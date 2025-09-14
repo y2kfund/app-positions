@@ -1,6 +1,6 @@
 # AGENTS.md — y2kfund/app-positions
 
-**Purpose:** This repo contains the **Positions app/component** for the y2kfund dashboard. It is a Vue 3 library package published privately to GitHub Packages as `@y2kfund/positions`.
+**Purpose:** This repo contains the **Positions app** The app also exposes a component that can be used by other apps. The component is a Vue 3 library package published privately to GitHub Packages as `@y2kfund/positions`.
 
 - **Repo name:** `app-positions`
 - **Package name:** `@y2kfund/positions`
@@ -8,15 +8,13 @@
 - **Org:** https://github.com/orgs/y2kfund/
 - **Core shared pkg:** `@y2kfund/core` (provides `SUPABASE`, `useSupabase()`, `queryKeys`, shared types)
 
-> This file is for AI coding assistants (Copilot/agents). Follow these rules exactly.
-
 ---
 
 ## 1) Architecture & Rules (authoritative)
 
 - **Vue 3 only.** Package is a **library build (ESM)** that exports a Vue component. No web components, no module federation.
-- **Single Supabase client**: the **dashboard host** creates it and provides it via `@y2kfund/core`. **Do not** create clients inside this library code.
-- **Data fetching**: Use **TanStack Vue Query**. Cache persistence is configured in the **dashboard**, not here.
+- **Single Supabase client**: `@y2kfund/core` creates it and provides it. **Do not** create clients inside the positions app or component.
+- **Data fetching**: Use **TanStack Vue Query**. Cache persistence is configured in the `@y2kfund/core`, not here.
 - **Realtime**: Subscribe to **Supabase Realtime** and **invalidate** (or patch) the right query key.
 - **Styling**: Use `<style scoped>` or CSS Modules. Expose **CSS variables** for theming. Do **not** add global CSS.
 - **Type-safety**: Put public props/events in `src/types.ts`, export from `src/index.ts`.
@@ -67,7 +65,7 @@ export interface PositionsProps {
 
 ## 4) Supabase client (from @y2kfund/core)
 
-**Never call `createClient()` inside library code.** Use core helpers.
+**Never call `createClient()` inside this repo.** Use core helpers.
 
 ```ts
 // inside a composable or <script setup>
@@ -316,35 +314,6 @@ app.component('Positions', Positions)
 - ❌ Don’t create Supabase clients in library code.
 - ❌ Don’t use localStorage for caching.
 - ❌ Don’t add global CSS.
-
----
-
-## 10) Optional: Make Copilot read this without duplication
-
-If we keep only **AGENTS.md**, mirror it to Copilot’s path automatically:
-
-**Symlink (macOS/Linux):**
-```bash
-mkdir -p .github
-rm -f .github/copilot-instructions.md
-ln -s ../AGENTS.md .github/copilot-instructions.md
-```
-
-**Portable script:**
-```js
-// scripts/sync-agents.mjs
-import { mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { dirname } from 'path';
-const src = 'AGENTS.md', dst = '.github/copilot-instructions.md';
-mkdirSync(dirname(dst), { recursive: true });
-writeFileSync(dst, readFileSync(src, 'utf8'));
-console.log(`[sync] ${src} -> ${dst}`);
-```
-
-```json
-// package.json
-{ "scripts": { "prepare": "node scripts/sync-agents.mjs" } }
-```
 
 ---
 
