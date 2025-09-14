@@ -1,25 +1,33 @@
 # AGENTS.md — y2kfund/app-positions
 
-**Purpose:** This repo contains the **Positions app** The app also exposes a component that can be used by other apps. The component is a Vue 3 library package published privately to GitHub Packages as `@y2kfund/positions`.
+**Purpose:** This repo contains the **Positions app**. The app also exposes a Vue 3 **component** that can be used by other apps. The component is published privately to GitHub Packages as `@y2kfund/positions`.
 
 - **Repo name:** `app-positions`
 - **Package name:** `@y2kfund/positions`
 - **Component export:** `Positions`
 - **Org:** https://github.com/orgs/y2kfund/
-- **Core shared pkg:** `@y2kfund/core` (provides `SUPABASE`, `useSupabase()`, `queryKeys`, shared types)
+- **Core pkg:** `@y2kfund/core` (aka **app-core**) — provides initialization, injection keys, hooks, query-key helpers, and shared types.
+
+**System layout**
+- **app-core** (`@y2kfund/core`) ⟶ initializes Supabase client **and** TanStack Query (with IndexedDB persistence), and provides them to the app via a Vue plugin.
+- **app-positions** (`@y2kfund/positions`) ⟶ consumes core’s client/query; exports `<Positions />`.
+- **app-trades**, … ⟶ same pattern as positions.
+- **app-dashboard** ⟶ uses **app-core** + **app-positions** + **app-trades**.
 
 ---
 
 ## 1) Architecture & Rules (authoritative)
 
-- **Vue 3 only.** Package is a **library build (ESM)** that exports a Vue component. No web components, no module federation.
-- **Single Supabase client**: `@y2kfund/core` creates it and provides it. **Do not** create clients inside the positions app or component.
-- **Data fetching**: Use **TanStack Vue Query**. Cache persistence is configured in the `@y2kfund/core`, not here.
-- **Realtime**: Subscribe to **Supabase Realtime** and **invalidate** (or patch) the right query key.
-- **Styling**: Use `<style scoped>` or CSS Modules. Expose **CSS variables** for theming. Do **not** add global CSS.
-- **Type-safety**: Put public props/events in `src/types.ts`, export from `src/index.ts`.
-- **SemVer**: Any breaking change to props/events is a **major** version bump.
-- **Naming**: Import as `import { Positions } from '@y2kfund/positions'` and use `<Positions .../>`.
+- **Vue 3 only.** This package is a **library build (ESM)** that exports a Vue component. No Web Components, no Module Federation.
+- **Single Supabase client & Query cache:** Both are **created and provided by `@y2kfund/core`**.  
+  **Do not** create Supabase clients or `QueryClient` instances inside this repo’s library code.
+- **Cache persistence:** Configured **inside `@y2kfund/core`** (TanStack Query + IndexedDB persister).
+- **Data fetching:** Use **TanStack Vue Query** hooks (installed by core).
+- **Realtime:** Subscribe to **Supabase Realtime** and **invalidate** (or patch) the right query key.
+- **Styling:** Use `<style scoped>` or CSS Modules. Expose **CSS variables** for theming. Do **not** add global CSS.
+- **Types:** Put public props/events in `src/types.ts`, export from `src/index.ts`.
+- **SemVer:** Any breaking change to props/events is a **major** version bump.
+- **Naming:** Import as `import { Positions } from '@y2kfund/positions'` and use `<Positions .../>`.
 
 ---
 
@@ -34,7 +42,7 @@ src/
   styles.css           # optional, scoped/CSS vars only
 dev/
   index.html           # local dev harness page
-  dev.ts               # creates/provides Supabase client, mounts <Positions/>
+  dev.ts               # installs app-core plugin, mounts <Positions/>
 package.json
 vite.config.ts
 tsconfig.json
@@ -63,29 +71,35 @@ export interface PositionsProps {
 
 ---
 
-## 4) Supabase client (from @y2kfund/core)
+## 4) Core-provided client & cache (no local creation)
 
-**Never call `createClient()` inside this repo.** Use core helpers.
+**Never call `createClient()` or new `QueryClient()` inside this library.** Use core’s hooks.
 
 ```ts
 // inside a composable or <script setup>
 import { useSupabase } from '@y2kfund/core'
-const supabase = useSupabase()  // typed client, throws if not provided
+const supabase = useSupabase()  // typed client; throws if core is not installed
 ```
 
-**Dev harness (allowed to create client for local runs):**
+**Dev harness installs app-core (which creates/provides everything):**
 
 **`dev/dev.ts`**
 ```ts
 import { createApp } from 'vue'
-import { createClient } from '@supabase/supabase-js'
-import { SUPABASE } from '@y2kfund/core'
 import Positions from '../src/Positions.vue'
+import { createCore } from '@y2kfund/core'
+// createCore initializes Supabase + TanStack Query + IDB persistence and returns a Vue plugin.
 
-const supabase = createClient(import.meta.env.VITE_SUPA_URL, import.meta.env.VITE_SUPA_ANON)
+const core = await createCore({
+  supabaseUrl: import.meta.env.VITE_SUPA_URL,
+  supabaseAnon: import.meta.env.VITE_SUPA_ANON,
+  idb: { databaseName: 'y2k-cache', storeName: 'tanstack' },
+  query: { staleTime: 60_000, gcTime: 86_400_000, refetchOnWindowFocus: false },
+  buster: 'v1'
+})
 
 createApp(Positions, (window as any).__DEMO_PROPS__ || {})
-  .provide(SUPABASE, supabase)
+  .use(core)
   .mount('#app')
 ```
 
@@ -271,26 +285,17 @@ jobs:
 // main.ts (dashboard host)
 import { createApp } from 'vue'
 import App from './App.vue'
-import { createClient } from '@supabase/supabase-js'
-import { VueQueryPlugin, QueryClient } from '@tanstack/vue-query'
-import { persistQueryClient } from '@tanstack/query-persist-client-core'
-import { createIDBPersister } from '@tanstack/query-persist-client-idb'
-import { SUPABASE } from '@y2kfund/core'
+import { createCore } from '@y2kfund/core'
 
-const supabase = createClient(import.meta.env.VITE_SUPA_URL, import.meta.env.VITE_SUPA_ANON)
-const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 60_000, gcTime: 86_400_000, refetchOnWindowFocus: false } } })
-
-await persistQueryClient({
-  queryClient,
-  persister: await createIDBPersister({ databaseName: 'hf-cache', storeName: 'tanstack' }),
-  maxAge: 86_400_000,
+const core = await createCore({
+  supabaseUrl: import.meta.env.VITE_SUPA_URL,
+  supabaseAnon: import.meta.env.VITE_SUPA_ANON,
+  idb: { databaseName: 'y2k-cache', storeName: 'tanstack' },
+  query: { staleTime: 60_000, gcTime: 86_400_000, refetchOnWindowFocus: false },
   buster: 'v1'
 })
 
-createApp(App)
-  .use(VueQueryPlugin, { queryClient })
-  .provide(SUPABASE, supabase)
-  .mount('#app')
+createApp(App).use(core).mount('#app')
 ```
 
 ```ts
@@ -306,18 +311,17 @@ app.component('Positions', Positions)
 
 ## 9) Do / Don’t
 
-- ✅ Import keys/helpers from **`@y2kfund/core`** (`useSupabase()`, `queryKeys`).
-- ✅ Use **TanStack Query**; rely on **dashboard** for persistence setup.
-- ✅ Namespaced query keys via `queryKeys`.
+- ✅ Install **app-core** and consume its hooks: `useSupabase()`, `queryKeys`, and TanStack Query context.
+- ✅ Use **TanStack Query**; persistence is handled by **app-core**.
+- ✅ Namespaced query keys via `@y2kfund/core/queryKeys`.
 - ✅ Emit typed events (`row-click`).
-- ✅ Dev harness may create the Supabase client for local runs.
-- ❌ Don’t create Supabase clients in library code.
+- ❌ Don’t create Supabase clients or `QueryClient`s in this library.
 - ❌ Don’t use localStorage for caching.
 - ❌ Don’t add global CSS.
 
 ---
 
 **Definition of done for this repo**
-- `pnpm dev` runs a standalone demo (dev harness provides Supabase).
+- `pnpm dev` runs a standalone demo (dev harness installs app-core).
 - `pnpm build` produces `dist/` (ESM library).
 - Publishing creates a private **`@y2kfund/positions`** package on GitHub Packages.
