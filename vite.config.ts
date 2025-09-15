@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
           entry: './src/index.ts',
           name: 'Positions',
           formats: ['es'],
-          fileName: 'index'
+          fileName: (format) => `index.${format}.js`
         },
         rollupOptions: {
           external: ['vue', '@y2kfund/core', '@tanstack/vue-query'],
