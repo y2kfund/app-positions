@@ -7,6 +7,7 @@
 - **Component export:** `Positions`
 - **Org:** https://github.com/orgs/y2kfund/
 - **Core pkg:** `@y2kfund/core` (aka **app-core**) — provides initialization, injection keys, hooks, query-key helpers, and shared types.
+- **Functionality:** Displays the positions table using ag-grid
 
 **System layout**
 - **app-core** (`@y2kfund/core`) ⟶ initializes Supabase client **and** TanStack Query (with IndexedDB persistence), and provides them to the app via a Vue plugin.
@@ -28,6 +29,8 @@
 - **Types:** Put public props/events in `src/types.ts`, export from `src/index.ts`.
 - **SemVer:** Any breaking change to props/events is a **major** version bump.
 - **Naming:** Import as `import { Positions } from '@y2kfund/positions'` and use `<Positions .../>`.
+- **Code organization:** **Strong preference that each code file should be less than 300 lines.** When files approach this limit, consider extracting utility functions, splitting complex initialization logic, or creating focused helper modules.
+
 
 ---
 
