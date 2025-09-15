@@ -1,20 +1,44 @@
 {
-  "name": "app-positions",
-  "private": true,
+  "name": "@y2kfund/positions",
+  "private": false,
   "version": "0.1.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/y2kfund/positions.git"
+  },
+  "homepage": "https://github.com/y2kfund/positions#readme",
+  "bugs": {
+    "url": "https://github.com/y2kfund/positions/issues"
+  },
+  "main": "./dist/positions.umd.cjs",
+  "module": "./dist/positions.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/positions.js",
+      "require": "./dist/positions.umd.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:lib": "vite build --mode lib",
+    "prepublishOnly": "pnpm run build:lib",
     "preview": "vite preview --port 5173"
   },
   "dependencies": {
     "vue": "^3.4.0"
   },
   "devDependencies": {
+    "@types/node": "^24.4.0",
     "@vitejs/plugin-vue": "^5.0.0",
     "typescript": "^5.4.0",
     "vite": "^5.0.0",
+    "vite-plugin-dts": "^4.5.4",
     "vue-tsc": "^2.0.0"
   }
 }

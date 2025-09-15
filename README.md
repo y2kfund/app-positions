@@ -1,16 +1,62 @@
-# app-positions (standalone)
+# @y2kfund/positions
 
-Minimal Vue 3 app that renders **"Positions app"**. This version is **standalone** and does **not** use `@y2kfund/core`.
+A Vue 3 component for displaying positions information.
 
-## Scripts
+## Installation
+
+Install from GitHub:
+
 ```bash
-pnpm install   # or npm install / yarn
-pnpm dev       # start dev server (http://localhost:5101)
-pnpm build     # production build
-pnpm preview   # preview built app
+npm install git+https://github.com/y2kfund/positions.git
+# or
+pnpm add git+https://github.com/y2kfund/positions.git
+# or
+yarn add git+https://github.com/y2kfund/positions.git
 ```
 
+## Usage
+
+```vue
+<template>
+  <div>
+    <Positions />
+  </div>
+</template>
+
+<script setup>
+import { Positions } from '@y2kfund/positions'
+// or
+import Positions from '@y2kfund/positions'
+</script>
+```
+
+## Development
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Build the library
+pnpm build:lib
+
+# Build for production
+pnpm build
+```
+
+## Scripts
+- `pnpm dev` - start dev server (http://localhost:5101)
+- `pnpm build` - production build
+- `pnpm build:lib` - build as library
+- `pnpm preview` - preview built app
+
 ## Notes
-- Pure Vue 3 + Vite.
-- No Supabase / TanStack Query / app-core here—just a simple starter.
-- Upgrade to your full architecture later by replacing this with the library build + core plugin.
+- Pure Vue 3 + Vite library
+- Can be used as a standalone app or imported as a component
+- Built with TypeScript support
+
+## License
+
+MIT
