@@ -7,7 +7,7 @@
 - **Component export:** `Positions`
 - **Org:** https://github.com/orgs/y2kfund/
 - **Core pkg:** `@y2kfund/core` (aka **app-core**) — provides initialization, injection keys, hooks, query-key helpers, and shared types.
-- **Functionality:** Displays the positions table using ag-grid
+- **Functionality:** Displays the positions table using ag-grid https://www.ag-grid.com/vue-data-grid/getting-started/
 
 **System layout**
 - **app-core** (`@y2kfund/core`) ⟶ initializes Supabase client **and** TanStack Query (with IndexedDB persistence), and provides them to the app via a Vue plugin.
