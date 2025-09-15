@@ -4,21 +4,24 @@ import { createCore } from '@y2kfund/core'
 
 async function initializeApp() {
   try {
+    // Check for required environment variables
+    const supabaseUrl = import.meta.env.VITE_SUPA_URL
+    const supabaseAnon = import.meta.env.VITE_SUPA_ANON
+
+    if (!supabaseUrl || !supabaseAnon) {
+      throw new Error('Missing required environment variables: VITE_SUPA_URL and VITE_SUPA_ANON must be set in .env file')
+    }
+
     // Initialize app-core with Supabase and TanStack Query
     // This provides the Supabase client that usePositionsQuery needs
     const core = await createCore({
-      supabaseUrl: import.meta.env.VITE_SUPA_URL || 'http://127.0.0.1:54321',
-      supabaseAnon: import.meta.env.VITE_SUPA_ANON || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-      idb: { 
-        databaseName: 'y2k-cache', 
-        storeName: 'tanstack' 
-      },
+      supabaseUrl,
+      supabaseAnon,
       query: { 
         staleTime: 60_000, 
         gcTime: 86_400_000, 
         refetchOnWindowFocus: false 
-      },
-      buster: 'v1'
+      }
     })
 
     // Get demo props from window
@@ -47,12 +50,13 @@ async function initializeApp() {
               <li>✅ @y2kfund/core is built and linked</li>
               <li>❓ Is Supabase running? <code>npx supabase status --workdir ./supabase/data/developer</code></li>
               <li>❓ Does hf.positions table exist?</li>
-              <li>❓ Are environment variables set?</li>
+              <li>❓ Are environment variables set in .env file?</li>
             </ul>
           </div>
           <div style="background: #f8f9fa; padding: 1rem; border-radius: 0.25rem; font-family: monospace; font-size: 0.875rem;">
-            Expected: http://127.0.0.1:54321 (Supabase API URL)<br>
-            Expected: eyJhbGciOiJIUzI... (Supabase anon key)
+            Required .env file:<br>
+            VITE_SUPA_URL=http://127.0.0.1:54321<br>
+            VITE_SUPA_ANON=your_anon_key_here
           </div>
         </div>
       `
