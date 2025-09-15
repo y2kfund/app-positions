@@ -1,13 +1,198 @@
 # AGENTS.md — y2kfund/app-positions
 
+# AGENTS.md — y2kfund/app-positions
+
 **Purpose:** This repo contains the **Positions app**. The app also exposes a Vue 3 **component** that can be used by other apps. The component is published privately to GitHub Packages as `@y2kfund/positions`.
 
 - **Repo name:** `app-positions`
 - **Package name:** `@y2kfund/positions`
 - **Component export:** `Positions`
 - **Org:** https://github.com/orgs/y2kfund/
-- **Core pkg:** `@y2kfund/core` (aka **app-core**) — provides initialization, injection keys, hooks, query-key helpers, and shared types.
+- **Core pkg:** `@y2kfund/core` (aka **app-core**) — provides initialization, query hooks with realtime, and shared types.
 - **Functionality:** Displays the positions table using ag-grid https://www.ag-grid.com/vue-data-grid/getting-started/
+
+**System layout (simplified)**
+- **app-core** (`@y2kfund/core`) ⟶ single file with Supabase client, TanStack Query, and ready-to-use hooks
+- **app-positions** (`@y2kfund/positions`) ⟶ simple Vue component that uses `usePositionsQuery()` from core
+- **app-trades**, … ⟶ same simplified pattern
+- **app-dashboard** ⟶ uses **app-core** + **app-positions** + **app-trades**
+
+---
+
+## 1) Architecture & Rules (simplified)
+
+- **Vue 3 only.** This package is a **library build (ESM)** that exports a Vue component.
+- **No local data fetching:** Use `usePositionsQuery()` hook from `@y2kfund/core` which includes built-in realtime subscriptions.
+- **No separate types file:** Types are imported from `@y2kfund/core` or defined inline in `index.ts`.
+- **No debug code:** Keep the component clean and production-ready.
+- **Styling:** Use `<style scoped>` with CSS variables for theming. No global CSS.
+- **SemVer:** Any breaking change to props/events is a **major** version bump.
+- **Single file focus:** Keep the main component focused and readable.
+
+---
+
+## 2) Simplified File Layout
+
+```
+src/
+  Positions.vue        # main component (clean, no debug code)
+  index.ts             # library entry: export component + props interface
+  styles.css           # (optional) if needed
+dev/
+  index.html           # local dev harness page
+  dev.ts               # installs app-core plugin, mounts <Positions/>
+package.json
+vite.config.ts
+tsconfig.json
+README.md
+AGENTS.md            # this file
+```
+
+**Removed files:**
+- ✅ `src/types.ts` - types now in `@y2kfund/core` or `index.ts`
+- ✅ Complex data composables - now use `usePositionsQuery` directly from core
+
+---
+
+## 3) Library entry & exports (simplified)
+
+**`src/index.ts`**
+```ts
+import Positions from './Positions.vue'
+
+export { Positions }
+export default Positions
+
+// Props interface (simple, local definition)
+export interface PositionsProps {
+  accountId: string
+  highlightPnL?: boolean
+  onRowClick?: (row: any) => void
+}
+```
+
+---
+
+## 4) Component implementation (clean & direct)
+
+**`src/Positions.vue`** - Key simplifications:
+- ✅ Direct import: `import { usePositionsQuery, type Position } from '@y2kfund/core'`
+- ✅ No debug code or conditional debug sections
+- ✅ Clean template with loading/error/success states
+- ✅ Built-in realtime updates from the core hook
+- ✅ Simple cleanup in `onBeforeUnmount`
+
+```vue
+<script setup lang="ts">
+import { onBeforeUnmount, computed } from 'vue'
+import { AgGridVue } from 'ag-grid-vue3'
+import { usePositionsQuery, type Position } from '@y2kfund/core'
+import type { PositionsProps } from './index'
+
+const props = defineProps<PositionsProps>()
+const emit = defineEmits<{ 'row-click': [row: Position] }>()
+
+// Query with built-in realtime from app-core
+const q = usePositionsQuery(props.accountId)
+
+// Clean up realtime subscription
+onBeforeUnmount(() => {
+  if (q._cleanup) q._cleanup()
+})
+
+// ... rest of implementation
+</script>
+```
+
+---
+
+## 5) Data pattern (simplified)
+
+**No local data composables needed.** Just use core's hook directly:
+
+```ts
+// Before (complex):
+// - Separate usePositions.ts file
+// - Manual realtime setup
+// - Custom query management
+
+// After (simple):
+const q = usePositionsQuery(props.accountId)
+// q.data.value - positions data
+// q.isLoading.value - loading state  
+// q.isError.value - error state
+// q._cleanup() - unsubscribes realtime
+```
+
+Core handles:
+- ✅ Supabase queries to `hf.positions` table
+- ✅ Realtime subscriptions and automatic invalidation
+- ✅ Query state management
+- ✅ Error handling
+
+---
+
+## 6) Build & Package (unchanged)
+
+**`vite.config.ts`**
+```ts
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+export default defineConfig({
+  plugins: [vue()],
+  build: {
+    outDir: 'dist',
+    lib: {
+      entry: 'src/index.ts',
+      name: 'Positions',
+      formats: ['es'],
+      fileName: 'index'
+    },
+    rollupOptions: {
+      external: ['vue', '@y2kfund/core']
+    }
+  },
+  server: { port: 5101 }
+})
+```
+
+---
+
+## 7) Usage (simplified)
+
+```ts
+// In dashboard
+import { Positions } from '@y2kfund/positions'
+
+// In template
+<Positions :account-id="selectedId" @row-click="onRow" />
+```
+
+All data fetching, caching, and realtime updates are handled transparently by the `@y2kfund/core` hooks.
+
+---
+
+## 8) Do / Don't (updated)
+
+- ✅ Use `usePositionsQuery()` directly from `@y2kfund/core`
+- ✅ Keep component clean and focused
+- ✅ Handle cleanup in `onBeforeUnmount`
+- ✅ Use scoped CSS with variables for theming
+- ❌ Don't create separate data composables
+- ❌ Don't add debug code to production component
+- ❌ Don't duplicate types from core
+- ❌ Don't manually set up realtime subscriptions
+
+---
+
+## 9) Definition of done (simplified)
+
+- ✅ `pnpm dev` runs a standalone demo
+- ✅ `pnpm build` produces clean `dist/` ESM library
+- ✅ Component uses `usePositionsQuery` with automatic realtime
+- ✅ No debug code, no unnecessary files
+- ✅ Published as `@y2kfund/positions` on GitHub Packages
 
 **System layout**
 - **app-core** (`@y2kfund/core`) ⟶ initializes Supabase client **and** TanStack Query (with IndexedDB persistence), and provides them to the app via a Vue plugin.

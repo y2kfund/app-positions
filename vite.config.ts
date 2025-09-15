@@ -7,16 +7,20 @@ export default defineConfig(({ mode }) => {
     return {
       plugins: [vue(), dts()],
       build: {
+        outDir: 'dist',
         lib: {
           entry: './src/index.ts',
           name: 'Positions',
-          fileName: 'positions'
+          formats: ['es'],
+          fileName: 'index'
         },
         rollupOptions: {
-          external: ['vue'],
+          external: ['vue', '@y2kfund/core', '@tanstack/vue-query'],
           output: {
             globals: {
-              vue: 'Vue'
+              vue: 'Vue',
+              '@y2kfund/core': 'Y2kfundCore',
+              '@tanstack/vue-query': 'VueQuery'
             }
           }
         }
@@ -26,6 +30,16 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [vue()],
-    server: { port: 5101 }
+    server: { 
+      port: 5101,
+      open: true 
+    },
+    root: '.',
+    // Use dev harness as the default entry point
+    build: {
+      rollupOptions: {
+        input: './dev/index.html'
+      }
+    }
   }
 })

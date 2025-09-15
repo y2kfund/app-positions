@@ -3,10 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Positions app</title>
+    <title>Positions Dev Harness</title>
   </head>
   <body>
     <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <script>
+      // Demo props for development - using account ID that exists in database
+      window.__DEMO_PROPS__ = { 
+        accountId: '1',  // This matches the internal_account_id in the database
+        highlightPnL: true 
+      };
+    </script>
+    <script type="module" src="/dev/dev.ts"></script>
   </body>
 </html>

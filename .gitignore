@@ -17,6 +17,8 @@ dist-dev/
 # Keep dist/ for publishing
 # dist/
 
+.env
+
 # Logs
 logs
 *.log

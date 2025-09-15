@@ -32,11 +32,19 @@
     "preview": "vite preview --port 5173"
   },
   "dependencies": {
+    "ag-grid-community": "^34.2.0",
+    "ag-grid-vue3": "^34.2.0",
+    "vue": "^3.4.0"
+  },
+  "peerDependencies": {
+    "@y2kfund/core": "^0.1.0",
     "vue": "^3.4.0"
   },
   "devDependencies": {
+    "@tanstack/vue-query": "^5.0.0",
     "@types/node": "^24.4.0",
     "@vitejs/plugin-vue": "^5.0.0",
+    "@y2kfund/core": "file:../app-core",
     "typescript": "^5.4.0",
     "vite": "^5.0.0",
     "vite-plugin-dts": "^4.5.4",
