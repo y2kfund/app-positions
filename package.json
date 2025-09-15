@@ -11,13 +11,12 @@
   "bugs": {
     "url": "https://github.com/y2kfund/positions/issues"
   },
-  "main": "./dist/positions.umd.cjs",
-  "module": "./dist/positions.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/positions.js",
-      "require": "./dist/positions.umd.cjs",
+      "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
   },
