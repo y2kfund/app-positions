@@ -80,6 +80,9 @@ function isColVisible(field: ColumnField): boolean {
   return visibleCols.value.includes(field)
 }
 
+// Symbol tag filter for exact tag matching
+const symbolTagFilter = ref<string>('')
+
 // Column definitions for ag-grid (hide based on visibleCols)
 const columnDefs = computed<ColDef[]>(() => [
   { 
@@ -191,62 +194,138 @@ const activeFilters = ref<ActiveFilter[]>([])
 function syncActiveFiltersFromGrid() {
   const api = gridApi.value
   const next: ActiveFilter[] = []
-  if (!api) {
-    activeFilters.value = next
-    return
+  
+  // Add external symbol filter if active
+  if (symbolTagFilter.value) {
+    next.push({ field: 'symbol', value: symbolTagFilter.value })
   }
-  const model = api.getFilterModel?.() || {}
-  const getFilterValue = (field: string) => model?.[field]?.filter || model?.[field]?.values || null
-  const symbol = getFilterValue('symbol')
-  if (typeof symbol === 'string' && symbol.length) next.push({ field: 'symbol', value: symbol })
-  const asset = getFilterValue('asset_class')
-  if (typeof asset === 'string' && asset.length) next.push({ field: 'asset_class', value: asset })
-  const account = getFilterValue('legal_entity')
-  if (typeof account === 'string' && account.length) next.push({ field: 'legal_entity', value: account })
+  
+  if (api) {
+    const model = api.getFilterModel?.() || {}
+    const getFilterValue = (field: string) => model?.[field]?.filter || model?.[field]?.values || null
+    
+    // Only add ag-Grid symbol filter if no external filter is active
+    if (!symbolTagFilter.value) {
+      const symbol = getFilterValue('symbol')
+      if (typeof symbol === 'string' && symbol.length) next.push({ field: 'symbol', value: symbol })
+    }
+    
+    const asset = getFilterValue('asset_class')
+    if (typeof asset === 'string' && asset.length) next.push({ field: 'asset_class', value: asset })
+    const account = getFilterValue('legal_entity')
+    if (typeof account === 'string' && account.length) next.push({ field: 'legal_entity', value: account })
+  }
+  
   activeFilters.value = next
+}
+
+// Helper function to extract tags from symbol text
+function extractTagsFromSymbol(symbolText: string): string[] {
+  if (!symbolText) return []
+  const text = String(symbolText)
+  const symMatch = text.match(/^([A-Z]+)\b/)
+  const base = symMatch?.[1] ?? ''
+  const rightMatch = text.match(/\s([CP])\b/)
+  const right = rightMatch?.[1] ?? ''
+  const strikeMatch = text.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/)
+  const strike = strikeMatch?.[1] ?? ''
+  const codeMatch = text.match(/\b(\d{6})[CP]/)
+  const expiry = codeMatch ? formatExpiryFromYyMmDd(codeMatch[1]) : ''
+  
+  return [base, expiry, strike, right].filter(Boolean)
 }
 
 function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity', value: any) {
   const api = gridApi.value
   if (!api || value === undefined || value === null) return
-  const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
-  const filterType = field === 'symbol' ? 'contains' : 'equals'
-  currentModel[field] = { type: filterType, filter: String(value) }
-  if (typeof api.setFilterModel === 'function') {
-    api.setFilterModel(currentModel)
+  
+  if (field === 'symbol') {
+    // For symbol field, use external filter for exact tag matching
+    const clickedTag = String(value).trim()
+    symbolTagFilter.value = clickedTag
+    
+    // Trigger external filter
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
+    
+    // Update URL to show symbol filter
+    const url = new URL(window.location.href)
+    if (clickedTag) {
+      url.searchParams.set('fsym', clickedTag)
+    } else {
+      url.searchParams.delete('fsym')
+    }
+    window.history.replaceState({}, '', url.toString())
+  } else {
+    // For other fields, use normal ag-Grid filters
+    const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
+    currentModel[field] = { type: 'equals', filter: String(value) }
+    
+    if (typeof api.setFilterModel === 'function') {
+      api.setFilterModel(currentModel)
+    }
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
+    writeFiltersToUrlFromModel(currentModel)
   }
-  if (typeof api.onFilterChanged === 'function') {
-    api.onFilterChanged()
-  }
-  writeFiltersToUrlFromModel(currentModel)
+  
   syncActiveFiltersFromGrid()
 }
 
 function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity') {
   const api = gridApi.value
   if (!api) return
-  const model = (api.getFilterModel && api.getFilterModel()) || {}
-  delete model[field]
-  if (typeof api.setFilterModel === 'function') {
-    api.setFilterModel(model)
+  
+  if (field === 'symbol') {
+    // Clear external symbol filter
+    symbolTagFilter.value = ''
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
+    
+    // Update URL
+    const url = new URL(window.location.href)
+    url.searchParams.delete('fsym')
+    window.history.replaceState({}, '', url.toString())
+  } else {
+    // Clear normal ag-Grid filter
+    const model = (api.getFilterModel && api.getFilterModel()) || {}
+    delete model[field]
+    if (typeof api.setFilterModel === 'function') {
+      api.setFilterModel(model)
+    }
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
+    writeFiltersToUrlFromModel(model)
   }
-  if (typeof api.onFilterChanged === 'function') {
-    api.onFilterChanged()
-  }
-  writeFiltersToUrlFromModel(model)
+  
   syncActiveFiltersFromGrid()
 }
 
 function clearAllFilters() {
   const api = gridApi.value
   if (!api) return
+  
+  // Clear external symbol filter
+  symbolTagFilter.value = ''
+  
+  // Clear ag-Grid filters
   if (typeof api.setFilterModel === 'function') {
     api.setFilterModel(null)
   }
   if (typeof api.onFilterChanged === 'function') {
     api.onFilterChanged()
   }
+  
+  // Clear URL params
   writeFiltersToUrlFromModel({})
+  const url = new URL(window.location.href)
+  url.searchParams.delete('fsym')
+  window.history.replaceState({}, '', url.toString())
+  
   syncActiveFiltersFromGrid()
 }
 
@@ -339,20 +418,33 @@ function recalcPinnedTotals() {
 function onGridReady(event: any) {
   gridApi.value = event.api
   columnApiRef.value = event.columnApi
+  
   // Apply initial column visibility from URL
   for (const opt of allColumnOptions) {
     setColumnVisibility(opt.field, isColVisible(opt.field))
   }
+  
   // Apply initial filters from URL
   const fromUrl = parseFiltersFromUrl()
+  
+  // Handle symbol filter (external filter for exact tag matching)
+  if (fromUrl.symbol) {
+    symbolTagFilter.value = fromUrl.symbol
+  }
+  
+  // Handle other filters (normal ag-Grid filters)
   const model: any = {}
-  if (fromUrl.symbol) model.symbol = { type: 'contains', filter: fromUrl.symbol }
   if (fromUrl.asset_class) model.asset_class = { type: 'equals', filter: fromUrl.asset_class }
   if (fromUrl.legal_entity) model.legal_entity = { type: 'equals', filter: fromUrl.legal_entity }
   if (Object.keys(model).length && typeof event.api.setFilterModel === 'function') {
     event.api.setFilterModel(model)
-    event.api.onFilterChanged?.()
   }
+  
+  // Trigger filter update
+  if (typeof event.api.onFilterChanged === 'function') {
+    event.api.onFilterChanged()
+  }
+  
   syncActiveFiltersFromGrid()
   recalcPinnedTotals()
 }
@@ -367,6 +459,12 @@ watch(visibleCols, (cols) => {
 
 // Recalculate when upstream data changes
 watch(() => q.data.value, () => {
+  recalcPinnedTotals()
+})
+
+// Recalculate when external symbol filter changes
+watch(symbolTagFilter, () => {
+  syncActiveFiltersFromGrid()
   recalcPinnedTotals()
 })
 
@@ -461,6 +559,21 @@ function extractClickedTagText(evt: any): string | null {
   const txt = String(tagEl.textContent || '').trim()
   return txt || null
 }
+
+// External filter function for exact tag matching
+function isExternalFilterPresent(): boolean {
+  return symbolTagFilter.value !== ''
+}
+
+function doesExternalFilterPass(node: any): boolean {
+  if (!symbolTagFilter.value) return true
+  
+  const symbolValue = node.data?.symbol
+  if (!symbolValue) return false
+  
+  const tags = extractTagsFromSymbol(symbolValue)
+  return tags.includes(symbolTagFilter.value)
+}
 </script>
 
 <template>
@@ -529,9 +642,11 @@ function extractClickedTagText(evt: any): string | null {
             minWidth: 100
           }"
           :animateRows="true"
-          :rowSelection="'single'"
+          :rowSelection="{ mode: 'singleRow' }"
           :domLayout="'autoHeight'"
           :pinnedBottomRowData="pinnedBottomRowDataRef"
+          :isExternalFilterPresent="isExternalFilterPresent"
+          :doesExternalFilterPass="doesExternalFilterPass"
           @grid-ready="onGridReady"
           @filter-changed="recalcPinnedTotals"
           @sort-changed="recalcPinnedTotals"
