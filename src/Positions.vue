@@ -667,7 +667,6 @@ function doesExternalFilterPass(node: any): boolean {
             minWidth: 100
           }"
           :animateRows="true"
-          :rowSelection="{ mode: 'singleRow' }"
           :domLayout="'autoHeight'"
           :pinnedBottomRowData="pinnedBottomRowDataRef"
           :isExternalFilterPresent="isExternalFilterPresent"
