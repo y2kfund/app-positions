@@ -97,7 +97,12 @@ const columnDefs = computed<ColDef[]>(() => [
     pinned: 'left' as const,
     hide: !isColVisible('symbol'),
     cellRenderer: (params: any) => renderFinancialInstrumentCell(params.value),
-    onCellClicked: (event: any) => handleCellFilterClick('symbol', event?.value)
+    onCellClicked: (event: any) => {
+      const clicked = extractClickedTagText(event)
+      if (clicked) {
+        handleCellFilterClick('symbol', clicked)
+      }
+    }
   },
   { 
     field: 'asset_class', 
@@ -205,7 +210,8 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity',
   const api = gridApi.value
   if (!api || value === undefined || value === null) return
   const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
-  currentModel[field] = { type: 'equals', filter: String(value) }
+  const filterType = field === 'symbol' ? 'contains' : 'equals'
+  currentModel[field] = { type: filterType, filter: String(value) }
   if (typeof api.setFilterModel === 'function') {
     api.setFilterModel(currentModel)
   }
@@ -340,7 +346,7 @@ function onGridReady(event: any) {
   // Apply initial filters from URL
   const fromUrl = parseFiltersFromUrl()
   const model: any = {}
-  if (fromUrl.symbol) model.symbol = { type: 'equals', filter: fromUrl.symbol }
+  if (fromUrl.symbol) model.symbol = { type: 'contains', filter: fromUrl.symbol }
   if (fromUrl.asset_class) model.asset_class = { type: 'equals', filter: fromUrl.asset_class }
   if (fromUrl.legal_entity) model.legal_entity = { type: 'equals', filter: fromUrl.legal_entity }
   if (Object.keys(model).length && typeof event.api.setFilterModel === 'function') {
@@ -437,9 +443,23 @@ function renderFinancialInstrumentCell(value: any): string {
   const codeMatch = text.match(/\b(\d{6})[CP]/)
   const expiry = codeMatch ? formatExpiryFromYyMmDd(codeMatch[1]) : ''
 
-  const tag = (label: string) => `<span class="fi-tag">${label}</span>`
-  const parts = [base && tag(base), expiry && tag(expiry), strike && tag(strike), right && tag(right)]
+  const tag = (label: string, extraClass = '') => `<span class="fi-tag fi-tag-click ${extraClass}">${label}</span>`
+  const parts = [
+    base && tag(base, 'fi-tag-symbol'),
+    expiry && tag(expiry, 'fi-tag-expiry'),
+    strike && tag(strike, 'fi-tag-strike'),
+    right && tag(right, 'fi-tag-right')
+  ]
   return parts.filter(Boolean).join(' ')
+}
+
+function extractClickedTagText(evt: any): string | null {
+  const target: any = evt?.event?.target
+  if (!target) return null
+  const tagEl = (target.closest && target.closest('.fi-tag')) || null
+  if (!tagEl) return null
+  const txt = String(tagEl.textContent || '').trim()
+  return txt || null
 }
 </script>
 
