@@ -413,7 +413,7 @@ function formatNumber(value: number | null | undefined): string {
     <!-- Success state with ag-grid -->
     <div v-else-if="q.isSuccess.value" class="positions-container">
       <div class="positions-header">
-        <h2>Portfolio Positions</h2>
+        <h2>Positions:</h2>
         <div class="positions-tools">
           <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
           <button ref="columnsBtnRef" class="columns-btn" aria-label="Column settings" @click.stop="toggleColumnsPopup">
@@ -785,5 +785,14 @@ h1 {
   .positions-grid {
     height: 300px;
   }
+}
+</style>
+
+<style>
+.ag-simple-filter-body-wrapper {
+  background-color: #fff;
+}
+.ag-input-wrapper:before {
+  content: none;
 }
 </style>
