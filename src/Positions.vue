@@ -21,8 +21,9 @@ const emit = defineEmits<{
 const q = usePositionsQuery(props.accountId)
 
 // Column metadata for visibility control
-type ColumnField = 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl'
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
+  { field: 'legal_entity', label: 'Account' },
   { field: 'symbol', label: 'Symbol' },
   { field: 'asset_class', label: 'Asset Class' },
   { field: 'conid', label: 'Conid' },
@@ -55,11 +56,12 @@ function writeVisibleColsToUrl(cols: ColumnField[]) {
 }
 
 // Filter URL helpers (fsym: symbol, fac: asset_class)
-function parseFiltersFromUrl(): { symbol?: string; asset_class?: string } {
+function parseFiltersFromUrl(): { symbol?: string; asset_class?: string; legal_entity?: string } {
   const url = new URL(window.location.href)
   const symbol = url.searchParams.get('fsym') || undefined
   const asset = url.searchParams.get('fac') || undefined
-  return { symbol, asset_class: asset }
+  const account = url.searchParams.get('facc') || undefined
+  return { symbol, asset_class: asset, legal_entity: account }
 }
 
 function writeFiltersToUrlFromModel(model: any) {
@@ -68,6 +70,8 @@ function writeFiltersToUrlFromModel(model: any) {
   const ac = model?.asset_class?.filter || ''
   if (sym) url.searchParams.set('fsym', sym); else url.searchParams.delete('fsym')
   if (ac) url.searchParams.set('fac', ac); else url.searchParams.delete('fac')
+  const acc = model?.legal_entity?.filter || ''
+  if (acc) url.searchParams.set('facc', acc); else url.searchParams.delete('facc')
   window.history.replaceState({}, '', url.toString())
 }
 
@@ -79,8 +83,16 @@ function isColVisible(field: ColumnField): boolean {
 // Column definitions for ag-grid (hide based on visibleCols)
 const columnDefs = computed<ColDef[]>(() => [
   { 
+    field: 'legal_entity', 
+    headerName: 'Account',
+    width: 160,
+    pinned: 'left' as const,
+    hide: !isColVisible('legal_entity'),
+    onCellClicked: (event: any) => handleCellFilterClick('legal_entity', event?.value)
+  },
+  { 
     field: 'symbol', 
-    headerName: 'Symbol',
+    headerName: 'Financial Instrument',
     width: 120,
     pinned: 'left' as const,
     hide: !isColVisible('symbol'),
@@ -92,7 +104,7 @@ const columnDefs = computed<ColDef[]>(() => [
     headerName: 'Asset Class',
     width: 100,
     hide: !isColVisible('asset_class'),
-    onCellClicked: (event: any) => handleCellFilterClick('asset_class', event?.value)
+    // removed click-to-filter for Asset Class per requirements
   },
   { 
     field: 'conid', 
@@ -168,7 +180,7 @@ const pinnedBottomRowDataRef = ref<any[]>([])
 const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl'] as const
 
 // Active filters tracking for tag UI
-type ActiveFilter = { field: 'symbol' | 'asset_class'; value: string }
+type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity'; value: string }
 const activeFilters = ref<ActiveFilter[]>([])
 
 function syncActiveFiltersFromGrid() {
@@ -184,10 +196,12 @@ function syncActiveFiltersFromGrid() {
   if (typeof symbol === 'string' && symbol.length) next.push({ field: 'symbol', value: symbol })
   const asset = getFilterValue('asset_class')
   if (typeof asset === 'string' && asset.length) next.push({ field: 'asset_class', value: asset })
+  const account = getFilterValue('legal_entity')
+  if (typeof account === 'string' && account.length) next.push({ field: 'legal_entity', value: account })
   activeFilters.value = next
 }
 
-function handleCellFilterClick(field: 'symbol' | 'asset_class', value: any) {
+function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity', value: any) {
   const api = gridApi.value
   if (!api || value === undefined || value === null) return
   const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
@@ -202,7 +216,7 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class', value: any) {
   syncActiveFiltersFromGrid()
 }
 
-function clearFilter(field: 'symbol' | 'asset_class') {
+function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity') {
   const api = gridApi.value
   if (!api) return
   const model = (api.getFilterModel && api.getFilterModel()) || {}
@@ -328,6 +342,7 @@ function onGridReady(event: any) {
   const model: any = {}
   if (fromUrl.symbol) model.symbol = { type: 'equals', filter: fromUrl.symbol }
   if (fromUrl.asset_class) model.asset_class = { type: 'equals', filter: fromUrl.asset_class }
+  if (fromUrl.legal_entity) model.legal_entity = { type: 'equals', filter: fromUrl.legal_entity }
   if (Object.keys(model).length && typeof event.api.setFilterModel === 'function') {
     event.api.setFilterModel(model)
     event.api.onFilterChanged?.()
@@ -440,7 +455,7 @@ function formatNumber(value: number | null | undefined): string {
         <span class="filters-label">Filtered by:</span>
         <div class="filters-tags">
           <span v-for="f in activeFilters" :key="f.field" class="filter-tag">
-            <strong>{{ f.field === 'symbol' ? 'Symbol' : 'Asset Class' }}:</strong> {{ f.value }}
+            <strong>{{ f.field === 'symbol' ? 'Financial Instrument' : (f.field === 'legal_entity' ? 'Account' : 'Asset Class') }}:</strong> {{ f.value }}
             <button class="tag-clear" @click="clearFilter(f.field)" aria-label="Clear filter">✕</button>
           </span>
           <button class="btn btn-clear-all" @click="clearAllFilters">Clear all</button>
