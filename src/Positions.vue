@@ -20,25 +20,87 @@ const emit = defineEmits<{
 // Query positions data with realtime updates
 const q = usePositionsQuery(props.accountId)
 
-// Column definitions for ag-grid
+// Column metadata for visibility control
+type ColumnField = 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl'
+const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
+  { field: 'symbol', label: 'Symbol' },
+  { field: 'asset_class', label: 'Asset Class' },
+  { field: 'conid', label: 'Conid' },
+  { field: 'undConid', label: 'Underlying Conid' },
+  { field: 'multiplier', label: 'Multiplier' },
+  { field: 'qty', label: 'Quantity' },
+  { field: 'avgPrice', label: 'Avg Price' },
+  { field: 'price', label: 'Market Price' },
+  { field: 'market_value', label: 'Market Value' },
+  { field: 'unrealized_pnl', label: 'Unrealized P&L' }
+]
+
+// URL param helpers
+function parseVisibleColsFromUrl(): ColumnField[] {
+  const url = new URL(window.location.href)
+  const colsParam = url.searchParams.get('cols')
+  if (!colsParam) {
+    return allColumnOptions.map(c => c.field)
+  }
+  const fromUrl = colsParam.split(',').map(s => s.trim()).filter(Boolean) as ColumnField[]
+  const valid = new Set(allColumnOptions.map(c => c.field))
+  const filtered = fromUrl.filter(c => valid.has(c))
+  return filtered.length ? filtered : allColumnOptions.map(c => c.field)
+}
+
+function writeVisibleColsToUrl(cols: ColumnField[]) {
+  const url = new URL(window.location.href)
+  url.searchParams.set('cols', cols.join(','))
+  window.history.replaceState({}, '', url.toString())
+}
+
+const visibleCols = ref<ColumnField[]>(parseVisibleColsFromUrl())
+function isColVisible(field: ColumnField): boolean {
+  return visibleCols.value.includes(field)
+}
+
+// Column definitions for ag-grid (hide based on visibleCols)
 const columnDefs = computed<ColDef[]>(() => [
   { 
     field: 'symbol', 
     headerName: 'Symbol',
     width: 120,
     pinned: 'left' as const,
+    hide: !isColVisible('symbol'),
     cellRenderer: (params: any) => `<span class="symbol">${params.value}</span>`
   },
   { 
     field: 'asset_class', 
     headerName: 'Asset Class',
-    width: 100
+    width: 100,
+    hide: !isColVisible('asset_class')
+  },
+  { 
+    field: 'conid', 
+    headerName: 'Conid',
+    width: 120,
+    hide: !isColVisible('conid')
+  },
+  { 
+    field: 'undConid', 
+    headerName: 'Underlying Conid',
+    width: 140,
+    hide: !isColVisible('undConid')
+  },
+  { 
+    field: 'multiplier', 
+    headerName: 'Multiplier',
+    width: 110,
+    type: 'rightAligned',
+    hide: !isColVisible('multiplier'),
+    valueFormatter: (params: any) => formatNumber(params.value)
   },
   { 
     field: 'qty', 
     headerName: 'Quantity',
     width: 120,
     type: 'rightAligned',
+    hide: !isColVisible('qty'),
     valueFormatter: (params: any) => formatNumber(params.value)
   },
   { 
@@ -46,6 +108,7 @@ const columnDefs = computed<ColDef[]>(() => [
     headerName: 'Avg Price',
     width: 120,
     type: 'rightAligned',
+    hide: !isColVisible('avgPrice'),
     valueFormatter: (params: any) => formatCurrency(params.value)
   },
   { 
@@ -53,6 +116,7 @@ const columnDefs = computed<ColDef[]>(() => [
     headerName: 'Market Price',
     width: 130,
     type: 'rightAligned',
+    hide: !isColVisible('price'),
     valueFormatter: (params: any) => formatCurrency(params.value)
   },
   { 
@@ -60,6 +124,7 @@ const columnDefs = computed<ColDef[]>(() => [
     headerName: 'Market Value',
     width: 140,
     type: 'rightAligned',
+    hide: !isColVisible('market_value'),
     valueFormatter: (params: any) => formatCurrency(params.value)
   },
   { 
@@ -67,6 +132,7 @@ const columnDefs = computed<ColDef[]>(() => [
     headerName: 'Unrealized P&L',
     width: 150,
     type: 'rightAligned',
+    hide: !isColVisible('unrealized_pnl'),
     valueFormatter: (params: any) => formatCurrency(params.value),
     cellClassRules: {
       'pnl-positive': (params: any) => params.value > 0,
@@ -78,8 +144,29 @@ const columnDefs = computed<ColDef[]>(() => [
 
 // Grid API and totals that respect filtering/sorting
 const gridApi = ref<any | null>(null)
+const columnApiRef = ref<any | null>(null)
 const pinnedBottomRowDataRef = ref<any[]>([])
 const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl'] as const
+
+// Compat helper: set column visibility across ag-Grid versions
+function setColumnVisibility(field: string, visible: boolean) {
+  const cApi: any = columnApiRef.value
+  const gApi: any = gridApi.value
+  if (cApi && typeof cApi.setColumnVisible === 'function') {
+    cApi.setColumnVisible(field, visible)
+    return
+  }
+  if (gApi) {
+    if (typeof gApi.setColumnVisible === 'function') {
+      gApi.setColumnVisible(field, visible)
+      return
+    }
+    if (typeof gApi.setColumnsVisible === 'function') {
+      gApi.setColumnsVisible([field], visible)
+      return
+    }
+  }
+}
 
 function recalcPinnedTotals() {
   const api = gridApi.value
@@ -115,8 +202,21 @@ function recalcPinnedTotals() {
 
 function onGridReady(event: any) {
   gridApi.value = event.api
+  columnApiRef.value = event.columnApi
+  // Apply initial column visibility from URL
+  for (const opt of allColumnOptions) {
+    setColumnVisibility(opt.field, isColVisible(opt.field))
+  }
   recalcPinnedTotals()
 }
+
+// Persist visibility to URL and update grid when changed
+watch(visibleCols, (cols) => {
+  writeVisibleColsToUrl(cols)
+  for (const opt of allColumnOptions) {
+    setColumnVisibility(opt.field, isColVisible(opt.field))
+  }
+}, { deep: true })
 
 // Recalculate when upstream data changes
 watch(() => q.data.value, () => {
@@ -174,6 +274,17 @@ function formatNumber(value: number | null | undefined): string {
       <div class="positions-header">
         <h2>Portfolio Positions</h2>
         <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
+      </div>
+ 
+      <!-- Column Visibility Controls -->
+      <div class="columns-controls">
+        <span class="label">Columns:</span>
+        <div class="columns-list">
+          <label v-for="opt in allColumnOptions" :key="opt.field" class="col-toggle">
+            <input type="checkbox" :value="opt.field" v-model="visibleCols" />
+            <span>{{ opt.label }}</span>
+          </label>
+        </div>
       </div>
       
       <div class="ag-theme-alpine positions-grid">
@@ -245,6 +356,34 @@ h1 {
   font-weight: 500;
 }
 
+.columns-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0 0.25rem 0;
+}
+
+.columns-controls .label {
+  font-size: 0.875rem;
+  color: #495057;
+  font-weight: 600;
+}
+
+.columns-list {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.col-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  color: #495057;
+}
+
 .loading, .error {
   padding: 2rem;
   text-align: center;
@@ -293,13 +432,13 @@ h1 {
 }
 
 .positions-grid {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   height: 400px;
   min-height: 200px;
 }
 
 /* ag-Grid styling */
-:deep(.ag-theme-alpine) {
+::deep(.ag-theme-alpine) {
   --ag-header-background-color: #f8f9fa;
   --ag-header-foreground-color: #495057;
   --ag-border-color: #dee2e6;
@@ -307,15 +446,17 @@ h1 {
   --ag-selected-row-background-color: #e3f2fd;
 }
 
-:deep(.ag-theme-alpine .ag-header-cell) {
+::deep(.ag-theme-alpine .ag-header-cell) {
   font-weight: 600;
   font-size: 0.875rem;
+  border-right: 1px solid #dee2e6;
 }
 
-:deep(.ag-theme-alpine .ag-cell) {
+::deep(.ag-theme-alpine .ag-cell) {
   font-size: 0.875rem;
   display: flex;
   align-items: center;
+  border-right: 1px solid #dee2e6;
 }
 
 /* Highlight pinned bottom total row */
@@ -327,22 +468,22 @@ h1 {
   border-top: 2px solid #dee2e6;
 }
 
-:deep(.symbol) {
+::deep(.symbol) {
   font-weight: 600;
   color: #007bff;
 }
 
-:deep(.pnl-positive) {
+::deep(.pnl-positive) {
   color: #28a745 !important;
   font-weight: 600;
 }
 
-:deep(.pnl-negative) {
+::deep(.pnl-negative) {
   color: #dc3545 !important;
   font-weight: 600;
 }
 
-:deep(.pnl-zero) {
+::deep(.pnl-zero) {
   color: #6c757d !important;
 }
 
