@@ -54,6 +54,23 @@ function writeVisibleColsToUrl(cols: ColumnField[]) {
   window.history.replaceState({}, '', url.toString())
 }
 
+// Filter URL helpers (fsym: symbol, fac: asset_class)
+function parseFiltersFromUrl(): { symbol?: string; asset_class?: string } {
+  const url = new URL(window.location.href)
+  const symbol = url.searchParams.get('fsym') || undefined
+  const asset = url.searchParams.get('fac') || undefined
+  return { symbol, asset_class: asset }
+}
+
+function writeFiltersToUrlFromModel(model: any) {
+  const url = new URL(window.location.href)
+  const sym = model?.symbol?.filter || ''
+  const ac = model?.asset_class?.filter || ''
+  if (sym) url.searchParams.set('fsym', sym); else url.searchParams.delete('fsym')
+  if (ac) url.searchParams.set('fac', ac); else url.searchParams.delete('fac')
+  window.history.replaceState({}, '', url.toString())
+}
+
 const visibleCols = ref<ColumnField[]>(parseVisibleColsFromUrl())
 function isColVisible(field: ColumnField): boolean {
   return visibleCols.value.includes(field)
@@ -181,6 +198,7 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class', value: any) {
   if (typeof api.onFilterChanged === 'function') {
     api.onFilterChanged()
   }
+  writeFiltersToUrlFromModel(currentModel)
   syncActiveFiltersFromGrid()
 }
 
@@ -195,6 +213,7 @@ function clearFilter(field: 'symbol' | 'asset_class') {
   if (typeof api.onFilterChanged === 'function') {
     api.onFilterChanged()
   }
+  writeFiltersToUrlFromModel(model)
   syncActiveFiltersFromGrid()
 }
 
@@ -207,6 +226,7 @@ function clearAllFilters() {
   if (typeof api.onFilterChanged === 'function') {
     api.onFilterChanged()
   }
+  writeFiltersToUrlFromModel({})
   syncActiveFiltersFromGrid()
 }
 
@@ -303,6 +323,16 @@ function onGridReady(event: any) {
   for (const opt of allColumnOptions) {
     setColumnVisibility(opt.field, isColVisible(opt.field))
   }
+  // Apply initial filters from URL
+  const fromUrl = parseFiltersFromUrl()
+  const model: any = {}
+  if (fromUrl.symbol) model.symbol = { type: 'equals', filter: fromUrl.symbol }
+  if (fromUrl.asset_class) model.asset_class = { type: 'equals', filter: fromUrl.asset_class }
+  if (Object.keys(model).length && typeof event.api.setFilterModel === 'function') {
+    event.api.setFilterModel(model)
+    event.api.onFilterChanged?.()
+  }
+  syncActiveFiltersFromGrid()
   recalcPinnedTotals()
 }
 
@@ -324,6 +354,9 @@ watch(() => gridApi.value, (api) => {
   if (!api) return
   const listener = () => {
     syncActiveFiltersFromGrid()
+    // Persist filter model to URL
+    const model = api.getFilterModel?.() || {}
+    writeFiltersToUrlFromModel(model)
     recalcPinnedTotals()
   }
   api.addEventListener?.('filterChanged', listener)
