@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, computed, ref, watch } from 'vue'
+import { onMounted, onBeforeUnmount, computed, ref, watch } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3'
 import { AllCommunityModule } from 'ag-grid-community'
 import type { ColDef } from 'ag-grid-community'
@@ -168,6 +168,40 @@ function setColumnVisibility(field: string, visible: boolean) {
   }
 }
 
+// UI state: column settings dropdown
+const showColumnsPopup = ref(false)
+const columnsBtnRef = ref<HTMLElement | null>(null)
+const columnsPopupRef = ref<HTMLElement | null>(null)
+
+function toggleColumnsPopup() {
+  showColumnsPopup.value = !showColumnsPopup.value
+}
+
+function closeColumnsPopup() {
+  showColumnsPopup.value = false
+}
+
+function handleClickOutside(event: MouseEvent) {
+  const target = event.target as Node | null
+  const btnEl = columnsBtnRef.value
+  const popEl = columnsPopupRef.value
+  if (!btnEl || !popEl) return
+  if (!btnEl.contains(target) && !popEl.contains(target)) {
+    closeColumnsPopup()
+  }
+}
+
+function handleEscape(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    closeColumnsPopup()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('click', handleClickOutside)
+  window.addEventListener('keydown', handleEscape)
+})
+
 function recalcPinnedTotals() {
   const api = gridApi.value
   // API not ready: compute from raw rows
@@ -228,6 +262,8 @@ onBeforeUnmount(() => {
   if (q._cleanup) {
     q._cleanup()
   }
+  window.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('keydown', handleEscape)
 })
 
 function rowClicked(position: Position) {
@@ -273,17 +309,26 @@ function formatNumber(value: number | null | undefined): string {
     <div v-else-if="q.isSuccess.value" class="positions-container">
       <div class="positions-header">
         <h2>Portfolio Positions</h2>
-        <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
-      </div>
- 
-      <!-- Column Visibility Controls -->
-      <div class="columns-controls">
-        <span class="label">Columns:</span>
-        <div class="columns-list">
-          <label v-for="opt in allColumnOptions" :key="opt.field" class="col-toggle">
-            <input type="checkbox" :value="opt.field" v-model="visibleCols" />
-            <span>{{ opt.label }}</span>
-          </label>
+        <div class="positions-tools">
+          <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
+          <button ref="columnsBtnRef" class="columns-btn" aria-label="Column settings" @click.stop="toggleColumnsPopup">
+            <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path fill="currentColor" d="M12 8a4 4 0 100 8 4 4 0 000-8zm9.4 3a7.96 7.96 0 00-.5-1.2l2-1.6-2-3.4-2.4 1a8.53 8.53 0 00-1-.6L17 1h-4l-.5 2.2a8.53 8.53 0 00-1 .6L8.1 2.8 6.1 6.2l2 1.6c-.2.4-.4.8-.5 1.2H3v4h4.6c.1.4.3.8.5 1.2l-2 1.6 2 3.4 2.4-1c.3.2.6.4 1 .6L13 23h4l.5-2.2c.4-.2.7-.4 1-.6l2.4 1 2-3.4-2-1.6c.2-.4.4-.8.5-1.2H23v-4h-1.6z"/>
+            </svg>
+          </button>
+          <div v-if="showColumnsPopup" ref="columnsPopupRef" class="columns-popup" @click.stop>
+            <div class="popup-header">Columns</div>
+            <div class="popup-list">
+              <label v-for="opt in allColumnOptions" :key="opt.field" class="popup-item">
+                <input type="checkbox" :value="opt.field" v-model="visibleCols" />
+                <span>{{ opt.label }}</span>
+              </label>
+            </div>
+            <div class="popup-actions">
+              <button class="btn btn-clear" @click="visibleCols = allColumnOptions.map(c=>c.field)">Show All</button>
+              <button class="btn" @click="closeColumnsPopup">Done</button>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -355,6 +400,82 @@ h1 {
   border-radius: 1rem;
   font-weight: 500;
 }
+
+.positions-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.columns-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  background: #fff;
+  color: #495057;
+  cursor: pointer;
+}
+.columns-btn:hover { background: #f8f9fa; }
+.columns-btn .icon { pointer-events: none; }
+
+.columns-popup {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 260px;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.columns-popup .popup-header {
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.columns-popup .popup-list {
+  max-height: 260px;
+  overflow: auto;
+  padding: 0.5rem 0.75rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.35rem;
+}
+
+.columns-popup .popup-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #495057;
+}
+
+.columns-popup .popup-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem 0.75rem 0.75rem;
+  border-top: 1px solid #f1f3f5;
+}
+
+.columns-popup .btn {
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.8125rem;
+}
+.columns-popup .btn:hover { background: #f8f9fa; }
+.columns-popup .btn-clear { color: #6c757d; }
 
 .columns-controls {
   display: flex;
