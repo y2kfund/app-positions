@@ -58,9 +58,9 @@ function writeVisibleColsToUrl(cols: ColumnField[]) {
 // Filter URL helpers (fsym: symbol, fac: asset_class)
 function parseFiltersFromUrl(): { symbol?: string; asset_class?: string; legal_entity?: string } {
   const url = new URL(window.location.href)
-  const symbol = url.searchParams.get('position_fsym') || undefined
+  const symbol = url.searchParams.get('all_cts_fi') || undefined
   const asset = url.searchParams.get('fac') || undefined
-  const account = url.searchParams.get('facc') || undefined
+  const account = url.searchParams.get('all_cts_clientId') || undefined
   return { symbol, asset_class: asset, legal_entity: account }
 }
 
@@ -69,18 +69,18 @@ function writeFiltersToUrlFromModel(model: any) {
   
   // Handle external symbol filters first
   if (symbolTagFilters.value.length > 0) {
-    url.searchParams.set('position_fsym', symbolTagFilters.value.join(','))
+    url.searchParams.set('all_cts_fi', symbolTagFilters.value.join(','))
   } else {
     // Only handle ag-Grid symbol filter if no external filters
     const sym = model?.symbol?.filter || ''
-    if (sym) url.searchParams.set('position_fsym', sym); else url.searchParams.delete('position_fsym')
+    if (sym) url.searchParams.set('all_cts_fi', sym); else url.searchParams.delete('all_cts_fi')
   }
   
   // Handle other ag-Grid filters
   const ac = model?.asset_class?.filter || ''
   if (ac) url.searchParams.set('fac', ac); else url.searchParams.delete('fac')
   const acc = model?.legal_entity?.filter || ''
-  if (acc) url.searchParams.set('facc', acc); else url.searchParams.delete('facc')
+  if (acc) url.searchParams.set('all_cts_clientId', acc); else url.searchParams.delete('all_cts_clientId')
   
   window.history.replaceState({}, '', url.toString())
 }
@@ -300,7 +300,7 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity', specificV
     
     // Update URL
     const url = new URL(window.location.href)
-    url.searchParams.delete('position_fsym')
+    url.searchParams.delete('all_cts_fi')
     window.history.replaceState({}, '', url.toString())
   } else {
     // Clear normal ag-Grid filter
@@ -336,7 +336,7 @@ function clearAllFilters() {
   // Clear URL params
   writeFiltersToUrlFromModel({})
   const url = new URL(window.location.href)
-  url.searchParams.delete('position_fsym')
+  url.searchParams.delete('all_cts_fi')
   window.history.replaceState({}, '', url.toString())
   
   syncActiveFiltersFromGrid()
