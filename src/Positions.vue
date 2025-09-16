@@ -396,8 +396,6 @@ function formatNumber(value: number | null | undefined): string {
 
 <template>
   <section class="positions-card">
-    <h1>Positions Dashboard</h1>
-    
     <!-- Loading state -->
     <div v-if="q.isLoading.value" class="loading">
       <div class="loading-spinner"></div>
@@ -671,7 +669,7 @@ h1 {
 
 .positions-grid {
   margin-top: 0.5rem;
-  height: 400px;
+  height: 100%;
   min-height: 200px;
 }
 
