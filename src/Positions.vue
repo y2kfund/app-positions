@@ -43,7 +43,7 @@ function parseVisibleColsFromUrl(): ColumnField[] {
   if (!colsParam) {
     return allColumnOptions.map(c => c.field)
   }
-  const fromUrl = colsParam.split(',').map(s => s.trim()).filter(Boolean) as ColumnField[]
+  const fromUrl = colsParam.split('-and-').map(s => s.trim()).filter(Boolean) as ColumnField[]
   const valid = new Set(allColumnOptions.map(c => c.field))
   const filtered = fromUrl.filter(c => valid.has(c))
   return filtered.length ? filtered : allColumnOptions.map(c => c.field)
@@ -51,7 +51,7 @@ function parseVisibleColsFromUrl(): ColumnField[] {
 
 function writeVisibleColsToUrl(cols: ColumnField[]) {
   const url = new URL(window.location.href)
-  url.searchParams.set('position_cols', cols.join(','))
+  url.searchParams.set('position_cols', cols.join('-and-'))
   window.history.replaceState({}, '', url.toString())
 }
 
