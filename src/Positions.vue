@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, computed } from 'vue'
+import { onBeforeUnmount, computed, ref, watch } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3'
 import { AllCommunityModule } from 'ag-grid-community'
 import type { ColDef } from 'ag-grid-community'
@@ -76,6 +76,53 @@ const columnDefs = computed<ColDef[]>(() => [
   }
 ])
 
+// Grid API and totals that respect filtering/sorting
+const gridApi = ref<any | null>(null)
+const pinnedBottomRowDataRef = ref<any[]>([])
+const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl'] as const
+
+function recalcPinnedTotals() {
+  const api = gridApi.value
+  // API not ready: compute from raw rows
+  if (!api) {
+    const rows = q.data.value || []
+    const totals: any = { symbol: 'Total', asset_class: '' }
+    for (const field of numericFields) {
+      totals[field] = rows.reduce((sum: number, row: any) => {
+        const v = row?.[field]
+        const n = typeof v === 'number' && Number.isFinite(v) ? v : 0
+        return sum + n
+      }, 0)
+    }
+    pinnedBottomRowDataRef.value = [totals]
+    return
+  }
+
+  const totals: any = { symbol: 'Total', asset_class: '' }
+  for (const field of numericFields) totals[field] = 0
+
+  api.forEachNodeAfterFilterAndSort((node: any) => {
+    const data = node.data || {}
+    for (const field of numericFields) {
+      const v = data?.[field]
+      const n = typeof v === 'number' && Number.isFinite(v) ? v : 0
+      totals[field] += n
+    }
+  })
+
+  pinnedBottomRowDataRef.value = [totals]
+}
+
+function onGridReady(event: any) {
+  gridApi.value = event.api
+  recalcPinnedTotals()
+}
+
+// Recalculate when upstream data changes
+watch(() => q.data.value, () => {
+  recalcPinnedTotals()
+})
+
 // Clean up realtime subscription
 onBeforeUnmount(() => {
   if (q._cleanup) {
@@ -144,6 +191,11 @@ function formatNumber(value: number | null | undefined): string {
           :animateRows="true"
           :rowSelection="'single'"
           :domLayout="'autoHeight'"
+          :pinnedBottomRowData="pinnedBottomRowDataRef"
+          @grid-ready="onGridReady"
+          @filter-changed="recalcPinnedTotals"
+          @sort-changed="recalcPinnedTotals"
+          @row-data-updated="recalcPinnedTotals"
           @row-clicked="(event: any) => event.data && rowClicked(event.data)"
           style="width: 100%;"
         />
@@ -264,6 +316,15 @@ h1 {
   font-size: 0.875rem;
   display: flex;
   align-items: center;
+}
+
+/* Highlight pinned bottom total row */
+::deep(.ag-theme-alpine .ag-row-pinned-bottom) {
+  background-color: #f1f3f5 !important;
+  font-weight: 600;
+}
+::deep(.ag-theme-alpine .ag-row-pinned-bottom .ag-cell) {
+  border-top: 2px solid #dee2e6;
 }
 
 :deep(.symbol) {
