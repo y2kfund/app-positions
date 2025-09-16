@@ -66,12 +66,22 @@ function parseFiltersFromUrl(): { symbol?: string; asset_class?: string; legal_e
 
 function writeFiltersToUrlFromModel(model: any) {
   const url = new URL(window.location.href)
-  const sym = model?.symbol?.filter || ''
+  
+  // Handle external symbol filters first
+  if (symbolTagFilters.value.length > 0) {
+    url.searchParams.set('fsym', symbolTagFilters.value.join(','))
+  } else {
+    // Only handle ag-Grid symbol filter if no external filters
+    const sym = model?.symbol?.filter || ''
+    if (sym) url.searchParams.set('fsym', sym); else url.searchParams.delete('fsym')
+  }
+  
+  // Handle other ag-Grid filters
   const ac = model?.asset_class?.filter || ''
-  if (sym) url.searchParams.set('fsym', sym); else url.searchParams.delete('fsym')
   if (ac) url.searchParams.set('fac', ac); else url.searchParams.delete('fac')
   const acc = model?.legal_entity?.filter || ''
   if (acc) url.searchParams.set('facc', acc); else url.searchParams.delete('facc')
+  
   window.history.replaceState({}, '', url.toString())
 }
 
@@ -195,11 +205,9 @@ function syncActiveFiltersFromGrid() {
   const api = gridApi.value
   const next: ActiveFilter[] = []
   
-  // Add external symbol filters if active (each tag as separate filter)
+  // Add external symbol filters if active (group all tags under one Financial Instrument filter)
   if (symbolTagFilters.value.length > 0) {
-    symbolTagFilters.value.forEach(tag => {
-      next.push({ field: 'symbol', value: tag })
-    })
+    next.push({ field: 'symbol', value: symbolTagFilters.value.join(', ') })
   }
   
   if (api) {
@@ -260,14 +268,7 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity',
       api.onFilterChanged()
     }
     
-    // Update URL to show symbol filters
-    const url = new URL(window.location.href)
-    if (symbolTagFilters.value.length > 0) {
-      url.searchParams.set('fsym', symbolTagFilters.value.join(','))
-    } else {
-      url.searchParams.delete('fsym')
-    }
-    window.history.replaceState({}, '', url.toString())
+    // URL update will be handled by the gridApi watcher via writeFiltersToUrlFromModel
   } else {
     // For other fields, use normal ag-Grid filters
     const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
@@ -279,7 +280,7 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity',
     if (typeof api.onFilterChanged === 'function') {
       api.onFilterChanged()
     }
-    writeFiltersToUrlFromModel(currentModel)
+    // URL update will be handled by the gridApi watcher via writeFiltersToUrlFromModel
   }
   
   syncActiveFiltersFromGrid()
@@ -290,16 +291,8 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity', specificV
   if (!api) return
   
   if (field === 'symbol') {
-    if (specificValue) {
-      // Remove specific tag from filters
-      const index = symbolTagFilters.value.indexOf(specificValue)
-      if (index >= 0) {
-        symbolTagFilters.value.splice(index, 1)
-      }
-    } else {
-      // Clear all symbol filters
-      symbolTagFilters.value = []
-    }
+    // For symbol field, clear all symbol filters (since we group them)
+    symbolTagFilters.value = []
     
     if (typeof api.onFilterChanged === 'function') {
       api.onFilterChanged()
@@ -307,11 +300,7 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity', specificV
     
     // Update URL
     const url = new URL(window.location.href)
-    if (symbolTagFilters.value.length > 0) {
-      url.searchParams.set('fsym', symbolTagFilters.value.join(','))
-    } else {
-      url.searchParams.delete('fsym')
-    }
+    url.searchParams.delete('fsym')
     window.history.replaceState({}, '', url.toString())
   } else {
     // Clear normal ag-Grid filter
@@ -659,7 +648,7 @@ function doesExternalFilterPass(node: any): boolean {
         <div class="filters-tags">
           <span v-for="f in activeFilters" :key="`${f.field}-${f.value}`" class="filter-tag">
             <strong>{{ f.field === 'symbol' ? 'Financial Instrument' : (f.field === 'legal_entity' ? 'Account' : 'Asset Class') }}:</strong> {{ f.value }}
-            <button class="tag-clear" @click="clearFilter(f.field, f.value)" aria-label="Clear filter">✕</button>
+            <button class="tag-clear" @click="clearFilter(f.field)" aria-label="Clear filter">✕</button>
           </span>
           <button class="btn btn-clear-all" @click="clearAllFilters">Clear all</button>
         </div>
