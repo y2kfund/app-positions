@@ -80,8 +80,8 @@ function isColVisible(field: ColumnField): boolean {
   return visibleCols.value.includes(field)
 }
 
-// Symbol tag filter for exact tag matching
-const symbolTagFilter = ref<string>('')
+// Symbol tag filters for exact tag matching (supports multiple tags)
+const symbolTagFilters = ref<string[]>([])
 
 // Column definitions for ag-grid (hide based on visibleCols)
 const columnDefs = computed<ColDef[]>(() => [
@@ -195,17 +195,19 @@ function syncActiveFiltersFromGrid() {
   const api = gridApi.value
   const next: ActiveFilter[] = []
   
-  // Add external symbol filter if active
-  if (symbolTagFilter.value) {
-    next.push({ field: 'symbol', value: symbolTagFilter.value })
+  // Add external symbol filters if active (each tag as separate filter)
+  if (symbolTagFilters.value.length > 0) {
+    symbolTagFilters.value.forEach(tag => {
+      next.push({ field: 'symbol', value: tag })
+    })
   }
   
   if (api) {
     const model = api.getFilterModel?.() || {}
     const getFilterValue = (field: string) => model?.[field]?.filter || model?.[field]?.values || null
     
-    // Only add ag-Grid symbol filter if no external filter is active
-    if (!symbolTagFilter.value) {
+    // Only add ag-Grid symbol filter if no external filters are active
+    if (symbolTagFilters.value.length === 0) {
       const symbol = getFilterValue('symbol')
       if (typeof symbol === 'string' && symbol.length) next.push({ field: 'symbol', value: symbol })
     }
@@ -242,17 +244,26 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity',
   if (field === 'symbol') {
     // For symbol field, use external filter for exact tag matching
     const clickedTag = String(value).trim()
-    symbolTagFilter.value = clickedTag
+    
+    // Toggle the tag: add if not present, remove if present
+    const currentIndex = symbolTagFilters.value.indexOf(clickedTag)
+    if (currentIndex >= 0) {
+      // Tag already exists, remove it
+      symbolTagFilters.value.splice(currentIndex, 1)
+    } else {
+      // Tag doesn't exist, add it
+      symbolTagFilters.value.push(clickedTag)
+    }
     
     // Trigger external filter
     if (typeof api.onFilterChanged === 'function') {
       api.onFilterChanged()
     }
     
-    // Update URL to show symbol filter
+    // Update URL to show symbol filters
     const url = new URL(window.location.href)
-    if (clickedTag) {
-      url.searchParams.set('fsym', clickedTag)
+    if (symbolTagFilters.value.length > 0) {
+      url.searchParams.set('fsym', symbolTagFilters.value.join(','))
     } else {
       url.searchParams.delete('fsym')
     }
@@ -274,20 +285,33 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity',
   syncActiveFiltersFromGrid()
 }
 
-function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity') {
+function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity', specificValue?: string) {
   const api = gridApi.value
   if (!api) return
   
   if (field === 'symbol') {
-    // Clear external symbol filter
-    symbolTagFilter.value = ''
+    if (specificValue) {
+      // Remove specific tag from filters
+      const index = symbolTagFilters.value.indexOf(specificValue)
+      if (index >= 0) {
+        symbolTagFilters.value.splice(index, 1)
+      }
+    } else {
+      // Clear all symbol filters
+      symbolTagFilters.value = []
+    }
+    
     if (typeof api.onFilterChanged === 'function') {
       api.onFilterChanged()
     }
     
     // Update URL
     const url = new URL(window.location.href)
-    url.searchParams.delete('fsym')
+    if (symbolTagFilters.value.length > 0) {
+      url.searchParams.set('fsym', symbolTagFilters.value.join(','))
+    } else {
+      url.searchParams.delete('fsym')
+    }
     window.history.replaceState({}, '', url.toString())
   } else {
     // Clear normal ag-Grid filter
@@ -309,8 +333,8 @@ function clearAllFilters() {
   const api = gridApi.value
   if (!api) return
   
-  // Clear external symbol filter
-  symbolTagFilter.value = ''
+  // Clear external symbol filters
+  symbolTagFilters.value = []
   
   // Clear ag-Grid filters
   if (typeof api.setFilterModel === 'function') {
@@ -429,7 +453,8 @@ function onGridReady(event: any) {
   
   // Handle symbol filter (external filter for exact tag matching)
   if (fromUrl.symbol) {
-    symbolTagFilter.value = fromUrl.symbol
+    // Split comma-separated tags from URL
+    symbolTagFilters.value = fromUrl.symbol.split(',').map(s => s.trim()).filter(Boolean)
   }
   
   // Handle other filters (normal ag-Grid filters)
@@ -462,11 +487,17 @@ watch(() => q.data.value, () => {
   recalcPinnedTotals()
 })
 
-// Recalculate when external symbol filter changes
-watch(symbolTagFilter, () => {
+// Recalculate when external symbol filters change
+watch(symbolTagFilters, () => {
   syncActiveFiltersFromGrid()
   recalcPinnedTotals()
-})
+  
+  // Force re-render of Financial Instrument column to update selected tag styling
+  const api = gridApi.value
+  if (api && typeof api.refreshCells === 'function') {
+    api.refreshCells({ columns: ['symbol'] })
+  }
+}, { deep: true })
 
 // Keep active filter tags in sync whenever filters change via UI
 watch(() => gridApi.value, (api) => {
@@ -541,7 +572,11 @@ function renderFinancialInstrumentCell(value: any): string {
   const codeMatch = text.match(/\b(\d{6})[CP]/)
   const expiry = codeMatch ? formatExpiryFromYyMmDd(codeMatch[1]) : ''
 
-  const tag = (label: string, extraClass = '') => `<span class="fi-tag fi-tag-click ${extraClass}">${label}</span>`
+  const tag = (label: string, extraClass = '') => {
+    const isSelected = symbolTagFilters.value.includes(label)
+    const selectedClass = isSelected ? 'fi-tag-selected' : ''
+    return `<span class="fi-tag fi-tag-click ${extraClass} ${selectedClass}">${label}</span>`
+  }
   const parts = [
     base && tag(base, 'fi-tag-symbol'),
     expiry && tag(expiry, 'fi-tag-expiry'),
@@ -562,17 +597,18 @@ function extractClickedTagText(evt: any): string | null {
 
 // External filter function for exact tag matching
 function isExternalFilterPresent(): boolean {
-  return symbolTagFilter.value !== ''
+  return symbolTagFilters.value.length > 0
 }
 
 function doesExternalFilterPass(node: any): boolean {
-  if (!symbolTagFilter.value) return true
+  if (symbolTagFilters.value.length === 0) return true
   
   const symbolValue = node.data?.symbol
   if (!symbolValue) return false
   
   const tags = extractTagsFromSymbol(symbolValue)
-  return tags.includes(symbolTagFilter.value)
+  // Row passes if it contains ALL selected tags (AND logic)
+  return symbolTagFilters.value.every(filter => tags.includes(filter))
 }
 </script>
 
@@ -621,9 +657,9 @@ function doesExternalFilterPass(node: any): boolean {
       <div v-if="activeFilters.length" class="filters-bar">
         <span class="filters-label">Filtered by:</span>
         <div class="filters-tags">
-          <span v-for="f in activeFilters" :key="f.field" class="filter-tag">
+          <span v-for="f in activeFilters" :key="`${f.field}-${f.value}`" class="filter-tag">
             <strong>{{ f.field === 'symbol' ? 'Financial Instrument' : (f.field === 'legal_entity' ? 'Account' : 'Asset Class') }}:</strong> {{ f.value }}
-            <button class="tag-clear" @click="clearFilter(f.field)" aria-label="Clear filter">✕</button>
+            <button class="tag-clear" @click="clearFilter(f.field, f.value)" aria-label="Clear filter">✕</button>
           </span>
           <button class="btn btn-clear-all" @click="clearAllFilters">Clear all</button>
         </div>
@@ -870,6 +906,19 @@ h1 {
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:deep(.fi-tag:hover) {
+  background: #e8eef6;
+  border-color: #b8c5d1;
+}
+
+:deep(.fi-tag-selected) {
+  background: #007bff !important;
+  color: white !important;
+  border-color: #0056b3 !important;
 }
 
 .filters-bar {
