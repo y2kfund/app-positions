@@ -96,7 +96,7 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 120,
     pinned: 'left' as const,
     hide: !isColVisible('symbol'),
-    cellRenderer: (params: any) => `<span class="symbol symbol-click">${params.value}</span>`,
+    cellRenderer: (params: any) => renderFinancialInstrumentCell(params.value),
     onCellClicked: (event: any) => handleCellFilterClick('symbol', event?.value)
   },
   { 
@@ -407,6 +407,40 @@ function formatNumber(value: number | null | undefined): string {
   if (value === null || value === undefined) return '0'
   return new Intl.NumberFormat('en-US').format(value)
 }
+
+// Renderer helpers for Financial Instrument tags
+function formatExpiryFromYyMmDd(yyMmDd: string): string {
+  // yyMmDd: e.g., '251219' => DEC-19-2025
+  if (!/^[0-9]{6}$/.test(yyMmDd)) return ''
+  const yy = Number(yyMmDd.slice(0, 2))
+  const mm = Number(yyMmDd.slice(2, 4))
+  const dd = Number(yyMmDd.slice(4, 6))
+  const year = 2000 + yy
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+  const mon = months[(mm - 1) >= 0 && (mm - 1) < 12 ? (mm - 1) : 0]
+  return `${mon}-${String(dd).padStart(2,'0')}-${year}`
+}
+
+function renderFinancialInstrumentCell(value: any): string {
+  const text = String(value ?? '')
+  if (!text) return ''
+  // Extract base symbol (first token)
+  const symMatch = text.match(/^([A-Z]+)\b/)
+  const base = symMatch?.[1] ?? ''
+  // Extract right (C/P)
+  const rightMatch = text.match(/\s([CP])\b/)
+  const right = rightMatch?.[1] ?? ''
+  // Extract strike (the number before right token)
+  const strikeMatch = text.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/)
+  const strike = strikeMatch?.[1] ?? ''
+  // Extract 6 digits before C/P inside bracket code, e.g. ... [AAPL 251219C00235000 100]
+  const codeMatch = text.match(/\b(\d{6})[CP]/)
+  const expiry = codeMatch ? formatExpiryFromYyMmDd(codeMatch[1]) : ''
+
+  const tag = (label: string) => `<span class="fi-tag">${label}</span>`
+  const parts = [base && tag(base), expiry && tag(expiry), strike && tag(strike), right && tag(right)]
+  return parts.filter(Boolean).join(' ')
+}
 </script>
 
 <template>
@@ -686,6 +720,21 @@ h1 {
   margin-top: 0.5rem;
   height: 100%;
   min-height: 200px;
+}
+
+/* Financial Instrument tags */
+:deep(.fi-tag) {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid #dbe2ea;
+  border-radius: 999px;
+  background: #f5f7fa;
+  color: #425466;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
 }
 
 .filters-bar {
