@@ -38758,7 +38758,7 @@ const CD = { ref: "root" }, vD = /* @__PURE__ */ Mn({
       { field: "unrealized_pnl", label: "Unrealized P&L" }
     ];
     function r() {
-      const x = new URL(window.location.href).searchParams.get("cols");
+      const x = new URL(window.location.href).searchParams.get("position_cols");
       if (!x)
         return n.map((K) => K.field);
       const L = x.split(",").map((K) => K.trim()).filter(Boolean), k = new Set(n.map((K) => K.field)), W = L.filter((K) => k.has(K));
@@ -38766,20 +38766,20 @@ const CD = { ref: "root" }, vD = /* @__PURE__ */ Mn({
     }
     function a(F) {
       const x = new URL(window.location.href);
-      x.searchParams.set("cols", F.join(",")), window.history.replaceState({}, "", x.toString());
+      x.searchParams.set("position_cols", F.join(",")), window.history.replaceState({}, "", x.toString());
     }
     function l() {
-      const F = new URL(window.location.href), x = F.searchParams.get("fsym") || void 0, L = F.searchParams.get("fac") || void 0, k = F.searchParams.get("facc") || void 0;
+      const F = new URL(window.location.href), x = F.searchParams.get("position_fsym") || void 0, L = F.searchParams.get("fac") || void 0, k = F.searchParams.get("facc") || void 0;
       return { symbol: x, asset_class: L, legal_entity: k };
     }
     function d(F) {
       var W, K, X;
       const x = new URL(window.location.href);
       if (h.value.length > 0)
-        x.searchParams.set("fsym", h.value.join(","));
+        x.searchParams.set("position_fsym", h.value.join(","));
       else {
         const se = ((W = F == null ? void 0 : F.symbol) == null ? void 0 : W.filter) || "";
-        se ? x.searchParams.set("fsym", se) : x.searchParams.delete("fsym");
+        se ? x.searchParams.set("position_fsym", se) : x.searchParams.delete("position_fsym");
       }
       const L = ((K = F == null ? void 0 : F.asset_class) == null ? void 0 : K.filter) || "";
       L ? x.searchParams.set("fac", L) : x.searchParams.delete("fac");
@@ -38927,7 +38927,7 @@ const CD = { ref: "root" }, vD = /* @__PURE__ */ Mn({
         if (F === "symbol") {
           h.value = [], typeof L.onFilterChanged == "function" && L.onFilterChanged();
           const k = new URL(window.location.href);
-          k.searchParams.delete("fsym"), window.history.replaceState({}, "", k.toString());
+          k.searchParams.delete("position_fsym"), window.history.replaceState({}, "", k.toString());
         } else {
           const k = L.getFilterModel && L.getFilterModel() || {};
           delete k[F], typeof L.setFilterModel == "function" && L.setFilterModel(k), typeof L.onFilterChanged == "function" && L.onFilterChanged(), d(k);
@@ -38940,7 +38940,7 @@ const CD = { ref: "root" }, vD = /* @__PURE__ */ Mn({
       if (!F) return;
       h.value = [], typeof F.setFilterModel == "function" && F.setFilterModel(null), typeof F.onFilterChanged == "function" && F.onFilterChanged(), d({});
       const x = new URL(window.location.href);
-      x.searchParams.delete("fsym"), window.history.replaceState({}, "", x.toString()), S();
+      x.searchParams.delete("position_fsym"), window.history.replaceState({}, "", x.toString()), S();
     }
     function G(F, x) {
       const L = f.value, k = p.value;
@@ -39207,7 +39207,7 @@ const CD = { ref: "root" }, vD = /* @__PURE__ */ Mn({
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, VD = /* @__PURE__ */ LD(kD, [["__scopeId", "data-v-a3b2ed63"]]);
+}, VD = /* @__PURE__ */ LD(kD, [["__scopeId", "data-v-d6b4fe60"]]);
 export {
   VD as Positions,
   VD as default
