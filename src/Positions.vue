@@ -67,13 +67,15 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 120,
     pinned: 'left' as const,
     hide: !isColVisible('symbol'),
-    cellRenderer: (params: any) => `<span class="symbol">${params.value}</span>`
+    cellRenderer: (params: any) => `<span class="symbol symbol-click">${params.value}</span>`,
+    onCellClicked: (event: any) => handleCellFilterClick('symbol', event?.value)
   },
   { 
     field: 'asset_class', 
     headerName: 'Asset Class',
     width: 100,
-    hide: !isColVisible('asset_class')
+    hide: !isColVisible('asset_class'),
+    onCellClicked: (event: any) => handleCellFilterClick('asset_class', event?.value)
   },
   { 
     field: 'conid', 
@@ -147,6 +149,66 @@ const gridApi = ref<any | null>(null)
 const columnApiRef = ref<any | null>(null)
 const pinnedBottomRowDataRef = ref<any[]>([])
 const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl'] as const
+
+// Active filters tracking for tag UI
+type ActiveFilter = { field: 'symbol' | 'asset_class'; value: string }
+const activeFilters = ref<ActiveFilter[]>([])
+
+function syncActiveFiltersFromGrid() {
+  const api = gridApi.value
+  const next: ActiveFilter[] = []
+  if (!api) {
+    activeFilters.value = next
+    return
+  }
+  const model = api.getFilterModel?.() || {}
+  const getFilterValue = (field: string) => model?.[field]?.filter || model?.[field]?.values || null
+  const symbol = getFilterValue('symbol')
+  if (typeof symbol === 'string' && symbol.length) next.push({ field: 'symbol', value: symbol })
+  const asset = getFilterValue('asset_class')
+  if (typeof asset === 'string' && asset.length) next.push({ field: 'asset_class', value: asset })
+  activeFilters.value = next
+}
+
+function handleCellFilterClick(field: 'symbol' | 'asset_class', value: any) {
+  const api = gridApi.value
+  if (!api || value === undefined || value === null) return
+  const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
+  currentModel[field] = { type: 'equals', filter: String(value) }
+  if (typeof api.setFilterModel === 'function') {
+    api.setFilterModel(currentModel)
+  }
+  if (typeof api.onFilterChanged === 'function') {
+    api.onFilterChanged()
+  }
+  syncActiveFiltersFromGrid()
+}
+
+function clearFilter(field: 'symbol' | 'asset_class') {
+  const api = gridApi.value
+  if (!api) return
+  const model = (api.getFilterModel && api.getFilterModel()) || {}
+  delete model[field]
+  if (typeof api.setFilterModel === 'function') {
+    api.setFilterModel(model)
+  }
+  if (typeof api.onFilterChanged === 'function') {
+    api.onFilterChanged()
+  }
+  syncActiveFiltersFromGrid()
+}
+
+function clearAllFilters() {
+  const api = gridApi.value
+  if (!api) return
+  if (typeof api.setFilterModel === 'function') {
+    api.setFilterModel(null)
+  }
+  if (typeof api.onFilterChanged === 'function') {
+    api.onFilterChanged()
+  }
+  syncActiveFiltersFromGrid()
+}
 
 // Compat helper: set column visibility across ag-Grid versions
 function setColumnVisibility(field: string, visible: boolean) {
@@ -257,6 +319,16 @@ watch(() => q.data.value, () => {
   recalcPinnedTotals()
 })
 
+// Keep active filter tags in sync whenever filters change via UI
+watch(() => gridApi.value, (api) => {
+  if (!api) return
+  const listener = () => {
+    syncActiveFiltersFromGrid()
+    recalcPinnedTotals()
+  }
+  api.addEventListener?.('filterChanged', listener)
+}, { immediate: true })
+
 // Clean up realtime subscription
 onBeforeUnmount(() => {
   if (q._cleanup) {
@@ -332,6 +404,18 @@ function formatNumber(value: number | null | undefined): string {
         </div>
       </div>
       
+      <!-- Active filter tags -->
+      <div v-if="activeFilters.length" class="filters-bar">
+        <span class="filters-label">Filtered by:</span>
+        <div class="filters-tags">
+          <span v-for="f in activeFilters" :key="f.field" class="filter-tag">
+            <strong>{{ f.field === 'symbol' ? 'Symbol' : 'Asset Class' }}:</strong> {{ f.value }}
+            <button class="tag-clear" @click="clearFilter(f.field)" aria-label="Clear filter">✕</button>
+          </span>
+          <button class="btn btn-clear-all" @click="clearAllFilters">Clear all</button>
+        </div>
+      </div>
+
       <div class="ag-theme-alpine positions-grid">
         <AgGridVue
           :columnDefs="columnDefs"
@@ -558,6 +642,50 @@ h1 {
   min-height: 200px;
 }
 
+.filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+.filters-label {
+  font-size: 0.875rem;
+  color: #495057;
+  font-weight: 600;
+}
+.filters-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #f1f3f5;
+  color: #495057;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid #e9ecef;
+  font-size: 0.8125rem;
+}
+.filter-tag .tag-clear {
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #6c757d;
+}
+.btn-clear-all {
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid #dee2e6;
+  background: #fff;
+  color: #6c757d;
+  cursor: pointer;
+  font-size: 0.8125rem;
+}
+
 /* ag-Grid styling */
 ::deep(.ag-theme-alpine) {
   --ag-header-background-color: #f8f9fa;
@@ -593,6 +721,8 @@ h1 {
   font-weight: 600;
   color: #007bff;
 }
+
+::deep(.symbol-click) { cursor: pointer; }
 
 ::deep(.pnl-positive) {
   color: #28a745 !important;
