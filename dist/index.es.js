@@ -38769,14 +38769,14 @@ const CD = { ref: "root" }, vD = /* @__PURE__ */ Mn({
       x.searchParams.set("position_cols", F.join("-and-")), window.history.replaceState({}, "", x.toString());
     }
     function l() {
-      const F = new URL(window.location.href), x = F.searchParams.get("all_cts_fi") || void 0, L = F.searchParams.get("fac") || void 0, k = F.searchParams.get("all_cts_clientId") || void 0;
-      return { symbol: x, asset_class: L, legal_entity: k };
+      const F = new URL(window.location.href), x = F.searchParams.get("all_cts_fi"), L = x ? x.split("-and-").join(",") : void 0, k = F.searchParams.get("fac") || void 0, W = F.searchParams.get("all_cts_clientId") || void 0;
+      return { symbol: L, asset_class: k, legal_entity: W };
     }
     function d(F) {
       var W, K, X;
       const x = new URL(window.location.href);
       if (h.value.length > 0)
-        x.searchParams.set("all_cts_fi", h.value.join(","));
+        x.searchParams.set("all_cts_fi", h.value.join("-and-"));
       else {
         const se = ((W = F == null ? void 0 : F.symbol) == null ? void 0 : W.filter) || "";
         se ? x.searchParams.set("all_cts_fi", se) : x.searchParams.delete("all_cts_fi");
@@ -39207,7 +39207,7 @@ const CD = { ref: "root" }, vD = /* @__PURE__ */ Mn({
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, VD = /* @__PURE__ */ LD(kD, [["__scopeId", "data-v-0f36bf01"]]);
+}, VD = /* @__PURE__ */ LD(kD, [["__scopeId", "data-v-f98b9105"]]);
 export {
   VD as Positions,
   VD as default

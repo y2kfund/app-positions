@@ -58,7 +58,8 @@ function writeVisibleColsToUrl(cols: ColumnField[]) {
 // Filter URL helpers (fsym: symbol, fac: asset_class)
 function parseFiltersFromUrl(): { symbol?: string; asset_class?: string; legal_entity?: string } {
   const url = new URL(window.location.href)
-  const symbol = url.searchParams.get('all_cts_fi') || undefined
+  const symbolParam = url.searchParams.get('all_cts_fi')
+  const symbol = symbolParam ? symbolParam.split('-and-').join(',') : undefined
   const asset = url.searchParams.get('fac') || undefined
   const account = url.searchParams.get('all_cts_clientId') || undefined
   return { symbol, asset_class: asset, legal_entity: account }
@@ -69,7 +70,7 @@ function writeFiltersToUrlFromModel(model: any) {
   
   // Handle external symbol filters first
   if (symbolTagFilters.value.length > 0) {
-    url.searchParams.set('all_cts_fi', symbolTagFilters.value.join(','))
+    url.searchParams.set('all_cts_fi', symbolTagFilters.value.join('-and-'))
   } else {
     // Only handle ag-Grid symbol filter if no external filters
     const sym = model?.symbol?.filter || ''
@@ -442,7 +443,7 @@ function onGridReady(event: any) {
   
   // Handle symbol filter (external filter for exact tag matching)
   if (fromUrl.symbol) {
-    // Split comma-separated tags from URL
+    // Split comma-separated tags from URL (converted from '-and-' separator)
     symbolTagFilters.value = fromUrl.symbol.split(',').map(s => s.trim()).filter(Boolean)
   }
   
