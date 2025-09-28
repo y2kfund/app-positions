@@ -10,7 +10,7 @@ Install from GitHub:
 npm install git+https://github.com/y2kfund/positions.git
 ```
 
-## Usagerun 
+## Usage
 
 ```vue
 <template>
