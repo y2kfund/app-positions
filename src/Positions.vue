@@ -436,7 +436,7 @@ onMounted(() => {
 
 const eventBus = inject('eventBus');
 
-function handleClientIdChanged(data: { clientId: string, accountId: number }) {
+function handleClientIdChanged(data: { clientId: string | null, accountId: number | null }) {
   console.log('Client ID changed via event bus:', data);
   
   const api = gridApi.value;
@@ -448,10 +448,11 @@ function handleClientIdChanged(data: { clientId: string, accountId: number }) {
   // Get current filter model
   const model = api.getFilterModel?.() || {};
   
-  // Update the legal_entity filter with the new clientId
+  // Update or clear the legal_entity filter
   if (data.clientId) {
     model.legal_entity = { type: 'equals', filter: data.clientId };
   } else {
+    // Clear the filter when clientId is null
     delete model.legal_entity;
   }
   
