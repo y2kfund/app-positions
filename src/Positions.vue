@@ -392,9 +392,45 @@ function handleEscape(event: KeyboardEvent) {
   }
 }
 
+// Handle URL changes from external components (like app-margin)
+function handleUrlChange() {
+  const api = gridApi.value
+  if (!api) return
+  
+  // Parse filters from the current URL
+  const fromUrl = parseFiltersFromUrl()
+  
+  // Handle symbol filter (external filter for exact tag matching)
+  if (fromUrl.symbol) {
+    // Split comma-separated tags from URL (converted from '-and-' separator)
+    symbolTagFilters.value = fromUrl.symbol.split(',').map(s => s.trim()).filter(Boolean)
+  } else {
+    symbolTagFilters.value = []
+  }
+  
+  // Handle other filters (normal ag-Grid filters)
+  const model: any = {}
+  if (fromUrl.asset_class) model.asset_class = { type: 'equals', filter: fromUrl.asset_class }
+  if (fromUrl.legal_entity) model.legal_entity = { type: 'equals', filter: fromUrl.legal_entity }
+  
+  // Apply the filter model
+  if (typeof api.setFilterModel === 'function') {
+    api.setFilterModel(model)
+  }
+  
+  // Trigger filter update
+  if (typeof api.onFilterChanged === 'function') {
+    api.onFilterChanged()
+  }
+  
+  syncActiveFiltersFromGrid()
+  recalcPinnedTotals()
+}
+
 onMounted(() => {
   window.addEventListener('click', handleClickOutside)
   window.addEventListener('keydown', handleEscape)
+  window.addEventListener('popstate', handleUrlChange)
 })
 
 function recalcPinnedTotals() {
@@ -509,6 +545,7 @@ onBeforeUnmount(() => {
   }
   window.removeEventListener('click', handleClickOutside)
   window.removeEventListener('keydown', handleEscape)
+  window.removeEventListener('popstate', handleUrlChange)
 })
 
 function rowClicked(position: Position) {
