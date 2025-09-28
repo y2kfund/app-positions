@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, computed, ref, watch } from 'vue'
+import { onMounted, onBeforeUnmount, computed, ref, watch, inject } from 'vue'
 import { AgGridVue } from 'ag-grid-vue3'
 import { AllCommunityModule } from 'ag-grid-community'
 import type { ColDef } from 'ag-grid-community'
@@ -431,6 +431,58 @@ onMounted(() => {
   window.addEventListener('click', handleClickOutside)
   window.addEventListener('keydown', handleEscape)
   window.addEventListener('popstate', handleUrlChange)
+  eventBus?.on('client-id-changed', handleClientIdChanged);
+})
+
+const eventBus = inject('eventBus');
+
+function handleClientIdChanged(data: { clientId: string, accountId: number }) {
+  console.log('Client ID changed via event bus:', data);
+  
+  const api = gridApi.value;
+  if (!api) {
+    console.log('Grid API not ready, skipping filter update');
+    return;
+  }
+  
+  // Get current filter model
+  const model = api.getFilterModel?.() || {};
+  
+  // Update the legal_entity filter with the new clientId
+  if (data.clientId) {
+    model.legal_entity = { type: 'equals', filter: data.clientId };
+  } else {
+    delete model.legal_entity;
+  }
+  
+  // Apply the updated filter model to the grid
+  if (typeof api.setFilterModel === 'function') {
+    api.setFilterModel(model);
+  }
+  
+  // Trigger filter change event to update the grid
+  if (typeof api.onFilterChanged === 'function') {
+    api.onFilterChanged();
+  }
+  
+  // Update the active filters UI
+  syncActiveFiltersFromGrid();
+  
+  // Recalculate totals with new filter
+  recalcPinnedTotals();
+  
+  // Update URL to reflect the new filter state
+  writeFiltersToUrlFromModel(model);
+}
+
+onBeforeUnmount(() => {
+  if (q._cleanup) {
+    q._cleanup()
+  }
+  window.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('keydown', handleEscape)
+  window.removeEventListener('popstate', handleUrlChange)
+  eventBus?.off('client-id-changed', handleClientIdChanged);
 })
 
 function recalcPinnedTotals() {
@@ -537,16 +589,6 @@ watch(() => gridApi.value, (api) => {
   }
   api.addEventListener?.('filterChanged', listener)
 }, { immediate: true })
-
-// Clean up realtime subscription
-onBeforeUnmount(() => {
-  if (q._cleanup) {
-    q._cleanup()
-  }
-  window.removeEventListener('click', handleClickOutside)
-  window.removeEventListener('keydown', handleEscape)
-  window.removeEventListener('popstate', handleUrlChange)
-})
 
 function rowClicked(position: Position) {
   emit('row-click', position)
@@ -661,7 +703,7 @@ function doesExternalFilterPass(node: any): boolean {
           <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
           <button ref="columnsBtnRef" class="columns-btn" aria-label="Column settings" @click.stop="toggleColumnsPopup">
             <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-              <path fill="currentColor" d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.21-.37-.3-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.03-.22-.22-.39-.44-.39h-3.84c-.22 0-.41.16-.44.39l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.09-.47 0-.59.22l-1.92 3.32c-.12.21-.07.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.21.37.3.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.03.22.22.39.44.39h3.84c.22 0 .41-.16.44-.39l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.09.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.03-1.58ZM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5Z"/>
+              <path fill="currentColor" d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.21-.37-.3-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.03-.22-.22-.39-.44-.39h-3.84c-.22 0-.41.16-.44.39l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.09-.47 0-.59.22l-1.92 3.32c-.12.21-.07.47.12.61l2.03 1.58c.04.31.06.63.06.94s-.02.63-.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.21.37.3.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.03.22.22.39.44.39h3.84c.22 0 .41-.16.44-.39l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.09.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.03-1.58ZM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5Z"/>
             </svg>
           </button>
           <div v-if="showColumnsPopup" ref="columnsPopupRef" class="columns-popup" @click.stop>
