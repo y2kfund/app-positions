@@ -25,11 +25,14 @@
     "dist"
   ],
   "scripts": {
+    "_devComment": "Command '>npm run dev' for development with hot reload.",
     "dev": "vite",
+    "_buildComment": "Builds standalone app for deployment. The command is >npm run build",
     "build": "vite build",
+    "_buildLibComment": "Builds library for consumption by other packages (use before git commit)",
     "build:lib": "vite build --mode lib",
-    "prepublishOnly": "pnpm run build:lib",
-    "preview": "vite preview --port 5173"
+    "_previewComment": "Serves locally built files from dist/ folder. it doesn't build, just serves what's already in dist/",
+    "preview": "vite preview"
   },
   "dependencies": {
     "ag-grid-community": "^34.2.0",
