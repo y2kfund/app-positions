@@ -24,16 +24,6 @@
   "files": [
     "dist"
   ],
-  "scripts": {
-    "_devComment": "Command '>npm run dev' for development with hot reload.",
-    "dev": "vite",
-    "_buildComment": "Builds standalone app for deployment. The command is >npm run build",
-    "build": "vite build",
-    "_buildLibComment": "Builds library for consumption by other packages (use before git commit)",
-    "build:lib": "vite build --mode lib",
-    "_previewComment": "Serves locally built files from dist/ folder. it doesn't build, just serves what's already in dist/",
-    "preview": "vite preview"
-  },
   "dependencies": {
     "ag-grid-community": "^34.2.0",
     "ag-grid-vue3": "^34.2.0",
@@ -52,5 +42,15 @@
     "vite": "^5.0.0",
     "vite-plugin-dts": "^4.5.4",
     "vue-tsc": "^2.0.0"
+  },
+  "scripts": {
+    "_devComment": "Command '>npm run dev' for development with hot reload.",
+    "dev": "vite",
+    "_buildComment": "Builds standalone app for deployment. The command is >npm run build",
+    "build": "vite build",
+    "_buildLibComment": "Builds library for consumption by other packages (use before git commit)",
+    "build:lib": "vite build --mode lib",
+    "_previewComment": "Serves locally built files from dist/ folder. it doesn't build, just serves what's already in dist/",
+    "preview": "vite preview"
   }
 }
