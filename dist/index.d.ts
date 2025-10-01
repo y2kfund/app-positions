@@ -5,4 +5,5 @@ export interface PositionsProps {
     accountId: string;
     highlightPnL?: boolean;
     onRowClick?: (row: any) => void;
+    showHeaderLink?: boolean;
 }

@@ -10,7 +10,8 @@ import type { PositionsProps } from './index'
 
 const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
-  highlightPnL: false
+  highlightPnL: false,
+  showHeaderLink: false
 })
 
 const emit = defineEmits<{ 
@@ -699,7 +700,10 @@ function doesExternalFilterPass(node: any): boolean {
     <!-- Success state with ag-grid -->
     <div v-else-if="q.isSuccess.value" class="positions-container">
       <div class="positions-header">
-        <h2>Positions:</h2>
+        <h2>
+          <router-link v-if="showHeaderLink" to="/positions">Positions:</router-link>
+          <span v-else>Positions:</span>
+        </h2>
         <div class="positions-tools">
           <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
           <button ref="columnsBtnRef" class="columns-btn" aria-label="Column settings" @click.stop="toggleColumnsPopup">
