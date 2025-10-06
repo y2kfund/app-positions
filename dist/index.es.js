@@ -1,4 +1,4 @@
-import { defineComponent as kn, mergeModels as Fr, useTemplateRef as Xc, ref as le, toRefs as eu, watch as Qt, useModel as tu, getCurrentInstance as hs, createElementBlock as Ie, onMounted as Qa, markRaw as iu, onUnmounted as su, openBlock as Fe, mergeDefaults as ou, toRaw as Pr, isRef as nu, isReactive as ru, isProxy as au, createVNode as Za, render as Er, computed as lu, inject as du, onBeforeUnmount as cu, resolveComponent as uu, createCommentVNode as mo, unref as at, createElementVNode as j, createTextVNode as Co, toDisplayString as yi, createBlock as hu, withCtx as gu, withModifiers as xr, Fragment as Dr, renderList as Tr, withDirectives as pu, vModelCheckbox as fu } from "vue";
+import { defineComponent as kn, mergeModels as Fr, useTemplateRef as Xc, ref as le, toRefs as eu, watch as Qt, useModel as tu, getCurrentInstance as hs, createElementBlock as Ie, onMounted as Qa, markRaw as iu, onUnmounted as su, openBlock as Fe, mergeDefaults as ou, toRaw as Pr, isRef as nu, isReactive as ru, isProxy as au, createVNode as Za, render as Er, computed as lu, inject as du, onBeforeUnmount as cu, resolveComponent as uu, createCommentVNode as mo, unref as lt, createElementVNode as j, createTextVNode as Co, toDisplayString as yi, createBlock as hu, withCtx as gu, withModifiers as xr, Fragment as Dr, renderList as Tr, withDirectives as pu, vModelCheckbox as fu } from "vue";
 import { usePositionsQuery as mu } from "@y2kfund/core";
 var Ht = class {
   constructor() {
@@ -178,7 +178,7 @@ function el(e, t) {
 function tl(e) {
   return `aria-${e}`;
 }
-function pt(e, t) {
+function ft(e, t) {
   t ? e.setAttribute("role", t) : e.removeAttribute("role");
 }
 function yu(e) {
@@ -434,7 +434,7 @@ function Nn(e) {
 function we(e, t, i) {
   i == null || i === "" ? e.removeAttribute(t) : e.setAttribute(t, i.toString());
 }
-function vt(e, t, i) {
+function wt(e, t, i) {
   const o = Xa(e).ResizeObserver, n = o ? new o(i) : null;
   return n == null || n.observe(t), () => n == null ? void 0 : n.disconnect();
 }
@@ -968,7 +968,7 @@ var rh = zn, ah = {
   rowNumbers: !1,
   enableFilterHandlers: !1
 }, vl = "https://www.ag-grid.com";
-function ft(e, t, ...i) {
+function mt(e, t, ...i) {
   e.get("debug") && console.log("AG Grid: " + t, ...i);
 }
 function Li(e, ...t) {
@@ -1073,7 +1073,7 @@ function Rl(e) {
 function fh(e, t) {
   return t ? !e.get("enableStrictPivotColumnOrder") : e.get("maintainColumnOrder");
 }
-function mt(e, t, i = !1, s) {
+function Ct(e, t, i = !1, s) {
   const { gos: o, environment: n } = e;
   if (s == null && (s = n.getDefaultRowHeight()), Rl(o)) {
     if (i)
@@ -1298,7 +1298,7 @@ var Dh = {
 function Il() {
   return Th++;
 }
-function Ct(e) {
+function vt(e) {
   return e instanceof _t;
 }
 var _t = class extends F {
@@ -1765,11 +1765,11 @@ var Es = class extends F {
   forEachLeafColumn(e) {
     if (this.children)
       for (const t of this.children)
-        Ct(t) ? e(t) : pe(t) && t.forEachLeafColumn(e);
+        vt(t) ? e(t) : pe(t) && t.forEachLeafColumn(e);
   }
   addLeafColumns(e) {
     this.children && this.children.forEach((t) => {
-      Ct(t) ? e.push(t) : pe(t) && t.addLeafColumns(e);
+      vt(t) ? e.push(t) : pe(t) && t.addLeafColumns(e);
     });
   }
   getColumnGroupShow() {
@@ -1851,7 +1851,7 @@ function K(e) {
   if (e != null && e.length)
     return e[e.length - 1];
 }
-function wt(e, t, i) {
+function bt(e, t, i) {
   if (e === t)
     return !0;
   if (!e || !t)
@@ -1884,7 +1884,7 @@ function Ol(e) {
   const t = [], i = (s) => {
     for (let o = 0; o < s.length; o++) {
       const n = s[o];
-      Ct(n) ? t.push(n) : pe(n) && i(n.getChildren());
+      vt(n) ? t.push(n) : pe(n) && i(n.getChildren());
     }
   };
   return i(e), t;
@@ -1907,23 +1907,23 @@ function zs(e, t, i) {
 function Un(e) {
   return e.getId().startsWith(oo);
 }
-function bt(e) {
+function St(e) {
   const t = typeof e == "string" ? e : "getColId" in e ? e.getColId() : e.colId;
   return (t == null ? void 0 : t.startsWith(kl)) ?? !1;
 }
-function gt(e) {
+function pt(e) {
   const t = typeof e == "string" ? e : "getColId" in e ? e.getColId() : e.colId;
   return (t == null ? void 0 : t.startsWith(Ll)) ?? !1;
 }
 function Ih(e) {
-  return bt(e) || gt(e);
+  return St(e) || pt(e);
 }
 function _s(e) {
   let t = [];
   return e instanceof Array ? t = e : typeof e == "string" && (t = e.split(",")), t;
 }
 function kh(e, t) {
-  return wt(e, t, (i, s) => i.getColId() === s.getColId());
+  return bt(e, t, (i, s) => i.getColId() === s.getColId());
 }
 function Lh(e) {
   e.map = {}, e.list.forEach((t) => e.map[t.getId()] = t);
@@ -2212,29 +2212,29 @@ function Oe(e, t, i) {
     }
     H || !P.isPrimary() || (h == null || h.syncColumnWithState(P, i, L), o == null || o.syncColumnWithState(P, i, L, G), n == null || n.syncColumnWithState(P, i, L, T));
   }, v = (P, D, G) => {
-    var ds, Ft;
+    var ds, nt;
     const T = _l(e, i), H = D.slice(), L = {}, W = {}, _ = [], ie = [], ye = [];
-    let Rt = 0;
+    let Ft = 0;
     const ae = (o == null ? void 0 : o.columns.slice()) ?? [], as = (n == null ? void 0 : n.columns.slice()) ?? [];
     P.forEach((se) => {
-      const nt = se.colId;
-      if (nt.startsWith(oo)) {
+      const rt = se.colId;
+      if (rt.startsWith(oo)) {
         _.push(se), ye.push(se);
         return;
       }
-      if (bt(nt)) {
+      if (St(rt)) {
         ie.push(se), ye.push(se);
         return;
       }
-      const rt = G(nt);
-      rt ? (C(rt, se, L, W, !1), Te(H, rt)) : (ye.push(se), Rt += 1);
+      const at = G(rt);
+      at ? (C(at, se, L, W, !1), Te(H, at)) : (ye.push(se), Ft += 1);
     });
     const Re = (se) => C(se, null, L, W, !1);
     H.forEach(Re), o == null || o.sortColumns(zr.bind(o, L, ae)), n == null || n.sortColumns(zr.bind(n, W, as)), s.refreshCols(!1);
-    const ls = (se, nt, Si = []) => {
-      nt.forEach((rt) => {
-        const cs = se(rt.colId);
-        Te(Si, cs), C(cs, rt, null, null, !0);
+    const ls = (se, rt, Si = []) => {
+      rt.forEach((at) => {
+        const cs = se(at.colId);
+        Te(Si, cs), C(cs, at, null, null, !0);
       }), Si.forEach(Re);
     };
     return ls(
@@ -2244,11 +2244,11 @@ function Oe(e, t, i) {
     ), ls(
       (se) => (a == null ? void 0 : a.getColumn(se)) ?? null,
       ie,
-      (Ft = a == null ? void 0 : a.getColumns()) == null ? void 0 : Ft.slice()
+      (nt = a == null ? void 0 : a.getColumns()) == null ? void 0 : nt.slice()
     ), jh(t, s, p), d.refresh(i), g.dispatchEvent({
       type: "columnEverythingChanged",
       source: i
-    }), T(), { unmatchedAndAutoStates: ye, unmatchedCount: Rt };
+    }), T(), { unmatchedAndAutoStates: ye, unmatchedCount: Ft };
   };
   l == null || l.start();
   let { unmatchedAndAutoStates: b, unmatchedCount: y } = v(
@@ -2292,7 +2292,7 @@ function _l(e, t) {
   }), () => {
     const u = (P, D, G, T) => {
       const H = D.map(T), L = G.map(T);
-      if (wt(H, L))
+      if (bt(H, L))
         return;
       const _ = new Set(D);
       G.forEach((ye) => {
@@ -2522,7 +2522,7 @@ var zr = (e, t, i, s) => {
     } = this.beans, h = this.selectCols(r, this.colDefCols);
     this.createColumnsForService([i, s, o], h);
     const g = fh(this.gos, this.showingPivotResult);
-    (!e || g) && this.restoreColOrder(h), this.positionLockedCols(h), a == null || a.refresh(), n == null || n.refreshCols(), this.setColSpanActive(), l == null || l.setAutoHeightActive(h), d.clear(), c.clear(), !wt(t, this.cols.tree) && u.dispatchEvent({
+    (!e || g) && this.restoreColOrder(h), this.positionLockedCols(h), a == null || a.refresh(), n == null || n.refreshCols(), this.setColSpanActive(), l == null || l.setAutoHeightActive(h), d.clear(), c.clear(), !bt(t, this.cols.tree) && u.dispatchEvent({
       type: "gridColumnsChanged"
     });
   }
@@ -2554,7 +2554,7 @@ var zr = (e, t, i, s) => {
       const d = Un(l);
       if (s) {
         const c = r == null ? void 0 : r.includes(l);
-        return d || c || o && bt(l) || n && gt(l);
+        return d || c || o && St(l) || n && pt(l);
       } else
         return d || l.isVisible();
     });
@@ -3261,7 +3261,7 @@ var w = {
     e && e.isAlive() && e.getGui().classList.remove("ag-has-popup"), super.destroy();
   }
 }, yo, Ro, Fo, Po, rn, an, Eo;
-function St() {
+function yt() {
   return yo === void 0 && (yo = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)), yo;
 }
 function Zl() {
@@ -3518,7 +3518,7 @@ var Ug = (
   }
   refreshLabel() {
     const { label: e, eLabel: t } = this;
-    ue(t), typeof e == "string" ? t.innerText = e + this.labelSeparator : e && t.appendChild(e), e === "" ? (q(t, !1), pt(t, "presentation")) : (q(t, !0), pt(t, null));
+    ue(t), typeof e == "string" ? t.innerText = e + this.labelSeparator : e && t.appendChild(e), e === "" ? (q(t, !1), ft(t, "presentation")) : (q(t, !0), ft(t, null));
   }
   setLabelSeparator(e) {
     return this.labelSeparator === e ? this : (this.labelSeparator = e, this.label != null && this.refreshLabel(), this);
@@ -3908,7 +3908,7 @@ var Dt = class extends sd {
   }
   postConstruct() {
     super.postConstruct();
-    const e = St();
+    const e = yt();
     this.addManagedListeners(this.eInput, {
       wheel: this.onWheel.bind(this),
       mousedown: () => {
@@ -4121,7 +4121,7 @@ var Dt = class extends sd {
     e === w.PAGE_HOME ? a = 0 : e === w.PAGE_END ? a = o : e === w.PAGE_DOWN ? a = Math.min(s + r, o) : e === w.PAGE_UP && (a = Math.max(s - r, 0)), a !== -1 && this.highlightItem(t[a]);
   }
   refreshAriaRole() {
-    pt(this.getGui(), this.options.length === 0 ? "presentation" : "listbox");
+    ft(this.getGui(), this.options.length === 0 ? "presentation" : "listbox");
   }
   updateIndices() {
     this.refreshAriaRole();
@@ -4177,7 +4177,7 @@ var Dt = class extends sd {
   }
   setupAria() {
     const e = this.getAriaElement();
-    e.setAttribute("tabindex", this.gos.get("tabIndex").toString()), Jo(e, !1), this.ariaRole && pt(e, this.ariaRole);
+    e.setAttribute("tabindex", this.gos.get("tabIndex").toString()), Jo(e, !1), this.ariaRole && ft(e, this.ariaRole);
   }
   onLabelOrWrapperMouseDown(e) {
     if (e) {
@@ -4464,7 +4464,7 @@ var Dt = class extends sd {
 }, jr, ri = (jr = typeof window == "object" ? window : {}).agStyleInjectionState ?? (jr.agStyleInjectionState = {
   map: /* @__PURE__ */ new WeakMap(),
   grids: /* @__PURE__ */ new Set()
-}), $e = (e) => new rd(e), ut = "$default", up = 0, rd = class {
+}), $e = (e) => new rd(e), ht = "$default", up = 0, rd = class {
   constructor({ feature: e, params: t, modeParams: i = {}, css: s, cssImports: o }) {
     this.feature = e, this.css = s, this.cssImports = o, this.modeParams = {
       // NOTE: it's important that default is defined first, putting it
@@ -4472,8 +4472,8 @@ var Dt = class extends sd {
       // params override any prior modal params, so modal params in this
       // part need to come after default params to prevent them from being
       // immediately overridden.
-      [ut]: {
-        ...i[ut] ?? {},
+      [ht]: {
+        ...i[ht] ?? {},
         ...t ?? {}
       },
       ...i
@@ -4659,7 +4659,7 @@ ${o}`;
   withoutPart(t) {
     return this.withPart($e({ feature: t }));
   }
-  withParams(t, i = ut) {
+  withParams(t, i = ht) {
     return this.withPart(
       $e({
         modeParams: { [i]: t }
@@ -4696,7 +4696,7 @@ ${o}`;
         // NOTE: defining the default mode here is important, it ensures
         // that the default mode is first in iteration order, which puts
         // it first in outputted CSS, allowing other modes to override it
-        [ut]: { ...mp }
+        [ht]: { ...mp }
       };
       for (const s of Yr(this.parts))
         for (const o of Object.keys(s.modeParams)) {
@@ -4707,10 +4707,10 @@ ${o}`;
               const d = n[l];
               d !== void 0 && (r[l] = d, a.add(l));
             }
-            if (o === ut)
+            if (o === ht)
               for (const l of Object.keys(i)) {
                 const d = i[l];
-                if (l !== ut)
+                if (l !== ht)
                   for (const c of a)
                     delete d[c];
               }
@@ -4735,7 +4735,7 @@ ${o}`;
       const r = this._getModeParams();
       for (const l of Object.keys(r)) {
         const d = r[l];
-        if (l !== ut) {
+        if (l !== ht) {
           const u = `:where([data-ag-theme-mode="${typeof CSS == "object" ? CSS.escape(l) : l}"]) & {
 `;
           o += u, n += u;
@@ -4751,7 +4751,7 @@ ${o}`;
 `;
           }
         }
-        l !== ut && (o += `}
+        l !== ht && (o += `}
 `, n += `}
 `);
       }
@@ -5350,7 +5350,7 @@ ${n}}
       )), t.style.left = `${c}px`, t.style.top = `${u}px`, e.postProcessCallback && e.postProcessCallback());
     };
     if (l(), !n) {
-      const d = vt(this.beans, t, () => l(!0));
+      const d = wt(this.beans, t, () => l(!0));
       setTimeout(() => d(), zp);
     }
   }
@@ -5382,7 +5382,7 @@ ${n}}
   }
   createPopupWrapper(e, t, i, s) {
     const o = this.getPopupParent(), { environment: n, gos: r } = this.beans, a = ts({ tag: "div" });
-    return n.applyThemeClasses(a), a.classList.add("ag-popup"), e.classList.add(r.get("enableRtl") ? "ag-rtl" : "ag-ltr", "ag-popup-child"), e.hasAttribute("role") || pt(e, "dialog"), i ? hi(e, i) : s && (e.id || (e.id = `popup-component-${fs}`), Mr(s, e.id)), a.appendChild(e), o.appendChild(a), t ? this.setAlwaysOnTop(e, !0) : this.bringPopupToFront(e), a;
+    return n.applyThemeClasses(a), a.classList.add("ag-popup"), e.classList.add(r.get("enableRtl") ? "ag-rtl" : "ag-ltr", "ag-popup-child"), e.hasAttribute("role") || ft(e, "dialog"), i ? hi(e, i) : s && (e.id || (e.id = `popup-component-${fs}`), Mr(s, e.id)), a.appendChild(e), o.appendChild(a), t ? this.setAlwaysOnTop(e, !0) : this.bringPopupToFront(e), a;
   }
   addEventListenersToPopup(e) {
     const t = this.beans, i = de(t), s = this.getPopupParent(), { wrapperEl: o, eChild: n, closedCallback: r, afterGuiAttached: a, closeOnEsc: l, modal: d, ariaOwns: c } = e;
@@ -5666,7 +5666,7 @@ ${n}}
   // and is removed when mouseUp happens
   onMouseMove(e, t) {
     var i;
-    St() && ((i = de(this.beans).getSelection()) == null || i.removeAllRanges()), this.shouldPreventMouseEvent(e) && e.preventDefault(), this.onCommonMove(e, this.mouseStartEvent, t);
+    yt() && ((i = de(this.beans).getSelection()) == null || i.removeAllRanges()), this.shouldPreventMouseEvent(e) && e.preventDefault(), this.onCommonMove(e, this.mouseStartEvent, t);
   }
   shouldPreventMouseEvent(e) {
     const t = e.type === "mousemove", i = (s) => {
@@ -6055,12 +6055,12 @@ var Yi = class extends F {
   }
   addDisplayedLeafColumns(e) {
     this.displayedChildren.forEach((t) => {
-      Ct(t) ? e.push(t) : ee(t) && t.addDisplayedLeafColumns(e);
+      vt(t) ? e.push(t) : ee(t) && t.addDisplayedLeafColumns(e);
     });
   }
   addLeafColumns(e) {
     this.children.forEach((t) => {
-      Ct(t) ? e.push(t) : ee(t) && t.addLeafColumns(e);
+      vt(t) ? e.push(t) : ee(t) && t.addLeafColumns(e);
     });
   }
   getChildren() {
@@ -6431,7 +6431,7 @@ var fd = {
   agDateColumnFilter: "agDateColumnFilterHandler",
   agTextColumnFilter: "agTextColumnFilterHandler"
 }, Jp = new Set(Object.values(fd));
-function lt(e, t) {
+function dt(e, t) {
   const i = e.filterUi;
   if (!i)
     return null;
@@ -6623,7 +6623,7 @@ var tf = class extends $ {
   filterSummaryInRangeValues: (e) => `(${e[0]}, ${e[1]})`,
   filterSummaryTextQuote: (e) => `"${e[0]}"`
 };
-function ht(e, t, i) {
+function gt(e, t, i) {
   return Zu(e, sf, t, i);
 }
 function ir(e, t) {
@@ -6682,7 +6682,7 @@ var of = class extends $ {
     if (l) {
       const c = n.map((u) => {
         const h = `${u}Filter`;
-        return { type: u, label: ht(this, h) };
+        return { type: u, label: gt(this, h) };
       });
       if (this.applyActive = ao(this.params), !d) {
         d = this.createBean(new tf()), this.appendChild(d.getGui());
@@ -6965,7 +6965,7 @@ var df = {
 function uf(e, t = !1) {
   return (t ? cf : df)[e ?? "text"];
 }
-var vd = "ag-resizer-wrapper", dt = (e, t) => ({
+var vd = "ag-resizer-wrapper", ct = (e, t) => ({
   tag: "div",
   ref: `${e}Resizer`,
   cls: `ag-resizer ag-resizer-${t}`
@@ -6973,14 +6973,14 @@ var vd = "ag-resizer-wrapper", dt = (e, t) => ({
   tag: "div",
   cls: vd,
   children: [
-    dt("eTopLeft", "topLeft"),
-    dt("eTop", "top"),
-    dt("eTopRight", "topRight"),
-    dt("eRight", "right"),
-    dt("eBottomRight", "bottomRight"),
-    dt("eBottom", "bottom"),
-    dt("eBottomLeft", "bottomLeft"),
-    dt("eLeft", "left")
+    ct("eTopLeft", "topLeft"),
+    ct("eTop", "top"),
+    ct("eTopRight", "topRight"),
+    ct("eRight", "right"),
+    ct("eBottomRight", "bottomRight"),
+    ct("eBottom", "bottom"),
+    ct("eBottomLeft", "bottomLeft"),
+    ct("eLeft", "left")
   ]
 }, gf = class extends F {
   constructor(e, t) {
@@ -7152,7 +7152,7 @@ var vd = "ag-resizer-wrapper", dt = (e, t) => ({
       const o = this.getAvailableHeight();
       this.element.style.setProperty("max-height", `${o}px`);
     };
-    e && this.popupSvc ? ((i = this.resizeObserverSubscriber) == null || i.call(this), this.resizeObserverSubscriber = vt(
+    e && this.popupSvc ? ((i = this.resizeObserverSubscriber) == null || i.call(this), this.resizeObserverSubscriber = wt(
       this.beans,
       (s = this.popupSvc) == null ? void 0 : s.getPopupParent(),
       t
@@ -7527,7 +7527,7 @@ var pf = "ag-focus-managed", bi = class extends F {
     this.positionableFeature = this.destroyBean(this.positionableFeature), super.destroy();
   }
   translate(e) {
-    return ht(this, e);
+    return gt(this, e);
   }
   // override to control positionable feature
   getPositionableElement() {
@@ -7573,7 +7573,7 @@ var ke = {
     }, i = t.autoHeight ? ke.AUTO_HEIGHT : t.print ? ke.PRINT : ke.NORMAL;
     this.view.updateLayoutClasses(i, t);
   }
-}, ct = "Viewport", sa = "fakeVScrollComp", To = [
+}, ut = "Viewport", sa = "fakeVScrollComp", To = [
   "fakeHScrollComp",
   "centerHeader",
   "topCenter",
@@ -7632,7 +7632,7 @@ var ke = {
   }
   addHorizontalScrollListeners() {
     this.addManagedElementListeners(this.centerRowsCtrl.eViewport, {
-      scroll: this.onHScroll.bind(this, ct)
+      scroll: this.onHScroll.bind(this, ut)
     });
     for (const e of To) {
       const t = this.ctrlsSvc.get(e);
@@ -7640,7 +7640,7 @@ var ke = {
     }
   }
   addVerticalScrollListeners() {
-    const e = this.ctrlsSvc.get("fakeVScrollComp"), t = this.gos.get("debounceVerticalScrollbar"), i = t ? ce(this, this.onVScroll.bind(this, ct), oa) : this.onVScroll.bind(this, ct), s = t ? ce(this, this.onVScroll.bind(this, sa), oa) : this.onVScroll.bind(this, sa);
+    const e = this.ctrlsSvc.get("fakeVScrollComp"), t = this.gos.get("debounceVerticalScrollbar"), i = t ? ce(this, this.onVScroll.bind(this, ut), oa) : this.onVScroll.bind(this, ut), s = t ? ce(this, this.onVScroll.bind(this, sa), oa) : this.onVScroll.bind(this, sa);
     this.addManagedElementListeners(this.eBodyViewport, { scroll: i }), this.registerScrollPartner(e, s);
   }
   registerScrollPartner(e, t) {
@@ -7653,7 +7653,7 @@ var ke = {
     this.centerRowsCtrl != null && (e === void 0 && (e = this.centerRowsCtrl.getCenterViewportScrollLeft()), this.setScrollLeftForAllContainersExceptCurrent(Math.abs(e)));
   }
   setScrollLeftForAllContainersExceptCurrent(e) {
-    for (const t of [...To, ct]) {
+    for (const t of [...To, ut]) {
       if (this.lastScrollSource[
         1
         /* Horizontal */
@@ -7664,7 +7664,7 @@ var ke = {
     }
   }
   getViewportForSource(e) {
-    return e === ct ? this.centerRowsCtrl.eViewport : this.ctrlsSvc.get(e).eViewport;
+    return e === ut ? this.centerRowsCtrl.eViewport : this.ctrlsSvc.get(e).eViewport;
   }
   isControllingScroll(e, t) {
     return this.lastScrollSource[t] == null ? (t === 0 ? this.lastScrollSource[0] = e : this.lastScrollSource[1] = e, !0) : this.lastScrollSource[t] === e;
@@ -7690,10 +7690,10 @@ var ke = {
     ))
       return;
     let t;
-    if (e === ct ? t = this.eBodyViewport.scrollTop : t = this.ctrlsSvc.get("fakeVScrollComp").getScrollPosition(), this.shouldBlockScrollUpdate(0, t, !0))
+    if (e === ut ? t = this.eBodyViewport.scrollTop : t = this.ctrlsSvc.get("fakeVScrollComp").getScrollPosition(), this.shouldBlockScrollUpdate(0, t, !0))
       return;
     const { animationFrameSvc: i } = this;
-    i == null || i.setScrollTop(t), this.nextScrollTop = t, e === ct ? this.ctrlsSvc.get("fakeVScrollComp").setScrollPosition(t) : this.eBodyViewport.scrollTop = t, i != null && i.active ? i.schedule() : this.scrollGridIfNeeded(!0), this.resetLastVScrollDebounced();
+    i == null || i.setScrollTop(t), this.nextScrollTop = t, e === ut ? this.ctrlsSvc.get("fakeVScrollComp").setScrollPosition(t) : this.eBodyViewport.scrollTop = t, i != null && i.active ? i.schedule() : this.scrollGridIfNeeded(!0), this.resetLastVScrollDebounced();
   }
   doHorizontalScroll(e) {
     const t = this.ctrlsSvc.get("fakeHScrollComp").getScrollPosition();
@@ -7755,7 +7755,7 @@ var ke = {
         t = !0;
         break;
       }
-    t && this.onHScroll(ct);
+    t && this.onHScroll(ut);
   }
   scrollGridIfNeeded(e = !1) {
     const t = this.scrollTop != this.nextScrollTop;
@@ -7849,9 +7849,9 @@ var ke = {
       let u, h, g = 0;
       this.invalidateVerticalScroll();
       do {
-        const { stickyTopHeight: m, stickyBottomHeight: C } = d, v = c.rowTop, b = c.rowHeight, y = r.getPixelOffset(), S = c.rowTop - y, P = S + c.rowHeight, D = this.getVScrollPosition(), G = a.divStretchOffset, T = D.top + G, H = D.bottom + G, L = H - T, W = a.getScrollPositionForPixel(S), _ = a.getScrollPositionForPixel(P - L), ie = Math.min((W + _) / 2, S), ye = T + m > S, Rt = H - C < P;
+        const { stickyTopHeight: m, stickyBottomHeight: C } = d, v = c.rowTop, b = c.rowHeight, y = r.getPixelOffset(), S = c.rowTop - y, P = S + c.rowHeight, D = this.getVScrollPosition(), G = a.divStretchOffset, T = D.top + G, H = D.bottom + G, L = H - T, W = a.getScrollPositionForPixel(S), _ = a.getScrollPositionForPixel(P - L), ie = Math.min((W + _) / 2, S), ye = T + m > S, Ft = H - C < P;
         let ae = null;
-        t === "top" ? ae = W - m : t === "bottom" ? ae = _ + C : t === "middle" ? ae = ie : ye ? ae = W - m : Rt && (_ - W > L ? ae = W - m : ae = _ + C), ae !== null && (this.setVerticalScrollPosition(ae), l.redraw({ afterScroll: !0 })), u = v !== c.rowTop || b !== c.rowHeight, h = m !== d.stickyTopHeight || C !== d.stickyBottomHeight, g++;
+        t === "top" ? ae = W - m : t === "bottom" ? ae = _ + C : t === "middle" ? ae = ie : ye ? ae = W - m : Ft && (_ - W > L ? ae = W - m : ae = _ + C), ae !== null && (this.setVerticalScrollPosition(ae), l.redraw({ afterScroll: !0 })), u = v !== c.rowTop || b !== c.rowHeight, h = m !== d.stickyTopHeight || C !== d.stickyBottomHeight, g++;
       } while ((u || h) && g < 10);
       if ((p = this.animationFrameSvc) == null || p.flushAllFrames(), i < 10 && (c != null && c.stub || !((f = this.beans.rowAutoHeight) != null && f.areRowsMeasured()))) {
         const m = this.getVScrollPosition().top;
@@ -8493,7 +8493,7 @@ var If = ["topCenter", "topLeft", "topRight"], kf = ["bottomCenter", "bottomLeft
     return Os(this.eViewport, this.enableRtl);
   }
   registerViewportResizeListener(e) {
-    const t = vt(this.beans, this.eViewport, e);
+    const t = wt(this.beans, this.eViewport, e);
     this.addDestroyFunc(() => t());
   }
   isViewportInTheDOMTree() {
@@ -9479,7 +9479,7 @@ var am = class extends F {
       const u = this.column.isAutoHeaderHeight();
       u && !r && d(), !u && r && c();
     }, d = () => {
-      r = !0, this.comp.toggleCss("ag-header-cell-auto-height", !0), n(0), a = vt(this.beans, t, () => n(0));
+      r = !0, this.comp.toggleCss("ag-header-cell-auto-height", !0), n(0), a = wt(this.beans, t, () => n(0));
     }, c = () => {
       r = !1, a && a(), this.comp.toggleCss("ag-header-cell-auto-height", !1), a = void 0;
     };
@@ -10168,7 +10168,7 @@ var Cm = 0, Lo = class extends F {
   }
   getHeaderCtrlForColumn(e) {
     const t = (i) => i == null ? void 0 : i.getHeaderCellCtrls().find((s) => s.column === e);
-    if (Ct(e))
+    if (vt(e))
       return t(this.columnsRowCtrl);
     if (this.groupsRowCtrls.length !== 0)
       for (let i = 0; i < this.groupsRowCtrls.length; i++) {
@@ -10256,7 +10256,7 @@ var Cm = 0, Lo = class extends F {
     return !e.getColDef().suppressHeaderFilterButton && !!((t = this.beans.filterManager) != null && t.isFilterAllowed(e));
   }
   isHeaderContextMenuEnabled(e) {
-    const t = e && Ct(e) ? e.getColDef() : e == null ? void 0 : e.getColGroupDef();
+    const t = e && vt(e) ? e.getColDef() : e == null ? void 0 : e.getColGroupDef();
     return !(t != null && t.suppressHeaderContextMenu) && this.gos.get("columnMenu") === "new";
   }
   isHeaderMenuButtonAlwaysShowEnabled() {
@@ -10698,7 +10698,7 @@ var ca = class extends F {
     let e = !1, t = 0;
     const i = (s) => {
       if (s.rowHeightEstimated) {
-        const o = mt(this.beans, s);
+        const o = Ct(this.beans, s);
         s.setRowTop(t), s.setRowHeight(o.height), t += o.height, e = !0;
       }
     };
@@ -10820,7 +10820,7 @@ function Lm(e, t) {
   let i = 0, s = !1;
   return t.forEach((o, n) => {
     if (s || (s = o.rowTop !== i), o.setRowTop(i), o.rowHeightEstimated || o.rowHeight == null) {
-      const r = mt(e, o).height;
+      const r = Ct(e, o).height;
       s || (s = o.rowHeight !== r), o.setRowHeight(r);
     }
     o.setRowIndex(n), i += o.rowHeight;
@@ -10896,7 +10896,7 @@ var ga = class extends F {
     let e = !1, t = 0;
     const i = (s) => {
       if (s.rowHeightEstimated) {
-        const o = mt(this.beans, s);
+        const o = Ct(this.beans, s);
         s.setRowTop(t), s.setRowHeight(o.height), t += o.height, e = !0;
       }
     };
@@ -10943,7 +10943,7 @@ var ga = class extends F {
     }), i.order = r;
   }
   setRowTopAndRowIndex(e, t, i) {
-    return e.setRowTop(t), e.setRowHeight(mt(this.beans, e).height), e.setRowIndex(i), e.rowHeight;
+    return e.setRowTop(t), e.setRowHeight(Ct(this.beans, e).height), e.setRowIndex(i), e.rowHeight;
   }
   getPinnedTopTotalHeight() {
     return pa(this.pinnedTopRows);
@@ -11497,7 +11497,7 @@ var Wm = {
   setComp(e) {
     this.headerCellCtrl = e;
     const t = this.createManagedBean(new qn());
-    this.cbSelectAll = t, t.addCss("ag-header-select-all"), pt(t.getGui(), "presentation"), this.showOrHideSelectAll();
+    this.cbSelectAll = t, t.addCss("ag-header-select-all"), ft(t.getGui(), "presentation"), this.showOrHideSelectAll();
     const i = this.updateStateOfCheckbox.bind(this);
     this.addManagedEventListeners({
       newColumnsLoaded: () => this.showOrHideSelectAll(),
@@ -11572,7 +11572,7 @@ function Hd({ gos: e, selectionColSvc: t }, i) {
   const s = e.get("rowSelection"), o = i.getColDef(), { headerCheckboxSelection: n } = o;
   let r = !1;
   if (typeof s == "object") {
-    const l = bt(i), d = Un(i);
+    const l = St(i), d = Un(i);
     (Vs(s) === "autoGroupColumn" && d || l && (t != null && t.isSelectionColumnEnabled())) && (r = Ps(s));
   } else
     typeof n == "function" ? r = n(V(e, { column: i, colDef: o })) : r = !!n;
@@ -11694,7 +11694,7 @@ var $m = class extends F {
   isCellCheckboxSelection(e, t) {
     const i = this.gos.get("rowSelection");
     if (i && typeof i != "string") {
-      const s = bt(e) && si(i);
+      const s = St(e) && si(i);
       return e.isColumnFunc(t, s);
     } else
       return e.isColumnFunc(t, e.colDef.checkboxSelection);
@@ -11945,7 +11945,7 @@ var $m = class extends F {
   }
   createTabGuard(e) {
     const t = de(this.beans).createElement("div"), i = e === "top" ? Go.TAB_GUARD_TOP : Go.TAB_GUARD_BOTTOM;
-    return t.classList.add(Go.TAB_GUARD, i), pt(t, "presentation"), t;
+    return t.classList.add(Go.TAB_GUARD, i), ft(t, "presentation"), t;
   }
   addTabGuards(e, t) {
     const i = this.eFocusableElement;
@@ -12773,7 +12773,7 @@ var uC = class extends $ {
       },
       setAlwaysVerticalScrollClass: (a, l) => this.eBodyViewport.classList.toggle(xd, l),
       registerBodyViewportResizeListener: (a) => {
-        const l = vt(this.beans, this.eBodyViewport, a);
+        const l = wt(this.beans, this.eBodyViewport, a);
         this.addDestroyFunc(() => l());
       },
       setPinnedTopBottomOverflowY: (a) => this.eTop.style.overflowY = this.eBottom.style.overflowY = a,
@@ -12783,7 +12783,7 @@ var uC = class extends $ {
         );
       },
       setBodyViewportWidth: (a) => this.eBodyViewport.style.width = a,
-      setGridRootRole: (a) => pt(this.eGridRoot, a)
+      setGridRootRole: (a) => ft(this.eGridRoot, a)
     };
     this.ctrl = this.createManagedBean(new Uf()), this.ctrl.setComp(
       r,
@@ -12810,7 +12810,7 @@ var uC = class extends $ {
     this.view = e, this.eGridHostDiv = t, this.eGui = i, this.eGui.setAttribute("grid-id", this.beans.context.getId());
     const { dragAndDrop: s, ctrlsSvc: o } = this.beans;
     s == null || s.registerGridDropTarget(() => this.eGui, this), this.createManagedBean(new sr(this.view)), this.view.setRtlClass(this.gos.get("enableRtl") ? "ag-rtl" : "ag-ltr");
-    const n = vt(this.beans, this.eGridHostDiv, this.onGridSizeChanged.bind(this));
+    const n = wt(this.beans, this.eGridHostDiv, this.onGridSizeChanged.bind(this));
     this.addDestroyFunc(() => n()), o.register("gridCtrl", this);
   }
   isDetailGrid() {
@@ -12964,7 +12964,7 @@ var uC = class extends $ {
   insertGridIntoDom() {
     const e = this.getGui();
     this.eGridDiv.appendChild(e), this.addDestroyFunc(() => {
-      this.eGridDiv.removeChild(e), ft(this.gos, "Grid removed from DOM");
+      this.eGridDiv.removeChild(e), mt(this.gos, "Grid removed from DOM");
     });
   }
   updateLayoutClasses(e, t) {
@@ -14268,7 +14268,7 @@ var Qi = class {
       return;
     e = t[0];
   }
-}, $C = (e, t) => e !== t && (!e || e.sameGrid !== t.sameGrid || e.allowed !== t.allowed || e.position !== t.position || e.target !== t.target || e.source !== t.source || e.newParent !== t.newParent || !wt(e.rows, t.rows)), KC = ({ rowIndex: e }, { rowIndex: t }) => e !== null && t !== null ? e - t : 0, ba = (e, t) => {
+}, $C = (e, t) => e !== t && (!e || e.sameGrid !== t.sameGrid || e.allowed !== t.allowed || e.position !== t.position || e.target !== t.target || e.source !== t.source || e.newParent !== t.newParent || !bt(e.rows, t.rows)), KC = ({ rowIndex: e }, { rowIndex: t }) => e !== null && t !== null ? e - t : 0, ba = (e, t) => {
   for (let i = 0, s = (e == null ? void 0 : e.length) || 0; i < s; ++i) {
     const o = e[i];
     o.dragging !== t && (o.dragging = t, o.dispatchRowEvent("draggingChanged"));
@@ -14563,7 +14563,7 @@ function rv(e, t, i, s) {
     const c = d.filter((h) => o.includes(h));
     if (r === null)
       r = c;
-    else if (!wt(c, r))
+    else if (!bt(c, r))
       break;
     const u = lv(d);
     (n === null || u < n.fragCount) && (n = { move: l, fragCount: u });
@@ -16093,7 +16093,7 @@ function Ot(e, t, i) {
 function Wo(e) {
   const t = [];
   return Ot(e, !0, (i) => {
-    Ct(i) && t.push(i);
+    vt(i) && t.push(i);
   }), t;
 }
 var _v = class extends F {
@@ -18221,7 +18221,7 @@ var Eb = class extends Op {
     )) : t.style.width = `var(${e.cssName}, ${Uo}px)`, i.appendChild(t), this.sizeEls.set(e, t);
     let n = this.measureSizeEl(e);
     n === "no-styles" && !o && x(9, { variable: e });
-    const r = vt(this.beans, t, () => {
+    const r = wt(this.beans, t, () => {
       const a = this.measureSizeEl(e);
       a === "detached" || a === "no-styles" || (this.lastKnownValues.set(e, a), a !== n && (n = a, this.fireStylesChangedEvent(e.changeKey)));
     });
@@ -20427,7 +20427,7 @@ var Zb = {
       }
     }
     this.validateGridOptions(this.gridOptions), s.properties = o.map((a) => a.type), o.forEach((a) => {
-      ft(this, `Updated property ${a.type} from`, a.previousValue, " to ", a.currentValue), this.propEventSvc.dispatchEvent(a);
+      mt(this, `Updated property ${a.type} from`, a.previousValue, " to ", a.currentValue), this.propEventSvc.dispatchEvent(a);
     });
   }
   addPropertyEventListener(e, t) {
@@ -21962,13 +21962,13 @@ var kS = class extends F {
     }
     if (this.isRightClickInExistingRange(e))
       return;
-    const v = l && !l.isEmpty(), b = this.containsWidget(o), y = gt(g);
+    const v = l && !l.isEmpty(), b = this.containsWidget(o), y = pt(g);
     if (d && y && !d.handleMouseDownOnCell(f, e)) {
       l && e.preventDefault(), e.stopImmediatePropagation();
       return;
     }
     if (!s || !v) {
-      const S = h == null ? void 0 : h.isEditing(n), D = u.get("enableCellTextSelection") && e.defaultPrevented, G = (St() || D) && !S && !On(o) && !b;
+      const S = h == null ? void 0 : h.isEditing(n), D = u.get("enableCellTextSelection") && e.defaultPrevented, G = (yt() || D) && !S && !On(o) && !b;
       n.focusCell(G, e);
     }
     if (s && v && !c.isCellFocused(f)) {
@@ -22059,7 +22059,7 @@ var kS = class extends F {
   }
   onDisplayColumnsChanged() {
     const e = this.getColSpanningList();
-    wt(this.colsSpanning, e) || (this.colsSpanning = e, this.onWidthChanged(), this.onLeftChanged());
+    bt(this.colsSpanning, e) || (this.colsSpanning = e, this.onWidthChanged(), this.onLeftChanged());
   }
   setupColSpan() {
     this.column.getColDef().colSpan != null && (this.colsSpanning = this.getColSpanningList(), this.addManagedListeners(this.beans.eventSvc, {
@@ -22134,7 +22134,7 @@ var kS = class extends F {
     const { beans: e } = this;
     this.positionFeature = new OS(this, e), this.customStyleFeature = (s = e.cellStyles) == null ? void 0 : s.createCellCustomStyleFeature(this, e), this.editStyleFeature = (o = e.editSvc) == null ? void 0 : o.createCellStyleFeature(this, e), this.mouseListener = new LS(this, e, this.column), this.keyboardListener = new kS(this, e, this.rowNode, this.rowCtrl), this.enableTooltipFeature();
     const { rangeSvc: t } = e;
-    t && tt(e.gos) && (this.rangeFeature = t.createCellRangeFeature(e, this)), gt(this.column) && (this.rowResizeFeature = this.beans.rowNumbersSvc.createRowNumbersRowResizerFeature(e, this));
+    t && tt(e.gos) && (this.rangeFeature = t.createCellRangeFeature(e, this)), pt(this.column) && (this.rowResizeFeature = this.beans.rowNumbersSvc.createRowNumbersRowResizerFeature(e, this));
   }
   isCellSpanning() {
     return !1;
@@ -22205,7 +22205,7 @@ var kS = class extends F {
     const d = o.stub && ((u = o.groupData) == null ? void 0 : u[s.getId()]) == null, c = s.getColDef();
     if (d || this.isCellRenderer()) {
       const f = this.createCellRendererParams();
-      !d || gt(s) ? l = Ur(r, c, f) : l = $r(r, c, f);
+      !d || pt(s) ? l = Ur(r, c, f) : l = $r(r, c, f);
     }
     if (!l && !d && ((h = i.findSvc) != null && h.isMatch(o, s))) {
       const f = this.createCellRendererParams();
@@ -22239,7 +22239,7 @@ var kS = class extends F {
     return (this.rowNode.rowPinned == null || t && rs(this.rowNode)) && !!e;
   }
   isCheckboxSelection(e) {
-    const { rowSelection: t, groupDisplayType: i } = this.beans.gridOptions, s = Vs(t), o = bt(this.column);
+    const { rowSelection: t, groupDisplayType: i } = this.beans.gridOptions, s = Vs(t), o = St(this.column);
     return i === "custom" && s !== "selectionColumn" && o ? !1 : e.checkboxSelection || o && typeof t == "object" && si(t);
   }
   refreshShouldDestroy() {
@@ -22436,7 +22436,7 @@ var kS = class extends F {
   }
   onSuppressCellFocusChanged(e) {
     const t = this.eGui;
-    t && (gt(this.column) && (e = !0), we(t, "tabindex", e ? void 0 : -1));
+    t && (pt(this.column) && (e = !0), we(t, "tabindex", e ? void 0 : -1));
   }
   onFirstRightPinnedChanged() {
     if (!this.comp)
@@ -23200,7 +23200,7 @@ var $S = class extends F {
     if (!s)
       return;
     const { rowGui: o, column: n } = s, r = o.element, a = e.target, l = this.rowNode;
-    let d = e.defaultPrevented || St();
+    let d = e.defaultPrevented || yt();
     r && r.contains(a) && On(a) && (d = !1), i.setFocusedCell({
       rowIndex: l.rowIndex,
       column: n,
@@ -23408,7 +23408,7 @@ var $S = class extends F {
   onRowHeightChanged(e) {
     if (this.rowNode.rowHeight == null)
       return;
-    const t = this.rowNode.rowHeight, i = this.beans.environment.getDefaultRowHeight(), o = Rl(this.gos) ? mt(this.beans, this.rowNode).height : void 0, n = o ? `${Math.min(i, o) - 2}px` : void 0;
+    const t = this.rowNode.rowHeight, i = this.beans.environment.getDefaultRowHeight(), o = Rl(this.gos) ? Ct(this.beans, this.rowNode).height : void 0, n = o ? `${Math.min(i, o) - 2}px` : void 0;
     this.forEachGui(e, (r) => {
       r.element.style.height = `${t}px`, n && r.element.style.setProperty("--ag-line-height", n);
     });
@@ -24012,7 +24012,7 @@ var qS = {
     !r.length && !n || (s && (r = s({
       columns: r,
       viewportWidth: t
-    })), !(!r || !r.length) && (r = r.filter((a) => !gt(a)), this.setColsPinned(r, null, "viewportSizeFeature")));
+    })), !(!r || !r.length) && (r = r.filter((a) => !pt(a)), this.setColsPinned(r, null, "viewportSizeFeature")));
   }
   createPinnedWidthFeature(e, ...t) {
     return new JS(e, t);
@@ -24408,7 +24408,7 @@ var dy = (
     super(...arguments), this.beanName = "rowContainerHeight", this.scrollY = 0, this.uiBodyHeight = 0;
   }
   postConstruct() {
-    this.addManagedEventListeners({ bodyHeightChanged: this.updateOffset.bind(this) }), this.maxDivHeight = Lg(), ft(this.gos, "RowContainerHeightService - maxDivHeight = " + this.maxDivHeight);
+    this.addManagedEventListeners({ bodyHeightChanged: this.updateOffset.bind(this) }), this.maxDivHeight = Lg(), mt(this.gos, "RowContainerHeightService - maxDivHeight = " + this.maxDivHeight);
   }
   updateOffset() {
     if (!this.stretching)
@@ -24419,7 +24419,7 @@ var dy = (
   calculateOffset() {
     this.setUiContainerHeight(this.maxDivHeight), this.pixelsToShave = this.modelHeight - this.uiContainerHeight, this.maxScrollY = this.uiContainerHeight - this.uiBodyHeight;
     const e = this.scrollY / this.maxScrollY, t = e * this.pixelsToShave;
-    ft(
+    mt(
       this.gos,
       `RowContainerHeightService - Div Stretch Offset = ${t} (${this.pixelsToShave} * ${e})`
     ), this.setDivStretchOffset(t);
@@ -25351,7 +25351,7 @@ var pc = {
     const { eventSvc: e, gos: t } = this;
     e.dispatchEvent({
       type: "gridReady"
-    }), ft(t, `initialised successfully, enterprise = ${t.isModuleRegistered("EnterpriseCore")}`);
+    }), mt(t, `initialised successfully, enterprise = ${t.isModuleRegistered("EnterpriseCore")}`);
   }
   setColumnDefs(e) {
     const t = this.gos.get("columnDefs");
@@ -27858,7 +27858,7 @@ var TR = {
           })
         );
       else {
-        const h = lt(d);
+        const h = dt(d);
         h && l.push(
           h.then((g) => {
             a(c, e(g), {
@@ -27890,7 +27890,7 @@ var TR = {
           })
         );
       else {
-        const r = lt(o);
+        const r = dt(o);
         r && i.push(
           r.then((a) => {
             this.setColFilterActive(
@@ -27953,7 +27953,7 @@ var TR = {
         this.allColumnFilters.forEach((o) => {
           var a, l, d;
           const { column: n, isHandler: r } = o;
-          s !== n.getColId() && (r && ((l = (a = o.handler).onAnyFilterChanged) == null || l.call(a)), (d = lt(o, r)) == null || d.then((c) => {
+          s !== n.getColId() && (r && ((l = (a = o.handler).onAnyFilterChanged) == null || l.call(a)), (d = dt(o, r)) == null || d.then((c) => {
             typeof (c == null ? void 0 : c.onAnyFilterChanged) == "function" && c.onAnyFilterChanged();
           }));
         }), this.processingFilterChange = !0;
@@ -27972,7 +27972,7 @@ var TR = {
       var n, r;
       const s = i.isHandler;
       s && ((r = (n = i.handler).onNewRowsLoaded) == null || r.call(n));
-      const o = lt(i, s);
+      const o = dt(i, s);
       o && t.push(
         o.then((a) => {
           var l;
@@ -28007,13 +28007,13 @@ var TR = {
   }
   getOrCreateFilterUi(e) {
     const t = this.getOrCreateFilterWrapper(e, !0);
-    return t ? lt(t) : null;
+    return t ? dt(t) : null;
   }
   getFilterUiForDisplay(e) {
     const t = this.getOrCreateFilterWrapper(e, !0);
     if (!t)
       return null;
-    const i = lt(t);
+    const i = dt(t);
     return i ? i.then((s) => ({
       comp: s,
       params: t.filterUi.filterParams,
@@ -28382,7 +28382,7 @@ var TR = {
       this.destroyFilterUi(i, o, g, p);
       return;
     }
-    i.filterUi.filterParams = f, (S = lt(i, h)) == null || S.then((P) => {
+    i.filterUi.filterParams = f, (S = dt(i, h)) == null || S.then((P) => {
       (P != null && P.refresh ? P.refresh(f) : !0) === !1 ? this.destroyFilterUi(i, o, g, p) : this.dispatchLocalEvent({
         type: "filterParamsChanged",
         column: o,
@@ -28515,7 +28515,7 @@ var TR = {
         this.refreshHandlerAndUi(n, t, "api").then(() => s());
         return;
       }
-      const o = lt(e);
+      const o = dt(e);
       if (o) {
         o.then((n) => {
           if (typeof (n == null ? void 0 : n.setModel) != "function") {
@@ -29155,7 +29155,7 @@ var Cr = class extends ff {
       n = this.areSimpleModelsEqual(r, a);
     } else {
       const r = e, a = t;
-      n = r.operator === a.operator && wt(
+      n = r.operator === a.operator && bt(
         r.conditions,
         a.conditions,
         (l, d) => this.areSimpleModelsEqual(l, d)
@@ -29842,13 +29842,13 @@ var Wa = 1e3, za = 1 / 0, WR = class extends Cr {
   getModelAsString(e, t) {
     const i = this.getLocaleTextFunc(), s = t === "filterToolPanel";
     if (!e)
-      return s ? ht(this, "filterSummaryInactive") : null;
+      return s ? gt(this, "filterSummaryInactive") : null;
     if (e.operator != null) {
       const n = e, a = (n.conditions ?? []).map((d) => this.getModelAsString(d, t)), l = n.operator === "AND" ? "andCondition" : "orCondition";
-      return a.join(` ${ht(this, l)} `);
+      return a.join(` ${gt(this, l)} `);
     } else {
       if (e.type === "blank" || e.type === "notBlank")
-        return s ? ht(this, e.type === "blank" ? "filterSummaryBlank" : "filterSummaryNotBlank") : i(e.type, e.type);
+        return s ? gt(this, e.type === "blank" ? "filterSummaryBlank" : "filterSummaryNotBlank") : i(e.type, e.type);
       {
         const n = e, r = this.optionsFactory.getCustomOption(n.type), { displayKey: a, displayName: l, numberOfInputs: d } = r || {};
         return a && l && d === 0 ? i(a, l) : this.conditionToString(
@@ -29868,7 +29868,7 @@ var Wa = 1e3, za = 1 / 0, WR = class extends Cr {
   conditionForToolPanel(e, t, i, s, o, n) {
     let r;
     const a = this.getTypeKey(e);
-    return a && (r = ht(this, a)), o && n && (r = this.getLocaleTextFunc()(o, n)), r != null ? t ? `${r} ${ht(this, "filterSummaryInRangeValues", [i(), s()])}` : `${r} ${i()}` : null;
+    return a && (r = gt(this, a)), o && n && (r = this.getLocaleTextFunc()(o, n)), r != null ? t ? `${r} ${gt(this, "filterSummaryInRangeValues", [i(), s()])}` : `${r} ${i()}` : null;
   }
   getTypeKey(e) {
     const t = this.filterTypeKeys[e];
@@ -30113,7 +30113,7 @@ var UR = class extends yc {
   setParams(e) {
     var h;
     const t = this.eDateInput.getInputElement(), i = this.shouldUseBrowserDatePicker(e);
-    this.usingSafariDatePicker = i && St();
+    this.usingSafariDatePicker = i && yt();
     const { minValidYear: s, maxValidYear: o, minValidDate: n, maxValidDate: r, buttons: a, includeTime: l, colDef: d } = e.filterParams || {}, c = this.beans.dataTypeSvc, u = l ?? ((h = c == null ? void 0 : c.getDateIncludesTimeFlag) == null ? void 0 : h.call(c, d.cellDataType)) ?? !1;
     if (i ? u ? (t.type = "datetime-local", t.step = "1") : t.type = "date" : t.type = "text", n && s && x(85), r && o && x(86), n && r) {
       const [g, p] = [n, r].map(
@@ -30482,7 +30482,7 @@ var ZR = {
   conditionToString(e, t, i, s, o) {
     const { filter: n, filterTo: r, type: a } = e;
     if (t) {
-      const l = (c) => () => ht(this, "filterSummaryTextQuote", [c]), d = this.conditionForToolPanel(
+      const l = (c) => () => gt(this, "filterSummaryTextQuote", [c]), d = this.conditionForToolPanel(
         a,
         i,
         l(n),
@@ -31273,7 +31273,7 @@ var dF = class extends F {
     const e = this.getLocaleTextFunc(), t = this.eEditor;
     if (t.setInputAriaLabel(e("ariaInputEditor", "Input Editor")), !this.focusAfterAttached)
       return;
-    St() || t.getFocusableElement().focus();
+    yt() || t.getFocusableElement().focus();
     const i = t.getInputElement();
     this.highlightAllOnFocus ? i.select() : (o = (s = this.cellEditorInput).setCaret) == null || o.call(s);
   }
@@ -31537,7 +31537,7 @@ var dF = class extends F {
     return this.params.value;
   }
   setCaret() {
-    St() && this.eEditor.getInputElement().focus({ preventScroll: !0 });
+    yt() && this.eEditor.getInputElement().focus({ preventScroll: !0 });
   }
 }, HF = class extends fo {
   constructor() {
@@ -31642,7 +31642,7 @@ var dF = class extends F {
     return e.useFormatter || e.column.getColDef().refData ? e.formatValue(e.value) : e.value;
   }
   setCaret() {
-    St() && this.eEditor.getInputElement().focus({ preventScroll: !0 });
+    yt() && this.eEditor.getInputElement().focus({ preventScroll: !0 });
     const e = this.eEditor, t = e.getValue(), i = A(t) && t.length || 0;
     i && e.getInputElement().setSelectionRange(i, i);
   }
@@ -32649,7 +32649,7 @@ var Nc = class extends F {
   destroy() {
     super.destroy(), this.rowNode = void 0, this.column = void 0;
   }
-}, yt = {
+}, Rt = {
   moduleName: "EditCore",
   version: I,
   beans: [RS, fP],
@@ -32678,12 +32678,12 @@ var Nc = class extends F {
     getCurrentUndoSize: JF,
     getCurrentRedoSize: XF
   },
-  dependsOn: [yt]
+  dependsOn: [Rt]
 }, bP = {
   moduleName: "TextEditor",
   version: I,
   userComponents: { agCellEditor: Ua, agTextCellEditor: Ua },
-  dependsOn: [yt]
+  dependsOn: [Rt]
 }, SP = {
   moduleName: "NumberEditor",
   version: I,
@@ -32692,7 +32692,7 @@ var Nc = class extends F {
       classImp: HF
     }
   },
-  dependsOn: [yt]
+  dependsOn: [Rt]
 }, yP = {
   moduleName: "DateEditor",
   version: I,
@@ -32700,28 +32700,28 @@ var Nc = class extends F {
     agDateCellEditor: DF,
     agDateStringCellEditor: AF
   },
-  dependsOn: [yt]
+  dependsOn: [Rt]
 }, RP = {
   moduleName: "CheckboxEditor",
   version: I,
   userComponents: {
     agCheckboxCellEditor: PF
   },
-  dependsOn: [yt]
+  dependsOn: [Rt]
 }, FP = {
   moduleName: "SelectEditor",
   version: I,
   userComponents: { agSelectCellEditor: BF },
-  dependsOn: [yt]
+  dependsOn: [Rt]
 }, PP = {
   moduleName: "LargeTextEditor",
   version: I,
   userComponents: { agLargeTextCellEditor: kF },
-  dependsOn: [yt]
+  dependsOn: [Rt]
 }, EP = {
   moduleName: "CustomEditor",
   version: I,
-  dependsOn: [yt]
+  dependsOn: [Rt]
 }, xP = class extends F {
   constructor() {
     super(...arguments), this.beanName = "selectionColSvc";
@@ -32757,7 +32757,7 @@ var Nc = class extends F {
     }, t((p) => {
       if (!p)
         return null;
-      const f = p.filter((m) => !bt(m));
+      const f = p.filter((m) => !St(m));
       return [...r, ...f];
     });
   }
@@ -33791,7 +33791,7 @@ var jP = {
       for (let c = l; c <= d; c++) {
         const u = this.getRow(c);
         if (u.rowHeightEstimated) {
-          const h = mt(this.beans, u);
+          const h = Ct(this.beans, u);
           u.setRowHeight(h.height), o = !0, n = !0;
         }
       }
@@ -33835,7 +33835,7 @@ var jP = {
     for (let r = 0, a = t.length; r < a; ++r) {
       const l = t[r];
       if (l.id != null && o.add(l.id), l.rowHeight == null) {
-        const d = mt(e, l, n, i);
+        const d = Ct(e, l, n, i);
         l.setRowHeight(d.height, d.estimated);
       }
       l.setRowTop(s), l.setRowIndex(r), s += l.rowHeight;
@@ -34483,7 +34483,7 @@ var pE = {
     };
   }
   getColumnsToExport(e) {
-    const { allColumns: t = !1, skipRowGroups: i = !1, exportRowNumbers: s = !1, columnKeys: o } = e, { colModel: n, gos: r, visibleCols: a } = this, l = n.isPivotMode(), d = (h) => bt(h) ? !1 : !gt(h) || s;
+    const { allColumns: t = !1, skipRowGroups: i = !1, exportRowNumbers: s = !1, columnKeys: o } = e, { colModel: n, gos: r, visibleCols: a } = this, l = n.isPivotMode(), d = (h) => St(h) ? !1 : !pt(h) || s;
     if (o && o.length)
       return n.getColsForKeys(o).filter(d);
     const c = r.get("treeData");
@@ -34811,7 +34811,7 @@ var yE = {
   }
   // block calls this, when page loaded
   pageLoaded(e, t) {
-    this.isAlive() && (ft(this.gos, `InfiniteCache - onPageLoaded: page = ${e.id}, lastRow = ${t}`), this.checkRowCount(e, t), this.onCacheUpdated());
+    this.isAlive() && (mt(this.gos, `InfiniteCache - onPageLoaded: page = ${e.id}, lastRow = ${t}`), this.checkRowCount(e, t), this.onCacheUpdated());
   }
   purgeBlocksIfNeeded(e) {
     const t = this.getBlocksInOrder().filter((r) => r != e), i = (r, a) => a.lastAccessed - r.lastAccessed;
@@ -35111,7 +35111,7 @@ var ME = class extends F {
     if (!this.active)
       return;
     if (this.printCacheStatus(), this.maxConcurrentRequests != null && this.activeBlockLoadsCount >= this.maxConcurrentRequests) {
-      ft(this.gos, "RowNodeBlockLoader - checkBlockToLoad: max loads exceeded");
+      mt(this.gos, "RowNodeBlockLoader - checkBlockToLoad: max loads exceeded");
       return;
     }
     const e = this.maxConcurrentRequests != null ? this.maxConcurrentRequests - this.activeBlockLoadsCount : 1, t = this.blocks.filter((i) => i.state === "needsLoading").slice(0, e);
@@ -35125,7 +35125,7 @@ var ME = class extends F {
     }), e;
   }
   printCacheStatus() {
-    ft(
+    mt(
       this.gos,
       `RowNodeBlockLoader - printCacheStatus: activePageLoadsCount = ${this.activeBlockLoadsCount}, blocks = ${JSON.stringify(this.getBlockState())}`
     );
@@ -35949,7 +35949,7 @@ var nx = class extends F {
       x(94, { pageSizeSet: o, pageSizesSet: n, pageSizeOptions: e, paginationPageSizeOption: t }), n || x(95, { paginationPageSizeOption: t, paginationPageSizeSelector: Di }), e.unshift("");
     }
     const s = String(i ? "" : t);
-    this.selectPageSizeComp ? (wt(this.pageSizeOptions, e) || (this.selectPageSizeComp.clearOptions().addOptions(this.createPageSizeSelectOptions(e)), this.pageSizeOptions = e), this.selectPageSizeComp.setValue(s, !0)) : this.createPageSizeSelectorComp(e, s), this.hasEmptyOption = i;
+    this.selectPageSizeComp ? (bt(this.pageSizeOptions, e) || (this.selectPageSizeComp.clearOptions().addOptions(this.createPageSizeSelectOptions(e)), this.pageSizeOptions = e), this.selectPageSizeComp.setValue(s, !0)) : this.createPageSizeSelectorComp(e, s), this.hasEmptyOption = i;
   }
   createPageSizeSelectOptions(e) {
     return e.map((t) => ({
@@ -37443,7 +37443,7 @@ var uD = {
     const r = (u) => {
       var p;
       const h = u.__autoHeights;
-      let g = mt(this.beans, u).height;
+      let g = Ct(this.beans, u).height;
       for (const f of o) {
         let m = h == null ? void 0 : h[f.getColId()];
         const C = i == null ? void 0 : i.getCellSpan(f, u);
@@ -37528,7 +37528,7 @@ var uD = {
       this.setRowAutoHeight(o, C, n);
     }, l = () => a(0);
     l();
-    const d = vt(r, t, l);
+    const d = wt(r, t, l);
     return i.addDestroyFunc(() => {
       d(), this.setRowAutoHeight(o, void 0, n);
     }), !0;
@@ -38756,7 +38756,8 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
       { field: "avgPrice", label: "Avg Price" },
       { field: "price", label: "Market Price" },
       { field: "market_value", label: "Market Value" },
-      { field: "unrealized_pnl", label: "Unrealized P&L" }
+      { field: "unrealized_pnl", label: "Unrealized P&L" },
+      { field: "cash_flow_on_entry", label: "Cash Flow on Entry" }
     ];
     function r() {
       const E = new URL(window.location.href).searchParams.get("position_cols");
@@ -38808,7 +38809,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
         hide: !u("symbol"),
         cellRenderer: (R) => Si(R.value),
         onCellClicked: (R) => {
-          const E = rt(R);
+          const E = at(R);
           E && S("symbol", E);
         }
       },
@@ -38853,7 +38854,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
         width: 120,
         type: "rightAligned",
         hide: !u("avgPrice"),
-        valueFormatter: (R) => Ft(R.value)
+        valueFormatter: (R) => nt(R.value)
       },
       {
         field: "price",
@@ -38861,7 +38862,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
         width: 130,
         type: "rightAligned",
         hide: !u("price"),
-        valueFormatter: (R) => Ft(R.value)
+        valueFormatter: (R) => nt(R.value)
       },
       {
         field: "market_value",
@@ -38869,7 +38870,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
         width: 140,
         type: "rightAligned",
         hide: !u("market_value"),
-        valueFormatter: (R) => Ft(R.value)
+        valueFormatter: (R) => nt(R.value)
       },
       {
         field: "unrealized_pnl",
@@ -38877,14 +38878,27 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
         width: 150,
         type: "rightAligned",
         hide: !u("unrealized_pnl"),
-        valueFormatter: (R) => Ft(R.value),
+        valueFormatter: (R) => nt(R.value),
+        cellClassRules: {
+          "pnl-positive": (R) => R.value > 0,
+          "pnl-negative": (R) => R.value < 0,
+          "pnl-zero": (R) => R.value === 0
+        }
+      },
+      {
+        field: "cash_flow_on_entry",
+        headerName: "Cash Flow on Entry",
+        width: 160,
+        type: "rightAligned",
+        hide: !u("cash_flow_on_entry"),
+        valueFormatter: (R) => nt(R.value),
         cellClassRules: {
           "pnl-positive": (R) => R.value > 0,
           "pnl-negative": (R) => R.value < 0,
           "pnl-zero": (R) => R.value === 0
         }
       }
-    ]), p = le(null), f = le(null), m = le([]), C = ["qty", "avgPrice", "price", "market_value", "unrealized_pnl"], v = le([]);
+    ]), p = le(null), f = le(null), m = le([]), C = ["qty", "avgPrice", "price", "market_value", "unrealized_pnl", "cash_flow_on_entry"], v = le([]);
     function b() {
       var k;
       const R = p.value, E = [];
@@ -38906,7 +38920,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
     }
     function y(R) {
       if (!R) return [];
-      const E = String(R), k = E.match(/^([A-Z]+)\b/), O = (k == null ? void 0 : k[1]) ?? "", B = E.match(/\s([CP])\b/), z = (B == null ? void 0 : B[1]) ?? "", X = E.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), oe = (X == null ? void 0 : X[1]) ?? "", Ge = E.match(/\b(\d{6})[CP]/), Pt = Ge ? nt(Ge[1]) : "";
+      const E = String(R), k = E.match(/^([A-Z]+)\b/), O = (k == null ? void 0 : k[1]) ?? "", B = E.match(/\s([CP])\b/), z = (B == null ? void 0 : B[1]) ?? "", X = E.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), oe = (X == null ? void 0 : X[1]) ?? "", Ge = E.match(/\b(\d{6})[CP]/), Pt = Ge ? rt(Ge[1]) : "";
       return [O, Pt, oe, z].filter(Boolean);
     }
     function S(R, E) {
@@ -38974,7 +38988,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
     function ye(R) {
       R.key === "Escape" && _();
     }
-    function Rt() {
+    function Ft() {
       const R = p.value;
       if (!R) return;
       const E = l();
@@ -38983,7 +38997,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
       E.asset_class && (k.asset_class = { type: "equals", filter: E.asset_class }), E.legal_entity && (k.legal_entity = { type: "equals", filter: E.legal_entity }), typeof R.setFilterModel == "function" && R.setFilterModel(k), typeof R.onFilterChanged == "function" && R.onFilterChanged(), b(), Re();
     }
     Qa(() => {
-      window.addEventListener("click", ie), window.addEventListener("keydown", ye), window.addEventListener("popstate", Rt), ae == null || ae.on("client-id-changed", as);
+      window.addEventListener("click", ie), window.addEventListener("keydown", ye), window.addEventListener("popstate", Ft), ae == null || ae.on("client-id-changed", as);
     });
     const ae = du("eventBus");
     function as(R) {
@@ -38998,7 +39012,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
       R.clientId ? k.legal_entity = { type: "equals", filter: R.clientId } : delete k.legal_entity, typeof E.setFilterModel == "function" && E.setFilterModel(k), typeof E.onFilterChanged == "function" && E.onFilterChanged(), b(), Re(), d(k);
     }
     cu(() => {
-      o._cleanup && o._cleanup(), window.removeEventListener("click", ie), window.removeEventListener("keydown", ye), window.removeEventListener("popstate", Rt), ae == null || ae.off("client-id-changed", as);
+      o._cleanup && o._cleanup(), window.removeEventListener("click", ie), window.removeEventListener("keydown", ye), window.removeEventListener("popstate", Ft), ae == null || ae.off("client-id-changed", as);
     });
     function Re() {
       const R = p.value;
@@ -39055,7 +39069,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
     function ds(R) {
       s("row-click", R), i.onRowClick && i.onRowClick(R);
     }
-    function Ft(R) {
+    function nt(R) {
       return R == null ? "$0.00" : new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -39066,7 +39080,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
     function se(R) {
       return R == null ? "0" : new Intl.NumberFormat("en-US").format(R);
     }
-    function nt(R) {
+    function rt(R) {
       if (!/^[0-9]{6}$/.test(R)) return "";
       const E = Number(R.slice(0, 2)), k = Number(R.slice(2, 4)), O = Number(R.slice(4, 6)), B = 2e3 + E;
       return `${["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][k - 1 >= 0 && k - 1 < 12 ? k - 1 : 0]}-${String(O).padStart(2, "0")}-${B}`;
@@ -39074,7 +39088,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
     function Si(R) {
       const E = String(R ?? "");
       if (!E) return "";
-      const k = E.match(/^([A-Z]+)\b/), O = (k == null ? void 0 : k[1]) ?? "", B = E.match(/\s([CP])\b/), z = (B == null ? void 0 : B[1]) ?? "", X = E.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), oe = (X == null ? void 0 : X[1]) ?? "", Ge = E.match(/\b(\d{6})[CP]/), Pt = Ge ? nt(Ge[1]) : "", us = (Rr, Zc = "") => {
+      const k = E.match(/^([A-Z]+)\b/), O = (k == null ? void 0 : k[1]) ?? "", B = E.match(/\s([CP])\b/), z = (B == null ? void 0 : B[1]) ?? "", X = E.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), oe = (X == null ? void 0 : X[1]) ?? "", Ge = E.match(/\b(\d{6})[CP]/), Pt = Ge ? rt(Ge[1]) : "", us = (Rr, Zc = "") => {
         const Jc = h.value.includes(Rr) ? "fi-tag-selected" : "";
         return `<span class="fi-tag fi-tag-click ${Zc} ${Jc}">${Rr}</span>`;
       };
@@ -39085,7 +39099,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
         z && us(z, "fi-tag-right")
       ].filter(Boolean).join(" ");
     }
-    function rt(R) {
+    function at(R) {
       var B;
       const E = (B = R == null ? void 0 : R.event) == null ? void 0 : B.target;
       if (!E) return null;
@@ -39107,13 +39121,13 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
       var O;
       const k = uu("router-link");
       return Fe(), Ie("section", ED, [
-        at(o).isLoading.value ? (Fe(), Ie("div", xD, [...E[5] || (E[5] = [
+        lt(o).isLoading.value ? (Fe(), Ie("div", xD, [...E[5] || (E[5] = [
           j("div", { class: "loading-spinner" }, null, -1),
           Co(" Loading positions... ", -1)
-        ])])) : at(o).isError.value ? (Fe(), Ie("div", DD, [
+        ])])) : lt(o).isError.value ? (Fe(), Ie("div", DD, [
           E[6] || (E[6] = j("h3", null, "Error loading positions", -1)),
-          j("p", null, yi(at(o).error.value), 1)
-        ])) : at(o).isSuccess.value ? (Fe(), Ie("div", TD, [
+          j("p", null, yi(lt(o).error.value), 1)
+        ])) : lt(o).isSuccess.value ? (Fe(), Ie("div", TD, [
           j("div", MD, [
             j("h2", null, [
               e.showHeaderLink ? (Fe(), hu(k, {
@@ -39127,7 +39141,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
               })) : (Fe(), Ie("span", AD, "Positions:"))
             ]),
             j("div", ID, [
-              j("div", kD, yi(((O = at(o).data.value) == null ? void 0 : O.length) || 0) + " positions", 1),
+              j("div", kD, yi(((O = lt(o).data.value) == null ? void 0 : O.length) || 0) + " positions", 1),
               j("button", {
                 ref_key: "columnsBtnRef",
                 ref: H,
@@ -39212,10 +39226,10 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
             ])
           ])) : mo("", !0),
           j("div", ND, [
-            Za(at(PD), {
+            Za(lt(PD), {
               columnDefs: g.value,
-              rowData: at(o).data.value || [],
-              modules: [at(fD)],
+              rowData: lt(o).data.value || [],
+              modules: [lt(fD)],
               defaultColDef: {
                 sortable: !0,
                 filter: !0,
@@ -39245,7 +39259,7 @@ const FD = { ref: "root" }, PD = /* @__PURE__ */ kn({
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, jD = /* @__PURE__ */ zD(WD, [["__scopeId", "data-v-c26abe8e"]]);
+}, jD = /* @__PURE__ */ zD(WD, [["__scopeId", "data-v-7499b81e"]]);
 export {
   jD as Positions,
   jD as default

@@ -23,7 +23,7 @@ const emit = defineEmits<{
 const q = usePositionsQuery(props.accountId)
 
 // Column metadata for visibility control
-type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl'
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'symbol', label: 'Symbol' },
@@ -35,7 +35,8 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'avgPrice', label: 'Avg Price' },
   { field: 'price', label: 'Market Price' },
   { field: 'market_value', label: 'Market Value' },
-  { field: 'unrealized_pnl', label: 'Unrealized P&L' }
+  { field: 'unrealized_pnl', label: 'Unrealized P&L' },
+  { field: 'cash_flow_on_entry', label: 'Cash Flow on Entry' }
 ]
 
 // URL param helpers
@@ -191,6 +192,19 @@ const columnDefs = computed<ColDef[]>(() => [
       'pnl-negative': (params: any) => params.value < 0,
       'pnl-zero': (params: any) => params.value === 0
     }
+  },
+  { 
+    field: 'cash_flow_on_entry', 
+    headerName: 'Cash Flow on Entry',
+    width: 160,
+    type: 'rightAligned',
+    hide: !isColVisible('cash_flow_on_entry'),
+    valueFormatter: (params: any) => formatCurrency(params.value),
+    cellClassRules: {
+      'pnl-positive': (params: any) => params.value > 0,
+      'pnl-negative': (params: any) => params.value < 0,
+      'pnl-zero': (params: any) => params.value === 0
+    }
   }
 ])
 
@@ -198,7 +212,7 @@ const columnDefs = computed<ColDef[]>(() => [
 const gridApi = ref<any | null>(null)
 const columnApiRef = ref<any | null>(null)
 const pinnedBottomRowDataRef = ref<any[]>([])
-const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl'] as const
+const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'cash_flow_on_entry'] as const
 
 // Active filters tracking for tag UI
 type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity'; value: string }
