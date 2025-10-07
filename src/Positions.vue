@@ -5,7 +5,8 @@ import { AllCommunityModule } from 'ag-grid-community'
 import type { ColDef } from 'ag-grid-community'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
-import { usePositionsQuery, type Position } from '@y2kfund/core'
+import { usePositionsQuery, useThesisQuery, type Position, type Thesis, useSupabase } from '@y2kfund/core'
+import { useQueryClient } from '@tanstack/vue-query'
 import type { PositionsProps } from './index'
 
 const props = withDefaults(defineProps<PositionsProps>(), {
@@ -22,10 +23,29 @@ const emit = defineEmits<{
 // Query positions data with realtime updates
 const q = usePositionsQuery(props.accountId)
 
+// Query thesis data for dropdowns
+const thesisQuery = useThesisQuery()
+
+// Add debugging for thesis data
+watch(() => thesisQuery.data.value, (thesisData) => {
+  console.log('📊 Thesis data updated:', thesisData)
+}, { immediate: true })
+
+watch(() => thesisQuery.isLoading.value, (isLoading) => {
+  console.log('📊 Thesis loading state:', isLoading)
+}, { immediate: true })
+
+watch(() => thesisQuery.error.value, (error) => {
+  if (error) {
+    console.error('📊 Thesis query error:', error)
+  }
+}, { immediate: true })
+
 // Column metadata for visibility control
-type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry' | 'cash_flow_on_exercise'
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
+  { field: 'thesis', label: 'Thesis' },
   { field: 'symbol', label: 'Symbol' },
   { field: 'asset_class', label: 'Asset Class' },
   { field: 'conid', label: 'Conid' },
@@ -98,15 +118,200 @@ function isColVisible(field: ColumnField): boolean {
 // Symbol tag filters for exact tag matching (supports multiple tags)
 const symbolTagFilters = ref<string[]>([])
 
-// Column definitions for ag-grid (hide based on visibleCols)
+// Custom cell renderers
+const thesisCellRenderer = (params: any) => {
+  const thesis = params.value
+  if (!thesis) return '<span style="color: #6c757d; font-style: italic;">No thesis</span>'
+  return `<span title="${thesis.description || ''}">${thesis.title}</span>`
+}
+
+// Thesis cell editor as a proper ag-grid component class
+class ThesisCellEditor {
+  private eGui!: HTMLElement
+  private eSelect!: HTMLSelectElement
+  private currentValue: any = null
+  private params: any
+
+  init(params: any) {
+    console.log('📝 Initializing thesis cell editor with value:', params.value)
+    
+    this.params = params
+    this.currentValue = params.value
+
+    // Create the select element
+    this.eSelect = document.createElement('select')
+    this.eSelect.style.width = '100%'
+    this.eSelect.style.height = '100%'
+    this.eSelect.style.border = 'none'
+    this.eSelect.style.outline = 'none'
+    this.eSelect.style.fontSize = '14px'
+
+    // Add options
+    const noThesisOption = document.createElement('option')
+    noThesisOption.value = ''
+    noThesisOption.textContent = 'No thesis'
+    this.eSelect.appendChild(noThesisOption)
+
+    // Get thesis options from cell editor params
+    const thesisOptions = params.thesisOptions || []
+    console.log('📊 Available thesis options:', thesisOptions)
+    
+    thesisOptions.forEach((thesis: Thesis) => {
+      const option = document.createElement('option')
+      option.value = thesis.id
+      option.textContent = thesis.title
+      if (this.currentValue && this.currentValue.id === thesis.id) {
+        option.selected = true
+      }
+      this.eSelect.appendChild(option)
+    })
+
+    // Set initial value
+    if (this.currentValue) {
+      this.eSelect.value = this.currentValue.id || ''
+    }
+
+    // Create container
+    this.eGui = document.createElement('div')
+    this.eGui.style.width = '100%'
+    this.eGui.style.height = '100%'
+    this.eGui.appendChild(this.eSelect)
+
+    // Handle value changes - UPDATE IMMEDIATELY
+    this.eSelect.addEventListener('change', async () => {
+      const selectedId = this.eSelect.value
+      const oldValue = this.currentValue
+      
+      if (selectedId) {
+        this.currentValue = thesisOptions.find((t: Thesis) => t.id === selectedId) || null
+      } else {
+        this.currentValue = null
+      }
+      
+      console.log('📝 Thesis selection changed to:', this.currentValue)
+      
+      // Get position ID from the row data
+      const positionId = this.params.data?.id
+      if (!positionId) {
+        console.error('No position ID found in row data:', this.params.data)
+        return
+      }
+      
+      // Call update function immediately
+      try {
+        console.log('🚀 Updating thesis immediately for position:', positionId)
+        await updatePositionThesis(String(positionId), this.currentValue?.id || null)
+        
+        // Update the local data
+        this.params.data.thesis = this.currentValue
+        
+        // Refresh the cell to show the updated value
+        if (this.params.api && typeof this.params.api.refreshCells === 'function') {
+          this.params.api.refreshCells({ 
+            rowNodes: [this.params.node],
+            columns: ['thesis']
+          })
+        }
+        
+        // Stop editing after successful update
+        this.params.stopEditing()
+        
+      } catch (error) {
+        console.error('❌ Failed to update thesis, reverting selection:', error)
+        
+        // Revert the selection on error
+        this.currentValue = oldValue
+        if (oldValue) {
+          this.eSelect.value = oldValue.id || ''
+        } else {
+          this.eSelect.value = ''
+        }
+      }
+    })
+
+    // Handle keydown events
+    this.eSelect.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        this.params.stopEditing()
+      } else if (event.key === 'Escape') {
+        this.params.stopEditing(true) // Cancel editing
+      }
+    })
+  }
+
+  getGui() {
+    return this.eGui
+  }
+
+  getValue() {
+    console.log('📝 Getting thesis editor value:', this.currentValue)
+    return this.currentValue
+  }
+
+  afterGuiAttached() {
+    console.log('📝 Thesis editor attached, focusing select')
+    if (this.eSelect) {
+      this.eSelect.focus()
+      // Open the dropdown automatically
+      setTimeout(() => {
+        if (this.eSelect.showPicker) {
+          this.eSelect.showPicker()
+        } else {
+          // Fallback for browsers that don't support showPicker
+          this.eSelect.click()
+        }
+      }, 0)
+    }
+  }
+
+  isCancelBeforeStart() {
+    return false
+  }
+
+  isCancelAfterEnd() {
+    return false
+  }
+
+  destroy() {
+    console.log('📝 Destroying thesis editor')
+    // Cleanup if needed
+  }
+}
+
+// Move these outside the function to be available in component scope
+const supabase = useSupabase()
+const queryClient = useQueryClient()
+
+// Column definitions for ag-grid
 const columnDefs = computed<ColDef[]>(() => [
   { 
-    field: 'legal_entity', 
+    field: 'legal_entity',
     headerName: 'Account',
     width: 160,
     pinned: 'left' as const,
     hide: !isColVisible('legal_entity'),
     onCellClicked: (event: any) => handleCellFilterClick('legal_entity', event?.value)
+  },
+  { 
+    field: 'thesis',
+    headerName: 'Thesis',
+    width: 180,
+    hide: !isColVisible('thesis'),
+    cellRenderer: thesisCellRenderer,
+    cellEditor: ThesisCellEditor,
+    editable: true,
+    cellEditorParams: {
+      // Pass thesis options to the cell editor
+      thesisOptions: thesisQuery.data.value || []
+    },
+    // Remove onCellValueChanged since we're handling updates in the editor
+    valueGetter: (params: any) => params.data.thesis,
+    valueSetter: (params: any) => {
+      // Just update the local data, updates are handled in the editor
+      params.data.thesis = params.newValue
+      return true
+    },
+    getQuickFilterText: (params: any) => params.value?.title || ''
   },
   { 
     field: 'symbol', 
@@ -116,9 +321,15 @@ const columnDefs = computed<ColDef[]>(() => [
     hide: !isColVisible('symbol'),
     cellRenderer: (params: any) => renderFinancialInstrumentCell(params.value),
     onCellClicked: (event: any) => {
-      const clicked = extractClickedTagText(event)
-      if (clicked) {
-        handleCellFilterClick('symbol', clicked)
+      const clickedTag = extractClickedTagText(event)
+      if (clickedTag) {
+        // Handle tag click for filtering
+        const currentTags = symbolTagFilters.value
+        if (currentTags.includes(clickedTag)) {
+          symbolTagFilters.value = currentTags.filter(t => t !== clickedTag)
+        } else {
+          symbolTagFilters.value = [...currentTags, clickedTag]
+        }
       }
     }
   },
@@ -710,10 +921,115 @@ function doesExternalFilterPass(node: any): boolean {
   // Row passes if it contains ALL selected tags (AND logic)
   return symbolTagFilters.value.every(filter => tags.includes(filter))
 }
+
+// Function to update position thesis assignment
+async function updatePositionThesis(positionId: string, thesisId: string | null) {
+  console.log('📝 Updating position thesis:', { positionId, thesisId })
+  
+  try {
+    // First, verify the position exists
+    const { data: existingPosition, error: checkError } = await supabase
+      .schema('hf')
+      .from('positions')
+      .select('id, symbol')
+      .eq('id', positionId)
+      .single()
+    
+    if (checkError) {
+      console.error('❌ Position not found:', checkError)
+      throw new Error(`Position not found: ${checkError.message}`)
+    }
+    
+    console.log('✅ Found position:', existingPosition)
+    
+    // Update the thesis assignment
+    const { error } = await supabase
+      .schema('hf')
+      .from('positions')
+      .update({ thesis_id: thesisId })
+      .eq('id', positionId)
+    
+    if (error) {
+      console.error('❌ Failed to update position thesis:', error)
+      throw new Error(`Failed to update thesis: ${error.message}`)
+    } else {
+      console.log('✅ Position thesis updated successfully')
+      
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['positions'] })
+      queryClient.invalidateQueries({ queryKey: ['thesis'] })
+    }
+  } catch (err) {
+    console.error('❌ Error updating position thesis:', err)
+    throw err // Re-throw to handle in the editor
+  }
+}
+
+// Grouping state
+const groupByThesis = ref(false)
+
+// Grouping functions
+function toggleGroupByThesis() {
+  groupByThesis.value = !groupByThesis.value
+  if (gridApi.value) {
+    if (groupByThesis.value) {
+      gridApi.value.setColumnDefs([
+        { field: 'thesis', headerName: 'Thesis', rowGroup: true, hide: true },
+        ...columnDefs.value.filter(col => col.field !== 'thesis')
+      ])
+    } else {
+      gridApi.value.setColumnDefs(columnDefs.value)
+    }
+  }
+}
+
+// Thesis management
+const showThesisModal = ref(false)
+const newThesis = ref({ title: '', description: '' })
+
+async function addNewThesis() {
+  if (!newThesis.value.title.trim()) {
+    alert('Please enter a thesis title')
+    return
+  }
+  
+  console.log('📝 Adding new thesis:', newThesis.value)
+  
+  try {
+    const { data, error } = await supabase
+      .schema('hf')
+      .from('thesis')
+      .insert([{
+        title: newThesis.value.title.trim(),
+        description: newThesis.value.description.trim() || null
+      }])
+      .select()
+    
+    if (error) {
+      console.error('❌ Failed to add thesis:', error)
+      alert(`Failed to add thesis: ${error.message}`)
+    } else {
+      console.log('✅ Thesis added successfully:', data)
+      
+      // Refresh thesis data
+      queryClient.invalidateQueries({ queryKey: ['thesis'] })
+      
+      // Reset form and close modal
+      newThesis.value = { title: '', description: '' }
+      showThesisModal.value = false
+      
+      alert('Thesis added successfully!')
+    }
+  } catch (err) {
+    console.error('❌ Error adding thesis:', err)
+    alert('An unexpected error occurred while adding the thesis')
+  }
+}
+
 </script>
 
 <template>
-  <section class="positions-card">
+  <div class="positions-card">
     <!-- Loading state -->
     <div v-if="q.isLoading.value" class="loading">
       <div class="loading-spinner"></div>
@@ -735,11 +1051,28 @@ function doesExternalFilterPass(node: any): boolean {
         </h2>
         <div class="positions-tools">
           <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
+          
+          <!-- Group by thesis toggle -->
+          <button 
+            class="group-btn"
+            :class="{ active: groupByThesis }"
+            @click="toggleGroupByThesis" 
+            title="Group by thesis"
+          >
+            <span class="icon">📊</span> Group by Thesis
+          </button>
+          
+          <!-- Add thesis button -->
+          <button class="thesis-btn" @click="showThesisModal = true" title="Add new thesis">
+            <span class="icon">+</span> Add Thesis
+          </button>
+          
           <button ref="columnsBtnRef" class="columns-btn" aria-label="Column settings" @click.stop="toggleColumnsPopup">
             <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-              <path fill="currentColor" d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.21-.37-.3-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.03-.22-.22-.39-.44-.39h-3.84c-.22 0-.41.16-.44.39l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.09-.47 0-.59.22l-1.92 3.32c-.12.21-.07.47.12.61l2.03 1.58c.04.31.06.63.06.94s-.02.63-.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.21.37.3.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.03.22.22.39.44.39h3.84c.22 0 .41-.16.44-.39l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.09.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.03-1.58ZM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5Z"/>
+              <path fill="currentColor" d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.21-.37-.3-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.03-.22-.22-.39-.44-.39h-3.84c-.22 0-.41.16-.44.39l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.09-.47 0-.59.22l-1.92 3.32c-.12.21-.07.47.12.61l2.03 1.58c.04.31.06.63.06.94s-.02.63-.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.21.37.3.59.22l2.39.96c.5.38 1.03.7 1.62.94l.36 2.54c.03.22.22.39.44.39h3.84c.22 0 .41-.16.44-.39l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.09.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.03-1.58ZM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5Z"/>
             </svg>
           </button>
+          
           <button 
             @click="emit('minimize')"
             class="minimize-button"
@@ -747,6 +1080,7 @@ function doesExternalFilterPass(node: any): boolean {
           >
             −
           </button>
+          
           <div v-if="showColumnsPopup" ref="columnsPopupRef" class="columns-popup" @click.stop>
             <div class="popup-header">Columns</div>
             <div class="popup-list">
@@ -801,7 +1135,49 @@ function doesExternalFilterPass(node: any): boolean {
         />
       </div>
     </div>
-  </section>
+
+    <!-- Thesis Modal -->
+    <div v-if="showThesisModal" class="modal-overlay" @click="showThesisModal = false">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3>Add New Thesis</h3>
+          <button class="modal-close" @click="showThesisModal = false">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="thesis-title">Title *</label>
+            <input 
+              id="thesis-title"
+              v-model="newThesis.title" 
+              type="text" 
+              placeholder="Enter thesis title"
+              maxlength="100"
+            />
+          </div>
+          <div class="form-group">
+            <label for="thesis-description">Description</label>
+            <textarea 
+              id="thesis-description"
+              v-model="newThesis.description" 
+              placeholder="Enter thesis description (optional)"
+              rows="3"
+              maxlength="500"
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-cancel" @click="showThesisModal = false">Cancel</button>
+          <button 
+            class="btn btn-primary" 
+            @click="addNewThesis"
+            :disabled="!newThesis.title.trim()"
+          >
+            Add Thesis
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -850,6 +1226,35 @@ h1 {
   align-items: center;
   gap: 0.5rem;
   position: relative;
+}
+
+.group-btn, .thesis-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.group-btn:hover, .thesis-btn:hover {
+  background: #f8f9fa;
+}
+
+.group-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.group-btn .icon, .thesis-btn .icon {
+  pointer-events: none;
+  font-size: 12px;
 }
 
 .columns-btn {
@@ -1165,6 +1570,151 @@ h1 {
   .positions-grid {
     height: 300px;
   }
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel {
+  background: white;
+  color: #6c757d;
+}
+
+.btn-cancel:hover {
+  background: #f8f9fa;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+.btn-primary:disabled {
+  background: #6c757d;
+  border-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* ag-Grid grouping styles */
+::deep(.ag-theme-alpine .ag-row-group) {
+  font-weight: 600;
+  background-color: #f8f9fa;
+}
+
+::deep(.ag-theme-alpine .ag-group-expanded) {
+  color: #007bff;
+}
+
+::deep(.ag-theme-alpine .ag-group-contracted) {
+  color: #6c757d;
 }
 </style>
 
