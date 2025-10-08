@@ -983,9 +983,54 @@ function toggleGroupByThesis() {
   }
 }
 
-// Thesis management
+// Thesis management - UPDATE THIS SECTION
 const showThesisModal = ref(false)
 const newThesis = ref({ title: '', description: '' })
+const thesisModalMode = ref<'add' | 'view'>('add') // Track modal mode
+
+// Function to show thesis modal in different modes
+function showThesisModalForAdd() {
+  thesisModalMode.value = 'add'
+  newThesis.value = { title: '', description: '' }
+  showThesisModal.value = true
+}
+
+function showThesisModalForView() {
+  thesisModalMode.value = 'view'
+  showThesisModal.value = true
+}
+
+async function deleteThesis(thesisId: string, thesisTitle: string) {
+  if (!confirm(`Are you sure you want to delete the thesis "${thesisTitle}"?\n\nThis action cannot be undone. Any positions assigned to this thesis will lose their thesis assignment.`)) {
+    return
+  }
+  
+  console.log('🗑️ Deleting thesis:', thesisId)
+  
+  try {
+    const { error } = await supabase
+      .schema('hf')
+      .from('thesis')
+      .delete()
+      .eq('id', thesisId)
+    
+    if (error) {
+      console.error('❌ Failed to delete thesis:', error)
+      alert(`Failed to delete thesis: ${error.message}`)
+    } else {
+      console.log('✅ Thesis deleted successfully')
+      
+      // Refresh thesis data
+      queryClient.invalidateQueries({ queryKey: ['thesis'] })
+      queryClient.invalidateQueries({ queryKey: ['positions'] })
+      
+      alert('Thesis deleted successfully!')
+    }
+  } catch (err) {
+    console.error('❌ Error deleting thesis:', err)
+    alert('An unexpected error occurred while deleting the thesis')
+  }
+}
 
 async function addNewThesis() {
   if (!newThesis.value.title.trim()) {
@@ -1062,9 +1107,9 @@ async function addNewThesis() {
             <span class="icon">📊</span> Group by Thesis
           </button>
           
-          <!-- Add thesis button -->
-          <button class="thesis-btn" @click="showThesisModal = true" title="Add new thesis">
-            <span class="icon">+</span> Add Thesis
+          <!-- Update the Add thesis button -->
+          <button class="thesis-btn" @click="showThesisModalForView" title="Manage thesis">
+            <span class="icon">📋</span> Manage Thesis
           </button>
           
           <button ref="columnsBtnRef" class="columns-btn" aria-label="Column settings" @click.stop="toggleColumnsPopup">
@@ -1136,14 +1181,72 @@ async function addNewThesis() {
       </div>
     </div>
 
-    <!-- Thesis Modal -->
+    <!-- Enhanced Thesis Modal -->
     <div v-if="showThesisModal" class="modal-overlay" @click="showThesisModal = false">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <h3>Add New Thesis</h3>
+          <h3>{{ thesisModalMode === 'add' ? 'Add New Thesis' : 'Manage Thesis' }}</h3>
           <button class="modal-close" @click="showThesisModal = false">×</button>
         </div>
-        <div class="modal-body">
+        
+        <!-- View/Manage Mode -->
+        <div v-if="thesisModalMode === 'view'" class="modal-body">
+          <div class="thesis-actions">
+            <button 
+              class="btn btn-primary" 
+              @click="thesisModalMode = 'add'"
+            >
+              + Add New Thesis
+            </button>
+          </div>
+          
+          <div class="thesis-list">
+            <div v-if="thesisQuery.isLoading.value" class="thesis-loading">
+              Loading thesis...
+            </div>
+            
+            <div v-else-if="thesisQuery.error.value" class="thesis-error">
+              Error loading thesis: {{ thesisQuery.error.value }}
+            </div>
+            
+            <div v-else-if="!thesisQuery.data.value || thesisQuery.data.value.length === 0" class="thesis-empty">
+              No thesis found. Click "Add New Thesis" to create one.
+            </div>
+            
+            <div v-else class="thesis-items">
+              <div 
+                v-for="thesis in thesisQuery.data.value" 
+                :key="thesis.id" 
+                class="thesis-item"
+              >
+                <div class="thesis-content">
+                  <div class="thesis-title">{{ thesis.title }}</div>
+                  <div v-if="thesis.description" class="thesis-description">
+                    {{ thesis.description }}
+                  </div>
+                  <div class="thesis-meta">
+                    <span class="thesis-id">ID: {{ thesis.id }}</span>
+                    <span v-if="thesis.created_at" class="thesis-date">
+                      Created: {{ new Date(thesis.created_at).toLocaleDateString() }}
+                    </span>
+                  </div>
+                </div>
+                <div class="thesis-actions">
+                  <button 
+                    class="btn btn-danger btn-sm" 
+                    @click="deleteThesis(thesis.id, thesis.title)"
+                    title="Delete thesis"
+                  >
+                    🗑️ Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Add Mode -->
+        <div v-else class="modal-body">
           <div class="form-group">
             <label for="thesis-title">Title *</label>
             <input 
@@ -1165,15 +1268,21 @@ async function addNewThesis() {
             ></textarea>
           </div>
         </div>
+        
         <div class="modal-footer">
-          <button class="btn btn-cancel" @click="showThesisModal = false">Cancel</button>
-          <button 
-            class="btn btn-primary" 
-            @click="addNewThesis"
-            :disabled="!newThesis.title.trim()"
-          >
-            Add Thesis
-          </button>
+          <div v-if="thesisModalMode === 'add'">
+            <button class="btn btn-cancel" @click="thesisModalMode = 'view'">← Back to List</button>
+            <button 
+              class="btn btn-primary" 
+              @click="addNewThesis"
+              :disabled="!newThesis.title.trim()"
+            >
+              Add Thesis
+            </button>
+          </div>
+          <div v-else>
+            <button class="btn btn-cancel" @click="showThesisModal = false">Close</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1590,7 +1699,7 @@ h1 {
   background: white;
   border-radius: 8px;
   width: 90%;
-  max-width: 500px;
+  max-width: 600px; /* Increased from 500px */
   max-height: 90vh;
   overflow: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -1715,6 +1824,98 @@ h1 {
 
 ::deep(.ag-theme-alpine .ag-group-contracted) {
   color: #6c757d;
+}
+
+/* Add these new styles */
+.thesis-actions {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.thesis-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.thesis-loading, .thesis-error, .thesis-empty {
+  padding: 20px;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.thesis-error {
+  color: #dc3545;
+}
+
+.thesis-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.thesis-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 15px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: #f8f9fa;
+  transition: all 0.2s ease;
+}
+
+.thesis-item:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.thesis-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.thesis-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.thesis-description {
+  color: #6c757d;
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.thesis-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #868e96;
+}
+
+.thesis-actions {
+  margin-left: 12px;
+  flex-shrink: 0;
+}
+
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+  border-color: #bd2130;
 }
 </style>
 
