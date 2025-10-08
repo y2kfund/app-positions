@@ -13,5 +13,5 @@ declare const _default: import('vue').DefineComponent<PositionsProps, {}, {}, {}
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, false, {
     columnsBtnRef: HTMLButtonElement;
     columnsPopupRef: HTMLDivElement;
-}, HTMLElement>;
+}, HTMLDivElement>;
 export default _default;

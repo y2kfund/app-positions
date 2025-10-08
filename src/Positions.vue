@@ -254,15 +254,8 @@ class ThesisCellEditor {
     console.log('📝 Thesis editor attached, focusing select')
     if (this.eSelect) {
       this.eSelect.focus()
-      // Open the dropdown automatically
-      setTimeout(() => {
-        if (this.eSelect.showPicker) {
-          this.eSelect.showPicker()
-        } else {
-          // Fallback for browsers that don't support showPicker
-          this.eSelect.click()
-        }
-      }, 0)
+      // Remove the showPicker() call to avoid the error
+      // The select will still be focused and ready for interaction
     }
   }
 
@@ -302,6 +295,7 @@ const columnDefs = computed<ColDef[]>(() => [
     cellRenderer: thesisCellRenderer,
     cellEditor: ThesisCellEditor,
     editable: true,
+    singleClickEdit: false, // Ensure double-click is required
     cellEditorParams: {
       thesisOptions: thesisQuery.data.value || []
     },
@@ -311,9 +305,30 @@ const columnDefs = computed<ColDef[]>(() => [
       return true
     },
     getQuickFilterText: (params: any) => params.value?.title || '',
+    filterValueGetter: (params: any) => params.data.thesis?.title || '',
     sortable: true,
-    // ADD THIS LINE - Enable click-to-filter for thesis column
-    onCellClicked: (event: any) => handleThesisCellFilterClick(event)
+    // UPDATE: Handle both single-click filter and double-click edit
+    onCellClicked: (event: any) => {
+      // Only handle filter click if not in edit mode and not a double-click
+      if (!event.event?.detail || event.event.detail === 1) {
+        // Single click - handle filter (with a small delay to allow double-click detection)
+        setTimeout(() => {
+          if (event.api && !event.api.getEditingCells().length) {
+            handleThesisCellFilterClick(event)
+          }
+        }, 200)
+      }
+    },
+    onCellDoubleClicked: (event: any) => {
+      // Double click - start editing
+      console.log('📝 Double-clicked thesis cell, starting edit mode')
+      if (event.api && typeof event.api.startEditingCell === 'function') {
+        event.api.startEditingCell({
+          rowIndex: event.rowIndex,
+          colKey: 'thesis'
+        })
+      }
+    }
   },
   { 
     field: 'symbol', 
@@ -493,8 +508,14 @@ function extractTagsFromSymbol(symbolText: string): string[] {
 }
 
 function handleThesisCellFilterClick(event: any) {
-  // Don't trigger filter when in edit mode
-  if (event.event?.target?.tagName === 'SELECT') {
+  // Don't trigger filter when in edit mode or when clicking select elements
+  if (event.event?.target?.tagName === 'SELECT' || 
+      event.event?.target?.closest('.ag-cell-edit-input')) {
+    return
+  }
+  
+  // Check if any cell is currently being edited
+  if (event.api && event.api.getEditingCells().length > 0) {
     return
   }
   
@@ -1191,7 +1212,11 @@ onBeforeUnmount(() => {
             domLayout: 'autoHeight',
             pinnedBottomRowData: pinnedBottomRowDataRef,
             isExternalFilterPresent: isExternalFilterPresent,
-            doesExternalFilterPass: doesExternalFilterPass
+            doesExternalFilterPass: doesExternalFilterPass,
+            singleClickEdit: false, // Ensure double-click is required for editing
+            stopEditingWhenCellsLoseFocus: true, // Stop editing when clicking elsewhere
+            enterMovesDown: true, // Allow Enter to move to next row
+            enterMovesDownAfterEdit: true
           }"
           @grid-ready="onGridReady"
           @filter-changed="recalcPinnedTotals"
@@ -1434,7 +1459,7 @@ h1 {
 }
 
 .minimize-button:hover {
-  background: #f8f9fa;
+  background: #f9f9fa;
   border-color: #adb5bd;
   transform: scale(1.05);
 }
