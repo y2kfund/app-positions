@@ -341,13 +341,8 @@ const columnDefs = computed<ColDef[]>(() => [
     onCellClicked: (event: any) => {
       const clickedTag = extractClickedTagText(event)
       if (clickedTag) {
-        // Handle tag click for filtering
-        const currentTags = symbolTagFilters.value
-        if (currentTags.includes(clickedTag)) {
-          symbolTagFilters.value = currentTags.filter(t => t !== clickedTag)
-        } else {
-          symbolTagFilters.value = [...currentTags, clickedTag]
-        }
+        // Handle tag click for filtering - ADD THIS LINE BACK
+        handleCellFilterClick('symbol', clickedTag)
       }
     }
   },

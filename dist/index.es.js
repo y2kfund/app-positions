@@ -2194,10 +2194,10 @@ function Ne(e, t, i) {
     return !1;
   if (t != null && t.state && !t.state.forEach)
     return D(32), !1;
-  const C = (E, M, H, L, B) => {
+  const C = (E, T, H, L, B) => {
     if (!E)
       return;
-    const G = dg(M, t.defaultState), _ = G("flex").value1;
+    const G = dg(T, t.defaultState), _ = G("flex").value1;
     if (id(
       e,
       E,
@@ -2215,9 +2215,9 @@ function Ne(e, t, i) {
       }
     }
     B || !E.isPrimary() || (h == null || h.syncColumnWithState(E, i, G), o == null || o.syncColumnWithState(E, i, G, H), n == null || n.syncColumnWithState(E, i, G, L));
-  }, v = (E, M, H) => {
+  }, v = (E, T, H) => {
     var fs, ms;
-    const L = ad(e, i), B = M.slice(), G = {}, _ = {}, K = [], ne = [], Ge = [];
+    const L = ad(e, i), B = T.slice(), G = {}, _ = {}, K = [], ne = [], Ge = [];
     let Qt = 0;
     const De = (o == null ? void 0 : o.columns.slice()) ?? [], ct = (n == null ? void 0 : n.columns.slice()) ?? [];
     E.forEach((le) => {
@@ -2265,7 +2265,7 @@ function Ne(e, t, i) {
     F = v(
       y,
       E,
-      (M) => (c == null ? void 0 : c.getPivotResultCol(M)) ?? null
+      (T) => (c == null ? void 0 : c.getPivotResultCol(T)) ?? null
     ).unmatchedCount;
   }
   return l == null || l.finish(), F === 0;
@@ -2294,11 +2294,11 @@ function ad(e, t) {
   return d.forEach((u) => {
     c[u.colId] = u;
   }), () => {
-    const u = (E, M, H, L) => {
-      const B = M.map(L), G = H.map(L);
+    const u = (E, T, H, L) => {
+      const B = T.map(L), G = H.map(L);
       if (Rt(B, G))
         return;
-      const K = new Set(M);
+      const K = new Set(T);
       H.forEach((Ge) => {
         K.delete(Ge) || K.add(Ge);
       });
@@ -2310,11 +2310,11 @@ function ad(e, t) {
         source: t
       });
     }, h = (E) => {
-      const M = [];
+      const T = [];
       return n.forAllCols((H) => {
         const L = c[H.getColId()];
-        L && E(L, H) && M.push(H);
-      }), M;
+        L && E(L, H) && T.push(H);
+      }), T;
     }, g = (E) => E.getColId();
     u(
       "columnRowGroupChanged",
@@ -2327,12 +2327,12 @@ function ad(e, t) {
       (s == null ? void 0 : s.columns) ?? [],
       g
     );
-    const f = h((E, M) => {
-      const H = E.aggFunc != null, L = H != M.isValueActive(), B = H && E.aggFunc != M.getAggFunc();
+    const f = h((E, T) => {
+      const H = E.aggFunc != null, L = H != T.isValueActive(), B = H && E.aggFunc != T.getAggFunc();
       return L || B;
     });
-    f.length > 0 && wg(a, "columnValueChanged", f, t), wi(a, h((E, M) => E.width != M.getActualWidth()), !0, t), rd(a, h((E, M) => E.pinned != M.getPinned()), t), vg(a, h((E, M) => E.hide == M.isVisible()), t);
-    const F = h((E, M) => E.sort != M.getSort() || E.sortIndex != M.getSortIndex());
+    f.length > 0 && wg(a, "columnValueChanged", f, t), wi(a, h((E, T) => E.width != T.getActualWidth()), !0, t), rd(a, h((E, T) => E.pinned != T.getPinned()), t), vg(a, h((E, T) => E.hide == T.isVisible()), t);
+    const F = h((E, T) => E.sort != T.getSort() || E.sortIndex != T.getSortIndex());
     F.length > 0 && (r == null || r.dispatchSortChangedEvents(t, F));
     const R = to(e);
     Rg(d, R, t, n, a);
@@ -7853,7 +7853,7 @@ var Be = {
       let u, h, g = 0;
       this.invalidateVerticalScroll();
       do {
-        const { stickyTopHeight: m, stickyBottomHeight: C } = d, v = c.rowTop, y = c.rowHeight, F = r.getPixelOffset(), R = c.rowTop - F, E = R + c.rowHeight, M = this.getVScrollPosition(), H = a.divStretchOffset, L = M.top + H, B = M.bottom + H, G = B - L, _ = a.getScrollPositionForPixel(R), K = a.getScrollPositionForPixel(E - G), ne = Math.min((_ + K) / 2, R), Ge = L + m > R, Qt = B - C < E;
+        const { stickyTopHeight: m, stickyBottomHeight: C } = d, v = c.rowTop, y = c.rowHeight, F = r.getPixelOffset(), R = c.rowTop - F, E = R + c.rowHeight, T = this.getVScrollPosition(), H = a.divStretchOffset, L = T.top + H, B = T.bottom + H, G = B - L, _ = a.getScrollPositionForPixel(R), K = a.getScrollPositionForPixel(E - G), ne = Math.min((_ + K) / 2, R), Ge = L + m > R, Qt = B - C < E;
         let De = null;
         t === "top" ? De = _ - m : t === "bottom" ? De = K + C : t === "middle" ? De = ne : Ge ? De = _ - m : Qt && (K - _ > G ? De = _ - m : De = K + C), De !== null && (this.setVerticalScrollPosition(De), l.redraw({ afterScroll: !0 })), u = v !== c.rowTop || y !== c.rowHeight, h = m !== d.stickyTopHeight || C !== d.stickyBottomHeight, g++;
       } while ((u || h) && g < 10);
@@ -15548,20 +15548,20 @@ var Zv = class extends P {
         m = !1;
         const v = [];
         let y = 0, F = u;
-        h.forEach((E, M) => {
+        h.forEach((E, T) => {
           if (f[E.getId()])
             F -= p[E.getId()];
           else {
             v.push(E);
-            const L = g[M];
+            const L = g[T];
             y += L;
           }
         });
         const R = 1 / y;
-        v.forEach((E, M) => {
-          const H = M === v.length - 1;
+        v.forEach((E, T) => {
+          const H = T === v.length - 1;
           let L;
-          H ? L = F : (L = Math.round(g[M] * u * R), F -= L);
+          H ? L = F : (L = Math.round(g[T] * u * R), F -= L);
           const B = E.getMinWidth(), G = E.getMaxWidth();
           L < B ? (L = B, f[E.getId()] = !0, m = !0) : G > 0 && L > G && (L = G, f[E.getId()] = !0, m = !0), p[E.getId()] = L;
         });
@@ -16574,16 +16574,16 @@ var Uw = class extends P {
         if (g(R))
           continue;
         m = R, v += f * (R.flex / c);
-        const E = v - C, M = Math.round(E);
-        R.targetSize = M, C += M;
+        const E = v - C, T = Math.round(E);
+        R.targetSize = T, C += T;
       }
       m && (m.targetSize += f - C);
       let y = 0;
       for (const R of l) {
         if (g(R))
           continue;
-        const E = R.targetSize, M = Math.min(Math.max(E, R.min), R.max);
-        y += M - E, R.violationType = M === E ? void 0 : M < E ? "max" : "min", R.targetSize = M;
+        const E = R.targetSize, T = Math.min(Math.max(E, R.min), R.max);
+        y += T - E, R.violationType = T === E ? void 0 : T < E ? "max" : "min", R.targetSize = T;
       }
       const F = y === 0 ? "all" : y > 0 ? "min" : "max";
       for (const R of l)
@@ -21457,7 +21457,7 @@ function it({
   return e === Le && (e = t), e !== t;
 }
 function yi(e, t, i) {
-  var C, v, y, F, R, E, M, H, L, B;
+  var C, v, y, F, R, E, T, H, L, B;
   const s = e.gos.get("enableGroupEdit"), { key: o, event: n, cellStartedEdit: r, silent: a } = i ?? {}, l = J(e, t), d = (C = l == null ? void 0 : l.comp) == null ? void 0 : C.getCellEditor(), c = Tc(e, t, o, r && !a), u = (v = e.editModelSvc) == null ? void 0 : v.getEdit(t);
   let h = c.value;
   if (h === void 0 && (h = u == null ? void 0 : u.sourceValue), (y = e.editModelSvc) == null || y.setEdit(t, {
@@ -21470,7 +21470,7 @@ function yi(e, t, i) {
   const g = t.column.getColDef(), p = gd(e.userCompFactory, g, c), f = (p == null ? void 0 : p.popupFromSelector) != null ? p.popupFromSelector : !!g.cellEditorPopup, m = (p == null ? void 0 : p.popupPositionFromSelector) != null ? p.popupPositionFromSelector : g.cellEditorPopupPosition;
   if (Mc(p.params, n), l) {
     l.editCompDetails = p, (R = l.comp) == null || R.setEditDetails(p, f, m, e.gos.get("reactiveCustomComponents")), (E = l == null ? void 0 : l.rowCtrl) == null || E.refreshRow({ suppressFlash: !0 });
-    const G = (M = e.editModelSvc) == null ? void 0 : M.getEdit(t, !0);
+    const G = (T = e.editModelSvc) == null ? void 0 : T.getEdit(t, !0);
     !a && !((H = G == null ? void 0 : G.editorState) != null && H.cellStartedEditing) && ((L = e.editSvc) == null || L.dispatchCellEvent(
       t,
       n,
@@ -21648,14 +21648,14 @@ function $t(e, t) {
     return;
   const i = xc(e), s = new Pc(), { ariaAnnounce: o, localeSvc: n, editModelSvc: r, gos: a } = e, l = a.get("editType") === "fullRow", c = Ll(n)("ariaValidationErrorPrefix", "Cell Editor Validation");
   for (const F of i) {
-    const { ctrl: R, editor: E } = F, { rowNode: M, column: H } = R, L = ((h = E.getValidationErrors) == null ? void 0 : h.call(E)) ?? [], B = ((g = E.getValidationElement) == null ? void 0 : g.call(E, !1)) || !((p = E.isPopup) != null && p.call(E)) && R.eGui;
+    const { ctrl: R, editor: E } = F, { rowNode: T, column: H } = R, L = ((h = E.getValidationErrors) == null ? void 0 : h.call(E)) ?? [], B = ((g = E.getValidationElement) == null ? void 0 : g.call(E, !1)) || !((p = E.isPopup) != null && p.call(E)) && R.eGui;
     if (B) {
       const G = L != null && L.length > 0, _ = G ? L.join(". ") : "";
       eh(B, G), G && o.announceValue(`${c} ${L}`, "editorValidation"), B instanceof HTMLInputElement ? B.setCustomValidity(_) : B.classList.toggle("invalid", G);
     }
     (L == null ? void 0 : L.length) > 0 && s.setCellValidation(
       {
-        rowNode: M,
+        rowNode: T,
         column: H
       },
       {
@@ -21972,17 +21972,17 @@ var ay = class extends P {
       return;
     }
     if (!s || !v) {
-      const R = h == null ? void 0 : h.isEditing(n), M = u.get("enableCellTextSelection") && e.defaultPrevented, H = (Pt() || M) && !R && !Qn(o) && !y;
+      const R = h == null ? void 0 : h.isEditing(n), T = u.get("enableCellTextSelection") && e.defaultPrevented, H = (Pt() || T) && !R && !Qn(o) && !y;
       n.focusCell(H, e);
     }
     if (s && v && !c.isCellFocused(f)) {
       e.preventDefault();
       const R = c.getFocusedCell();
       if (R) {
-        const { column: E, rowIndex: M, rowPinned: H } = R;
+        const { column: E, rowIndex: T, rowPinned: H } = R;
         h != null && h.isEditing(R) && (h == null || h.stopEditing(R)), c.setFocusedCell({
           column: E,
-          rowIndex: M,
+          rowIndex: T,
           rowPinned: H,
           forceBrowserFocus: !0,
           preventScrollOnBrowserFocus: !0,
@@ -25087,8 +25087,8 @@ var Hy = (
       const c = this.getRowBufferInPixels(), u = this.ctrlsSvc.getScrollFeature(), h = this.gos.get("suppressRowVirtualisation");
       let g = !1, p, f;
       do {
-        const F = t.getPixelOffset(), { pageFirstPixel: R, pageLastPixel: E } = t.getCurrentPagePixelRange(), M = e.divStretchOffset, H = u.getVScrollPosition(), L = H.top, B = H.bottom;
-        h ? (p = R + M, f = E + M) : (p = Math.max(L + F - c, R) + M, f = Math.min(B + F + c, E) + M), this.firstVisibleVPixel = Math.max(L + F, R) + M, this.lastVisibleVPixel = Math.min(B + F, E) + M, g = this.ensureAllRowsInRangeHaveHeightsCalculated(p, f);
+        const F = t.getPixelOffset(), { pageFirstPixel: R, pageLastPixel: E } = t.getCurrentPagePixelRange(), T = e.divStretchOffset, H = u.getVScrollPosition(), L = H.top, B = H.bottom;
+        h ? (p = R + T, f = E + T) : (p = Math.max(L + F - c, R) + T, f = Math.min(B + F + c, E) + T), this.firstVisibleVPixel = Math.max(L + F, R) + T, this.lastVisibleVPixel = Math.min(B + F, E) + T, g = this.ensureAllRowsInRangeHaveHeightsCalculated(p, f);
       } while (g);
       let m = i.getRowIndexAtPixel(p), C = i.getRowIndexAtPixel(f);
       const v = t.getFirstRow(), y = t.getLastRow();
@@ -26563,10 +26563,10 @@ function bR(e, t = !1) {
       pivotIndex: F,
       pinned: R,
       hide: E,
-      width: M,
+      width: T,
       flex: H
     } = e[h];
-    c.push(g), p && (i[f ?? u++] = { colId: g, sort: p }), m && (s[C ?? 0] = g), typeof v == "string" && o.push({ colId: g, aggFunc: v }), y && (n[F ?? 0] = g), R && (R === "right" ? a : r).push(g), E && l.push(g), (H != null || M) && d.push({ colId: g, flex: H ?? void 0, width: M });
+    c.push(g), p && (i[f ?? u++] = { colId: g, sort: p }), m && (s[C ?? 0] = g), typeof v == "string" && o.push({ colId: g, aggFunc: v }), y && (n[F ?? 0] = g), R && (R === "right" ? a : r).push(g), E && l.push(g), (H != null || T) && d.push({ colId: g, flex: H ?? void 0, width: T });
   }
   return {
     sort: i.length ? { sortModel: i } : void 0,
@@ -28362,14 +28362,14 @@ var sF = {
       this.createFilterCompParams(o, u, "colDef")
     );
     if (h) {
-      const E = (c == null ? void 0 : c.handlerNameOrCallback) ?? (c == null ? void 0 : c.filterHandler), M = re(this.model, e);
+      const E = (c == null ? void 0 : c.handlerNameOrCallback) ?? (c == null ? void 0 : c.filterHandler), T = re(this.model, e);
       if (i.handlerGenerator != E) {
         const H = i.handler, { handler: L, handlerParams: B } = this.createHandlerFromFunc(
           o,
           c.filterHandler,
           f
         );
-        i.handler = L, i.handlerParams = B, i.handlerGenerator = E, delete this.model[e], (m = L.init) == null || m.call(L, { ...B, source: "init", model: null }), this.destroyBean(H), M != null && ((C = this.beans.filterManager) == null || C.onFilterChanged({
+        i.handler = L, i.handlerParams = B, i.handlerGenerator = E, delete this.model[e], (m = L.init) == null || m.call(L, { ...B, source: "init", model: null }), this.destroyBean(H), T != null && ((C = this.beans.filterManager) == null || C.onFilterChanged({
           columns: [o],
           source: t
         }));
@@ -28378,7 +28378,7 @@ var sF = {
         i.handlerParams = H, (y = (v = i.handler).refresh) == null || y.call(v, {
           ...H,
           source: "colDef",
-          model: M
+          model: T
         });
       }
     }
@@ -32010,12 +32010,12 @@ var kP = class extends P {
       (C = this.strategy) == null || C.stop(s, i), R.forEach((E) => {
         d.clearEditValue(E);
       }), this.bulkRefresh(void 0, g), d.getEditPositions(F).forEach((E) => {
-        const M = J(l, E), H = it(E);
-        M == null || M.refreshCell({ force: !0, suppressFlash: !H });
+        const T = J(l, E), H = it(E);
+        T == null || T.refreshCell({ force: !0, suppressFlash: !H });
       }), g = F, p || (p = f);
     } else if (i instanceof KeyboardEvent && this.batch && ((v = this.strategy) != null && v.midBatchInputsAllowed(e)) && this.isEditing(e, { withOpenEditor: !0 })) {
-      const F = i.key, R = F === S.ENTER, E = F === S.ESCAPE, M = F === S.TAB;
-      (R || M || E) && (R || M ? kt(l, { persist: !0 }) : E && this.revertSingleCellEdit(h), this.isBatchEditing() ? (y = this.strategy) == null || y.cleanupEditors() : pi(l, d.getEditPositions(), { event: i, cancel: E }), i.preventDefault(), this.bulkRefresh(e, g, { suppressFlash: !0 }), g = d.getEditMap());
+      const F = i.key, R = F === S.ENTER, E = F === S.ESCAPE, T = F === S.TAB;
+      (R || T || E) && (R || T ? kt(l, { persist: !0 }) : E && this.revertSingleCellEdit(h), this.isBatchEditing() ? (y = this.strategy) == null || y.cleanupEditors() : pi(l, d.getEditPositions(), { event: i, cancel: E }), i.preventDefault(), this.bulkRefresh(e, g, { suppressFlash: !0 }), g = d.getEditMap());
     } else
       kt(l, { persist: !0 }), g = d.getEditMap();
     return p && e && this.model.removeEdits(e), !n && h && this.navigateAfterEdit(i instanceof KeyboardEvent && i.shiftKey, h.cellPosition), Wn(l), this.model.hasEdits() || (this.model.getCellValidationModel().clearCellValidationMap(), this.model.getRowValidationModel().clearRowValidationMap()), this.bulkRefresh(), m && this.beans.rowRenderer.refreshRows({ rowNodes: Array.from(g.keys()) }), this.isBatchEditing() && (this.beans.rowRenderer.refreshRows({ suppressFlash: !0, force: !0 }), p && f && this.dispatchBatchEvent("batchEditingStopped", g)), this.stopping = !1, p;
@@ -33641,7 +33641,7 @@ var SE = {
     const { gos: o, colModel: n, rowGroupColsSvc: r, rowNodeSorter: a, rowRenderer: l, showRowGroupCols: d } = this.beans, c = o.get("groupMaintainOrder"), u = n.getCols().some((v) => v.isRowGroupActive()), h = r == null ? void 0 : r.columns, g = n.isPivotMode(), p = o.getCallback("postSortRows");
     let f = !1, m;
     const C = (v) => {
-      var E, M;
+      var E, T;
       const y = g && v.leafGroup;
       let F = c && u && !v.leafGroup;
       F && (m ?? (m = this.shouldSortContainsGroupCols(e)), F && (F = !m));
@@ -33654,7 +33654,7 @@ var SE = {
         }
         H || (R = ME(v));
       } else !e.length || y ? R = null : t && i ? R = DE(a, v, i, s, e) : R = a.doFullSort(v.childrenAfterAggFilter, e);
-      if (R || (R = ((E = v.childrenAfterAggFilter) == null ? void 0 : E.slice(0)) ?? []), f || (f = ((M = v.childrenAfterSort) == null ? void 0 : M[0]) !== R[0]), v.childrenAfterSort = R, du(v), p) {
+      if (R || (R = ((E = v.childrenAfterAggFilter) == null ? void 0 : E.slice(0)) ?? []), f || (f = ((T = v.childrenAfterSort) == null ? void 0 : T[0]) !== R[0]), v.childrenAfterSort = R, du(v), p) {
         const H = { nodes: v.childrenAfterSort };
         p(H);
       }
@@ -35553,11 +35553,11 @@ var Sx = class extends P {
     E && (d == null || d.hiddenColIds.forEach((G) => {
       f(G).hide = !0;
     })), (E || !i) && (m.hide = null);
-    const M = g("columnSizing", c);
-    M && (c == null || c.columnSizingModel.forEach(({ colId: G, flex: _, width: K }) => {
+    const T = g("columnSizing", c);
+    T && (c == null || c.columnSizingModel.forEach(({ colId: G, flex: _, width: K }) => {
       const ne = f(G);
       ne.flex = _ ?? null, ne.width = K;
-    })), (M || !i) && (m.flex = null);
+    })), (T || !i) && (m.flex = null);
     const H = u == null ? void 0 : u.orderedColIds, L = !!(H != null && H.length) && !(s != null && s.has("columnOrder")), B = L ? H.map((G) => f(G)) : Object.values(p);
     (B.length || h) && (this.columnStates = B, Ne(
       this.beans,
@@ -36550,9 +36550,9 @@ var lD = class extends P {
           return;
         const E = h.getPreferredWidthForColumn(R, C);
         if (E > 0) {
-          const M = m[R.colId] ?? {};
-          M.minWidth ?? (M.minWidth = r), M.maxWidth ?? (M.maxWidth = n);
-          const H = dD(R, E, M);
+          const T = m[R.colId] ?? {};
+          T.minWidth ?? (T.minWidth = r), T.maxWidth ?? (T.maxWidth = n);
+          const H = dD(R, E, T);
           R.setActualWidth(H, l), p.push(R), f++;
         }
         y.push(R);
@@ -36679,7 +36679,7 @@ var lD = class extends P {
         const f = p / et(a);
         let m = p;
         for (let C = a.length - 1; C >= 0; C--) {
-          const v = a[C], y = o == null ? void 0 : o[v.getId()], F = (y == null ? void 0 : y.minWidth) ?? (s == null ? void 0 : s.defaultMinWidth), R = (y == null ? void 0 : y.maxWidth) ?? (s == null ? void 0 : s.defaultMaxWidth), E = v.getMinWidth(), M = v.getMaxWidth(), H = typeof F == "number" && F > E ? F : E, L = typeof R == "number" && R < M ? R : M;
+          const v = a[C], y = o == null ? void 0 : o[v.getId()], F = (y == null ? void 0 : y.minWidth) ?? (s == null ? void 0 : s.defaultMinWidth), R = (y == null ? void 0 : y.maxWidth) ?? (s == null ? void 0 : s.defaultMaxWidth), E = v.getMinWidth(), T = v.getMaxWidth(), H = typeof F == "number" && F > E ? F : E, L = typeof R == "number" && R < T ? R : T;
           let B = Math.round(v.getActualWidth() * f);
           B < H ? (B = H, u(v), c = !1) : B > L ? (B = L, u(v), c = !1) : C === 0 && (B = m), v.setActualWidth(B, t, !0), m -= B;
         }
@@ -37023,7 +37023,7 @@ var CD = {
       }
       const E = n.getValue(t, F);
       if (g) {
-        const M = W(i, {
+        const T = W(i, {
           valueA: m,
           nodeA: p,
           valueB: E,
@@ -37031,7 +37031,7 @@ var CD = {
           column: t,
           colDef: a
         });
-        if (!h(M)) {
+        if (!h(T)) {
           C(F, E);
           return;
         }
@@ -37040,8 +37040,8 @@ var CD = {
         return;
       }
       if (!f) {
-        const M = l == null ? void 0 : l.get(p);
-        (M == null ? void 0 : M.firstNode) === p ? (M.reset(), f = M) : f = new SD(t, p), d.set(p, f);
+        const T = l == null ? void 0 : l.get(p);
+        (T == null ? void 0 : T.firstNode) === p ? (T.reset(), f = T) : f = new SD(t, p), d.set(p, f);
       }
       f.addSpannedNode(F), d.set(F, f);
     };
@@ -38664,7 +38664,7 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
       _e(
         () => u[L],
         (B, G) => {
-          (L === "rowData" && !f.value || L !== "rowData") && M(L, B), f.value = !1;
+          (L === "rowData" && !f.value || L !== "rowData") && T(L, B), f.value = !1;
         },
         { deep: !0 }
       );
@@ -38673,7 +38673,7 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
     _e(
       g,
       (L, B) => {
-        r.value && (f.value || (p.value = !0, M("rowData", Hi(L), Hi(B))), f.value = !1);
+        r.value && (f.value || (p.value = !0, T("rowData", Hi(L), Hi(B))), f.value = !1);
       },
       { deep: !0 }
     );
@@ -38693,7 +38693,7 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
       B === "gridReady" && (l.value = !0);
       const G = $i.has(B);
       G && !L || !G && L || h.has(B) && (p.value || y(B), p.value = !1);
-    }, M = (L, B, G) => {
+    }, T = (L, B, G) => {
       if (r.value) {
         let _ = B.value || B;
         L === "rowData" && _ != null && (_ = Hi(_)), d.value[L] = _, c.value == null && (c.value = window.setTimeout(() => {
@@ -38805,7 +38805,7 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
       const b = new URL(window.location.href).searchParams.get("position_cols");
       if (!b)
         return r.map((V) => V.field);
-      const T = b.split("-and-").map((V) => V.trim()).filter(Boolean), O = new Set(r.map((V) => V.field)), x = T.filter((V) => O.has(V));
+      const M = b.split("-and-").map((V) => V.trim()).filter(Boolean), O = new Set(r.map((V) => V.field)), x = M.filter((V) => O.has(V));
       return x.length ? x : r.map((V) => V.field);
     }
     function l(w) {
@@ -38813,8 +38813,8 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
       b.searchParams.set("position_cols", w.join("-and-")), window.history.replaceState({}, "", b.toString());
     }
     function d() {
-      const w = new URL(window.location.href), b = w.searchParams.get("all_cts_fi"), T = b ? b.split("-and-").join(",") : void 0, O = w.searchParams.get("fac") || void 0, x = w.searchParams.get("all_cts_clientId") || void 0;
-      return { symbol: T, asset_class: O, legal_entity: x };
+      const w = new URL(window.location.href), b = w.searchParams.get("all_cts_fi"), M = b ? b.split("-and-").join(",") : void 0, O = w.searchParams.get("fac") || void 0, x = w.searchParams.get("all_cts_clientId") || void 0;
+      return { symbol: M, asset_class: O, legal_entity: x };
     }
     function c(w) {
       var x, V, ie;
@@ -38825,8 +38825,8 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
         const de = ((x = w == null ? void 0 : w.symbol) == null ? void 0 : x.filter) || "";
         de ? b.searchParams.set("all_cts_fi", de) : b.searchParams.delete("all_cts_fi");
       }
-      const T = ((V = w == null ? void 0 : w.asset_class) == null ? void 0 : V.filter) || "";
-      T ? b.searchParams.set("fac", T) : b.searchParams.delete("fac");
+      const M = ((V = w == null ? void 0 : w.asset_class) == null ? void 0 : V.filter) || "";
+      M ? b.searchParams.set("fac", M) : b.searchParams.delete("fac");
       const O = ((ie = w == null ? void 0 : w.legal_entity) == null ? void 0 : ie.filter) || "";
       O ? b.searchParams.set("all_cts_clientId", O) : b.searchParams.delete("all_cts_clientId"), window.history.replaceState({}, "", b.toString());
     }
@@ -38847,8 +38847,8 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
       }
       init(b) {
         console.log("📝 Initializing thesis cell editor with value:", b.value), this.params = b, this.currentValue = b.value, this.eSelect = document.createElement("select"), this.eSelect.style.width = "100%", this.eSelect.style.height = "100%", this.eSelect.style.border = "none", this.eSelect.style.outline = "none", this.eSelect.style.fontSize = "14px";
-        const T = document.createElement("option");
-        T.value = "", T.textContent = "No thesis", this.eSelect.appendChild(T);
+        const M = document.createElement("option");
+        M.value = "", M.textContent = "No thesis", this.eSelect.appendChild(M);
         const O = b.thesisOptions || [];
         console.log("📊 Available thesis options:", O), O.forEach((x) => {
           const V = document.createElement("option");
@@ -38949,10 +38949,7 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
         cellRenderer: (w) => fs(w.value),
         onCellClicked: (w) => {
           const b = ms(w);
-          if (b) {
-            const T = g.value;
-            T.includes(b) ? g.value = T.filter((O) => O !== b) : g.value = [...T, b];
-          }
+          b && G("symbol", b);
         }
       },
       {
@@ -39053,12 +39050,12 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
           "pnl-zero": (w) => w.value === 0
         }
       }
-    ]), y = te(null), F = te(null), R = te([]), E = ["qty", "avgPrice", "price", "market_value", "unrealized_pnl", "cash_flow_on_entry", "cash_flow_on_exercise"], M = te([]);
+    ]), y = te(null), F = te(null), R = te([]), E = ["qty", "avgPrice", "price", "market_value", "unrealized_pnl", "cash_flow_on_entry", "cash_flow_on_exercise"], T = te([]);
     function H() {
-      var T;
+      var M;
       const w = y.value, b = [];
       if (g.value.length > 0 && b.push({ field: "symbol", value: g.value.join(", ") }), w) {
-        const O = ((T = w.getFilterModel) == null ? void 0 : T.call(w)) || {}, x = (me) => {
+        const O = ((M = w.getFilterModel) == null ? void 0 : M.call(w)) || {}, x = (me) => {
           var He, Tt;
           return ((He = O == null ? void 0 : O[me]) == null ? void 0 : He.filter) || ((Tt = O == null ? void 0 : O[me]) == null ? void 0 : Tt.values) || null;
         };
@@ -39073,29 +39070,29 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
         const de = x("thesis");
         typeof de == "string" && de.length && b.push({ field: "thesis", value: de });
       }
-      M.value = b;
+      T.value = b;
     }
     function L(w) {
       if (!w) return [];
-      const b = String(w), T = b.match(/^([A-Z]+)\b/), O = (T == null ? void 0 : T[1]) ?? "", x = b.match(/\s([CP])\b/), V = (x == null ? void 0 : x[1]) ?? "", ie = b.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), de = (ie == null ? void 0 : ie[1]) ?? "", me = b.match(/\b(\d{6})[CP]/), He = me ? xi(me[1]) : "";
+      const b = String(w), M = b.match(/^([A-Z]+)\b/), O = (M == null ? void 0 : M[1]) ?? "", x = b.match(/\s([CP])\b/), V = (x == null ? void 0 : x[1]) ?? "", ie = b.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), de = (ie == null ? void 0 : ie[1]) ?? "", me = b.match(/\b(\d{6})[CP]/), He = me ? xi(me[1]) : "";
       return [O, He, de, V].filter(Boolean);
     }
     function B(w) {
-      var T, O, x, V;
-      if (((O = (T = w.event) == null ? void 0 : T.target) == null ? void 0 : O.tagName) === "SELECT" || (V = (x = w.event) == null ? void 0 : x.target) != null && V.closest(".ag-cell-edit-input") || w.api && w.api.getEditingCells().length > 0)
+      var M, O, x, V;
+      if (((O = (M = w.event) == null ? void 0 : M.target) == null ? void 0 : O.tagName) === "SELECT" || (V = (x = w.event) == null ? void 0 : x.target) != null && V.closest(".ag-cell-edit-input") || w.api && w.api.getEditingCells().length > 0)
         return;
       const b = w == null ? void 0 : w.value;
       !b || !b.title || G("thesis", b.title);
     }
     function G(w, b) {
-      const T = y.value;
-      if (!(!T || b === void 0 || b === null)) {
+      const M = y.value;
+      if (!(!M || b === void 0 || b === null)) {
         if (w === "symbol") {
           const O = String(b).trim(), x = g.value.indexOf(O);
-          x >= 0 ? g.value.splice(x, 1) : g.value.push(O), typeof T.onFilterChanged == "function" && T.onFilterChanged();
+          x >= 0 ? g.value.splice(x, 1) : g.value.push(O), typeof M.onFilterChanged == "function" && M.onFilterChanged();
         } else {
-          const O = T.getFilterModel && T.getFilterModel() || {};
-          O[w] = { type: "equals", filter: String(b) }, typeof T.setFilterModel == "function" && T.setFilterModel(O), typeof T.onFilterChanged == "function" && T.onFilterChanged();
+          const O = M.getFilterModel && M.getFilterModel() || {};
+          O[w] = { type: "equals", filter: String(b) }, typeof M.setFilterModel == "function" && M.setFilterModel(O), typeof M.onFilterChanged == "function" && M.onFilterChanged();
         }
         H();
       }
@@ -39103,8 +39100,8 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
     Kr(() => {
       const w = o.data.value || [];
       return !i.accountId || i.accountId === "demo" ? w : w.filter((b) => {
-        var T;
-        return ((T = b.legal_entity) == null ? void 0 : T.id) === i.accountId;
+        var M;
+        return ((M = b.legal_entity) == null ? void 0 : M.id) === i.accountId;
       });
     });
     const _ = [
@@ -39129,7 +39126,7 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
       const b = new URL(window.location.href).searchParams.get("position_cols");
       if (!b)
         return _.map((V) => V.field);
-      const T = b.split("-and-").map((V) => V.trim()).filter(Boolean), O = new Set(_.map((V) => V.field)), x = T.filter((V) => O.has(V));
+      const M = b.split("-and-").map((V) => V.trim()).filter(Boolean), O = new Set(_.map((V) => V.field)), x = M.filter((V) => O.has(V));
       return x.length ? x : _.map((V) => V.field);
     }
     function Qt(w) {
@@ -39147,7 +39144,7 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
       const w = y.value;
       w && typeof w.refreshCells == "function" && w.refreshCells({ columns: ["symbol"] });
     }, { deep: !0 }), _e(() => y.value, (w) => {
-      var T;
+      var M;
       if (!w) return;
       const b = () => {
         var x;
@@ -39155,7 +39152,7 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
         const O = ((x = w.getFilterModel) == null ? void 0 : x.call(w)) || {};
         c(O), Dt();
       };
-      (T = w.addEventListener) == null || T.call(w, "filterChanged", b);
+      (M = w.addEventListener) == null || M.call(w, "filterChanged", b);
     }, { immediate: !0 });
     function De(w) {
       s("row-click", w), i.onRowClick && i.onRowClick(w);
@@ -39173,13 +39170,13 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
     }
     function xi(w) {
       if (!/^[0-9]{6}$/.test(w)) return "";
-      const b = Number(w.slice(0, 2)), T = Number(w.slice(2, 4)), O = Number(w.slice(4, 6)), x = 2e3 + b;
-      return `${["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][T - 1 >= 0 && T - 1 < 12 ? T - 1 : 0]}-${String(O).padStart(2, "0")}-${x}`;
+      const b = Number(w.slice(0, 2)), M = Number(w.slice(2, 4)), O = Number(w.slice(4, 6)), x = 2e3 + b;
+      return `${["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][M - 1 >= 0 && M - 1 < 12 ? M - 1 : 0]}-${String(O).padStart(2, "0")}-${x}`;
     }
     function fs(w) {
       const b = String(w ?? "");
       if (!b) return "";
-      const T = b.match(/^([A-Z]+)\b/), O = (T == null ? void 0 : T[1]) ?? "", x = b.match(/\s([CP])\b/), V = (x == null ? void 0 : x[1]) ?? "", ie = b.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), de = (ie == null ? void 0 : ie[1]) ?? "", me = b.match(/\b(\d{6})[CP]/), He = me ? xi(me[1]) : "", Tt = (zr, yu = "") => {
+      const M = b.match(/^([A-Z]+)\b/), O = (M == null ? void 0 : M[1]) ?? "", x = b.match(/\s([CP])\b/), V = (x == null ? void 0 : x[1]) ?? "", ie = b.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), de = (ie == null ? void 0 : ie[1]) ?? "", me = b.match(/\b(\d{6})[CP]/), He = me ? xi(me[1]) : "", Tt = (zr, yu = "") => {
         const Ru = g.value.includes(zr) ? "fi-tag-selected" : "";
         return `<span class="fi-tag fi-tag-click ${yu} ${Ru}">${zr}</span>`;
       };
@@ -39194,8 +39191,8 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
       var x;
       const b = (x = w == null ? void 0 : w.event) == null ? void 0 : x.target;
       if (!b) return null;
-      const T = b.closest && b.closest(".fi-tag") || null;
-      return T && String(T.textContent || "").trim() || null;
+      const M = b.closest && b.closest(".fi-tag") || null;
+      return M && String(M.textContent || "").trim() || null;
     }
     function le() {
       return g.value.length > 0;
@@ -39205,21 +39202,21 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
       if (g.value.length === 0) return !0;
       const b = (O = w.data) == null ? void 0 : O.symbol;
       if (!b) return !1;
-      const T = L(b);
-      return g.value.every((x) => T.includes(x));
+      const M = L(b);
+      return g.value.every((x) => M.includes(x));
     }
     async function Di(w, b) {
       console.log("📝 Updating position thesis:", { positionId: w, thesisId: b });
       try {
-        const { data: T, error: O } = await m.schema("hf").from("positions").select("id, symbol").eq("id", w).single();
+        const { data: M, error: O } = await m.schema("hf").from("positions").select("id, symbol").eq("id", w).single();
         if (O)
           throw console.error("❌ Position not found:", O), new Error(`Position not found: ${O.message}`);
         const { error: x } = await m.schema("hf").from("positions").update({ thesis_id: b }).eq("id", w);
         if (x)
           throw console.error("❌ Failed to update position thesis:", x), new Error(`Failed to update thesis: ${x.message}`);
         console.log("✅ Position thesis updated successfully"), C.invalidateQueries({ queryKey: ["positions"] }), C.invalidateQueries({ queryKey: ["thesis"] });
-      } catch (T) {
-        throw console.error("❌ Error updating position thesis:", T), T;
+      } catch (M) {
+        throw console.error("❌ Error updating position thesis:", M), M;
       }
     }
     const ye = te(!1), Re = te({ title: "", description: "" }), Zt = te("add");
@@ -39227,14 +39224,14 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
       Zt.value = "view", ye.value = !0;
     }
     const Cs = te([]);
-    function xo(w, b, T, O = 5e3) {
-      const x = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, V = { id: x, type: w, title: b, message: T, duration: O };
+    function xo(w, b, M, O = 5e3) {
+      const x = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, V = { id: x, type: w, title: b, message: M, duration: O };
       Cs.value.push(V), O > 0 && setTimeout(() => {
         Do(x);
       }, O);
     }
     function Do(w) {
-      const b = Cs.value.findIndex((T) => T.id === w);
+      const b = Cs.value.findIndex((M) => M.id === w);
       b > -1 && Cs.value.splice(b, 1);
     }
     function Br(w, b) {
@@ -39252,10 +39249,10 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
 This action cannot be undone. Any positions assigned to this thesis will lose their thesis assignment.`)) {
         console.log("🗑️ Deleting thesis:", w);
         try {
-          const { error: T } = await m.schema("hf").from("thesis").delete().eq("id", w);
-          T ? (console.error("❌ Failed to delete thesis:", T), vs("Failed to Delete Thesis", T.message)) : (console.log("✅ Thesis deleted successfully"), C.invalidateQueries({ queryKey: ["thesis"] }), C.invalidateQueries({ queryKey: ["positions"] }), Br("Thesis Deleted", `"${b}" has been successfully deleted.`));
-        } catch (T) {
-          console.error("❌ Error deleting thesis:", T), vs("Unexpected Error", "An unexpected error occurred while deleting the thesis. Please try again.");
+          const { error: M } = await m.schema("hf").from("thesis").delete().eq("id", w);
+          M ? (console.error("❌ Failed to delete thesis:", M), vs("Failed to Delete Thesis", M.message)) : (console.log("✅ Thesis deleted successfully"), C.invalidateQueries({ queryKey: ["thesis"] }), C.invalidateQueries({ queryKey: ["positions"] }), Br("Thesis Deleted", `"${b}" has been successfully deleted.`));
+        } catch (M) {
+          console.error("❌ Error deleting thesis:", M), vs("Unexpected Error", "An unexpected error occurred while deleting the thesis. Please try again.");
         }
       }
     }
@@ -39267,25 +39264,25 @@ This action cannot be undone. Any positions assigned to this thesis will lose th
       }
       console.log("📝 Adding new thesis:", Re.value);
       try {
-        const { data: b, error: T } = await m.schema("hf").from("thesis").insert([{
+        const { data: b, error: M } = await m.schema("hf").from("thesis").insert([{
           title: Re.value.title.trim(),
           description: Re.value.description.trim() || null
         }]).select();
-        T ? (console.error("❌ Failed to add thesis:", T), vs("Failed to Add Thesis", T.message)) : (console.log("✅ Thesis added successfully:", b), C.invalidateQueries({ queryKey: ["thesis"] }), Re.value = { title: "", description: "" }, ye.value = !1, Br("Thesis Added", `"${(w = b[0]) == null ? void 0 : w.title}" has been successfully created.`));
+        M ? (console.error("❌ Failed to add thesis:", M), vs("Failed to Add Thesis", M.message)) : (console.log("✅ Thesis added successfully:", b), C.invalidateQueries({ queryKey: ["thesis"] }), Re.value = { title: "", description: "" }, ye.value = !1, Br("Thesis Added", `"${(w = b[0]) == null ? void 0 : w.title}" has been successfully created.`));
       } catch (b) {
         console.error("❌ Error adding thesis:", b), vs("Unexpected Error", "An unexpected error occurred while adding the thesis. Please try again.");
       }
     }
     function vu(w, b) {
-      const T = y.value;
-      if (T) {
+      const M = y.value;
+      if (M) {
         if (w === "symbol") {
-          g.value = [], typeof T.onFilterChanged == "function" && T.onFilterChanged();
+          g.value = [], typeof M.onFilterChanged == "function" && M.onFilterChanged();
           const O = new URL(window.location.href);
           O.searchParams.delete("all_cts_fi"), window.history.replaceState({}, "", O.toString());
         } else {
-          const O = T.getFilterModel && T.getFilterModel() || {};
-          delete O[w], typeof T.setFilterModel == "function" && T.setFilterModel(O), typeof T.onFilterChanged == "function" && T.onFilterChanged(), c(O);
+          const O = M.getFilterModel && M.getFilterModel() || {};
+          delete O[w], typeof M.setFilterModel == "function" && M.setFilterModel(O), typeof M.onFilterChanged == "function" && M.onFilterChanged(), c(O);
         }
         H();
       }
@@ -39301,12 +39298,12 @@ This action cannot be undone. Any positions assigned to this thesis will lose th
       y.value = w.api, F.value = w.columnApi, console.log("🏁 Grid ready, applying URL filters...");
       const b = d();
       if (Object.keys(b).length > 0) {
-        const T = {};
+        const M = {};
         if (b.symbol) {
           const O = b.symbol;
-          O.includes(",") ? g.value = O.split(",").map((x) => x.trim()).filter(Boolean) : T.symbol = { type: "equals", filter: O };
+          O.includes(",") ? g.value = O.split(",").map((x) => x.trim()).filter(Boolean) : M.symbol = { type: "equals", filter: O };
         }
-        b.asset_class && (T.asset_class = { type: "equals", filter: b.asset_class }), b.legal_entity && (T.legal_entity = { type: "equals", filter: b.legal_entity }), Object.keys(T).length > 0 && w.api.setFilterModel(T);
+        b.asset_class && (M.asset_class = { type: "equals", filter: b.asset_class }), b.legal_entity && (M.legal_entity = { type: "equals", filter: b.legal_entity }), Object.keys(M).length > 0 && w.api.setFilterModel(M);
       }
       Dt(), H();
     }
@@ -39317,7 +39314,7 @@ This action cannot be undone. Any positions assigned to this thesis will lose th
       w.forEachNodeAfterFilterAndSort((O) => {
         O.data && b.push(O.data);
       });
-      const T = {
+      const M = {
         legal_entity: "TOTAL",
         symbol: "",
         asset_class: "",
@@ -39331,15 +39328,15 @@ This action cannot be undone. Any positions assigned to this thesis will lose th
           const de = ie[O];
           return V + (typeof de == "number" ? de : 0);
         }, 0);
-        T[O] = x;
+        M[O] = x;
       }
-      R.value = [T];
+      R.value = [M];
     }
     function Vr(w, b) {
-      const T = y.value;
-      if (T)
+      const M = y.value;
+      if (M)
         try {
-          typeof T.setColumnsVisible == "function" ? T.setColumnsVisible([w], b) : typeof T.setColumnVisible == "function" && T.setColumnVisible(w, b);
+          typeof M.setColumnsVisible == "function" ? M.setColumnsVisible([w], b) : typeof M.setColumnVisible == "function" && M.setColumnVisible(w, b);
         } catch (O) {
           console.warn("Could not set column visibility:", O);
         }
@@ -39364,7 +39361,7 @@ This action cannot be undone. Any positions assigned to this thesis will lose th
       document.removeEventListener("click", Wr);
     }), (w, b) => {
       var O;
-      const T = Gu("router-link");
+      const M = Gu("router-link");
       return U(), j("div", e0, [
         ve(o).isLoading.value ? (U(), j("div", t0, [...b[13] || (b[13] = [
           N("div", { class: "loading-spinner" }, null, -1),
@@ -39375,7 +39372,7 @@ This action cannot be undone. Any positions assigned to this thesis will lose th
         ])) : ve(o).isSuccess.value ? (U(), j("div", s0, [
           N("div", o0, [
             N("h2", null, [
-              e.showHeaderLink ? (U(), Hu(T, {
+              e.showHeaderLink ? (U(), Hu(M, {
                 key: 0,
                 to: "/positions"
               }, {
@@ -39457,10 +39454,10 @@ This action cannot be undone. Any positions assigned to this thesis will lose th
               ], 512)) : ut("", !0)
             ])
           ]),
-          M.value.length ? (U(), j("div", u0, [
+          T.value.length ? (U(), j("div", u0, [
             b[19] || (b[19] = N("span", { class: "filters-label" }, "Filtered by:", -1)),
             N("div", h0, [
-              (U(!0), j(ys, null, Rs(M.value, (x) => (U(), j("span", {
+              (U(!0), j(ys, null, Rs(T.value, (x) => (U(), j("span", {
                 key: `${x.field}-${x.value}`,
                 class: "filter-tag"
               }, [
@@ -39643,7 +39640,7 @@ This action cannot be undone. Any positions assigned to this thesis will lose th
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, sT = /* @__PURE__ */ Q0(Y0, [["__scopeId", "data-v-4f9b5e19"]]);
+}, sT = /* @__PURE__ */ Q0(Y0, [["__scopeId", "data-v-cd3d1e24"]]);
 export {
   sT as Positions,
   sT as default
