@@ -311,8 +311,9 @@ const columnDefs = computed<ColDef[]>(() => [
       return true
     },
     getQuickFilterText: (params: any) => params.value?.title || '',
-    // Remove enableRowGroup since it's enterprise only
-    sortable: true
+    sortable: true,
+    // ADD THIS LINE - Enable click-to-filter for thesis column
+    onCellClicked: (event: any) => handleThesisCellFilterClick(event)
   },
   { 
     field: 'symbol', 
@@ -441,7 +442,7 @@ const pinnedBottomRowDataRef = ref<any[]>([])
 const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'cash_flow_on_entry', 'cash_flow_on_exercise'] as const
 
 // Active filters tracking for tag UI
-type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity'; value: string }
+type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'; value: string }
 const activeFilters = ref<ActiveFilter[]>([])
 
 function syncActiveFiltersFromGrid() {
@@ -467,6 +468,9 @@ function syncActiveFiltersFromGrid() {
     if (typeof asset === 'string' && asset.length) next.push({ field: 'asset_class', value: asset })
     const account = getFilterValue('legal_entity')
     if (typeof account === 'string' && account.length) next.push({ field: 'legal_entity', value: account })
+    // ADD THIS LINE - Handle thesis filter
+    const thesis = getFilterValue('thesis')
+    if (typeof thesis === 'string' && thesis.length) next.push({ field: 'thesis', value: thesis })
   }
   
   activeFilters.value = next
@@ -488,7 +492,20 @@ function extractTagsFromSymbol(symbolText: string): string[] {
   return [base, expiry, strike, right].filter(Boolean)
 }
 
-function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity', value: any) {
+function handleThesisCellFilterClick(event: any) {
+  // Don't trigger filter when in edit mode
+  if (event.event?.target?.tagName === 'SELECT') {
+    return
+  }
+  
+  const thesis = event?.value
+  if (!thesis || !thesis.title) return
+  
+  // Use the thesis title for filtering
+  handleCellFilterClick('thesis', thesis.title)
+}
+
+function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis', value: any) {
   const api = gridApi.value
   if (!api || value === undefined || value === null) return
   
@@ -513,7 +530,7 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity',
     
     // URL update will be handled by the gridApi watcher via writeFiltersToUrlFromModel
   } else {
-    // For other fields, use normal ag-Grid filters
+    // For other fields (including thesis), use normal ag-Grid filters
     const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
     currentModel[field] = { type: 'equals', filter: String(value) }
     
@@ -529,277 +546,63 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity',
   syncActiveFiltersFromGrid()
 }
 
-function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity', specificValue?: string) {
-  const api = gridApi.value
-  if (!api) return
-  
-  if (field === 'symbol') {
-    // For symbol field, clear all symbol filters (since we group them)
-    symbolTagFilters.value = []
-    
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
-    }
-    
-    // Update URL
-    const url = new URL(window.location.href)
-    url.searchParams.delete('all_cts_fi')
-    window.history.replaceState({}, '', url.toString())
-  } else {
-    // Clear normal ag-Grid filter
-    const model = (api.getFilterModel && api.getFilterModel()) || {}
-    delete model[field]
-    if (typeof api.setFilterModel === 'function') {
-      api.setFilterModel(model)
-    }
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
-    }
-    writeFiltersToUrlFromModel(model)
+// Filter position data by account ID (client ID)
+const filteredPositions = computed(() => {
+  const positions = q.data.value || []
+  if (!props.accountId || props.accountId === 'demo') {
+    return positions
   }
   
-  syncActiveFiltersFromGrid()
+  return positions.filter(p => p.legal_entity?.id === props.accountId)
+})
+
+// Column metadata for visibility control
+type ColumnField2 = 'id' | 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry'
+const allColumnOptions2: Array<{ field: ColumnField2; label: string }> = [
+  { field: 'legal_entity', label: 'Account' },
+  { field: 'symbol', label: 'Symbol' },
+  { field: 'asset_class', label: 'Asset Class' },
+  { field: 'conid', label: 'Conid' },
+  { field: 'undConid', label: 'Underlying Conid' },
+  { field: 'multiplier', label: 'Multiplier' },
+  { field: 'qty', label: 'Quantity' },
+  { field: 'avgPrice', label: 'Avg Price' },
+  { field: 'price', label: 'Market Price' },
+  { field: 'market_value', label: 'Market Value' },
+  { field: 'unrealized_pnl', label: 'Unrealized P&L' },
+  { field: 'cash_flow_on_entry', label: 'Cash Flow on Entry' },
+  { field: 'cash_flow_on_exercise', label: 'Cash Flow on Exercise' }
+]
+
+const visibleCols2 = ref<ColumnField2[]>(parseVisibleColsFromUrl2())
+function isColVisible2(field: ColumnField2): boolean {
+  return visibleCols2.value.includes(field)
 }
 
-function clearAllFilters() {
-  const api = gridApi.value
-  if (!api) return
-  
-  // Clear external symbol filters
-  symbolTagFilters.value = []
-  
-  // Clear ag-Grid filters
-  if (typeof api.setFilterModel === 'function') {
-    api.setFilterModel(null)
-  }
-  if (typeof api.onFilterChanged === 'function') {
-    api.onFilterChanged()
-  }
-  
-  // Clear URL params
-  writeFiltersToUrlFromModel({})
+// URL param helpers
+function parseVisibleColsFromUrl2(): ColumnField2[] {
   const url = new URL(window.location.href)
-  url.searchParams.delete('all_cts_fi')
+  const colsParam = url.searchParams.get('position_cols')
+  if (!colsParam) {
+    return allColumnOptions2.map(c => c.field)
+  }
+  const fromUrl = colsParam.split('-and-').map(s => s.trim()).filter(Boolean) as ColumnField2[]
+  const valid = new Set(allColumnOptions2.map(c => c.field))
+  const filtered = fromUrl.filter(c => valid.has(c))
+  return filtered.length ? filtered : allColumnOptions2.map(c => c.field)
+}
+
+function writeVisibleColsToUrl2(cols: ColumnField2[]) {
+  const url = new URL(window.location.href)
+  url.searchParams.set('position_cols', cols.join('-and-'))
   window.history.replaceState({}, '', url.toString())
-  
-  syncActiveFiltersFromGrid()
-}
-
-// Compat helper: set column visibility across ag-Grid versions
-function setColumnVisibility(field: string, visible: boolean) {
-  const cApi: any = columnApiRef.value
-  const gApi: any = gridApi.value
-  if (cApi && typeof cApi.setColumnVisible === 'function') {
-    cApi.setColumnVisible(field, visible)
-    return
-  }
-  if (gApi) {
-    if (typeof gApi.setColumnVisible === 'function') {
-      gApi.setColumnVisible(field, visible)
-      return
-    }
-    if (typeof gApi.setColumnsVisible === 'function') {
-      gApi.setColumnsVisible([field], visible)
-      return
-    }
-  }
-}
-
-// UI state: column settings dropdown
-const showColumnsPopup = ref(false)
-const columnsBtnRef = ref<HTMLElement | null>(null)
-const columnsPopupRef = ref<HTMLElement | null>(null)
-
-function toggleColumnsPopup() {
-  showColumnsPopup.value = !showColumnsPopup.value
-}
-
-function closeColumnsPopup() {
-  showColumnsPopup.value = false
-}
-
-function handleClickOutside(event: MouseEvent) {
-  const target = event.target as Node | null
-  const btnEl = columnsBtnRef.value
-  const popEl = columnsPopupRef.value
-  if (!btnEl || !popEl) return
-  if (!btnEl.contains(target) && !popEl.contains(target)) {
-    closeColumnsPopup()
-  }
-}
-
-function handleEscape(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
-    closeColumnsPopup()
-  }
-}
-
-// Handle URL changes from external components (like app-margin)
-function handleUrlChange() {
-  const api = gridApi.value
-  if (!api) return
-  
-  // Parse filters from the current URL
-  const fromUrl = parseFiltersFromUrl()
-  
-  // Handle symbol filter (external filter for exact tag matching)
-  if (fromUrl.symbol) {
-    // Split comma-separated tags from URL (converted from '-and-' separator)
-    symbolTagFilters.value = fromUrl.symbol.split(',').map(s => s.trim()).filter(Boolean)
-  } else {
-    symbolTagFilters.value = []
-  }
-  
-  // Handle other filters (normal ag-Grid filters)
-  const model: any = {}
-  if (fromUrl.asset_class) model.asset_class = { type: 'equals', filter: fromUrl.asset_class }
-  if (fromUrl.legal_entity) model.legal_entity = { type: 'equals', filter: fromUrl.legal_entity }
-  
-  // Apply the filter model
-  if (typeof api.setFilterModel === 'function') {
-    api.setFilterModel(model)
-  }
-  
-  // Trigger filter update
-  if (typeof api.onFilterChanged === 'function') {
-    api.onFilterChanged()
-  }
-  
-  syncActiveFiltersFromGrid()
-  recalcPinnedTotals()
-}
-
-onMounted(() => {
-  window.addEventListener('click', handleClickOutside)
-  window.addEventListener('keydown', handleEscape)
-  window.addEventListener('popstate', handleUrlChange)
-  eventBus?.on('client-id-changed', handleClientIdChanged);
-})
-
-const eventBus = inject('eventBus');
-
-function handleClientIdChanged(data: { clientId: string | null, accountId: number | null }) {
-  console.log('Client ID changed via event bus:', data);
-  
-  const api = gridApi.value;
-  if (!api) {
-    console.log('Grid API not ready, skipping filter update');
-    return;
-  }
-  
-  // Get current filter model
-  const model = api.getFilterModel?.() || {};
-  
-  // Update or clear the legal_entity filter
-  if (data.clientId) {
-    model.legal_entity = { type: 'equals', filter: data.clientId };
-  } else {
-    // Clear the filter when clientId is null
-    delete model.legal_entity;
-  }
-  
-  // Apply the updated filter model to the grid
-  if (typeof api.setFilterModel === 'function') {
-    api.setFilterModel(model);
-  }
-  
-  // Trigger filter change event to update the grid
-  if (typeof api.onFilterChanged === 'function') {
-    api.onFilterChanged();
-  }
-  
-  // Update the active filters UI
-  syncActiveFiltersFromGrid();
-  
-  // Recalculate totals with new filter
-  recalcPinnedTotals();
-  
-  // Update URL to reflect the new filter state
-  writeFiltersToUrlFromModel(model);
-}
-
-onBeforeUnmount(() => {
-  if (q._cleanup) {
-    q._cleanup()
-  }
-  window.removeEventListener('click', handleClickOutside)
-  window.removeEventListener('keydown', handleEscape)
-  window.removeEventListener('popstate', handleUrlChange)
-  eventBus?.off('client-id-changed', handleClientIdChanged);
-})
-
-function recalcPinnedTotals() {
-  const api = gridApi.value
-  // API not ready: compute from raw rows
-  if (!api) {
-    const rows = q.data.value || []
-    const totals: any = { symbol: 'Total', asset_class: '' }
-    for (const field of numericFields) {
-      totals[field] = rows.reduce((sum: number, row: any) => {
-        const v = row?.[field]
-        const n = typeof v === 'number' && Number.isFinite(v) ? v : 0
-        return sum + n
-      }, 0)
-    }
-    pinnedBottomRowDataRef.value = [totals]
-    return
-  }
-
-  const totals: any = { symbol: 'Total', asset_class: '' }
-  for (const field of numericFields) totals[field] = 0
-
-  api.forEachNodeAfterFilterAndSort((node: any) => {
-    const data = node.data || {}
-    for (const field of numericFields) {
-      const v = data?.[field]
-      const n = typeof v === 'number' && Number.isFinite(v) ? v : 0
-      totals[field] += n
-    }
-  })
-
-  pinnedBottomRowDataRef.value = [totals]
-}
-
-function onGridReady(event: any) {
-  gridApi.value = event.api
-  columnApiRef.value = event.columnApi
-  
-  // Apply initial column visibility from URL
-  for (const opt of allColumnOptions) {
-    setColumnVisibility(opt.field, isColVisible(opt.field))
-  }
-  
-  // Apply initial filters from URL
-  const fromUrl = parseFiltersFromUrl()
-  
-  // Handle symbol filter (external filter for exact tag matching)
-  if (fromUrl.symbol) {
-    // Split comma-separated tags from URL (converted from '-and-' separator)
-    symbolTagFilters.value = fromUrl.symbol.split(',').map(s => s.trim()).filter(Boolean)
-  }
-  
-  // Handle other filters (normal ag-Grid filters)
-  const model: any = {}
-  if (fromUrl.asset_class) model.asset_class = { type: 'equals', filter: fromUrl.asset_class }
-  if (fromUrl.legal_entity) model.legal_entity = { type: 'equals', filter: fromUrl.legal_entity }
-  if (Object.keys(model).length && typeof event.api.setFilterModel === 'function') {
-    event.api.setFilterModel(model)
-  }
-  
-  // Trigger filter update
-  if (typeof event.api.onFilterChanged === 'function') {
-    event.api.onFilterChanged()
-  }
-  
-  syncActiveFiltersFromGrid()
-  recalcPinnedTotals()
 }
 
 // Persist visibility to URL and update grid when changed
-watch(visibleCols, (cols) => {
-  writeVisibleColsToUrl(cols)
-  for (const opt of allColumnOptions) {
-    setColumnVisibility(opt.field, isColVisible(opt.field))
+watch(visibleCols2, (cols) => {
+  writeVisibleColsToUrl2(cols)
+  for (const opt of allColumnOptions2) {
+    setColumnVisibility(opt.field, isColVisible2(opt.field))
   }
 }, { deep: true })
 
@@ -1101,6 +904,196 @@ async function addNewThesis() {
   }
 }
 
+function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis', specificValue?: string) {
+  const api = gridApi.value
+  if (!api) return
+  
+  if (field === 'symbol') {
+    // For symbol field, clear all symbol filters (since we group them)
+    symbolTagFilters.value = []
+    
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
+    
+    // Update URL
+    const url = new URL(window.location.href)
+    url.searchParams.delete('all_cts_fi')
+    window.history.replaceState({}, '', url.toString())
+  } else {
+    // Clear normal ag-Grid filter (including thesis)
+    const model = (api.getFilterModel && api.getFilterModel()) || {}
+    delete model[field]
+    if (typeof api.setFilterModel === 'function') {
+      api.setFilterModel(model)
+    }
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
+    writeFiltersToUrlFromModel(model)
+  }
+  
+  syncActiveFiltersFromGrid()
+}
+
+function clearAllFilters() {
+  const api = gridApi.value
+  if (!api) return
+  
+  // Clear all ag-Grid filters
+  if (typeof api.setFilterModel === 'function') {
+    api.setFilterModel({})
+  }
+  
+  // Clear external symbol filters
+  symbolTagFilters.value = []
+  
+  if (typeof api.onFilterChanged === 'function') {
+    api.onFilterChanged()
+  }
+  
+  // Clear URL parameters
+  const url = new URL(window.location.href)
+  url.searchParams.delete('all_cts_fi')
+  url.searchParams.delete('fac')
+  url.searchParams.delete('all_cts_clientId')
+  window.history.replaceState({}, '', url.toString())
+  
+  syncActiveFiltersFromGrid()
+}
+
+function onGridReady(params: any) {
+  gridApi.value = params.api
+  columnApiRef.value = params.columnApi
+  
+  console.log('🏁 Grid ready, applying URL filters...')
+  
+  // Apply filters from URL
+  const urlFilters = parseFiltersFromUrl()
+  if (Object.keys(urlFilters).length > 0) {
+    const model: any = {}
+    
+    if (urlFilters.symbol) {
+      // Handle symbol filters - check if it's comma-separated tags
+      const symbolValue = urlFilters.symbol
+      if (symbolValue.includes(',')) {
+        // Multiple tags - use external filter
+        symbolTagFilters.value = symbolValue.split(',').map(s => s.trim()).filter(Boolean)
+      } else {
+        // Single value - use ag-Grid filter
+        model.symbol = { type: 'equals', filter: symbolValue }
+      }
+    }
+    
+    if (urlFilters.asset_class) {
+      model.asset_class = { type: 'equals', filter: urlFilters.asset_class }
+    }
+    
+    if (urlFilters.legal_entity) {
+      model.legal_entity = { type: 'equals', filter: urlFilters.legal_entity }
+    }
+    
+    if (Object.keys(model).length > 0) {
+      params.api.setFilterModel(model)
+    }
+  }
+  
+  // Initial calculation
+  recalcPinnedTotals()
+  syncActiveFiltersFromGrid()
+}
+
+function recalcPinnedTotals() {
+  const api = gridApi.value
+  if (!api || !q.data.value) return
+  
+  // Get all displayed (filtered/sorted) rows
+  const displayedRows: any[] = []
+  api.forEachNodeAfterFilterAndSort((node: any) => {
+    if (node.data) {
+      displayedRows.push(node.data)
+    }
+  })
+  
+  // Calculate totals for numeric fields
+  const totals: any = {
+    legal_entity: 'TOTAL',
+    symbol: '',
+    asset_class: '',
+    thesis: '',
+    conid: '',
+    undConid: '',
+    multiplier: null
+  }
+  
+  for (const field of numericFields) {
+    const sum = displayedRows.reduce((acc, row) => {
+      const value = row[field]
+      return acc + (typeof value === 'number' ? value : 0)
+    }, 0)
+    totals[field] = sum
+  }
+  
+  // Update pinned bottom row
+  pinnedBottomRowDataRef.value = [totals]
+}
+
+function setColumnVisibility(field: string, visible: boolean) {
+  const api = gridApi.value
+  if (!api) return
+  
+  try {
+    if (typeof api.setColumnsVisible === 'function') {
+      api.setColumnsVisible([field], visible)
+    } else if (typeof api.setColumnVisible === 'function') {
+      api.setColumnVisible(field, visible)
+    }
+  } catch (error) {
+    console.warn('Could not set column visibility:', error)
+  }
+}
+
+// Column visibility controls
+const showColumnsPopup = ref(false)
+const columnsBtnRef = ref<HTMLElement | null>(null)
+const columnsPopupRef = ref<HTMLElement | null>(null)
+
+function toggleColumnsPopup() {
+  showColumnsPopup.value = !showColumnsPopup.value
+}
+
+function closeColumnsPopup() {
+  showColumnsPopup.value = false
+}
+
+// Close popup when clicking outside
+function handleClickOutside(event: Event) {
+  if (showColumnsPopup.value && 
+      columnsPopupRef.value && 
+      columnsBtnRef.value &&
+      !columnsPopupRef.value.contains(event.target as Node) && 
+      !columnsBtnRef.value.contains(event.target as Node)) {
+    closeColumnsPopup()
+  }
+}
+
+// Persist visibility to URL and update grid when changed
+watch(visibleCols, (cols) => {
+  writeVisibleColsToUrl(cols)
+  for (const opt of allColumnOptions) {
+    setColumnVisibility(opt.field, isColVisible(opt.field))
+  }
+}, { deep: true })
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
+// ...rest of existing code...
 </script>
 
 <template>
@@ -1169,7 +1162,12 @@ async function addNewThesis() {
         <span class="filters-label">Filtered by:</span>
         <div class="filters-tags">
           <span v-for="f in activeFilters" :key="`${f.field}-${f.value}`" class="filter-tag">
-            <strong>{{ f.field === 'symbol' ? 'Financial Instrument' : (f.field === 'legal_entity' ? 'Account' : 'Asset Class') }}:</strong> {{ f.value }}
+            <strong>{{ 
+              f.field === 'symbol' ? 'Financial Instrument' : 
+              f.field === 'legal_entity' ? 'Account' : 
+              f.field === 'thesis' ? 'Thesis' :
+              'Asset Class' 
+            }}:</strong> {{ f.value }}
             <button class="tag-clear" @click="clearFilter(f.field)" aria-label="Clear filter">✕</button>
           </span>
           <button class="btn btn-clear-all" @click="clearAllFilters">Clear all</button>
