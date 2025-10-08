@@ -119,9 +119,11 @@ function isColVisible(field: ColumnField): boolean {
 const symbolTagFilters = ref<string[]>([])
 
 // Custom cell renderers
+// Update the thesis cell renderer to remove grouping indicator
 const thesisCellRenderer = (params: any) => {
   const thesis = params.value
   if (!thesis) return '<span style="color: #6c757d; font-style: italic;">No thesis</span>'
+  
   return `<span title="${thesis.description || ''}">${thesis.title}</span>`
 }
 
@@ -301,17 +303,16 @@ const columnDefs = computed<ColDef[]>(() => [
     cellEditor: ThesisCellEditor,
     editable: true,
     cellEditorParams: {
-      // Pass thesis options to the cell editor
       thesisOptions: thesisQuery.data.value || []
     },
-    // Remove onCellValueChanged since we're handling updates in the editor
     valueGetter: (params: any) => params.data.thesis,
     valueSetter: (params: any) => {
-      // Just update the local data, updates are handled in the editor
       params.data.thesis = params.newValue
       return true
     },
-    getQuickFilterText: (params: any) => params.value?.title || ''
+    getQuickFilterText: (params: any) => params.value?.title || '',
+    // Remove enableRowGroup since it's enterprise only
+    sortable: true
   },
   { 
     field: 'symbol', 
@@ -940,8 +941,6 @@ async function updatePositionThesis(positionId: string, thesisId: string | null)
       throw new Error(`Position not found: ${checkError.message}`)
     }
     
-    console.log('✅ Found position:', existingPosition)
-    
     // Update the thesis assignment
     const { error } = await supabase
       .schema('hf')
@@ -965,24 +964,6 @@ async function updatePositionThesis(positionId: string, thesisId: string | null)
   }
 }
 
-// Grouping state
-const groupByThesis = ref(false)
-
-// Grouping functions
-function toggleGroupByThesis() {
-  groupByThesis.value = !groupByThesis.value
-  if (gridApi.value) {
-    if (groupByThesis.value) {
-      gridApi.value.setColumnDefs([
-        { field: 'thesis', headerName: 'Thesis', rowGroup: true, hide: true },
-        ...columnDefs.value.filter(col => col.field !== 'thesis')
-      ])
-    } else {
-      gridApi.value.setColumnDefs(columnDefs.value)
-    }
-  }
-}
-
 // Thesis management - UPDATE THIS SECTION
 const showThesisModal = ref(false)
 const newThesis = ref({ title: '', description: '' })
@@ -998,6 +979,55 @@ function showThesisModalForAdd() {
 function showThesisModalForView() {
   thesisModalMode.value = 'view'
   showThesisModal.value = true
+}
+
+// Toast notification system
+interface ToastMessage {
+  id: string
+  type: 'success' | 'error' | 'warning' | 'info'
+  title: string
+  message?: string
+  duration?: number
+}
+
+const toasts = ref<ToastMessage[]>([])
+
+function showToast(type: ToastMessage['type'], title: string, message?: string, duration = 5000) {
+  const id = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  const toast: ToastMessage = { id, type, title, message, duration }
+  
+  toasts.value.push(toast)
+  
+  // Auto-remove after duration
+  if (duration > 0) {
+    setTimeout(() => {
+      removeToast(id)
+    }, duration)
+  }
+}
+
+function removeToast(id: string) {
+  const index = toasts.value.findIndex(t => t.id === id)
+  if (index > -1) {
+    toasts.value.splice(index, 1)
+  }
+}
+
+// Convenience methods
+function showSuccess(title: string, message?: string) {
+  showToast('success', title, message)
+}
+
+function showError(title: string, message?: string) {
+  showToast('error', title, message)
+}
+
+function showWarning(title: string, message?: string) {
+  showToast('warning', title, message)
+}
+
+function showInfo(title: string, message?: string) {
+  showToast('info', title, message)
 }
 
 async function deleteThesis(thesisId: string, thesisTitle: string) {
@@ -1016,7 +1046,7 @@ async function deleteThesis(thesisId: string, thesisTitle: string) {
     
     if (error) {
       console.error('❌ Failed to delete thesis:', error)
-      alert(`Failed to delete thesis: ${error.message}`)
+      showError('Failed to Delete Thesis', error.message)
     } else {
       console.log('✅ Thesis deleted successfully')
       
@@ -1024,17 +1054,17 @@ async function deleteThesis(thesisId: string, thesisTitle: string) {
       queryClient.invalidateQueries({ queryKey: ['thesis'] })
       queryClient.invalidateQueries({ queryKey: ['positions'] })
       
-      alert('Thesis deleted successfully!')
+      showSuccess('Thesis Deleted', `"${thesisTitle}" has been successfully deleted.`)
     }
   } catch (err) {
     console.error('❌ Error deleting thesis:', err)
-    alert('An unexpected error occurred while deleting the thesis')
+    showError('Unexpected Error', 'An unexpected error occurred while deleting the thesis. Please try again.')
   }
 }
 
 async function addNewThesis() {
   if (!newThesis.value.title.trim()) {
-    alert('Please enter a thesis title')
+    showWarning('Title Required', 'Please enter a thesis title before saving.')
     return
   }
   
@@ -1052,7 +1082,7 @@ async function addNewThesis() {
     
     if (error) {
       console.error('❌ Failed to add thesis:', error)
-      alert(`Failed to add thesis: ${error.message}`)
+      showError('Failed to Add Thesis', error.message)
     } else {
       console.log('✅ Thesis added successfully:', data)
       
@@ -1063,11 +1093,11 @@ async function addNewThesis() {
       newThesis.value = { title: '', description: '' }
       showThesisModal.value = false
       
-      alert('Thesis added successfully!')
+      showSuccess('Thesis Added', `"${data[0]?.title}" has been successfully created.`)
     }
   } catch (err) {
     console.error('❌ Error adding thesis:', err)
-    alert('An unexpected error occurred while adding the thesis')
+    showError('Unexpected Error', 'An unexpected error occurred while adding the thesis. Please try again.')
   }
 }
 
@@ -1097,17 +1127,9 @@ async function addNewThesis() {
         <div class="positions-tools">
           <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
           
-          <!-- Group by thesis toggle -->
-          <button 
-            class="group-btn"
-            :class="{ active: groupByThesis }"
-            @click="toggleGroupByThesis" 
-            title="Group by thesis"
-          >
-            <span class="icon">📊</span> Group by Thesis
-          </button>
+          <!-- Remove the Group by thesis button -->
           
-          <!-- Update the Add thesis button -->
+          <!-- Keep the thesis management button -->
           <button class="thesis-btn" @click="showThesisModalForView" title="Manage thesis">
             <span class="icon">📋</span> Manage Thesis
           </button>
@@ -1166,11 +1188,13 @@ async function addNewThesis() {
             flex: 1,
             minWidth: 100
           }"
-          :animateRows="true"
-          :domLayout="'autoHeight'"
-          :pinnedBottomRowData="pinnedBottomRowDataRef"
-          :isExternalFilterPresent="isExternalFilterPresent"
-          :doesExternalFilterPass="doesExternalFilterPass"
+          :gridOptions="{
+            animateRows: true,
+            domLayout: 'autoHeight',
+            pinnedBottomRowData: pinnedBottomRowDataRef,
+            isExternalFilterPresent: isExternalFilterPresent,
+            doesExternalFilterPass: doesExternalFilterPass
+          }"
           @grid-ready="onGridReady"
           @filter-changed="recalcPinnedTotals"
           @sort-changed="recalcPinnedTotals"
@@ -1286,6 +1310,32 @@ async function addNewThesis() {
         </div>
       </div>
     </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container">
+      <TransitionGroup name="toast" tag="div">
+        <div
+          v-for="toast in toasts"
+          :key="toast.id"
+          :class="['toast', `toast-${toast.type}`]"
+          @click="removeToast(toast.id)"
+        >
+          <div class="toast-icon">
+            <span v-if="toast.type === 'success'">✅</span>
+            <span v-else-if="toast.type === 'error'">❌</span>
+            <span v-else-if="toast.type === 'warning'">⚠️</span>
+            <span v-else-if="toast.type === 'info'">ℹ️</span>
+          </div>
+          <div class="toast-content">
+            <div class="toast-title">{{ toast.title }}</div>
+            <div v-if="toast.message" class="toast-message">{{ toast.message }}</div>
+          </div>
+          <button class="toast-close" @click.stop="removeToast(toast.id)" aria-label="Close notification">
+            ×
+          </button>
+        </div>
+      </TransitionGroup>
+    </div>
   </div>
 </template>
 
@@ -1337,7 +1387,7 @@ h1 {
   position: relative;
 }
 
-.group-btn, .thesis-btn {
+.thesis-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -1351,19 +1401,8 @@ h1 {
   white-space: nowrap;
 }
 
-.group-btn:hover, .thesis-btn:hover {
+.thesis-btn:hover {
   background: #f8f9fa;
-}
-
-.group-btn.active {
-  background: #007bff;
-  color: white;
-  border-color: #007bff;
-}
-
-.group-btn .icon, .thesis-btn .icon {
-  pointer-events: none;
-  font-size: 12px;
 }
 
 .columns-btn {
@@ -1812,20 +1851,6 @@ h1 {
   cursor: not-allowed;
 }
 
-/* ag-Grid grouping styles */
-::deep(.ag-theme-alpine .ag-row-group) {
-  font-weight: 600;
-  background-color: #f8f9fa;
-}
-
-::deep(.ag-theme-alpine .ag-group-expanded) {
-  color: #007bff;
-}
-
-::deep(.ag-theme-alpine .ag-group-contracted) {
-  color: #6c757d;
-}
-
 /* Add these new styles */
 .thesis-actions {
   margin-bottom: 20px;
@@ -1916,6 +1941,140 @@ h1 {
 .btn-danger:hover {
   background: #c82333;
   border-color: #bd2130;
+}
+
+/* Toast notification styles */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  pointer-events: none;
+  max-width: 400px;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  pointer-events: auto;
+  min-width: 300px;
+  position: relative;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toast-success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #155724;
+  border-left: 4px solid #28a745;
+}
+
+.toast-error {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  color: #721c24;
+  border-left: 4px solid #dc3545;
+}
+
+.toast-warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  color: #856404;
+  border-left: 4px solid #ffc107;
+}
+
+.toast-info {
+  background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+  color: #0c5460;
+  border-left: 4px solid #17a2b8;
+}
+
+.toast-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.toast-message {
+  font-size: 13px;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toast-close:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Toast animations */
+.toast-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.toast-leave-active {
+  transition: all 0.3s ease-in;
+}
+
+.toast-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.toast-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.toast-move {
+  transition: transform 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .toast-container {
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    max-width: none;
+  }
+  
+  .toast {
+    min-width: auto;
+  }
 }
 </style>
 
