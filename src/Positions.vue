@@ -1022,36 +1022,33 @@ function onGridReady(params: any) {
 
 function recalcPinnedTotals() {
   const api = gridApi.value
-  if (!api || !q.data.value) return
-  
-  // Get all displayed (filtered/sorted) rows
-  const displayedRows: any[] = []
+  // API not ready: compute from raw rows
+  if (!api) {
+    const rows = q.data.value || []
+    const totals: any = { symbol: 'Total', asset_class: '' }
+    for (const field of numericFields) {
+      totals[field] = rows.reduce((sum: number, row: any) => {
+        const v = row?.[field]
+        const n = typeof v === 'number' && Number.isFinite(v) ? v : 0
+        return sum + n
+      }, 0)
+    }
+    pinnedBottomRowDataRef.value = [totals]
+    return
+  }
+
+  const totals: any = { symbol: 'Total', asset_class: '' }
+  for (const field of numericFields) totals[field] = 0
+
   api.forEachNodeAfterFilterAndSort((node: any) => {
-    if (node.data) {
-      displayedRows.push(node.data)
+    const data = node.data || {}
+    for (const field of numericFields) {
+      const v = data?.[field]
+      const n = typeof v === 'number' && Number.isFinite(v) ? v : 0
+      totals[field] += n
     }
   })
-  
-  // Calculate totals for numeric fields
-  const totals: any = {
-    legal_entity: 'TOTAL',
-    symbol: '',
-    asset_class: '',
-    thesis: '',
-    conid: '',
-    undConid: '',
-    multiplier: null
-  }
-  
-  for (const field of numericFields) {
-    const sum = displayedRows.reduce((acc, row) => {
-      const value = row[field]
-      return acc + (typeof value === 'number' ? value : 0)
-    }, 0)
-    totals[field] = sum
-  }
-  
-  // Update pinned bottom row
+
   pinnedBottomRowDataRef.value = [totals]
 }
 
@@ -1203,17 +1200,11 @@ onBeforeUnmount(() => {
             flex: 1,
             minWidth: 100
           }"
-          :gridOptions="{
-            animateRows: true,
-            domLayout: 'autoHeight',
-            pinnedBottomRowData: pinnedBottomRowDataRef,
-            isExternalFilterPresent: isExternalFilterPresent,
-            doesExternalFilterPass: doesExternalFilterPass,
-            singleClickEdit: false, // Ensure double-click is required for editing
-            stopEditingWhenCellsLoseFocus: true, // Stop editing when clicking elsewhere
-            enterMovesDown: true, // Allow Enter to move to next row
-            enterMovesDownAfterEdit: true
-          }"
+          :animateRows="true"
+          :domLayout="'autoHeight'"
+          :pinnedBottomRowData="pinnedBottomRowDataRef"
+          :isExternalFilterPresent="isExternalFilterPresent"
+          :doesExternalFilterPass="doesExternalFilterPass"
           @grid-ready="onGridReady"
           @filter-changed="recalcPinnedTotals"
           @sort-changed="recalcPinnedTotals"
