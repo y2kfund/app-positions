@@ -12,7 +12,8 @@ import type { PositionsProps } from './index'
 const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
   highlightPnL: false,
-  showHeaderLink: false
+  showHeaderLink: false,
+  userId: null
 })
 
 const emit = defineEmits<{ 
@@ -20,8 +21,8 @@ const emit = defineEmits<{
   'minimize': []
 }>()
 
-// Query positions data with realtime updates
-const q = usePositionsQuery(props.accountId)
+// Query positions data with realtime updates - pass userId for access control
+const q = usePositionsQuery(props.accountId, props.userId)
 
 // Query thesis data for dropdowns
 const thesisQuery = useThesisQuery()

@@ -6,4 +6,5 @@ export interface PositionsProps {
     highlightPnL?: boolean;
     onRowClick?: (row: any) => void;
     showHeaderLink?: boolean;
+    userId?: string | null;
 }

@@ -38772,11 +38772,12 @@ const JD = { ref: "root" }, XD = /* @__PURE__ */ qn({
     accountId: { default: "demo" },
     highlightPnL: { type: Boolean, default: !1 },
     onRowClick: {},
-    showHeaderLink: { type: Boolean, default: !1 }
+    showHeaderLink: { type: Boolean, default: !1 },
+    userId: { default: null }
   },
   emits: ["row-click", "minimize"],
   setup(e, { emit: t }) {
-    const i = e, s = t, o = Wu(i.accountId), n = zu();
+    const i = e, s = t, o = Wu(i.accountId, i.userId), n = zu();
     _e(() => n.data.value, (w) => {
       console.log("📊 Thesis data updated:", w);
     }, { immediate: !0 }), _e(() => n.isLoading.value, (w) => {
@@ -39642,7 +39643,7 @@ This action cannot be undone. Any positions assigned to this thesis will lose th
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, sT = /* @__PURE__ */ Q0(Y0, [["__scopeId", "data-v-bf6c5c2f"]]);
+}, sT = /* @__PURE__ */ Q0(Y0, [["__scopeId", "data-v-4f9b5e19"]]);
 export {
   sT as Positions,
   sT as default
