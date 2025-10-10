@@ -994,8 +994,13 @@ function extractClickedTagText(event: any): string | null {
 
 // Thesis modal functionality
 const showThesisModal = ref(false)
-const thesisModalMode = ref<'view' | 'add'>('view')
+const thesisModalMode = ref<'view' | 'add' | 'edit'>('view')
 const newThesis = ref({
+  title: '',
+  description: ''
+})
+const editingThesis = ref<Thesis | null>(null)
+const editThesisForm = ref({
   title: '',
   description: ''
 })
@@ -1003,6 +1008,62 @@ const newThesis = ref({
 function showThesisModalForView() {
   thesisModalMode.value = 'view'
   showThesisModal.value = true
+}
+
+function startEditThesis(thesis: Thesis) {
+  editingThesis.value = thesis
+  editThesisForm.value = {
+    title: thesis.title,
+    description: thesis.description || ''
+  }
+  thesisModalMode.value = 'edit'
+}
+
+function cancelEditThesis() {
+  editingThesis.value = null
+  editThesisForm.value = { title: '', description: '' }
+  thesisModalMode.value = 'view'
+}
+
+async function saveEditThesis() {
+  if (!editingThesis.value || !editThesisForm.value.title.trim()) return
+  
+  try {
+    const { error } = await supabase
+      .schema('hf')
+      .from('thesis')
+      .update({
+        title: editThesisForm.value.title.trim(),
+        description: editThesisForm.value.description.trim() || null
+      })
+      .eq('id', editingThesis.value.id)
+    
+    if (error) throw error
+    
+    // Reset form and state
+    editingThesis.value = null
+    editThesisForm.value = { title: '', description: '' }
+    
+    // Invalidate queries to refetch data
+    await queryClient.invalidateQueries({ queryKey: ['thesis'] })
+    await queryClient.invalidateQueries({ queryKey: ['positions'] })
+    
+    addToast({
+      type: 'success',
+      title: 'Thesis Updated',
+      message: 'Thesis has been updated successfully'
+    })
+    
+    // Go back to view mode
+    thesisModalMode.value = 'view'
+  } catch (error) {
+    console.error('Error updating thesis:', error)
+    addToast({
+      type: 'error',
+      title: 'Failed to Update Thesis',
+      message: error instanceof Error ? error.message : 'Unknown error occurred'
+    })
+  }
 }
 
 // Toast notification system
@@ -1072,6 +1133,7 @@ async function addNewThesis() {
   
   try {
     const { data, error } = await supabase
+      .schema('hf')  // Add this line
       .from('thesis')
       .insert([{
         title: newThesis.value.title.trim(),
@@ -1110,6 +1172,7 @@ async function deleteThesis(thesisId: string, thesisTitle: string) {
   
   try {
     const { error } = await supabase
+      .schema('hf')  // Add this line
       .from('thesis')
       .delete()
       .eq('id', thesisId)
@@ -1367,6 +1430,14 @@ function clearAllFilters() {
                 </div>
                 <div class="thesis-actions">
                   <button 
+                    class="btn btn-secondary btn-sm" 
+                    @click="startEditThesis(thesis)"
+                    title="Edit thesis"
+                    style="margin-right: 8px;"
+                  >
+                    ✏️ Edit
+                  </button>
+                  <button 
                     class="btn btn-danger btn-sm" 
                     @click="deleteThesis(thesis.id, thesis.title)"
                     title="Delete thesis"
@@ -1380,7 +1451,7 @@ function clearAllFilters() {
         </div>
         
         <!-- Add Mode -->
-        <div v-else class="modal-body">
+        <div v-else-if="thesisModalMode === 'add'" class="modal-body">
           <div class="form-group">
             <label for="thesis-title">Title *</label>
             <input 
@@ -1403,6 +1474,30 @@ function clearAllFilters() {
           </div>
         </div>
         
+        <!-- Edit Mode -->
+        <div v-else-if="thesisModalMode === 'edit'" class="modal-body">
+          <div class="form-group">
+            <label for="edit-thesis-title">Title *</label>
+            <input 
+              id="edit-thesis-title"
+              v-model="editThesisForm.title" 
+              type="text" 
+              placeholder="Enter thesis title"
+              maxlength="100"
+            />
+          </div>
+          <div class="form-group">
+            <label for="edit-thesis-description">Description</label>
+            <textarea 
+              id="edit-thesis-description"
+              v-model="editThesisForm.description" 
+              placeholder="Enter thesis description (optional)"
+              rows="3"
+              maxlength="500"
+            ></textarea>
+          </div>
+        </div>
+        
         <div class="modal-footer">
           <div v-if="thesisModalMode === 'add'">
             <button class="btn btn-cancel" @click="thesisModalMode = 'view'">← Back to List</button>
@@ -1412,6 +1507,16 @@ function clearAllFilters() {
               :disabled="!newThesis.title.trim()"
             >
               Add Thesis
+            </button>
+          </div>
+          <div v-else-if="thesisModalMode === 'edit'">
+            <button class="btn btn-cancel" @click="cancelEditThesis">← Back to List</button>
+            <button 
+              class="btn btn-primary" 
+              @click="saveEditThesis"
+              :disabled="!editThesisForm.title.trim()"
+            >
+              Save Changes
             </button>
           </div>
           <div v-else>
@@ -1988,6 +2093,17 @@ h1 {
   background: #6c757d;
   border-color: #6c757d;
   cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+  border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+  background: #545b62;
+  border-color: #4e555b;
 }
 
 /* Add these new styles */
