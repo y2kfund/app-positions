@@ -1422,7 +1422,6 @@ function clearAllFilters() {
                     {{ thesis.description }}
                   </div>
                   <div class="thesis-meta">
-                    <span class="thesis-id">ID: {{ thesis.id }}</span>
                     <span v-if="thesis.created_at" class="thesis-date">
                       Created: {{ new Date(thesis.created_at).toLocaleDateString() }}
                     </span>

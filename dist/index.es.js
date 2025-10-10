@@ -1,7 +1,7 @@
 var Du = Object.defineProperty;
 var Tu = (e, t, i) => t in e ? Du(e, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : e[t] = i;
 var ki = (e, t, i) => Tu(e, typeof t != "symbol" ? t + "" : t, i);
-import { defineComponent as Qn, mergeModels as zr, useTemplateRef as Mu, ref as Z, toRefs as Au, watch as Ue, useModel as Iu, getCurrentInstance as Rs, createElementBlock as $, onMounted as gl, markRaw as ku, onUnmounted as Lu, openBlock as U, mergeDefaults as Ou, toRaw as _r, isRef as Hu, isReactive as Gu, isProxy as Bu, createVNode as pn, render as Ur, computed as Fs, onBeforeUnmount as Vu, resolveComponent as Nu, createCommentVNode as st, createElementVNode as G, unref as Fe, createTextVNode as Li, toDisplayString as we, createBlock as Wu, withCtx as $r, normalizeClass as Kr, withModifiers as Ps, Fragment as Es, renderList as xs, withDirectives as Oi, vModelCheckbox as zu, vModelText as Ds, TransitionGroup as _u } from "vue";
+import { defineComponent as Qn, mergeModels as zr, useTemplateRef as Mu, ref as Z, toRefs as Au, watch as Ue, useModel as Iu, getCurrentInstance as Rs, createElementBlock as $, onMounted as gl, markRaw as ku, onUnmounted as Lu, openBlock as U, mergeDefaults as Ou, toRaw as _r, isRef as Hu, isReactive as Gu, isProxy as Bu, createVNode as pn, render as Ur, computed as Fs, onBeforeUnmount as Vu, resolveComponent as Nu, createCommentVNode as st, createElementVNode as V, unref as Re, createTextVNode as Li, toDisplayString as Fe, createBlock as Wu, withCtx as $r, normalizeClass as Kr, withModifiers as Ps, Fragment as Es, renderList as xs, withDirectives as Oi, vModelCheckbox as zu, vModelText as Ds, TransitionGroup as _u } from "vue";
 import { usePositionsQuery as Uu, useThesisQuery as $u, useSupabase as Ku } from "@y2kfund/core";
 import { useQueryClient as ju } from "@tanstack/vue-query";
 var zt = class {
@@ -2194,7 +2194,7 @@ function Ve(e, t, i) {
     return !1;
   if (t != null && t.state && !t.state.forEach)
     return T(32), !1;
-  const w = (E, M, B, L, N) => {
+  const w = (E, M, G, L, N) => {
     if (!E)
       return;
     const H = hg(M, t.defaultState), _ = H("flex").value1;
@@ -2214,8 +2214,8 @@ function Ve(e, t, i) {
         re != null && j >= re && E.setActualWidth(j, i);
       }
     }
-    N || !E.isPrimary() || (h == null || h.syncColumnWithState(E, i, H), o == null || o.syncColumnWithState(E, i, H, B), n == null || n.syncColumnWithState(E, i, H, L));
-  }, b = (E, M, B) => {
+    N || !E.isPrimary() || (h == null || h.syncColumnWithState(E, i, H), o == null || o.syncColumnWithState(E, i, H, G), n == null || n.syncColumnWithState(E, i, H, L));
+  }, b = (E, M, G) => {
     var Ss, Ti;
     const L = nd(e, i), N = M.slice(), H = {}, _ = {}, j = [], re = [], Oe = [];
     let Jt = 0;
@@ -2230,7 +2230,7 @@ function Ve(e, t, i) {
         re.push(se), Oe.push(se);
         return;
       }
-      const pt = B(tt);
+      const pt = G(tt);
       pt ? (w(pt, se, H, _, !1), Ie(N, pt)) : (Oe.push(se), Jt += 1);
     });
     const bs = (se) => w(se, null, H, _, !1);
@@ -2294,12 +2294,12 @@ function nd(e, t) {
   return d.forEach((u) => {
     c[u.colId] = u;
   }), () => {
-    const u = (E, M, B, L) => {
-      const N = M.map(L), H = B.map(L);
+    const u = (E, M, G, L) => {
+      const N = M.map(L), H = G.map(L);
       if (xt(N, H))
         return;
       const j = new Set(M);
-      B.forEach((Oe) => {
+      G.forEach((Oe) => {
         j.delete(Oe) || j.add(Oe);
       });
       const re = [...j];
@@ -2311,9 +2311,9 @@ function nd(e, t) {
       });
     }, h = (E) => {
       const M = [];
-      return n.forAllCols((B) => {
-        const L = c[B.getColId()];
-        L && E(L, B) && M.push(B);
+      return n.forAllCols((G) => {
+        const L = c[G.getColId()];
+        L && E(L, G) && M.push(G);
       }), M;
     }, g = (E) => E.getColId();
     u(
@@ -2328,7 +2328,7 @@ function nd(e, t) {
       g
     );
     const f = h((E, M) => {
-      const B = E.aggFunc != null, L = B != M.isValueActive(), N = B && E.aggFunc != M.getAggFunc();
+      const G = E.aggFunc != null, L = G != M.isValueActive(), N = G && E.aggFunc != M.getAggFunc();
       return L || N;
     });
     f.length > 0 && yg(a, "columnValueChanged", f, t), yi(a, h((E, M) => E.width != M.getActualWidth()), !0, t), od(a, h((E, M) => E.pinned != M.getPinned()), t), Sg(a, h((E, M) => E.hide == M.isVisible()), t);
@@ -3380,12 +3380,12 @@ function En(e, t) {
   return t.replace(o, (n) => n in s ? s[n]() : n);
 }
 function _s(e, t = !1) {
-  return !!ye(e, t);
+  return !!Se(e, t);
 }
 function fp(e) {
   return _s(e, !0);
 }
-function ye(e, t = !1, i) {
+function Se(e, t = !1, i) {
   if (!e || !i && !pp.test(e))
     return null;
   const [s, o] = e.split(gp);
@@ -3939,7 +3939,7 @@ var Lt = class extends wd {
   }
   getDate() {
     if (this.eInput.validity.valid)
-      return ye(this.getValue()) ?? void 0;
+      return Se(this.getValue()) ?? void 0;
   }
   setDate(e, t) {
     this.setValue(xe(e ?? null, this.includeTime), t);
@@ -4517,7 +4517,7 @@ ${o}`;
   ref: "foregroundColor",
   mix: e,
   onto: "headerBackgroundColor"
-}), Se = { ref: "backgroundColor" }, ni = { ref: "foregroundColor" }, nt = { ref: "accentColor" }, co = {
+}), be = { ref: "backgroundColor" }, ni = { ref: "foregroundColor" }, nt = { ref: "accentColor" }, co = {
   backgroundColor: "#fff",
   foregroundColor: "#181d1f",
   borderColor: De(0.15),
@@ -4565,7 +4565,7 @@ ${o}`;
   listItemHeight: {
     calc: "max(iconSize, dataFontSize) + widgetVerticalSpacing"
   },
-  dragAndDropImageBackgroundColor: Se,
+  dragAndDropImageBackgroundColor: be,
   dragAndDropImageBorder: !0,
   dragAndDropImageNotAllowedBorder: {
     color: {
@@ -4583,7 +4583,7 @@ ${o}`;
   toggleButtonHeight: 18,
   toggleButtonOnBackgroundColor: nt,
   toggleButtonOffBackgroundColor: Me(0.3),
-  toggleButtonSwitchBackgroundColor: Se,
+  toggleButtonSwitchBackgroundColor: be,
   toggleButtonSwitchInset: 2,
   tooltipBackgroundColor: {
     ref: "chromeBackgroundColor"
@@ -7853,7 +7853,7 @@ var Ge = {
       let u, h, g = 0;
       this.invalidateVerticalScroll();
       do {
-        const { stickyTopHeight: m, stickyBottomHeight: w } = d, b = c.rowTop, R = c.rowHeight, F = r.getPixelOffset(), S = c.rowTop - F, E = S + c.rowHeight, M = this.getVScrollPosition(), B = a.divStretchOffset, L = M.top + B, N = M.bottom + B, H = N - L, _ = a.getScrollPositionForPixel(S), j = a.getScrollPositionForPixel(E - H), re = Math.min((_ + j) / 2, S), Oe = L + m > S, Jt = N - w < E;
+        const { stickyTopHeight: m, stickyBottomHeight: w } = d, b = c.rowTop, R = c.rowHeight, F = r.getPixelOffset(), S = c.rowTop - F, E = S + c.rowHeight, M = this.getVScrollPosition(), G = a.divStretchOffset, L = M.top + G, N = M.bottom + G, H = N - L, _ = a.getScrollPositionForPixel(S), j = a.getScrollPositionForPixel(E - H), re = Math.min((_ + j) / 2, S), Oe = L + m > S, Jt = N - w < E;
         let ae = null;
         t === "top" ? ae = _ - m : t === "bottom" ? ae = j + w : t === "middle" ? ae = re : Oe ? ae = _ - m : Jt && (j - _ > H ? ae = _ - m : ae = j + w), ae !== null && (this.setVerticalScrollPosition(ae), l.redraw({ afterScroll: !0 })), u = b !== c.rowTop || R !== c.rowHeight, h = m !== d.stickyTopHeight || w !== d.stickyBottomHeight, g++;
       } while ((u || h) && g < 10);
@@ -15559,9 +15559,9 @@ var ew = class extends P {
         });
         const S = 1 / R;
         b.forEach((E, M) => {
-          const B = M === b.length - 1;
+          const G = M === b.length - 1;
           let L;
-          B ? L = F : (L = Math.round(g[M] * u * S), F -= L);
+          G ? L = F : (L = Math.round(g[M] * u * S), F -= L);
           const N = E.getMinWidth(), H = E.getMaxWidth();
           L < N ? (L = N, f[E.getId()] = !0, m = !0) : H > 0 && L > H && (L = H, f[E.getId()] = !0, m = !0), p[E.getId()] = L;
         });
@@ -16940,7 +16940,7 @@ var Yw = [
     const t = this.getLocaleTextFunc(), i = this.getDateIncludesTimeFlag(e);
     return {
       baseDataType: e,
-      valueParser: (s) => ye(s.newValue && String(s.newValue)),
+      valueParser: (s) => Se(s.newValue && String(s.newValue)),
       valueFormatter: (s) => s.value == null ? "" : !(s.value instanceof Date) || isNaN(s.value.getTime()) ? t("invalidDate", "Invalid Date") : xe(s.value, i) ?? "",
       dataTypeMatcher: (s) => s instanceof Date
     };
@@ -16949,7 +16949,7 @@ var Yw = [
     const t = this.getDateIncludesTimeFlag(e);
     return {
       baseDataType: e,
-      dateParser: (i) => ye(i) ?? void 0,
+      dateParser: (i) => Se(i) ?? void 0,
       dateFormatter: (i) => xe(i ?? null, t) ?? void 0,
       valueParser: (i) => _s(String(i.newValue)) ? i.newValue : null,
       valueFormatter: (i) => _s(String(i.value)) ? String(i.value) : "",
@@ -17529,7 +17529,7 @@ var vb = (
   sideButtonTextColor: { ref: "textColor" },
   sideButtonHoverBackgroundColor: { ref: "sideButtonBackgroundColor" },
   sideButtonHoverTextColor: { ref: "sideButtonTextColor" },
-  sideButtonSelectedBackgroundColor: Se,
+  sideButtonSelectedBackgroundColor: be,
   sideButtonSelectedTextColor: { ref: "sideButtonTextColor" },
   sideButtonBorder: "solid 1px transparent",
   sideButtonSelectedBorder: !0,
@@ -17576,7 +17576,7 @@ var vb = (
     ref: "backgroundColor",
     mix: 0.66
   },
-  oddRowBackgroundColor: Se,
+  oddRowBackgroundColor: be,
   wrapperBorderRadius: 8,
   cellHorizontalPadding: {
     calc: "spacing * 2 * cellHorizontalPaddingScale"
@@ -17661,7 +17661,7 @@ var vb = (
   dialogBorder: {
     color: De(0.2)
   },
-  panelBackgroundColor: Se,
+  panelBackgroundColor: be,
   panelTitleBarBackgroundColor: {
     ref: "headerBackgroundColor"
   },
@@ -17701,7 +17701,7 @@ var vb = (
   advancedFilterBuilderColumnPillColor: "#a6e194",
   advancedFilterBuilderOptionPillColor: "#f3c08b",
   advancedFilterBuilderValuePillColor: "#85c0e4",
-  filterPanelApplyButtonColor: Se,
+  filterPanelApplyButtonColor: be,
   filterPanelApplyButtonBackgroundColor: nt,
   filterPanelCardSubtleColor: {
     ref: "textColor",
@@ -17777,7 +17777,7 @@ var vb = (
   feature: "buttonStyle",
   params: {
     ...Pb,
-    buttonBackgroundColor: Se,
+    buttonBackgroundColor: be,
     buttonBorder: !0,
     buttonHoverBackgroundColor: { ref: "rowHoverColor" },
     buttonActiveBorder: { color: nt }
@@ -17809,20 +17809,20 @@ var vb = (
     checkboxBorderRadius: {
       ref: "borderRadius"
     },
-    checkboxUncheckedBackgroundColor: Se,
+    checkboxUncheckedBackgroundColor: be,
     checkboxUncheckedBorderColor: Me(0.3),
     checkboxCheckedBackgroundColor: nt,
     checkboxCheckedBorderColor: { ref: "checkboxCheckedBackgroundColor" },
     checkboxCheckedShapeImage: {
       svg: '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="7" fill="none"><path stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M1 3.5 3.5 6l5-5"/></svg>'
     },
-    checkboxCheckedShapeColor: Se,
+    checkboxCheckedShapeColor: be,
     checkboxIndeterminateBackgroundColor: Me(0.3),
     checkboxIndeterminateBorderColor: { ref: "checkboxIndeterminateBackgroundColor" },
     checkboxIndeterminateShapeImage: {
       svg: '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="2" fill="none"><rect width="10" height="2" fill="#000" rx="1"/></svg>'
     },
-    checkboxIndeterminateShapeColor: Se,
+    checkboxIndeterminateShapeColor: be,
     radioCheckedShapeImage: {
       svg: '<svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="none"><circle cx="3" cy="3" r="3" fill="#000"/></svg>'
     }
@@ -17845,8 +17845,8 @@ var vb = (
   advancedFilterBuilderOptionPillColor: "#5a3168",
   advancedFilterBuilderValuePillColor: "#374c86",
   filterPanelApplyButtonColor: ni,
-  findMatchColor: Se,
-  findActiveMatchColor: Se,
+  findMatchColor: be,
+  findActiveMatchColor: be,
   checkboxUncheckedBorderColor: Me(0.4),
   toggleButtonOffBackgroundColor: Me(0.4),
   rowBatchEditBackgroundColor: Me(0.1)
@@ -18011,7 +18011,7 @@ var vb = (
   feature: "inputStyle",
   params: {
     ...Ub,
-    inputBackgroundColor: Se,
+    inputBackgroundColor: be,
     inputBorder: !0,
     inputBorderRadius: {
       ref: "borderRadius"
@@ -18095,7 +18095,7 @@ var vb = (
     tabSelectedBorderColor: {
       ref: "borderColor"
     },
-    tabSelectedBackgroundColor: Se
+    tabSelectedBackgroundColor: be
   },
   css: jb
 }), Qb = /* @__PURE__ */ Yb(), Zb = () => Ab().withPart(Lb).withPart(Gb).withPart(Wb).withPart(Qb).withPart(Kb).withPart(fc).withParams({
@@ -21457,7 +21457,7 @@ function rt({
   return e === ke && (e = t), e !== t;
 }
 function Pi(e, t, i) {
-  var w, b, R, F, S, E, M, B, L, N;
+  var w, b, R, F, S, E, M, G, L, N;
   const s = e.gos.get("enableGroupEdit"), { key: o, event: n, cellStartedEdit: r, silent: a } = i ?? {}, l = ee(e, t), d = (w = l == null ? void 0 : l.comp) == null ? void 0 : w.getCellEditor(), c = xc(e, t, o, r && !a), u = (b = e.editModelSvc) == null ? void 0 : b.getEdit(t);
   let h = c.value;
   if (h === void 0 && (h = u == null ? void 0 : u.sourceValue), (R = e.editModelSvc) == null || R.setEdit(t, {
@@ -21471,7 +21471,7 @@ function Pi(e, t, i) {
   if (Dc(p.params, n), l) {
     l.editCompDetails = p, (S = l.comp) == null || S.setEditDetails(p, f, m, e.gos.get("reactiveCustomComponents")), (E = l == null ? void 0 : l.rowCtrl) == null || E.refreshRow({ suppressFlash: !0 });
     const H = (M = e.editModelSvc) == null ? void 0 : M.getEdit(t, !0);
-    !a && !((B = H == null ? void 0 : H.editorState) != null && B.cellStartedEditing) && ((L = e.editSvc) == null || L.dispatchCellEvent(
+    !a && !((G = H == null ? void 0 : H.editorState) != null && G.cellStartedEditing) && ((L = e.editSvc) == null || L.dispatchCellEvent(
       t,
       n,
       "cellEditingStarted",
@@ -21648,7 +21648,7 @@ function jt(e, t) {
     return;
   const i = Pc(e), s = new Rc(), { ariaAnnounce: o, localeSvc: n, editModelSvc: r, gos: a } = e, l = a.get("editType") === "fullRow", c = Il(n)("ariaValidationErrorPrefix", "Cell Editor Validation");
   for (const F of i) {
-    const { ctrl: S, editor: E } = F, { rowNode: M, column: B } = S, L = ((h = E.getValidationErrors) == null ? void 0 : h.call(E)) ?? [], N = ((g = E.getValidationElement) == null ? void 0 : g.call(E, !1)) || !((p = E.isPopup) != null && p.call(E)) && S.eGui;
+    const { ctrl: S, editor: E } = F, { rowNode: M, column: G } = S, L = ((h = E.getValidationErrors) == null ? void 0 : h.call(E)) ?? [], N = ((g = E.getValidationElement) == null ? void 0 : g.call(E, !1)) || !((p = E.isPopup) != null && p.call(E)) && S.eGui;
     if (N) {
       const H = L != null && L.length > 0, _ = H ? L.join(". ") : "";
       sh(N, H), H && o.announceValue(`${c} ${L}`, "editorValidation"), N instanceof HTMLInputElement ? N.setCustomValidity(_) : N.classList.toggle("invalid", H);
@@ -21656,7 +21656,7 @@ function jt(e, t) {
     (L == null ? void 0 : L.length) > 0 && s.setCellValidation(
       {
         rowNode: M,
-        column: B
+        column: G
       },
       {
         errorMessages: L
@@ -21972,18 +21972,18 @@ var cy = class extends P {
       return;
     }
     if (!s || !b) {
-      const S = h == null ? void 0 : h.isEditing(n), M = u.get("enableCellTextSelection") && e.defaultPrevented, B = (Tt() || M) && !S && !Jn(o) && !R;
-      n.focusCell(B, e);
+      const S = h == null ? void 0 : h.isEditing(n), M = u.get("enableCellTextSelection") && e.defaultPrevented, G = (Tt() || M) && !S && !Jn(o) && !R;
+      n.focusCell(G, e);
     }
     if (s && b && !c.isCellFocused(f)) {
       e.preventDefault();
       const S = c.getFocusedCell();
       if (S) {
-        const { column: E, rowIndex: M, rowPinned: B } = S;
+        const { column: E, rowIndex: M, rowPinned: G } = S;
         h != null && h.isEditing(S) && (h == null || h.stopEditing(S)), c.setFocusedCell({
           column: E,
           rowIndex: M,
-          rowPinned: B,
+          rowPinned: G,
           forceBrowserFocus: !0,
           preventScrollOnBrowserFocus: !0,
           sourceEvent: e
@@ -25087,7 +25087,7 @@ var Ny = (
       const c = this.getRowBufferInPixels(), u = this.ctrlsSvc.getScrollFeature(), h = this.gos.get("suppressRowVirtualisation");
       let g = !1, p, f;
       do {
-        const F = t.getPixelOffset(), { pageFirstPixel: S, pageLastPixel: E } = t.getCurrentPagePixelRange(), M = e.divStretchOffset, B = u.getVScrollPosition(), L = B.top, N = B.bottom;
+        const F = t.getPixelOffset(), { pageFirstPixel: S, pageLastPixel: E } = t.getCurrentPagePixelRange(), M = e.divStretchOffset, G = u.getVScrollPosition(), L = G.top, N = G.bottom;
         h ? (p = S + M, f = E + M) : (p = Math.max(L + F - c, S) + M, f = Math.min(N + F + c, E) + M), this.firstVisibleVPixel = Math.max(L + F, S) + M, this.lastVisibleVPixel = Math.min(N + F, E) + M, g = this.ensureAllRowsInRangeHaveHeightsCalculated(p, f);
       } while (g);
       let m = i.getRowIndexAtPixel(p), w = i.getRowIndexAtPixel(f);
@@ -26564,9 +26564,9 @@ function RR(e, t = !1) {
       pinned: S,
       hide: E,
       width: M,
-      flex: B
+      flex: G
     } = e[h];
-    c.push(g), p && (i[f ?? u++] = { colId: g, sort: p }), m && (s[w ?? 0] = g), typeof b == "string" && o.push({ colId: g, aggFunc: b }), R && (n[F ?? 0] = g), S && (S === "right" ? a : r).push(g), E && l.push(g), (B != null || M) && d.push({ colId: g, flex: B ?? void 0, width: M });
+    c.push(g), p && (i[f ?? u++] = { colId: g, sort: p }), m && (s[w ?? 0] = g), typeof b == "string" && o.push({ colId: g, aggFunc: b }), R && (n[F ?? 0] = g), S && (S === "right" ? a : r).push(g), E && l.push(g), (G != null || M) && d.push({ colId: g, flex: G ?? void 0, width: M });
   }
   return {
     sort: i.length ? { sortModel: i } : void 0,
@@ -26798,18 +26798,18 @@ var MR = {
   enableCellSpan: !0,
   enableFilterHandlers: !0,
   filterHandlers: !0
-}, be = "clientSide", me = "serverSide", ti = "infinite", AR = {
-  onGroupExpandedOrCollapsed: [be],
-  refreshClientSideRowModel: [be],
-  isRowDataEmpty: [be],
-  forEachLeafNode: [be],
-  forEachNodeAfterFilter: [be],
-  forEachNodeAfterFilterAndSort: [be],
-  resetRowHeights: [be, me],
-  applyTransaction: [be],
-  applyTransactionAsync: [be],
-  flushAsyncTransactions: [be],
-  getBestCostNodeSelection: [be],
+}, we = "clientSide", me = "serverSide", ti = "infinite", AR = {
+  onGroupExpandedOrCollapsed: [we],
+  refreshClientSideRowModel: [we],
+  isRowDataEmpty: [we],
+  forEachLeafNode: [we],
+  forEachNodeAfterFilter: [we],
+  forEachNodeAfterFilterAndSort: [we],
+  resetRowHeights: [we, me],
+  applyTransaction: [we],
+  applyTransactionAsync: [we],
+  flushAsyncTransactions: [we],
+  getBestCostNodeSelection: [we],
   getServerSideSelectionState: [me],
   setServerSideSelectionState: [me],
   applyServerSideTransaction: [me],
@@ -26823,9 +26823,9 @@ var MR = {
   purgeInfiniteCache: [ti],
   getInfiniteRowCount: [ti],
   isLastRowIndexKnown: [ti, me],
-  expandAll: [be, me],
-  collapseAll: [be, me],
-  onRowHeightChanged: [be, me],
+  expandAll: [we, me],
+  collapseAll: [we, me],
+  onRowHeightChanged: [we, me],
   setRowCount: [ti, me],
   getCacheBlockState: [ti, me]
 }, IR = {
@@ -28364,19 +28364,19 @@ var rF = {
     if (h) {
       const E = (c == null ? void 0 : c.handlerNameOrCallback) ?? (c == null ? void 0 : c.filterHandler), M = de(this.model, e);
       if (i.handlerGenerator != E) {
-        const B = i.handler, { handler: L, handlerParams: N } = this.createHandlerFromFunc(
+        const G = i.handler, { handler: L, handlerParams: N } = this.createHandlerFromFunc(
           o,
           c.filterHandler,
           f
         );
-        i.handler = L, i.handlerParams = N, i.handlerGenerator = E, delete this.model[e], (m = L.init) == null || m.call(L, { ...N, source: "init", model: null }), this.destroyBean(B), M != null && ((w = this.beans.filterManager) == null || w.onFilterChanged({
+        i.handler = L, i.handlerParams = N, i.handlerGenerator = E, delete this.model[e], (m = L.init) == null || m.call(L, { ...N, source: "init", model: null }), this.destroyBean(G), M != null && ((w = this.beans.filterManager) == null || w.onFilterChanged({
           columns: [o],
           source: t
         }));
       } else {
-        const B = this.createHandlerParams(o, g == null ? void 0 : g.params);
-        i.handlerParams = B, (R = (b = i.handler).refresh) == null || R.call(b, {
-          ...B,
+        const G = this.createHandlerParams(o, g == null ? void 0 : g.params);
+        i.handlerParams = G, (R = (b = i.handler).refresh) == null || R.call(b, {
+          ...G,
           source: "colDef",
           model: M
         });
@@ -29552,8 +29552,8 @@ var Lr = class extends Kf {
 function Hc(e, t) {
   const { dateFrom: i, dateTo: s, type: o } = e || {};
   return [
-    i && ye(i, void 0, !0) || null,
-    s && ye(s, void 0, !0) || null
+    i && Se(i, void 0, !0) || null,
+    s && Se(s, void 0, !0) || null
   ].slice(0, us(o, t));
 }
 var ol = 1e3, nl = 1 / 0, vF = class extends Lr {
@@ -29575,9 +29575,9 @@ var ol = 1e3, nl = 1 / 0, vF = class extends Lr {
       return d;
     }, i = t("minValidYear", ol), s = t("maxValidYear", nl);
     this.minValidYear = i, this.maxValidYear = s, i > s && T(83);
-    const { minValidDate: o, maxValidDate: n } = e, r = o instanceof Date ? o : ye(o);
+    const { minValidDate: o, maxValidDate: n } = e, r = o instanceof Date ? o : Se(o);
     this.minValidDate = r;
-    const a = n instanceof Date ? n : ye(n);
+    const a = n instanceof Date ? n : Se(n);
     this.maxValidDate = a, r && a && r > a && T(84);
   }
   createDateCompWrapper(e) {
@@ -29890,7 +29890,7 @@ var ol = 1e3, nl = 1 / 0, vF = class extends Lr {
     }), this.filterTypeKeys = Vc;
   }
   conditionToString(e, t, i, s, o) {
-    const { type: n } = e, r = ye(e.dateFrom), a = ye(e.dateTo), l = this.filterParams.inRangeFloatingFilterDateFormat, d = t ? this.formatValue.bind(this) : (h) => En(h, l), c = () => r !== null ? d(r) : "null", u = () => a !== null ? d(a) : "null";
+    const { type: n } = e, r = Se(e.dateFrom), a = Se(e.dateTo), l = this.filterParams.inRangeFloatingFilterDateFormat, d = t ? this.formatValue.bind(this) : (h) => En(h, l), c = () => r !== null ? d(r) : "null", u = () => a !== null ? d(a) : "null";
     if (t) {
       const h = this.conditionForToolPanel(
         n,
@@ -30020,7 +30020,7 @@ var SF = class extends Bc {
   updateCompOnModelChange(e) {
     const t = !this.readOnly && this.canWeEditAfterModelFromParentFilter(e);
     if (this.setEditable(t), t) {
-      const i = e ? ye(e.dateFrom) : null;
+      const i = e ? Se(e.dateFrom) : null;
       this.dateComp.setDate(i), this.eReadOnlyText.setValue("");
     } else
       this.eReadOnlyText.setValue(this.filterModelFormatter.getModelAsString(e)), this.dateComp.setDate(null);
@@ -30121,7 +30121,7 @@ var SF = class extends Bc {
     const { minValidYear: s, maxValidYear: o, minValidDate: n, maxValidDate: r, buttons: a, includeTime: l, colDef: d } = e.filterParams || {}, c = this.beans.dataTypeSvc, u = l ?? ((h = c == null ? void 0 : c.getDateIncludesTimeFlag) == null ? void 0 : h.call(c, d.cellDataType)) ?? !1;
     if (i ? u ? (t.type = "datetime-local", t.step = "1") : t.type = "date" : t.type = "text", n && s && T(85), r && o && T(86), n && r) {
       const [g, p] = [n, r].map(
-        (f) => f instanceof Date ? f : ye(f)
+        (f) => f instanceof Date ? f : Se(f)
       );
       g && p && g.getTime() > p.getTime() && T(87);
     }
@@ -30131,7 +30131,7 @@ var SF = class extends Bc {
     this.params = e, this.setParams(e);
   }
   getDate() {
-    return ye(this.eDateInput.getValue());
+    return Se(this.eDateInput.getValue());
   }
   setDate(e) {
     var s;
@@ -31421,7 +31421,7 @@ var NF = class extends P {
   }
   parseDate(e) {
     const t = this.getDataTypeService();
-    return t ? t.getDateParserFunction(this.params.column)(e) : ye(e) ?? void 0;
+    return t ? t.getDateParserFunction(this.params.column)(e) : Se(e) ?? void 0;
   }
   formatDate(e) {
     const t = this.getDataTypeService();
@@ -32010,8 +32010,8 @@ var HP = class extends P {
       (w = this.strategy) == null || w.stop(s, i), S.forEach((E) => {
         d.clearEditValue(E);
       }), this.bulkRefresh(void 0, g), d.getEditPositions(F).forEach((E) => {
-        const M = ee(l, E), B = rt(E);
-        M == null || M.refreshCell({ force: !0, suppressFlash: !B });
+        const M = ee(l, E), G = rt(E);
+        M == null || M.refreshCell({ force: !0, suppressFlash: !G });
       }), g = F, p || (p = f);
     } else if (i instanceof KeyboardEvent && this.batch && ((b = this.strategy) != null && b.midBatchInputsAllowed(e)) && this.isEditing(e, { withOpenEditor: !0 })) {
       const F = i.key, S = F === y.ENTER, E = F === y.ESCAPE, M = F === y.TAB;
@@ -33647,16 +33647,16 @@ var FE = {
       F && (m ?? (m = this.shouldSortContainsGroupCols(e)), F && (F = !m));
       let S = null;
       if (F) {
-        let B = !1;
+        let G = !1;
         if (h) {
           const L = b.level + 1;
-          L < h.length && (B = h[L].getSort() === null);
+          L < h.length && (G = h[L].getSort() === null);
         }
-        B || (S = kE(b));
+        G || (S = kE(b));
       } else !e.length || R ? S = null : t && i ? S = AE(a, b, i, s, e) : S = a.doFullSort(b.childrenAfterAggFilter, e);
       if (S || (S = ((E = b.childrenAfterAggFilter) == null ? void 0 : E.slice(0)) ?? []), f || (f = ((M = b.childrenAfterSort) == null ? void 0 : M[0]) !== S[0]), b.childrenAfterSort = S, au(b), p) {
-        const B = { nodes: b.childrenAfterSort };
-        p(B);
+        const G = { nodes: b.childrenAfterSort };
+        p(G);
       }
     };
     if (s == null || s.forEachChangedNodeDepthFirst(w), f && o.get("groupHideOpenParents")) {
@@ -35558,7 +35558,7 @@ var Fx = class extends P {
       const re = f(H);
       re.flex = _ ?? null, re.width = j;
     })), (M || !i) && (m.flex = null);
-    const B = u == null ? void 0 : u.orderedColIds, L = !!(B != null && B.length) && !(s != null && s.has("columnOrder")), N = L ? B.map((H) => f(H)) : Object.values(p);
+    const G = u == null ? void 0 : u.orderedColIds, L = !!(G != null && G.length) && !(s != null && s.has("columnOrder")), N = L ? G.map((H) => f(H)) : Object.values(p);
     (N.length || h) && (this.columnStates = N, Ve(
       this.beans,
       {
@@ -36552,8 +36552,8 @@ var uD = class extends P {
         if (E > 0) {
           const M = m[S.colId] ?? {};
           M.minWidth ?? (M.minWidth = r), M.maxWidth ?? (M.maxWidth = n);
-          const B = hD(S, E, M);
-          S.setActualWidth(B, l), p.push(S), f++;
+          const G = hD(S, E, M);
+          S.setActualWidth(G, l), p.push(S), f++;
         }
         R.push(S);
       }), R.length && g.refresh(l);
@@ -36679,9 +36679,9 @@ var uD = class extends P {
         const f = p / ot(a);
         let m = p;
         for (let w = a.length - 1; w >= 0; w--) {
-          const b = a[w], R = o == null ? void 0 : o[b.getId()], F = (R == null ? void 0 : R.minWidth) ?? (s == null ? void 0 : s.defaultMinWidth), S = (R == null ? void 0 : R.maxWidth) ?? (s == null ? void 0 : s.defaultMaxWidth), E = b.getMinWidth(), M = b.getMaxWidth(), B = typeof F == "number" && F > E ? F : E, L = typeof S == "number" && S < M ? S : M;
+          const b = a[w], R = o == null ? void 0 : o[b.getId()], F = (R == null ? void 0 : R.minWidth) ?? (s == null ? void 0 : s.defaultMinWidth), S = (R == null ? void 0 : R.maxWidth) ?? (s == null ? void 0 : s.defaultMaxWidth), E = b.getMinWidth(), M = b.getMaxWidth(), G = typeof F == "number" && F > E ? F : E, L = typeof S == "number" && S < M ? S : M;
           let N = Math.round(b.getActualWidth() * f);
-          N < B ? (N = B, u(b), c = !1) : N > L ? (N = L, u(b), c = !1) : w === 0 && (N = m), b.setActualWidth(N, t, !0), m -= N;
+          N < G ? (N = G, u(b), c = !1) : N > L ? (N = L, u(b), c = !1) : w === 0 && (N = m), b.setActualWidth(N, t, !0), m -= N;
         }
       }
     }
@@ -38700,10 +38700,10 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
           c.value = null, og(d.value, n.value), d.value = {};
         }, 0));
       }
-    }, B = () => Object.create(Rs().provides);
+    }, G = () => Object.create(Rs().provides);
     return gl(() => {
       fo(du, void 0, !0);
-      const L = new YD(Rs(), B()), N = {
+      const L = new YD(Rs(), G()), N = {
         globalListener: E(),
         globalSyncListener: E(!0),
         frameworkOverrides: new ZD(Rs()),
@@ -38757,19 +38757,19 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
 }, E0 = { class: "thesis-content" }, x0 = { class: "thesis-title" }, D0 = {
   key: 0,
   class: "thesis-description"
-}, T0 = { class: "thesis-meta" }, M0 = { class: "thesis-id" }, A0 = {
+}, T0 = { class: "thesis-meta" }, M0 = {
   key: 0,
   class: "thesis-date"
-}, I0 = { class: "thesis-actions" }, k0 = ["onClick"], L0 = ["onClick"], O0 = {
+}, A0 = { class: "thesis-actions" }, I0 = ["onClick"], k0 = ["onClick"], L0 = {
   key: 1,
   class: "modal-body"
-}, H0 = { class: "form-group" }, G0 = { class: "form-group" }, B0 = {
+}, O0 = { class: "form-group" }, H0 = { class: "form-group" }, G0 = {
   key: 2,
   class: "modal-body"
-}, V0 = { class: "form-group" }, N0 = { class: "form-group" }, W0 = { class: "modal-footer" }, z0 = { key: 0 }, _0 = ["disabled"], U0 = { key: 1 }, $0 = ["disabled"], K0 = { key: 2 }, j0 = { class: "toast-container" }, q0 = ["onClick"], Y0 = { class: "toast-icon" }, Q0 = { key: 0 }, Z0 = { key: 1 }, J0 = { key: 2 }, X0 = { key: 3 }, eT = { class: "toast-content" }, tT = { class: "toast-title" }, iT = {
+}, B0 = { class: "form-group" }, V0 = { class: "form-group" }, N0 = { class: "modal-footer" }, W0 = { key: 0 }, z0 = ["disabled"], _0 = { key: 1 }, U0 = ["disabled"], $0 = { key: 2 }, K0 = { class: "toast-container" }, j0 = ["onClick"], q0 = { class: "toast-icon" }, Y0 = { key: 0 }, Q0 = { key: 1 }, Z0 = { key: 2 }, J0 = { key: 3 }, X0 = { class: "toast-content" }, eT = { class: "toast-title" }, tT = {
   key: 0,
   class: "toast-message"
-}, sT = ["onClick"], oT = /* @__PURE__ */ Qn({
+}, iT = ["onClick"], sT = /* @__PURE__ */ Qn({
   __name: "Positions",
   props: {
     accountId: { default: "demo" },
@@ -38807,9 +38807,9 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
     function a() {
       const C = new URL(window.location.href).searchParams.get("position_cols");
       if (!C)
-        return r.map((V) => V.field);
-      const D = C.split("-and-").map((V) => V.trim()).filter(Boolean), O = new Set(r.map((V) => V.field)), x = D.filter((V) => O.has(V));
-      return x.length ? x : r.map((V) => V.field);
+        return r.map((B) => B.field);
+      const D = C.split("-and-").map((B) => B.trim()).filter(Boolean), O = new Set(r.map((B) => B.field)), x = D.filter((B) => O.has(B));
+      return x.length ? x : r.map((B) => B.field);
     }
     function l(v) {
       const C = new URL(window.location.href);
@@ -38820,7 +38820,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       return { symbol: D, asset_class: O, legal_entity: x };
     }
     function c(v) {
-      var x, V, Q;
+      var x, B, Q;
       const C = new URL(window.location.href);
       if (g.value.length > 0)
         C.searchParams.set("all_cts_fi", g.value.join("-and-"));
@@ -38828,7 +38828,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
         const le = ((x = v == null ? void 0 : v.symbol) == null ? void 0 : x.filter) || "";
         le ? C.searchParams.set("all_cts_fi", le) : C.searchParams.delete("all_cts_fi");
       }
-      const D = ((V = v == null ? void 0 : v.asset_class) == null ? void 0 : V.filter) || "";
+      const D = ((B = v == null ? void 0 : v.asset_class) == null ? void 0 : B.filter) || "";
       D ? C.searchParams.set("fac", D) : C.searchParams.delete("fac");
       const O = ((Q = v == null ? void 0 : v.legal_entity) == null ? void 0 : Q.filter) || "";
       O ? C.searchParams.set("all_cts_clientId", O) : C.searchParams.delete("all_cts_clientId"), window.history.replaceState({}, "", C.toString());
@@ -38854,11 +38854,11 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
         D.value = "", D.textContent = "No thesis", this.eSelect.appendChild(D);
         const O = C.thesisOptions || [];
         console.log("📊 Available thesis options:", O), O.forEach((x) => {
-          const V = document.createElement("option");
-          V.value = x.id, V.textContent = x.title, this.currentValue && this.currentValue.id === x.id && (V.selected = !0), this.eSelect.appendChild(V);
+          const B = document.createElement("option");
+          B.value = x.id, B.textContent = x.title, this.currentValue && this.currentValue.id === x.id && (B.selected = !0), this.eSelect.appendChild(B);
         }), this.currentValue && (this.eSelect.value = this.currentValue.id || ""), this.eGui = document.createElement("div"), this.eGui.style.width = "100%", this.eGui.style.height = "100%", this.eGui.appendChild(this.eSelect), this.eSelect.addEventListener("change", async () => {
           var le, fe;
-          const x = this.eSelect.value, V = this.currentValue;
+          const x = this.eSelect.value, B = this.currentValue;
           x ? this.currentValue = O.find((ze) => ze.id === x) || null : this.currentValue = null, console.log("📝 Thesis selection changed to:", this.currentValue);
           const Q = (le = this.params.data) == null ? void 0 : le.id;
           if (!Q) {
@@ -38871,7 +38871,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
               columns: ["thesis"]
             }), this.params.stopEditing();
           } catch (ze) {
-            console.error("❌ Failed to update thesis, reverting selection:", ze), this.currentValue = V, V ? this.eSelect.value = V.id || "" : this.eSelect.value = "";
+            console.error("❌ Failed to update thesis, reverting selection:", ze), this.currentValue = B, B ? this.eSelect.value = B.id || "" : this.eSelect.value = "";
           }
         }), this.eSelect.addEventListener("keydown", (x) => {
           x.key === "Enter" ? this.params.stopEditing() : x.key === "Escape" && this.params.stopEditing(!0);
@@ -39117,7 +39117,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
         }
       }
     ]), R = Z(null), F = Z(null), S = Z([]), E = ["qty", "avgPrice", "price", "market_value", "unrealized_pnl", "cash_flow_on_entry", "cash_flow_on_exercise"], M = Z([]);
-    function B() {
+    function G() {
       var D;
       const v = R.value, C = [];
       if (g.value.length > 0 && C.push({ field: "symbol", value: g.value.join(", ") }), v) {
@@ -39129,8 +39129,8 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
           const fe = x("symbol");
           typeof fe == "string" && fe.length && C.push({ field: "symbol", value: fe });
         }
-        const V = x("asset_class");
-        typeof V == "string" && V.length && C.push({ field: "asset_class", value: V });
+        const B = x("asset_class");
+        typeof B == "string" && B.length && C.push({ field: "asset_class", value: B });
         const Q = x("legal_entity");
         typeof Q == "string" && Q.length && C.push({ field: "legal_entity", value: Q });
         const le = x("thesis");
@@ -39140,12 +39140,12 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
     }
     function L(v) {
       if (!v) return [];
-      const C = String(v), D = C.match(/^([A-Z]+)\b/), O = (D == null ? void 0 : D[1]) ?? "", x = C.match(/\s([CP])\b/), V = (x == null ? void 0 : x[1]) ?? "", Q = C.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), le = (Q == null ? void 0 : Q[1]) ?? "", fe = C.match(/\b(\d{6})[CP]/), ze = fe ? fu(fe[1]) : "";
-      return [O, ze, le, V].filter(Boolean);
+      const C = String(v), D = C.match(/^([A-Z]+)\b/), O = (D == null ? void 0 : D[1]) ?? "", x = C.match(/\s([CP])\b/), B = (x == null ? void 0 : x[1]) ?? "", Q = C.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), le = (Q == null ? void 0 : Q[1]) ?? "", fe = C.match(/\b(\d{6})[CP]/), ze = fe ? fu(fe[1]) : "";
+      return [O, ze, le, B].filter(Boolean);
     }
     function N(v) {
-      var D, O, x, V;
-      if (((O = (D = v.event) == null ? void 0 : D.target) == null ? void 0 : O.tagName) === "SELECT" || (V = (x = v.event) == null ? void 0 : x.target) != null && V.closest(".ag-cell-edit-input") || v.api && v.api.getEditingCells().length > 0)
+      var D, O, x, B;
+      if (((O = (D = v.event) == null ? void 0 : D.target) == null ? void 0 : O.tagName) === "SELECT" || (B = (x = v.event) == null ? void 0 : x.target) != null && B.closest(".ag-cell-edit-input") || v.api && v.api.getEditingCells().length > 0)
         return;
       const C = v == null ? void 0 : v.value;
       !C || !C.title || H("thesis", C.title);
@@ -39160,7 +39160,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
           const O = D.getFilterModel && D.getFilterModel() || {};
           O[v] = { type: "equals", filter: String(C) }, typeof D.setFilterModel == "function" && D.setFilterModel(O), typeof D.onFilterChanged == "function" && D.onFilterChanged();
         }
-        B();
+        G();
       }
     }
     Fs(() => {
@@ -39191,9 +39191,9 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
     function Oe() {
       const C = new URL(window.location.href).searchParams.get("position_cols");
       if (!C)
-        return _.map((V) => V.field);
-      const D = C.split("-and-").map((V) => V.trim()).filter(Boolean), O = new Set(_.map((V) => V.field)), x = D.filter((V) => O.has(V));
-      return x.length ? x : _.map((V) => V.field);
+        return _.map((B) => B.field);
+      const D = C.split("-and-").map((B) => B.trim()).filter(Boolean), O = new Set(_.map((B) => B.field)), x = D.filter((B) => O.has(B));
+      return x.length ? x : _.map((B) => B.field);
     }
     function Jt(v) {
       const C = new URL(window.location.href);
@@ -39206,7 +39206,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
     }, { deep: !0 }), Ue(() => o.data.value, () => {
       We();
     }), Ue(g, () => {
-      B(), We();
+      G(), We();
       const v = R.value;
       v && typeof v.refreshCells == "function" && v.refreshCells({ columns: ["symbol"] });
     }, { deep: !0 }), Ue(() => R.value, (v) => {
@@ -39214,7 +39214,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       if (!v) return;
       const C = () => {
         var x;
-        B();
+        G();
         const O = ((x = v.getFilterModel) == null ? void 0 : x.call(v)) || {};
         c(O), We();
       };
@@ -39230,11 +39230,11 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       });
       const D = [];
       for (const [O, x] of C.entries()) {
-        const V = x[0].thesis;
+        const B = x[0].thesis;
         D.push({
           isThesisHeader: !0,
-          thesis: V,
-          symbol: `📋 ${V.title}`,
+          thesis: B,
+          symbol: `📋 ${B.title}`,
           legal_entity: `${x.length} position${x.length !== 1 ? "s" : ""}`,
           asset_class: "",
           // Set all numeric fields to empty/null for header
@@ -39249,7 +39249,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
         const Q = {
           isThesisTotal: !0,
           thesisId: O,
-          symbol: `Total for ${V.title}`,
+          symbol: `Total for ${B.title}`,
           legal_entity: "",
           asset_class: "",
           thesis: null
@@ -39272,9 +39272,9 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       if (!v) {
         const D = o.data.value || [], O = { symbol: "Total", asset_class: "" };
         for (const x of E)
-          O[x] = D.reduce((V, Q) => {
+          O[x] = D.reduce((B, Q) => {
             const le = Q == null ? void 0 : Q[x], fe = typeof le == "number" && Number.isFinite(le) ? le : 0;
-            return V + fe;
+            return B + fe;
           }, 0);
         S.value = [O];
         return;
@@ -39285,7 +39285,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
         const O = D.data || {};
         if (!(O.isThesisHeader || O.isThesisTotal))
           for (const x of E) {
-            const V = O == null ? void 0 : O[x], Q = typeof V == "number" && Number.isFinite(V) ? V : 0;
+            const B = O == null ? void 0 : O[x], Q = typeof B == "number" && Number.isFinite(B) ? B : 0;
             C[x] += Q;
           }
       }), S.value = [C];
@@ -39329,13 +39329,13 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       if (g.value.length === 0) return !0;
       const C = ((O = v.data) == null ? void 0 : O.symbol) || "", D = L(C);
       return g.value.some(
-        (x) => D.some((V) => V === x)
+        (x) => D.some((B) => B === x)
       );
     }
     function pu(v) {
       R.value = v.api, F.value = v.columnApi;
       const C = d(), D = {};
-      C.asset_class && (D.asset_class = { type: "equals", filter: C.asset_class }), C.legal_entity && (D.legal_entity = { type: "equals", filter: C.legal_entity }), Object.keys(D).length > 0 && v.api.setFilterModel(D), C.symbol && (g.value = C.symbol.split(",").map((O) => O.trim()).filter(Boolean)), We(), B();
+      C.asset_class && (D.asset_class = { type: "equals", filter: C.asset_class }), C.legal_entity && (D.legal_entity = { type: "equals", filter: C.legal_entity }), Object.keys(D).length > 0 && v.api.setFilterModel(D), C.symbol && (g.value = C.symbol.split(",").map((O) => O.trim()).filter(Boolean)), We(), G();
     }
     function Wr(v) {
       return v == null || isNaN(Number(v)) ? "" : Number(v).toLocaleString("en-US", {
@@ -39366,7 +39366,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       const C = (D = v.event) == null ? void 0 : D.target;
       return C && (O = C.classList) != null && O.contains("fi-tag") && ((x = C.textContent) == null ? void 0 : x.trim()) || null;
     }
-    const Ai = Z(!1), Re = Z("view"), it = Z({
+    const Ai = Z(!1), ye = Z("view"), it = Z({
       title: "",
       description: ""
     }), Ii = Z(null), He = Z({
@@ -39374,16 +39374,16 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       description: ""
     });
     function vu() {
-      Re.value = "view", Ai.value = !0;
+      ye.value = "view", Ai.value = !0;
     }
     function wu(v) {
       Ii.value = v, He.value = {
         title: v.title,
         description: v.description || ""
-      }, Re.value = "edit";
+      }, ye.value = "edit";
     }
     function bu() {
-      Ii.value = null, He.value = { title: "", description: "" }, Re.value = "view";
+      Ii.value = null, He.value = { title: "", description: "" }, ye.value = "view";
     }
     async function Su() {
       if (!(!Ii.value || !He.value.title.trim()))
@@ -39397,7 +39397,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
             type: "success",
             title: "Thesis Updated",
             message: "Thesis has been updated successfully"
-          }), Re.value = "view";
+          }), ye.value = "view";
         } catch (v) {
           console.error("Error updating thesis:", v), ft({
             type: "error",
@@ -39447,7 +39447,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
             type: "success",
             title: "Thesis Added",
             message: `"${v[0].title}" has been created successfully`
-          }), Re.value = "view";
+          }), ye.value = "view";
         } catch (v) {
           console.error("Error adding thesis:", v), ft({
             type: "error",
@@ -39483,26 +39483,26 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
           const D = C.getFilterModel && C.getFilterModel() || {};
           delete D[v], typeof C.setFilterModel == "function" && C.setFilterModel(D), typeof C.onFilterChanged == "function" && C.onFilterChanged();
         }
-        B();
+        G();
       }
     }
     function Eu() {
       const v = R.value;
-      v && (g.value = [], typeof v.setFilterModel == "function" && v.setFilterModel({}), typeof v.onFilterChanged == "function" && v.onFilterChanged(), B());
+      v && (g.value = [], typeof v.setFilterModel == "function" && v.setFilterModel({}), typeof v.onFilterChanged == "function" && v.onFilterChanged(), G());
     }
     return (v, C) => {
       var O;
       const D = Nu("router-link");
       return U(), $("div", s0, [
-        Fe(o).isLoading.value ? (U(), $("div", o0, [...C[16] || (C[16] = [
-          G("div", { class: "loading-spinner" }, null, -1),
+        Re(o).isLoading.value ? (U(), $("div", o0, [...C[16] || (C[16] = [
+          V("div", { class: "loading-spinner" }, null, -1),
           Li(" Loading positions... ", -1)
-        ])])) : Fe(o).isError.value ? (U(), $("div", n0, [
-          C[17] || (C[17] = G("h3", null, "Error loading positions", -1)),
-          G("p", null, we(Fe(o).error.value), 1)
-        ])) : Fe(o).isSuccess.value ? (U(), $("div", r0, [
-          G("div", a0, [
-            G("h2", null, [
+        ])])) : Re(o).isError.value ? (U(), $("div", n0, [
+          C[17] || (C[17] = V("h3", null, "Error loading positions", -1)),
+          V("p", null, Fe(Re(o).error.value), 1)
+        ])) : Re(o).isSuccess.value ? (U(), $("div", r0, [
+          V("div", a0, [
+            V("h2", null, [
               e.showHeaderLink ? (U(), Wu(D, {
                 key: 0,
                 to: "/positions"
@@ -39513,45 +39513,45 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
                 _: 1
               })) : (U(), $("span", l0, "Positions:"))
             ]),
-            G("div", d0, [
-              G("div", c0, we(((O = Fe(o).data.value) == null ? void 0 : O.length) || 0) + " positions", 1),
-              G("button", {
+            V("div", d0, [
+              V("div", c0, Fe(((O = Re(o).data.value) == null ? void 0 : O.length) || 0) + " positions", 1),
+              V("button", {
                 class: Kr(["thesis-group-btn", { active: ae.value }]),
                 onClick: C[0] || (C[0] = (x) => ae.value = !ae.value),
                 title: "Group positions by thesis"
               }, [
-                C[19] || (C[19] = G("span", { class: "icon" }, "📊", -1)),
-                Li(" " + we(ae.value ? "Ungroup" : "Group by Thesis"), 1)
+                C[19] || (C[19] = V("span", { class: "icon" }, "📊", -1)),
+                Li(" " + Fe(ae.value ? "Ungroup" : "Group by Thesis"), 1)
               ], 2),
-              G("button", {
+              V("button", {
                 class: "thesis-btn",
                 onClick: vu,
                 title: "Manage thesis"
               }, [...C[20] || (C[20] = [
-                G("span", { class: "icon" }, "📋", -1),
+                V("span", { class: "icon" }, "📋", -1),
                 Li(" Manage Thesis ", -1)
               ])]),
-              G("button", {
+              V("button", {
                 ref_key: "columnsBtnRef",
                 ref: tt,
                 class: "columns-btn",
                 "aria-label": "Column settings",
                 onClick: Ps(pt, ["stop"])
               }, [...C[21] || (C[21] = [
-                G("svg", {
+                V("svg", {
                   class: "icon",
                   viewBox: "0 0 24 24",
                   width: "18",
                   height: "18",
                   "aria-hidden": "true"
                 }, [
-                  G("path", {
+                  V("path", {
                     fill: "currentColor",
                     d: "M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.21-.37-.3-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.03-.22-.22-.39-.44-.39h-3.84c-.22 0-.41.16-.44.39l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.09-.47 0-.59.22l-1.92 3.32c-.12.21-.07.47.12.61l2.03 1.58c.04.31.06.63.06.94s-.02.63-.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.21.37.3.59.22l2.39.96c.5.38 1.03.7 1.62.94l.36 2.54c.03.22.22.39.44.39h3.84c.22 0 .41-.16.44-.39l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.09.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.03-1.58ZM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5Z"
                   })
                 ], -1)
               ])], 512),
-              G("button", {
+              V("button", {
                 onClick: C[1] || (C[1] = (x) => s("minimize")),
                 class: "minimize-button",
                 title: "Minimize Positions"
@@ -39564,28 +39564,28 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
                 onClick: C[4] || (C[4] = Ps(() => {
                 }, ["stop"]))
               }, [
-                C[22] || (C[22] = G("div", { class: "popup-header" }, "Columns", -1)),
-                G("div", u0, [
-                  (U(), $(Es, null, xs(r, (x) => G("label", {
+                C[22] || (C[22] = V("div", { class: "popup-header" }, "Columns", -1)),
+                V("div", u0, [
+                  (U(), $(Es, null, xs(r, (x) => V("label", {
                     key: x.field,
                     class: "popup-item"
                   }, [
-                    Oi(G("input", {
+                    Oi(V("input", {
                       type: "checkbox",
                       value: x.field,
-                      "onUpdate:modelValue": C[2] || (C[2] = (V) => u.value = V)
+                      "onUpdate:modelValue": C[2] || (C[2] = (B) => u.value = B)
                     }, null, 8, h0), [
                       [zu, u.value]
                     ]),
-                    G("span", null, we(x.label), 1)
+                    V("span", null, Fe(x.label), 1)
                   ])), 64))
                 ]),
-                G("div", g0, [
-                  G("button", {
+                V("div", g0, [
+                  V("button", {
                     class: "btn btn-clear",
-                    onClick: C[3] || (C[3] = (x) => u.value = r.map((V) => V.field))
+                    onClick: C[3] || (C[3] = (x) => u.value = r.map((B) => B.field))
                   }, "Show All"),
-                  G("button", {
+                  V("button", {
                     class: "btn",
                     onClick: Mi
                   }, "Done")
@@ -39594,31 +39594,31 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
             ])
           ]),
           M.value.length ? (U(), $("div", p0, [
-            C[23] || (C[23] = G("span", { class: "filters-label" }, "Filtered by:", -1)),
-            G("div", f0, [
+            C[23] || (C[23] = V("span", { class: "filters-label" }, "Filtered by:", -1)),
+            V("div", f0, [
               (U(!0), $(Es, null, xs(M.value, (x) => (U(), $("span", {
                 key: `${x.field}-${x.value}`,
                 class: "filter-tag"
               }, [
-                G("strong", null, we(x.field === "symbol" ? "Financial Instrument" : x.field === "legal_entity" ? "Account" : x.field === "thesis" ? "Thesis" : "Asset Class") + ":", 1),
-                Li(" " + we(x.value) + " ", 1),
-                G("button", {
+                V("strong", null, Fe(x.field === "symbol" ? "Financial Instrument" : x.field === "legal_entity" ? "Account" : x.field === "thesis" ? "Thesis" : "Asset Class") + ":", 1),
+                Li(" " + Fe(x.value) + " ", 1),
+                V("button", {
                   class: "tag-clear",
-                  onClick: (V) => Pu(x.field),
+                  onClick: (B) => Pu(x.field),
                   "aria-label": "Clear filter"
                 }, "✕", 8, m0)
               ]))), 128)),
-              G("button", {
+              V("button", {
                 class: "btn btn-clear-all",
                 onClick: Eu
               }, "Clear all")
             ])
           ])) : st("", !0),
-          G("div", C0, [
-            pn(Fe(i0), {
+          V("div", C0, [
+            pn(Re(i0), {
               columnDefs: b.value,
               rowData: bs.value,
-              modules: [Fe(KD)],
+              modules: [Re(KD)],
               defaultColDef: {
                 sortable: !0,
                 filter: !0,
@@ -39633,8 +39633,8 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
               doesExternalFilterPass: gu,
               gridOptions: {
                 getRowStyle: (x) => {
-                  var V, Q;
-                  return (V = x.data) != null && V.isThesisHeader ? {
+                  var B, Q;
+                  return (B = x.data) != null && B.isThesisHeader ? {
                     "background-color": "#f8f9fa",
                     "font-weight": "bold",
                     "border-top": "2px solid #dee2e6"
@@ -39660,59 +39660,58 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
           class: "modal-overlay",
           onClick: C[15] || (C[15] = (x) => Ai.value = !1)
         }, [
-          G("div", {
+          V("div", {
             class: "modal-content",
             onClick: C[14] || (C[14] = Ps(() => {
             }, ["stop"]))
           }, [
-            G("div", v0, [
-              G("h3", null, we(Re.value === "add" ? "Add New Thesis" : "Manage Thesis"), 1),
-              G("button", {
+            V("div", v0, [
+              V("h3", null, Fe(ye.value === "add" ? "Add New Thesis" : "Manage Thesis"), 1),
+              V("button", {
                 class: "modal-close",
                 onClick: C[6] || (C[6] = (x) => Ai.value = !1)
               }, "×")
             ]),
-            Re.value === "view" ? (U(), $("div", w0, [
-              G("div", b0, [
-                G("button", {
+            ye.value === "view" ? (U(), $("div", w0, [
+              V("div", b0, [
+                V("button", {
                   class: "btn btn-primary",
-                  onClick: C[7] || (C[7] = (x) => Re.value = "add")
+                  onClick: C[7] || (C[7] = (x) => ye.value = "add")
                 }, " + Add New Thesis ")
               ]),
-              G("div", S0, [
-                Fe(n).isLoading.value ? (U(), $("div", y0, " Loading thesis... ")) : Fe(n).error.value ? (U(), $("div", R0, " Error loading thesis: " + we(Fe(n).error.value), 1)) : !Fe(n).data.value || Fe(n).data.value.length === 0 ? (U(), $("div", F0, ' No thesis found. Click "Add New Thesis" to create one. ')) : (U(), $("div", P0, [
-                  (U(!0), $(Es, null, xs(Fe(n).data.value, (x) => (U(), $("div", {
+              V("div", S0, [
+                Re(n).isLoading.value ? (U(), $("div", y0, " Loading thesis... ")) : Re(n).error.value ? (U(), $("div", R0, " Error loading thesis: " + Fe(Re(n).error.value), 1)) : !Re(n).data.value || Re(n).data.value.length === 0 ? (U(), $("div", F0, ' No thesis found. Click "Add New Thesis" to create one. ')) : (U(), $("div", P0, [
+                  (U(!0), $(Es, null, xs(Re(n).data.value, (x) => (U(), $("div", {
                     key: x.id,
                     class: "thesis-item"
                   }, [
-                    G("div", E0, [
-                      G("div", x0, we(x.title), 1),
-                      x.description ? (U(), $("div", D0, we(x.description), 1)) : st("", !0),
-                      G("div", T0, [
-                        G("span", M0, "ID: " + we(x.id), 1),
-                        x.created_at ? (U(), $("span", A0, " Created: " + we(new Date(x.created_at).toLocaleDateString()), 1)) : st("", !0)
+                    V("div", E0, [
+                      V("div", x0, Fe(x.title), 1),
+                      x.description ? (U(), $("div", D0, Fe(x.description), 1)) : st("", !0),
+                      V("div", T0, [
+                        x.created_at ? (U(), $("span", M0, " Created: " + Fe(new Date(x.created_at).toLocaleDateString()), 1)) : st("", !0)
                       ])
                     ]),
-                    G("div", I0, [
-                      G("button", {
+                    V("div", A0, [
+                      V("button", {
                         class: "btn btn-secondary btn-sm",
-                        onClick: (V) => wu(x),
+                        onClick: (B) => wu(x),
                         title: "Edit thesis",
                         style: { "margin-right": "8px" }
-                      }, " ✏️ Edit ", 8, k0),
-                      G("button", {
+                      }, " ✏️ Edit ", 8, I0),
+                      V("button", {
                         class: "btn btn-danger btn-sm",
-                        onClick: (V) => Fu(x.id, x.title),
+                        onClick: (B) => Fu(x.id, x.title),
                         title: "Delete thesis"
-                      }, " 🗑️ Delete ", 8, L0)
+                      }, " 🗑️ Delete ", 8, k0)
                     ])
                   ]))), 128))
                 ]))
               ])
-            ])) : Re.value === "add" ? (U(), $("div", O0, [
-              G("div", H0, [
-                C[24] || (C[24] = G("label", { for: "thesis-title" }, "Title *", -1)),
-                Oi(G("input", {
+            ])) : ye.value === "add" ? (U(), $("div", L0, [
+              V("div", O0, [
+                C[24] || (C[24] = V("label", { for: "thesis-title" }, "Title *", -1)),
+                Oi(V("input", {
                   id: "thesis-title",
                   "onUpdate:modelValue": C[8] || (C[8] = (x) => it.value.title = x),
                   type: "text",
@@ -39722,9 +39721,9 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
                   [Ds, it.value.title]
                 ])
               ]),
-              G("div", G0, [
-                C[25] || (C[25] = G("label", { for: "thesis-description" }, "Description", -1)),
-                Oi(G("textarea", {
+              V("div", H0, [
+                C[25] || (C[25] = V("label", { for: "thesis-description" }, "Description", -1)),
+                Oi(V("textarea", {
                   id: "thesis-description",
                   "onUpdate:modelValue": C[9] || (C[9] = (x) => it.value.description = x),
                   placeholder: "Enter thesis description (optional)",
@@ -39734,10 +39733,10 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
                   [Ds, it.value.description]
                 ])
               ])
-            ])) : Re.value === "edit" ? (U(), $("div", B0, [
-              G("div", V0, [
-                C[26] || (C[26] = G("label", { for: "edit-thesis-title" }, "Title *", -1)),
-                Oi(G("input", {
+            ])) : ye.value === "edit" ? (U(), $("div", G0, [
+              V("div", B0, [
+                C[26] || (C[26] = V("label", { for: "edit-thesis-title" }, "Title *", -1)),
+                Oi(V("input", {
                   id: "edit-thesis-title",
                   "onUpdate:modelValue": C[10] || (C[10] = (x) => He.value.title = x),
                   type: "text",
@@ -39747,9 +39746,9 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
                   [Ds, He.value.title]
                 ])
               ]),
-              G("div", N0, [
-                C[27] || (C[27] = G("label", { for: "edit-thesis-description" }, "Description", -1)),
-                Oi(G("textarea", {
+              V("div", V0, [
+                C[27] || (C[27] = V("label", { for: "edit-thesis-description" }, "Description", -1)),
+                Oi(V("textarea", {
                   id: "edit-thesis-description",
                   "onUpdate:modelValue": C[11] || (C[11] = (x) => He.value.description = x),
                   placeholder: "Enter thesis description (optional)",
@@ -39760,29 +39759,29 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
                 ])
               ])
             ])) : st("", !0),
-            G("div", W0, [
-              Re.value === "add" ? (U(), $("div", z0, [
-                G("button", {
+            V("div", N0, [
+              ye.value === "add" ? (U(), $("div", W0, [
+                V("button", {
                   class: "btn btn-cancel",
-                  onClick: C[12] || (C[12] = (x) => Re.value = "view")
+                  onClick: C[12] || (C[12] = (x) => ye.value = "view")
                 }, "← Back to List"),
-                G("button", {
+                V("button", {
                   class: "btn btn-primary",
                   onClick: Ru,
                   disabled: !it.value.title.trim()
-                }, " Add Thesis ", 8, _0)
-              ])) : Re.value === "edit" ? (U(), $("div", U0, [
-                G("button", {
+                }, " Add Thesis ", 8, z0)
+              ])) : ye.value === "edit" ? (U(), $("div", _0, [
+                V("button", {
                   class: "btn btn-cancel",
                   onClick: bu
                 }, "← Back to List"),
-                G("button", {
+                V("button", {
                   class: "btn btn-primary",
                   onClick: Su,
                   disabled: !He.value.title.trim()
-                }, " Save Changes ", 8, $0)
-              ])) : (U(), $("div", K0, [
-                G("button", {
+                }, " Save Changes ", 8, U0)
+              ])) : (U(), $("div", $0, [
+                V("button", {
                   class: "btn btn-cancel",
                   onClick: C[13] || (C[13] = (x) => Ai.value = !1)
                 }, "Close")
@@ -39790,7 +39789,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
             ])
           ])
         ])) : st("", !0),
-        G("div", j0, [
+        V("div", K0, [
           pn(_u, {
             name: "toast",
             tag: "div"
@@ -39799,21 +39798,21 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
               (U(!0), $(Es, null, xs(ys.value, (x) => (U(), $("div", {
                 key: x.id,
                 class: Kr(["toast", `toast-${x.type}`]),
-                onClick: (V) => ko(x.id)
+                onClick: (B) => ko(x.id)
               }, [
-                G("div", Y0, [
-                  x.type === "success" ? (U(), $("span", Q0, "✅")) : x.type === "error" ? (U(), $("span", Z0, "❌")) : x.type === "warning" ? (U(), $("span", J0, "⚠️")) : x.type === "info" ? (U(), $("span", X0, "ℹ️")) : st("", !0)
+                V("div", q0, [
+                  x.type === "success" ? (U(), $("span", Y0, "✅")) : x.type === "error" ? (U(), $("span", Q0, "❌")) : x.type === "warning" ? (U(), $("span", Z0, "⚠️")) : x.type === "info" ? (U(), $("span", J0, "ℹ️")) : st("", !0)
                 ]),
-                G("div", eT, [
-                  G("div", tT, we(x.title), 1),
-                  x.message ? (U(), $("div", iT, we(x.message), 1)) : st("", !0)
+                V("div", X0, [
+                  V("div", eT, Fe(x.title), 1),
+                  x.message ? (U(), $("div", tT, Fe(x.message), 1)) : st("", !0)
                 ]),
-                G("button", {
+                V("button", {
                   class: "toast-close",
-                  onClick: Ps((V) => ko(x.id), ["stop"]),
+                  onClick: Ps((B) => ko(x.id), ["stop"]),
                   "aria-label": "Close notification"
-                }, " × ", 8, sT)
-              ], 10, q0))), 128))
+                }, " × ", 8, iT)
+              ], 10, j0))), 128))
             ]),
             _: 1
           })
@@ -39821,13 +39820,13 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       ]);
     };
   }
-}), nT = (e, t) => {
+}), oT = (e, t) => {
   const i = e.__vccOpts || e;
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, cT = /* @__PURE__ */ nT(oT, [["__scopeId", "data-v-d5978345"]]);
+}, dT = /* @__PURE__ */ oT(sT, [["__scopeId", "data-v-6937e65a"]]);
 export {
-  cT as Positions,
-  cT as default
+  dT as Positions,
+  dT as default
 };
