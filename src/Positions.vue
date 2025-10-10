@@ -286,17 +286,30 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 160,
     pinned: 'left' as const,
     hide: !isColVisible('legal_entity'),
-    onCellClicked: (event: any) => handleCellFilterClick('legal_entity', event?.value)
+    onCellClicked: (event: any) => {
+      // Don't allow filtering on header/total rows
+      if (event.data?.isThesisHeader || event.data?.isThesisTotal) return
+      handleCellFilterClick('legal_entity', event?.value)
+    }
   },
   { 
     field: 'thesis',
     headerName: 'Thesis',
     width: 180,
     hide: !isColVisible('thesis'),
-    cellRenderer: thesisCellRenderer,
+    cellRenderer: (params: any) => {
+      // Don't show thesis cell for header/total rows
+      if (params.data?.isThesisHeader || params.data?.isThesisTotal) {
+        return ''
+      }
+      return thesisCellRenderer(params)
+    },
     cellEditor: ThesisCellEditor,
-    editable: true,
-    singleClickEdit: false, // Ensure double-click is required
+    editable: (params: any) => {
+      // Only allow editing for regular position rows
+      return !params.data?.isThesisHeader && !params.data?.isThesisTotal
+    },
+    singleClickEdit: false,
     cellEditorParams: {
       thesisOptions: thesisQuery.data.value || []
     },
@@ -308,11 +321,11 @@ const columnDefs = computed<ColDef[]>(() => [
     getQuickFilterText: (params: any) => params.value?.title || '',
     filterValueGetter: (params: any) => params.data.thesis?.title || '',
     sortable: true,
-    // UPDATE: Handle both single-click filter and double-click edit
     onCellClicked: (event: any) => {
-      // Only handle filter click if not in edit mode and not a double-click
+      // Don't handle clicks on header/total rows
+      if (event.data?.isThesisHeader || event.data?.isThesisTotal) return
+      
       if (!event.event?.detail || event.event.detail === 1) {
-        // Single click - handle filter (with a small delay to allow double-click detection)
         setTimeout(() => {
           if (event.api && !event.api.getEditingCells().length) {
             handleThesisCellFilterClick(event)
@@ -321,7 +334,9 @@ const columnDefs = computed<ColDef[]>(() => [
       }
     },
     onCellDoubleClicked: (event: any) => {
-      // Double click - start editing
+      // Don't allow editing header/total rows
+      if (event.data?.isThesisHeader || event.data?.isThesisTotal) return
+      
       console.log('📝 Double-clicked thesis cell, starting edit mode')
       if (event.api && typeof event.api.startEditingCell === 'function') {
         event.api.startEditingCell({
@@ -337,11 +352,19 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 120,
     pinned: 'left' as const,
     hide: !isColVisible('symbol'),
-    cellRenderer: (params: any) => renderFinancialInstrumentCell(params.value),
+    cellRenderer: (params: any) => {
+      // For thesis header/total rows, show the symbol as-is
+      if (params.data?.isThesisHeader || params.data?.isThesisTotal) {
+        return `<span style="font-weight: 600; color: ${params.data?.isThesisHeader ? '#495057' : '#007bff'};">${params.value || ''}</span>`
+      }
+      return renderFinancialInstrumentCell(params.value)
+    },
     onCellClicked: (event: any) => {
+      // Don't allow filtering on header/total rows
+      if (event.data?.isThesisHeader || event.data?.isThesisTotal) return
+      
       const clickedTag = extractClickedTagText(event)
       if (clickedTag) {
-        // Handle tag click for filtering - ADD THIS LINE BACK
         handleCellFilterClick('symbol', clickedTag)
       }
     }
@@ -351,7 +374,6 @@ const columnDefs = computed<ColDef[]>(() => [
     headerName: 'Asset Class',
     width: 100,
     hide: !isColVisible('asset_class'),
-    // removed click-to-filter for Asset Class per requirements
   },
   { 
     field: 'conid', 
@@ -371,7 +393,10 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 110,
     type: 'rightAligned',
     hide: !isColVisible('multiplier'),
-    valueFormatter: (params: any) => formatNumber(params.value)
+    valueFormatter: (params: any) => {
+      if (params.data?.isThesisHeader) return ''
+      return formatNumber(params.value)
+    }
   },
   { 
     field: 'qty', 
@@ -379,7 +404,10 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 120,
     type: 'rightAligned',
     hide: !isColVisible('qty'),
-    valueFormatter: (params: any) => formatNumber(params.value)
+    valueFormatter: (params: any) => {
+      if (params.data?.isThesisHeader) return ''
+      return formatNumber(params.value)
+    }
   },
   { 
     field: 'avgPrice', 
@@ -387,7 +415,10 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 120,
     type: 'rightAligned',
     hide: !isColVisible('avgPrice'),
-    valueFormatter: (params: any) => formatCurrency(params.value)
+    valueFormatter: (params: any) => {
+      if (params.data?.isThesisHeader) return ''
+      return formatCurrency(params.value)
+    }
   },
   { 
     field: 'price', 
@@ -395,7 +426,10 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 130,
     type: 'rightAligned',
     hide: !isColVisible('price'),
-    valueFormatter: (params: any) => formatCurrency(params.value)
+    valueFormatter: (params: any) => {
+      if (params.data?.isThesisHeader) return ''
+      return formatCurrency(params.value)
+    }
   },
   { 
     field: 'market_value', 
@@ -403,7 +437,10 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 140,
     type: 'rightAligned',
     hide: !isColVisible('market_value'),
-    valueFormatter: (params: any) => formatCurrency(params.value)
+    valueFormatter: (params: any) => {
+      if (params.data?.isThesisHeader) return ''
+      return formatCurrency(params.value)
+    }
   },
   { 
     field: 'unrealized_pnl', 
@@ -411,11 +448,14 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 150,
     type: 'rightAligned',
     hide: !isColVisible('unrealized_pnl'),
-    valueFormatter: (params: any) => formatCurrency(params.value),
+    valueFormatter: (params: any) => {
+      if (params.data?.isThesisHeader) return ''
+      return formatCurrency(params.value)
+    },
     cellClassRules: {
-      'pnl-positive': (params: any) => params.value > 0,
-      'pnl-negative': (params: any) => params.value < 0,
-      'pnl-zero': (params: any) => params.value === 0
+      'pnl-positive': (params: any) => !params.data?.isThesisHeader && params.value > 0,
+      'pnl-negative': (params: any) => !params.data?.isThesisHeader && params.value < 0,
+      'pnl-zero': (params: any) => !params.data?.isThesisHeader && params.value === 0
     }
   },
   { 
@@ -424,11 +464,14 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 160,
     type: 'rightAligned',
     hide: !isColVisible('cash_flow_on_entry'),
-    valueFormatter: (params: any) => formatCurrency(params.value),
+    valueFormatter: (params: any) => {
+      if (params.data?.isThesisHeader) return ''
+      return formatCurrency(params.value)
+    },
     cellClassRules: {
-      'pnl-positive': (params: any) => params.value > 0,
-      'pnl-negative': (params: any) => params.value < 0,
-      'pnl-zero': (params: any) => params.value === 0
+      'pnl-positive': (params: any) => !params.data?.isThesisHeader && params.value > 0,
+      'pnl-negative': (params: any) => !params.data?.isThesisHeader && params.value < 0,
+      'pnl-zero': (params: any) => !params.data?.isThesisHeader && params.value === 0
     }
   }, 
   { 
@@ -437,11 +480,14 @@ const columnDefs = computed<ColDef[]>(() => [
     width: 160,
     type: 'rightAligned',
     hide: !isColVisible('cash_flow_on_exercise'),
-    valueFormatter: (params: any) => formatCurrency(params.value),
+    valueFormatter: (params: any) => {
+      if (params.data?.isThesisHeader) return ''
+      return formatCurrency(params.value)
+    },
     cellClassRules: {
-      'pnl-positive': (params: any) => params.value > 0,
-      'pnl-negative': (params: any) => params.value < 0,
-      'pnl-zero': (params: any) => params.value === 0
+      'pnl-positive': (params: any) => !params.data?.isThesisHeader && params.value > 0,
+      'pnl-negative': (params: any) => !params.data?.isThesisHeader && params.value < 0,
+      'pnl-zero': (params: any) => !params.data?.isThesisHeader && params.value === 0
     },
   }, 
 ])
@@ -653,376 +699,92 @@ watch(() => gridApi.value, (api) => {
   api.addEventListener?.('filterChanged', listener)
 }, { immediate: true })
 
-function rowClicked(position: Position) {
-  emit('row-click', position)
-  if (props.onRowClick) {
-    props.onRowClick(position)
+const groupByThesis = ref(false)
+const groupedData = computed(() => {
+  if (!groupByThesis.value || !q.data.value) {
+    return q.data.value || []
   }
-}
-
-function formatCurrency(value: number | null | undefined): string {
-  if (value === null || value === undefined) return '$0.00'
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(value)
-}
-
-function formatNumber(value: number | null | undefined): string {
-  if (value === null || value === undefined) return '0'
-  return new Intl.NumberFormat('en-US').format(value)
-}
-
-// Renderer helpers for Financial Instrument tags
-function formatExpiryFromYyMmDd(yyMmDd: string): string {
-  // yyMmDd: e.g., '251219' => DEC-19-2025
-  if (!/^[0-9]{6}$/.test(yyMmDd)) return ''
-  const yy = Number(yyMmDd.slice(0, 2))
-  const mm = Number(yyMmDd.slice(2, 4))
-  const dd = Number(yyMmDd.slice(4, 6))
-  const year = 2000 + yy
-  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
-  const mon = months[(mm - 1) >= 0 && (mm - 1) < 12 ? (mm - 1) : 0]
-  return `${mon}-${String(dd).padStart(2,'0')}-${year}`
-}
-
-function renderFinancialInstrumentCell(value: any): string {
-  const text = String(value ?? '')
-  if (!text) return ''
-  // Extract base symbol (first token)
-  const symMatch = text.match(/^([A-Z]+)\b/)
-  const base = symMatch?.[1] ?? ''
-  // Extract right (C/P)
-  const rightMatch = text.match(/\s([CP])\b/)
-  const right = rightMatch?.[1] ?? ''
-  // Extract strike (the number before right token)
-  const strikeMatch = text.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/)
-  const strike = strikeMatch?.[1] ?? ''
-  // Extract 6 digits before C/P inside bracket code, e.g. ... [AAPL 251219C00235000 100]
-  const codeMatch = text.match(/\b(\d{6})[CP]/)
-  const expiry = codeMatch ? formatExpiryFromYyMmDd(codeMatch[1]) : ''
-
-  const tag = (label: string, extraClass = '') => {
-    const isSelected = symbolTagFilters.value.includes(label)
-    const selectedClass = isSelected ? 'fi-tag-selected' : ''
-    return `<span class="fi-tag fi-tag-click ${extraClass} ${selectedClass}">${label}</span>`
-  }
-  const parts = [
-    base && tag(base, 'fi-tag-symbol'),
-    expiry && tag(expiry, 'fi-tag-expiry'),
-    strike && tag(strike, 'fi-tag-strike'),
-    right && tag(right, 'fi-tag-right')
-  ]
-  return parts.filter(Boolean).join(' ')
-}
-
-function extractClickedTagText(evt: any): string | null {
-  const target: any = evt?.event?.target
-  if (!target) return null
-  const tagEl = (target.closest && target.closest('.fi-tag')) || null
-  if (!tagEl) return null
-  const txt = String(tagEl.textContent || '').trim()
-  return txt || null
-}
-
-// External filter function for exact tag matching
-function isExternalFilterPresent(): boolean {
-  return symbolTagFilters.value.length > 0
-}
-
-function doesExternalFilterPass(node: any): boolean {
-  if (symbolTagFilters.value.length === 0) return true
   
-  const symbolValue = node.data?.symbol
-  if (!symbolValue) return false
+  // Filter only positions with thesis assigned
+  const positionsWithThesis = q.data.value.filter(pos => pos.thesis && pos.thesis.id)
   
-  const tags = extractTagsFromSymbol(symbolValue)
-  // Row passes if it contains ALL selected tags (AND logic)
-  return symbolTagFilters.value.every(filter => tags.includes(filter))
-}
-
-// Function to update position thesis assignment
-async function updatePositionThesis(positionId: string, thesisId: string | null) {
-  console.log('📝 Updating position thesis:', { positionId, thesisId })
+  // Group by thesis
+  const grouped = new Map<string, Position[]>()
   
-  try {
-    // First, verify the position exists
-    const { data: existingPosition, error: checkError } = await supabase
-      .schema('hf')
-      .from('positions')
-      .select('id, symbol')
-      .eq('id', positionId)
-      .single()
+  positionsWithThesis.forEach(position => {
+    const thesisId = position.thesis.id
+    if (!grouped.has(thesisId)) {
+      grouped.set(thesisId, [])
+    }
+    grouped.get(thesisId)!.push(position)
+  })
+  
+  // Create flat array with thesis groups and their totals
+  const result: any[] = []
+  
+  for (const [thesisId, positions] of grouped.entries()) {
+    const thesis = positions[0].thesis
     
-    if (checkError) {
-      console.error('❌ Position not found:', checkError)
-      throw new Error(`Position not found: ${checkError.message}`)
+    // Add thesis header row
+    result.push({
+      isThesisHeader: true,
+      thesis,
+      symbol: `📋 ${thesis.title}`,
+      legal_entity: `${positions.length} position${positions.length !== 1 ? 's' : ''}`,
+      asset_class: '',
+      // Set all numeric fields to empty/null for header
+      qty: null,
+      avgPrice: null,
+      price: null,
+      market_value: null,
+      unrealized_pnl: null,
+      cash_flow_on_entry: null,
+      cash_flow_on_exercise: null
+    })
+    
+    // Add all positions for this thesis
+    result.push(...positions)
+    
+    // Calculate totals for this thesis
+    const totals: any = {
+      isThesisTotal: true,
+      thesisId,
+      symbol: `Total for ${thesis.title}`,
+      legal_entity: '',
+      asset_class: '',
+      thesis: null
     }
     
-    // Update the thesis assignment
-    const { error } = await supabase
-      .schema('hf')
-      .from('positions')
-      .update({ thesis_id: thesisId })
-      .eq('id', positionId)
-    
-    if (error) {
-      console.error('❌ Failed to update position thesis:', error)
-      throw new Error(`Failed to update thesis: ${error.message}`)
-    } else {
-      console.log('✅ Position thesis updated successfully')
-      
-      // Invalidate queries to refresh data
-      queryClient.invalidateQueries({ queryKey: ['positions'] })
-      queryClient.invalidateQueries({ queryKey: ['thesis'] })
-    }
-  } catch (err) {
-    console.error('❌ Error updating position thesis:', err)
-    throw err // Re-throw to handle in the editor
-  }
-}
-
-// Thesis management - UPDATE THIS SECTION
-const showThesisModal = ref(false)
-const newThesis = ref({ title: '', description: '' })
-const thesisModalMode = ref<'add' | 'view'>('add') // Track modal mode
-
-// Function to show thesis modal in different modes
-function showThesisModalForAdd() {
-  thesisModalMode.value = 'add'
-  newThesis.value = { title: '', description: '' }
-  showThesisModal.value = true
-}
-
-function showThesisModalForView() {
-  thesisModalMode.value = 'view'
-  showThesisModal.value = true
-}
-
-// Toast notification system
-interface ToastMessage {
-  id: string
-  type: 'success' | 'error' | 'warning' | 'info'
-  title: string
-  message?: string
-  duration?: number
-}
-
-const toasts = ref<ToastMessage[]>([])
-
-function showToast(type: ToastMessage['type'], title: string, message?: string, duration = 5000) {
-  const id = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-  const toast: ToastMessage = { id, type, title, message, duration }
-  
-  toasts.value.push(toast)
-  
-  // Auto-remove after duration
-  if (duration > 0) {
-    setTimeout(() => {
-      removeToast(id)
-    }, duration)
-  }
-}
-
-function removeToast(id: string) {
-  const index = toasts.value.findIndex(t => t.id === id)
-  if (index > -1) {
-    toasts.value.splice(index, 1)
-  }
-}
-
-// Convenience methods
-function showSuccess(title: string, message?: string) {
-  showToast('success', title, message)
-}
-
-function showError(title: string, message?: string) {
-  showToast('error', title, message)
-}
-
-function showWarning(title: string, message?: string) {
-  showToast('warning', title, message)
-}
-
-function showInfo(title: string, message?: string) {
-  showToast('info', title, message)
-}
-
-async function deleteThesis(thesisId: string, thesisTitle: string) {
-  if (!confirm(`Are you sure you want to delete the thesis "${thesisTitle}"?\n\nThis action cannot be undone. Any positions assigned to this thesis will lose their thesis assignment.`)) {
-    return
-  }
-  
-  console.log('🗑️ Deleting thesis:', thesisId)
-  
-  try {
-    const { error } = await supabase
-      .schema('hf')
-      .from('thesis')
-      .delete()
-      .eq('id', thesisId)
-    
-    if (error) {
-      console.error('❌ Failed to delete thesis:', error)
-      showError('Failed to Delete Thesis', error.message)
-    } else {
-      console.log('✅ Thesis deleted successfully')
-      
-      // Refresh thesis data
-      queryClient.invalidateQueries({ queryKey: ['thesis'] })
-      queryClient.invalidateQueries({ queryKey: ['positions'] })
-      
-      showSuccess('Thesis Deleted', `"${thesisTitle}" has been successfully deleted.`)
-    }
-  } catch (err) {
-    console.error('❌ Error deleting thesis:', err)
-    showError('Unexpected Error', 'An unexpected error occurred while deleting the thesis. Please try again.')
-  }
-}
-
-async function addNewThesis() {
-  if (!newThesis.value.title.trim()) {
-    showWarning('Title Required', 'Please enter a thesis title before saving.')
-    return
-  }
-  
-  console.log('📝 Adding new thesis:', newThesis.value)
-  
-  try {
-    const { data, error } = await supabase
-      .schema('hf')
-      .from('thesis')
-      .insert([{
-        title: newThesis.value.title.trim(),
-        description: newThesis.value.description.trim() || null
-      }])
-      .select()
-    
-    if (error) {
-      console.error('❌ Failed to add thesis:', error)
-      showError('Failed to Add Thesis', error.message)
-    } else {
-      console.log('✅ Thesis added successfully:', data)
-      
-      // Refresh thesis data
-      queryClient.invalidateQueries({ queryKey: ['thesis'] })
-      
-      // Reset form and close modal
-      newThesis.value = { title: '', description: '' }
-      showThesisModal.value = false
-      
-      showSuccess('Thesis Added', `"${data[0]?.title}" has been successfully created.`)
-    }
-  } catch (err) {
-    console.error('❌ Error adding thesis:', err)
-    showError('Unexpected Error', 'An unexpected error occurred while adding the thesis. Please try again.')
-  }
-}
-
-function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis', specificValue?: string) {
-  const api = gridApi.value
-  if (!api) return
-  
-  if (field === 'symbol') {
-    // For symbol field, clear all symbol filters (since we group them)
-    symbolTagFilters.value = []
-    
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
+    for (const field of numericFields) {
+      totals[field] = positions.reduce((sum: number, pos: any) => {
+        const value = pos[field]
+        const num = typeof value === 'number' && Number.isFinite(value) ? value : 0
+        return sum + num
+      }, 0)
     }
     
-    // Update URL
-    const url = new URL(window.location.href)
-    url.searchParams.delete('all_cts_fi')
-    window.history.replaceState({}, '', url.toString())
-  } else {
-    // Clear normal ag-Grid filter (including thesis)
-    const model = (api.getFilterModel && api.getFilterModel()) || {}
-    delete model[field]
-    if (typeof api.setFilterModel === 'function') {
-      api.setFilterModel(model)
-    }
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
-    }
-    writeFiltersToUrlFromModel(model)
+    result.push(totals)
   }
   
-  syncActiveFiltersFromGrid()
-}
+  return result
+})
 
-function clearAllFilters() {
-  const api = gridApi.value
-  if (!api) return
-  
-  // Clear all ag-Grid filters
-  if (typeof api.setFilterModel === 'function') {
-    api.setFilterModel({})
-  }
-  
-  // Clear external symbol filters
-  symbolTagFilters.value = []
-  
-  if (typeof api.onFilterChanged === 'function') {
-    api.onFilterChanged()
-  }
-  
-  // Clear URL parameters
-  const url = new URL(window.location.href)
-  url.searchParams.delete('all_cts_fi')
-  url.searchParams.delete('fac')
-  url.searchParams.delete('all_cts_clientId')
-  window.history.replaceState({}, '', url.toString())
-  
-  syncActiveFiltersFromGrid()
-}
+// Update the grid row data computed property
+const gridRowData = computed(() => {
+  return groupByThesis.value ? groupedData.value : (q.data.value || [])
+})
 
-function onGridReady(params: any) {
-  gridApi.value = params.api
-  columnApiRef.value = params.columnApi
-  
-  console.log('🏁 Grid ready, applying URL filters...')
-  
-  // Apply filters from URL
-  const urlFilters = parseFiltersFromUrl()
-  if (Object.keys(urlFilters).length > 0) {
-    const model: any = {}
-    
-    if (urlFilters.symbol) {
-      // Handle symbol filters - check if it's comma-separated tags
-      const symbolValue = urlFilters.symbol
-      if (symbolValue.includes(',')) {
-        // Multiple tags - use external filter
-        symbolTagFilters.value = symbolValue.split(',').map(s => s.trim()).filter(Boolean)
-      } else {
-        // Single value - use ag-Grid filter
-        model.symbol = { type: 'equals', filter: symbolValue }
-      }
-    }
-    
-    if (urlFilters.asset_class) {
-      model.asset_class = { type: 'equals', filter: urlFilters.asset_class }
-    }
-    
-    if (urlFilters.legal_entity) {
-      model.legal_entity = { type: 'equals', filter: urlFilters.legal_entity }
-    }
-    
-    if (Object.keys(model).length > 0) {
-      params.api.setFilterModel(model)
-    }
-  }
-  
-  // Initial calculation
-  recalcPinnedTotals()
-  syncActiveFiltersFromGrid()
-}
-
+// Update the recalcPinnedTotals function to handle grouped data
 function recalcPinnedTotals() {
   const api = gridApi.value
-  // API not ready: compute from raw rows
+  
+  if (groupByThesis.value) {
+    // When grouping by thesis, don't show overall pinned totals
+    pinnedBottomRowDataRef.value = []
+    return
+  }
+  
+  // Original totals logic for non-grouped view
   if (!api) {
     const rows = q.data.value || []
     const totals: any = { symbol: 'Total', asset_class: '' }
@@ -1042,6 +804,9 @@ function recalcPinnedTotals() {
 
   api.forEachNodeAfterFilterAndSort((node: any) => {
     const data = node.data || {}
+    // Skip thesis header and total rows when calculating overall totals
+    if (data.isThesisHeader || data.isThesisTotal) return
+    
     for (const field of numericFields) {
       const v = data?.[field]
       const n = typeof v === 'number' && Number.isFinite(v) ? v : 0
@@ -1050,6 +815,19 @@ function recalcPinnedTotals() {
   })
 
   pinnedBottomRowDataRef.value = [totals]
+}
+
+// Update the rowClicked function to handle grouped rows
+function rowClicked(position: Position) {
+  // Don't emit row click for thesis header/total rows
+  if ((position as any).isThesisHeader || (position as any).isThesisTotal) {
+    return
+  }
+  
+  emit('row-click', position)
+  if (props.onRowClick) {
+    props.onRowClick(position)
+  }
 }
 
 function setColumnVisibility(field: string, visible: boolean) {
@@ -1107,7 +885,300 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 
-// ...rest of existing code...
+// Add these missing reactive variables and functions:
+
+// External filter functions for ag-grid
+function isExternalFilterPresent(): boolean {
+  return symbolTagFilters.value.length > 0
+}
+
+function doesExternalFilterPass(node: any): boolean {
+  if (symbolTagFilters.value.length === 0) return true
+  
+  const symbolText = node.data?.symbol || ''
+  const symbolTags = extractTagsFromSymbol(symbolText)
+  
+  // Check if any of the active symbol filters match any tags from this symbol
+  return symbolTagFilters.value.some(filter => 
+    symbolTags.some(tag => tag === filter)
+  )
+}
+
+// Grid ready handler
+function onGridReady(params: any) {
+  gridApi.value = params.api
+  columnApiRef.value = params.columnApi
+  
+  // Apply initial filters from URL
+  const initialFilters = parseFiltersFromUrl()
+  const filterModel: any = {}
+  
+  if (initialFilters.asset_class) {
+    filterModel.asset_class = { type: 'equals', filter: initialFilters.asset_class }
+  }
+  if (initialFilters.legal_entity) {
+    filterModel.legal_entity = { type: 'equals', filter: initialFilters.legal_entity }
+  }
+  
+  if (Object.keys(filterModel).length > 0) {
+    params.api.setFilterModel(filterModel)
+  }
+  
+  // Handle symbol filters separately (external filter)
+  if (initialFilters.symbol) {
+    symbolTagFilters.value = initialFilters.symbol.split(',').map(s => s.trim()).filter(Boolean)
+  }
+  
+  // Initial totals calculation
+  recalcPinnedTotals()
+  syncActiveFiltersFromGrid()
+}
+
+// Helper functions for formatting
+function formatNumber(value: any): string {
+  if (value === null || value === undefined || isNaN(Number(value))) return ''
+  return Number(value).toLocaleString('en-US', { 
+    minimumFractionDigits: 0, 
+    maximumFractionDigits: 2 
+  })
+}
+
+function formatCurrency(value: any): string {
+  if (value === null || value === undefined || isNaN(Number(value))) return ''
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(Number(value))
+}
+
+function formatExpiryFromYyMmDd(yymmdd: string): string {
+  if (yymmdd.length !== 6) return yymmdd
+  const yy = yymmdd.slice(0, 2)
+  const mm = yymmdd.slice(2, 4)
+  const dd = yymmdd.slice(4, 6)
+  const year = parseInt(yy) + (parseInt(yy) < 50 ? 2000 : 1900)
+  return `${mm}/${dd}/${year}`
+}
+
+// Financial instrument cell renderer
+function renderFinancialInstrumentCell(symbolText: string): string {
+  if (!symbolText) return ''
+  
+  const tags = extractTagsFromSymbol(symbolText)
+  if (tags.length === 0) {
+    return `<span class="symbol">${symbolText}</span>`
+  }
+  
+  const tagElements = tags.map(tag => {
+    const isSelected = symbolTagFilters.value.includes(tag)
+    const className = isSelected ? 'fi-tag fi-tag-selected' : 'fi-tag'
+    return `<span class="${className}">${tag}</span>`
+  }).join('')
+  
+  return `<div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center;">${tagElements}</div>`
+}
+
+// Extract clicked tag from click event
+function extractClickedTagText(event: any): string | null {
+  const target = event.event?.target
+  if (!target) return null
+  
+  if (target.classList?.contains('fi-tag')) {
+    return target.textContent?.trim() || null
+  }
+  
+  return null
+}
+
+// Thesis modal functionality
+const showThesisModal = ref(false)
+const thesisModalMode = ref<'view' | 'add'>('view')
+const newThesis = ref({
+  title: '',
+  description: ''
+})
+
+function showThesisModalForView() {
+  thesisModalMode.value = 'view'
+  showThesisModal.value = true
+}
+
+// Toast notification system
+interface Toast {
+  id: string
+  type: 'success' | 'error' | 'warning' | 'info'
+  title: string
+  message?: string
+}
+
+const toasts = ref<Toast[]>([])
+
+function addToast(toast: Omit<Toast, 'id'>) {
+  const id = Date.now().toString()
+  toasts.value.push({ ...toast, id })
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    removeToast(id)
+  }, 5000)
+}
+
+function removeToast(id: string) {
+  const index = toasts.value.findIndex(t => t.id === id)
+  if (index >= 0) {
+    toasts.value.splice(index, 1)
+  }
+}
+
+// Thesis management functions
+async function updatePositionThesis(positionId: string, thesisId: string | null) {
+  try {
+    console.log('🔄 Updating position thesis:', { positionId, thesisId })
+    
+    // Add the schema('hf') to match the query pattern
+    const { error } = await supabase
+      .schema('hf')  // Add this line
+      .from('positions')
+      .update({ thesis_id: thesisId })
+      .eq('id', positionId)
+    
+    if (error) throw error
+    
+    // Invalidate and refetch positions data
+    await queryClient.invalidateQueries({ queryKey: ['positions'] })
+    
+    addToast({
+      type: 'success',
+      title: 'Thesis Updated',
+      message: 'Position thesis has been updated successfully'
+    })
+    
+    console.log('✅ Position thesis updated successfully')
+  } catch (error) {
+    console.error('❌ Error updating position thesis:', error)
+    addToast({
+      type: 'error',
+      title: 'Update Failed',
+      message: 'Failed to update position thesis'
+    })
+    throw error
+  }
+}
+
+async function addNewThesis() {
+  if (!newThesis.value.title.trim()) return
+  
+  try {
+    const { data, error } = await supabase
+      .from('thesis')
+      .insert([{
+        title: newThesis.value.title.trim(),
+        description: newThesis.value.description.trim() || null
+      }])
+      .select()
+    
+    if (error) throw error
+    
+    // Reset form
+    newThesis.value = { title: '', description: '' }
+    
+    // Invalidate thesis query to refetch data
+    await queryClient.invalidateQueries({ queryKey: ['thesis'] })
+    
+    addToast({
+      type: 'success',
+      title: 'Thesis Added',
+      message: `"${data[0].title}" has been created successfully`
+    })
+    
+    // Go back to view mode
+    thesisModalMode.value = 'view'
+  } catch (error) {
+    console.error('Error adding thesis:', error)
+    addToast({
+      type: 'error',
+      title: 'Failed to Add Thesis',
+      message: error instanceof Error ? error.message : 'Unknown error occurred'
+    })
+  }
+}
+
+async function deleteThesis(thesisId: string, thesisTitle: string) {
+  if (!confirm(`Are you sure you want to delete "${thesisTitle}"?`)) return
+  
+  try {
+    const { error } = await supabase
+      .from('thesis')
+      .delete()
+      .eq('id', thesisId)
+    
+    if (error) throw error
+    
+    // Invalidate queries to refetch data
+    await queryClient.invalidateQueries({ queryKey: ['thesis'] })
+    await queryClient.invalidateQueries({ queryKey: ['positions'] })
+    
+    addToast({
+      type: 'success',
+      title: 'Thesis Deleted',
+      message: `"${thesisTitle}" has been deleted successfully`
+    })
+  } catch (error) {
+    console.error('Error deleting thesis:', error)
+    addToast({
+      type: 'error',
+      title: 'Failed to Delete Thesis',
+      message: error instanceof Error ? error.message : 'Unknown error occurred'
+    })
+  }
+}
+
+// Filter management functions
+function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis') {
+  const api = gridApi.value
+  if (!api) return
+  
+  if (field === 'symbol') {
+    // Clear external symbol filters
+    symbolTagFilters.value = []
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
+  } else {
+    // Clear ag-Grid filter for other fields
+    const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
+    delete currentModel[field]
+    
+    if (typeof api.setFilterModel === 'function') {
+      api.setFilterModel(currentModel)
+    }
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
+  }
+  
+  syncActiveFiltersFromGrid()
+}
+
+function clearAllFilters() {
+  const api = gridApi.value
+  if (!api) return
+  
+  // Clear external symbol filters
+  symbolTagFilters.value = []
+  
+  // Clear all ag-Grid filters
+  if (typeof api.setFilterModel === 'function') {
+    api.setFilterModel({})
+  }
+  if (typeof api.onFilterChanged === 'function') {
+    api.onFilterChanged()
+  }
+  
+  syncActiveFiltersFromGrid()
+}
 </script>
 
 <template>
@@ -1134,7 +1205,16 @@ onBeforeUnmount(() => {
         <div class="positions-tools">
           <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
           
-          <!-- Remove the Group by thesis button -->
+          <!-- Add the Group by Thesis button -->
+          <button 
+            class="thesis-group-btn" 
+            :class="{ active: groupByThesis }"
+            @click="groupByThesis = !groupByThesis" 
+            title="Group positions by thesis"
+          >
+            <span class="icon">📊</span> 
+            {{ groupByThesis ? 'Ungroup' : 'Group by Thesis' }}
+          </button>
           
           <!-- Keep the thesis management button -->
           <button class="thesis-btn" @click="showThesisModalForView" title="Manage thesis">
@@ -1191,7 +1271,7 @@ onBeforeUnmount(() => {
       <div class="ag-theme-alpine positions-grid">
         <AgGridVue
           :columnDefs="columnDefs"
-          :rowData="q.data.value || []"
+          :rowData="gridRowData"
           :modules="[AllCommunityModule]"
           :defaultColDef="{
             sortable: true,
@@ -1205,6 +1285,26 @@ onBeforeUnmount(() => {
           :pinnedBottomRowData="pinnedBottomRowDataRef"
           :isExternalFilterPresent="isExternalFilterPresent"
           :doesExternalFilterPass="doesExternalFilterPass"
+          :gridOptions="{
+            getRowStyle: (params) => {
+              if (params.data?.isThesisHeader) {
+                return { 
+                  'background-color': '#f8f9fa', 
+                  'font-weight': 'bold',
+                  'border-top': '2px solid #dee2e6'
+                };
+              }
+              if (params.data?.isThesisTotal) {
+                return { 
+                  'background-color': '#e9ecef', 
+                  'font-weight': 'bold',
+                  'font-style': 'italic',
+                  'border-bottom': '2px solid #dee2e6'
+                };
+              }
+              return null;
+            }
+          }"
           @grid-ready="onGridReady"
           @filter-changed="recalcPinnedTotals"
           @sort-changed="recalcPinnedTotals"
@@ -1395,6 +1495,35 @@ h1 {
   align-items: center;
   gap: 0.5rem;
   position: relative;
+}
+
+.thesis-group-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.thesis-group-btn:hover {
+  background: #f8f9fa;
+}
+
+.thesis-group-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.thesis-group-btn.active:hover {
+  background: #0056b3;
+  border-color: #0056b3;
 }
 
 .thesis-btn {
@@ -2004,7 +2133,7 @@ h1 {
 }
 
 .toast-icon {
-  font-size: 20px;
+   font-size: 20px;
   flex-shrink: 0;
   line-height: 1;
 }
@@ -2047,7 +2176,7 @@ h1 {
 
 .toast-close:hover {
   opacity: 1;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0,    0.1);
 }
 
 /* Toast animations */
