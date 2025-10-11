@@ -66,7 +66,10 @@ function parseVisibleColsFromUrl(): ColumnField[] {
   const url = new URL(window.location.href)
   const colsParam = url.searchParams.get('position_cols')
   if (!colsParam) {
-    return allColumnOptions.map(c => c.field)
+    // Default visible columns (exclude asset_class, conid, undConid, multiplier, qty)
+    return allColumnOptions
+      .map(c => c.field)
+      .filter(field => !['asset_class', 'conid', 'undConid', 'multiplier', 'qty'].includes(field))
   }
   const fromUrl = colsParam.split('-and-').map(s => s.trim()).filter(Boolean) as ColumnField[]
   const valid = new Set(allColumnOptions.map(c => c.field))
@@ -647,7 +650,10 @@ function parseVisibleColsFromUrl2(): ColumnField2[] {
   const url = new URL(window.location.href)
   const colsParam = url.searchParams.get('position_cols')
   if (!colsParam) {
-    return allColumnOptions2.map(c => c.field)
+    // Default visible columns (exclude asset_class, conid, undConid, multiplier, qty)
+    return allColumnOptions2
+      .map(c => c.field)
+      .filter(field => !['asset_class', 'conid', 'undConid', 'multiplier', 'qty'].includes(field))
   }
   const fromUrl = colsParam.split('-and-').map(s => s.trim()).filter(Boolean) as ColumnField2[]
   const valid = new Set(allColumnOptions2.map(c => c.field))
