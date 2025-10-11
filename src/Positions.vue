@@ -598,7 +598,11 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
   } else {
     // For other fields (including thesis), use normal ag-Grid filters
     const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
-    currentModel[field] = { type: 'equals', filter: String(value) }
+    currentModel[field] = { 
+      filterType: 'text',
+      type: 'equals', 
+      filter: String(value) 
+    }
     
     if (typeof api.setFilterModel === 'function') {
       api.setFilterModel(currentModel)
@@ -606,7 +610,15 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
     if (typeof api.onFilterChanged === 'function') {
       api.onFilterChanged()
     }
-    // URL update will be handled by the gridApi watcher via writeFiltersToUrlFromModel
+    
+    // Emit event for account filter changes
+    if (field === 'legal_entity' && eventBus) {
+      console.log('📍 [Positions] Emitting account filter change')
+      eventBus.emit('account-filter-changed', {
+        accountId: String(value),
+        source: 'positions'
+      })
+    }
   }
   
   syncActiveFiltersFromGrid()
@@ -883,328 +895,85 @@ watch(visibleCols, (cols) => {
   }
 }, { deep: true })
 
+// Inject event bus
+const eventBus = inject<any>('eventBus')
+
+// Add listener for external filter changes
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  
+  // Listen for account filter changes from other components
+  if (eventBus) {
+    eventBus.on('account-filter-changed', handleExternalAccountFilter)
+  }
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
+  
+  // Clean up event listener
+  if (eventBus) {
+    eventBus.off('account-filter-changed', handleExternalAccountFilter)
+  }
 })
 
-// Add these missing reactive variables and functions:
-
-// External filter functions for ag-grid
-function isExternalFilterPresent(): boolean {
-  return symbolTagFilters.value.length > 0
-}
-
-function doesExternalFilterPass(node: any): boolean {
-  if (symbolTagFilters.value.length === 0) return true
+// Handle external account filter changes
+function handleExternalAccountFilter(payload: { accountId: string | null, source: string }) {
+  console.log('📍 [Positions] Received account filter:', payload)
   
-  const symbolText = node.data?.symbol || ''
-  const symbolTags = extractTagsFromSymbol(symbolText)
+  // Ignore if this component is the source
+  if (payload.source === 'positions') return
   
-  // Check if any of the active symbol filters match any tags from this symbol
-  return symbolTagFilters.value.some(filter => 
-    symbolTags.some(tag => tag === filter)
-  )
-}
-
-// Grid ready handler
-function onGridReady(params: any) {
-  gridApi.value = params.api
-  columnApiRef.value = params.columnApi
-  
-  // Apply initial filters from URL
-  const initialFilters = parseFiltersFromUrl()
-  const filterModel: any = {}
-  
-  if (initialFilters.asset_class) {
-    filterModel.asset_class = { type: 'equals', filter: initialFilters.asset_class }
-  }
-  if (initialFilters.legal_entity) {
-    filterModel.legal_entity = { type: 'equals', filter: initialFilters.legal_entity }
+  const api = gridApi.value
+  if (!api) {
+    console.warn('📍 [Positions] Grid API not ready')
+    return
   }
   
-  if (Object.keys(filterModel).length > 0) {
-    params.api.setFilterModel(filterModel)
+  if (payload.accountId) {
+    // Apply filter
+    const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
+    currentModel.legal_entity = { 
+      filterType: 'text',
+      type: 'equals', 
+      filter: payload.accountId 
+    }
+    
+    console.log('📍 [Positions] Applying filter model:', currentModel)
+    
+    if (typeof api.setFilterModel === 'function') {
+      api.setFilterModel(currentModel)
+    }
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
+    
+    // Update URL
+    writeFiltersToUrlFromModel(currentModel)
+  } else {
+    // Clear filter
+    const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
+    delete currentModel.legal_entity
+    
+    console.log('📍 [Positions] Clearing account filter')
+    
+    if (typeof api.setFilterModel === 'function') {
+      api.setFilterModel(currentModel)
+    }
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
+    
+    // Update URL
+    writeFiltersToUrlFromModel(currentModel)
   }
   
-  // Handle symbol filters separately (external filter)
-  if (initialFilters.symbol) {
-    symbolTagFilters.value = initialFilters.symbol.split(',').map(s => s.trim()).filter(Boolean)
-  }
-  
-  // Initial totals calculation
-  recalcPinnedTotals()
   syncActiveFiltersFromGrid()
 }
 
-// Helper functions for formatting
-function formatNumber(value: any): string {
-  if (value === null || value === undefined || isNaN(Number(value))) return ''
-  return Number(value).toLocaleString('en-US', { 
-    minimumFractionDigits: 0, 
-    maximumFractionDigits: 2 
-  })
-}
+// Update the handleCellFilterClick function to emit events
 
-function formatCurrency(value: any): string {
-  if (value === null || value === undefined || isNaN(Number(value))) return ''
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(Number(value))
-}
-
-function formatExpiryFromYyMmDd(yymmdd: string): string {
-  if (yymmdd.length !== 6) return yymmdd
-  const yy = yymmdd.slice(0, 2)
-  const mm = yymmdd.slice(2, 4)
-  const dd = yymmdd.slice(4, 6)
-  const year = parseInt(yy) + (parseInt(yy) < 50 ? 2000 : 1900)
-  return `${mm}/${dd}/${year}`
-}
-
-// Financial instrument cell renderer
-function renderFinancialInstrumentCell(symbolText: string): string {
-  if (!symbolText) return ''
-  
-  const tags = extractTagsFromSymbol(symbolText)
-  if (tags.length === 0) {
-    return `<span class="symbol">${symbolText}</span>`
-  }
-  
-  const tagElements = tags.map(tag => {
-    const isSelected = symbolTagFilters.value.includes(tag)
-    const className = isSelected ? 'fi-tag fi-tag-selected' : 'fi-tag'
-    return `<span class="${className}">${tag}</span>`
-  }).join('')
-  
-  return `<div style="display: flex; flex-wrap: wrap; gap: 4px; align-items: center;">${tagElements}</div>`
-}
-
-// Extract clicked tag from click event
-function extractClickedTagText(event: any): string | null {
-  const target = event.event?.target
-  if (!target) return null
-  
-  if (target.classList?.contains('fi-tag')) {
-    return target.textContent?.trim() || null
-  }
-  
-  return null
-}
-
-// Thesis modal functionality
-const showThesisModal = ref(false)
-const thesisModalMode = ref<'view' | 'add' | 'edit'>('view')
-const newThesis = ref({
-  title: '',
-  description: ''
-})
-const editingThesis = ref<Thesis | null>(null)
-const editThesisForm = ref({
-  title: '',
-  description: ''
-})
-
-function showThesisModalForView() {
-  thesisModalMode.value = 'view'
-  showThesisModal.value = true
-}
-
-function startEditThesis(thesis: Thesis) {
-  editingThesis.value = thesis
-  editThesisForm.value = {
-    title: thesis.title,
-    description: thesis.description || ''
-  }
-  thesisModalMode.value = 'edit'
-}
-
-function cancelEditThesis() {
-  editingThesis.value = null
-  editThesisForm.value = { title: '', description: '' }
-  thesisModalMode.value = 'view'
-}
-
-async function saveEditThesis() {
-  if (!editingThesis.value || !editThesisForm.value.title.trim()) return
-  
-  try {
-    const { error } = await supabase
-      .schema('hf')
-      .from('thesisMaster')
-      .update({
-        title: editThesisForm.value.title.trim(),
-        description: editThesisForm.value.description.trim() || null
-      })
-      .eq('id', editingThesis.value.id)
-    
-    if (error) throw error
-    
-    // Reset form and state
-    editingThesis.value = null
-    editThesisForm.value = { title: '', description: '' }
-    
-    // Invalidate queries to refetch data
-    await queryClient.invalidateQueries({ queryKey: ['thesis'] })
-    await queryClient.invalidateQueries({ queryKey: ['positions'] })
-    
-    addToast({
-      type: 'success',
-      title: 'Thesis Updated',
-      message: 'Thesis has been updated successfully'
-    })
-    
-    // Go back to view mode
-    thesisModalMode.value = 'view'
-  } catch (error) {
-    console.error('Error updating thesis:', error)
-    addToast({
-      type: 'error',
-      title: 'Failed to Update Thesis',
-      message: error instanceof Error ? error.message : 'Unknown error occurred'
-    })
-  }
-}
-
-// Toast notification system
-interface Toast {
-  id: string
-  type: 'success' | 'error' | 'warning' | 'info'
-  title: string
-  message?: string
-}
-
-const toasts = ref<Toast[]>([])
-
-function addToast(toast: Omit<Toast, 'id'>) {
-  const id = Date.now().toString()
-  toasts.value.push({ ...toast, id })
-  
-  // Auto-remove after 5 seconds
-  setTimeout(() => {
-    removeToast(id)
-  }, 5000)
-}
-
-function removeToast(id: string) {
-  const index = toasts.value.findIndex(t => t.id === id)
-  if (index >= 0) {
-    toasts.value.splice(index, 1)
-  }
-}
-
-// Thesis management functions
-async function updatePositionThesis(positionId: string, thesisId: string | null) {
-  try {
-    console.log('🔄 Updating position thesis:', { positionId, thesisId })
-    
-    // Add the schema('hf') to match the query pattern
-    const { error } = await supabase
-      .schema('hf')  // Add this line
-      .from('positions')
-      .update({ thesis_id: thesisId })
-      .eq('id', positionId)
-    
-    if (error) throw error
-    
-    // Invalidate and refetch positions data
-    await queryClient.invalidateQueries({ queryKey: ['positions'] })
-    
-    addToast({
-      type: 'success',
-      title: 'Thesis Updated',
-      message: 'Position thesis has been updated successfully'
-    })
-    
-    console.log('✅ Position thesis updated successfully')
-  } catch (error) {
-    console.error('❌ Error updating position thesis:', error)
-    addToast({
-      type: 'error',
-      title: 'Update Failed',
-      message: 'Failed to update position thesis'
-    })
-    throw error
-  }
-}
-
-async function addNewThesis() {
-  if (!newThesis.value.title.trim()) return
-  
-  try {
-    const { data, error } = await supabase
-      .schema('hf')  // Add this line
-      .from('thesisMaster')
-      .insert([{
-        title: newThesis.value.title.trim(),
-        description: newThesis.value.description.trim() || null
-      }])
-      .select()
-    
-    if (error) throw error
-    
-    // Reset form
-    newThesis.value = { title: '', description: '' }
-    
-    // Invalidate thesis query to refetch data
-    await queryClient.invalidateQueries({ queryKey: ['thesis'] })
-    
-    addToast({
-      type: 'success',
-      title: 'Thesis Added',
-      message: `"${data[0].title}" has been created successfully`
-    })
-    
-    // Go back to view mode
-    thesisModalMode.value = 'view'
-  } catch (error) {
-    console.error('Error adding thesis:', error)
-    addToast({
-      type: 'error',
-      title: 'Failed to Add Thesis',
-      message: error instanceof Error ? error.message : 'Unknown error occurred'
-    })
-  }
-}
-
-async function deleteThesis(thesisId: string, thesisTitle: string) {
-  if (!confirm(`Are you sure you want to delete "${thesisTitle}"?`)) return
-  
-  try {
-    const { error } = await supabase
-      .schema('hf')  // Add this line
-      .from('thesisMaster')
-      .delete()
-      .eq('id', thesisId)
-    
-    if (error) throw error
-    
-    // Invalidate queries to refetch data
-    await queryClient.invalidateQueries({ queryKey: ['thesis'] })
-    await queryClient.invalidateQueries({ queryKey: ['positions'] })
-    
-    addToast({
-      type: 'success',
-      title: 'Thesis Deleted',
-      message: `"${thesisTitle}" has been deleted successfully`
-    })
-  } catch (error) {
-    console.error('Error deleting thesis:', error)
-    addToast({
-      type: 'error',
-      title: 'Failed to Delete Thesis',
-      message: error instanceof Error ? error.message : 'Unknown error occurred'
-    })
-  }
-}
-
-// Filter management functions
+// Update clearFilter to emit events
 function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis') {
   const api = gridApi.value
   if (!api) return
@@ -1226,14 +995,28 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'
     if (typeof api.onFilterChanged === 'function') {
       api.onFilterChanged()
     }
+    
+    // Emit event for account filter clear
+    if (field === 'legal_entity' && eventBus) {
+      console.log('📍 [Positions] Clearing account filter via event')
+      eventBus.emit('account-filter-changed', {
+        accountId: null,
+        source: 'positions'
+      })
+    }
   }
   
   syncActiveFiltersFromGrid()
 }
 
+// Update clearAllFilters to emit events
 function clearAllFilters() {
   const api = gridApi.value
   if (!api) return
+  
+  // Check if account filter was active
+  const currentModel = api.getFilterModel?.() || {}
+  const hadAccountFilter = !!currentModel.legal_entity
   
   // Clear external symbol filters
   symbolTagFilters.value = []
@@ -1246,8 +1029,271 @@ function clearAllFilters() {
     api.onFilterChanged()
   }
   
+  // Emit event if account filter was cleared
+  if (hadAccountFilter && eventBus) {
+    eventBus.emit('account-filter-changed', {
+      accountId: null,
+      source: 'positions'
+    })
+  }
+  
   syncActiveFiltersFromGrid()
 }
+
+// Add these helper functions before columnDefs
+function formatCurrency(value: number | string | null | undefined): string {
+  if (value === null || value === undefined) return ''
+  const num = typeof value === 'string' ? parseFloat(value) : value
+  if (!Number.isFinite(num)) return ''
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(num)
+}
+
+function formatNumber(value: number | string | null | undefined): string {
+  if (value === null || value === undefined) return ''
+  const num = typeof value === 'string' ? parseFloat(value) : value
+  if (!Number.isFinite(num)) return ''
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  }).format(num)
+}
+
+function formatExpiryFromYyMmDd(code: string): string {
+  if (!code || code.length !== 6) return ''
+  const yy = code.substring(0, 2)
+  const mm = code.substring(2, 4)
+  const dd = code.substring(4, 6)
+  return `20${yy}-${mm}-${dd}`
+}
+
+function renderFinancialInstrumentCell(symbolText: string): string {
+  if (!symbolText) return ''
+  
+  const tags = extractTagsFromSymbol(symbolText)
+  const selectedTags = new Set(symbolTagFilters.value)
+  
+  return tags.map(tag => {
+    const isSelected = selectedTags.has(tag)
+    const className = isSelected ? 'fi-tag fi-tag-selected' : 'fi-tag'
+    return `<span class="${className}">${tag}</span>`
+  }).join(' ')
+}
+
+function extractClickedTagText(event: any): string | null {
+  const target = event.event?.target
+  if (!target) return null
+  
+  const tagSpan = target.closest('.fi-tag')
+  if (!tagSpan) return null
+  
+  return tagSpan.textContent?.trim() || null
+}
+
+// Add these thesis management functions
+const showThesisModal = ref(false)
+const thesisModalMode = ref<'view' | 'add' | 'edit'>('view')
+const newThesis = ref({ title: '', description: '' })
+const editThesisForm = ref({ id: '', title: '', description: '' })
+
+function showThesisModalForView() {
+  thesisModalMode.value = 'view'
+  showThesisModal.value = true
+}
+
+async function addNewThesis() {
+  if (!newThesis.value.title.trim()) return
+  
+  try {
+    const { data, error } = await supabase
+      .schema('hf')
+      .from('thesisMaster')
+      .insert([{
+        title: newThesis.value.title.trim(),
+        description: newThesis.value.description.trim() || null
+      }])
+      .select()
+    
+    if (error) throw error
+    
+    // Refresh thesis data
+    queryClient.invalidateQueries({ queryKey: ['thesis'] })
+    
+    // Reset form and go back to view mode
+    newThesis.value = { title: '', description: '' }
+    thesisModalMode.value = 'view'
+    
+    showToast('success', 'Thesis Added', 'New thesis has been created successfully')
+  } catch (error: any) {
+    console.error('Error adding thesis:', error)
+    showToast('error', 'Error', `Failed to add thesis: ${error.message}`)
+  }
+}
+
+function startEditThesis(thesis: Thesis) {
+  editThesisForm.value = {
+    id: thesis.id,
+    title: thesis.title,
+    description: thesis.description || ''
+  }
+  thesisModalMode.value = 'edit'
+}
+
+function cancelEditThesis() {
+  editThesisForm.value = { id: '', title: '', description: '' }
+  thesisModalMode.value = 'view'
+}
+
+async function saveEditThesis() {
+  if (!editThesisForm.value.title.trim()) return
+  
+  try {
+    const { error } = await supabase
+      .schema('hf')
+      .from('thesisMaster')
+      .update({
+        title: editThesisForm.value.title.trim(),
+        description: editThesisForm.value.description.trim() || null
+      })
+      .eq('id', editThesisForm.value.id)
+    
+    if (error) throw error
+    
+    // Refresh thesis data
+    queryClient.invalidateQueries({ queryKey: ['thesis'] })
+    
+    // Reset form and go back to view mode
+    editThesisForm.value = { id: '', title: '', description: '' }
+    thesisModalMode.value = 'view'
+    
+    showToast('success', 'Thesis Updated', 'Thesis has been updated successfully')
+  } catch (error: any) {
+    console.error('Error updating thesis:', error)
+    showToast('error', 'Error', `Failed to update thesis: ${error.message}`)
+  }
+}
+
+async function deleteThesis(id: string, title: string) {
+  if (!confirm(`Are you sure you want to delete thesis "${title}"?`)) return
+  
+  try {
+    const { error } = await supabase
+      .schema('hf')
+      .from('thesisMaster')
+      .delete()
+      .eq('id', id)
+    
+    if (error) throw error
+    
+    // Refresh thesis data
+    queryClient.invalidateQueries({ queryKey: ['thesis'] })
+    
+    showToast('success', 'Thesis Deleted', 'Thesis has been deleted successfully')
+  } catch (error: any) {
+    console.error('Error deleting thesis:', error)
+    showToast('error', 'Error', `Failed to delete thesis: ${error.message}`)
+  }
+}
+
+async function updatePositionThesis(positionId: string, thesisId: string | null) {
+  try {
+    const { error } = await supabase
+      .schema('hf')
+      .from('positions')
+      .update({ thesis_id: thesisId })
+      .eq('id', positionId)
+    
+    if (error) throw error
+    
+    // Refresh positions data
+    queryClient.invalidateQueries({ queryKey: ['positions'] })
+    
+    showToast('success', 'Thesis Updated', 'Position thesis has been updated')
+  } catch (error: any) {
+    console.error('Error updating position thesis:', error)
+    showToast('error', 'Error', `Failed to update thesis: ${error.message}`)
+    throw error
+  }
+}
+
+// Toast notification system
+type ToastType = 'success' | 'error' | 'warning' | 'info'
+interface Toast {
+  id: number
+  type: ToastType
+  title: string
+  message?: string
+}
+
+const toasts = ref<Toast[]>([])
+let toastIdCounter = 0
+
+function showToast(type: ToastType, title: string, message?: string) {
+  const id = toastIdCounter++
+  toasts.value.push({ id, type, title, message })
+  
+  setTimeout(() => {
+    removeToast(id)
+  }, 5000)
+}
+
+function removeToast(id: number) {
+  const index = toasts.value.findIndex(t => t.id === id)
+  if (index !== -1) {
+    toasts.value.splice(index, 1)
+  }
+}
+
+// External filter for symbol tags
+function isExternalFilterPresent(): boolean {
+  return symbolTagFilters.value.length > 0
+}
+
+function doesExternalFilterPass(node: any): boolean {
+  if (symbolTagFilters.value.length === 0) return true
+  
+  const symbolText = node.data?.symbol
+  if (!symbolText) return false
+  
+  const tags = extractTagsFromSymbol(symbolText)
+  
+  // ALL selected tags must be present in the symbol
+  return symbolTagFilters.value.every(selectedTag => tags.includes(selectedTag))
+}
+
+// Grid ready handler
+function onGridReady(params: any) {
+  gridApi.value = params.api
+  columnApiRef.value = params.columnApi
+  
+  // Apply initial filters from URL
+  const filters = parseFiltersFromUrl()
+  const model: any = {}
+  
+  if (filters.symbol) {
+    // For symbol filter from URL, use external filter
+    symbolTagFilters.value = filters.symbol.split(',').map(s => s.trim())
+  }
+  if (filters.asset_class) {
+    model.asset_class = { type: 'equals', filter: filters.asset_class }
+  }
+  if (filters.legal_entity) {
+    model.legal_entity = { type: 'equals', filter: filters.legal_entity }
+  }
+  
+  if (Object.keys(model).length > 0) {
+    params.api.setFilterModel(model)
+  }
+  
+  syncActiveFiltersFromGrid()
+  recalcPinnedTotals()
+}
+
+// ...rest of existing code...
 </script>
 
 <template>
