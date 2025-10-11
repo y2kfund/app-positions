@@ -39508,7 +39508,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
                 to: "/positions"
               }, {
                 default: $r(() => [...C[18] || (C[18] = [
-                  Li("Positions:", -1)
+                  Li("Positions", -1)
                 ])]),
                 _: 1
               })) : (U(), $("span", l0, "Positions"))
@@ -39825,7 +39825,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, dT = /* @__PURE__ */ oT(sT, [["__scopeId", "data-v-200d6fb3"]]);
+}, dT = /* @__PURE__ */ oT(sT, [["__scopeId", "data-v-668103d0"]]);
 export {
   dT as Positions,
   dT as default

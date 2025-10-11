@@ -1268,7 +1268,7 @@ function clearAllFilters() {
     <div v-else-if="q.isSuccess.value" class="positions-container">
       <div class="positions-header">
         <h2>
-          <router-link v-if="showHeaderLink" to="/positions">Positions:</router-link>
+          <router-link v-if="showHeaderLink" to="/positions">Positions</router-link>
           <span v-else>Positions</span>
         </h2>
         <div class="positions-tools">
