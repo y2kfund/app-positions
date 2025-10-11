@@ -39503,7 +39503,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
         ])) : Re(o).isSuccess.value ? (U(), $("div", r0, [
           V("div", a0, [
             V("h2", null, [
-              e.showHeaderLink ? (U(), Wu(D, {
+              v.showHeaderLink ? (U(), Wu(D, {
                 key: 0,
                 to: "/positions"
               }, {
@@ -39511,7 +39511,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
                   Li("Positions:", -1)
                 ])]),
                 _: 1
-              })) : (U(), $("span", l0, "Positions:"))
+              })) : (U(), $("span", l0, "Positions"))
             ]),
             V("div", d0, [
               V("div", c0, Fe(((O = Re(o).data.value) == null ? void 0 : O.length) || 0) + " positions", 1),
@@ -39825,7 +39825,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, dT = /* @__PURE__ */ oT(sT, [["__scopeId", "data-v-0bb66647"]]);
+}, dT = /* @__PURE__ */ oT(sT, [["__scopeId", "data-v-200d6fb3"]]);
 export {
   dT as Positions,
   dT as default

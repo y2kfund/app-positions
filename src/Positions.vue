@@ -1269,7 +1269,7 @@ function clearAllFilters() {
       <div class="positions-header">
         <h2>
           <router-link v-if="showHeaderLink" to="/positions">Positions:</router-link>
-          <span v-else>Positions:</span>
+          <span v-else>Positions</span>
         </h2>
         <div class="positions-tools">
           <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
@@ -1561,10 +1561,10 @@ function clearAllFilters() {
 
 <style scoped>
 .positions-card {
-  padding: 1.5rem;
+  /* padding: 1.5rem; */
   border-radius: 0.75rem;
-  border: 1px solid rgba(0,0,0,.1);
-  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  /* border: 1px solid rgba(0,0,0,.1); */
+  /* box-shadow: 0 4px 12px rgba(0,0,0,.1); */
   background: white;
 }
 
@@ -1580,8 +1580,8 @@ h1 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e9ecef;
+  /* padding-bottom: 1rem; */
+  /*border-bottom: 1px solid #e9ecef;*/
 }
 
 .positions-header h2 {
@@ -1589,6 +1589,11 @@ h1 {
   font-size: 1.25rem;
   font-weight: 600;
   color: #495057;
+}
+
+.positions-header h2 a {
+  color: #3b82f6;
+  text-decoration: none;
 }
 
 .positions-count {
@@ -1954,9 +1959,9 @@ h1 {
 }
 
 @media (max-width: 768px) {
-  .positions-card {
+  /* .positions-card {
     padding: 1rem;
-  }
+  } */
   
   .positions-header {
     flex-direction: column;
