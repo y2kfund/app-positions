@@ -52,13 +52,13 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'conid', label: 'Conid' },
   { field: 'undConid', label: 'Underlying Conid' },
   { field: 'multiplier', label: 'Multiplier' },
-  { field: 'qty', label: 'Quantity' },
+  { field: 'qty', label: 'Qty' },
   { field: 'avgPrice', label: 'Avg Price' },
   { field: 'price', label: 'Market Price' },
   { field: 'market_value', label: 'Market Value' },
-  { field: 'unrealized_pnl', label: 'Unrealized P&L' },
-  { field: 'cash_flow_on_entry', label: 'Cash Flow on Entry' },
-  { field: 'cash_flow_on_exercise', label: 'Cash Flow on Exercise' }
+  { field: 'unrealized_pnl', label: 'P&L Unrealized' },
+  { field: 'cash_flow_on_entry', label: 'Entry cash flow' },
+  { field: 'cash_flow_on_exercise', label: 'Excercise cash flow' }
 ]
 
 // URL param helpers
@@ -400,7 +400,7 @@ const columnDefs = computed<ColDef[]>(() => [
   },
   { 
     field: 'qty', 
-    headerName: 'Quantity',
+    headerName: 'Qty',
     width: 120,
     type: 'rightAligned',
     hide: !isColVisible('qty'),
@@ -444,7 +444,7 @@ const columnDefs = computed<ColDef[]>(() => [
   },
   { 
     field: 'unrealized_pnl', 
-    headerName: 'Unrealized P&L',
+    headerName: 'P&L Unrealized',
     width: 150,
     type: 'rightAligned',
     hide: !isColVisible('unrealized_pnl'),
@@ -460,7 +460,7 @@ const columnDefs = computed<ColDef[]>(() => [
   },
   { 
     field: 'cash_flow_on_entry', 
-    headerName: 'Cash Flow on Entry',
+    headerName: 'Entry cash flow',
     width: 160,
     type: 'rightAligned',
     hide: !isColVisible('cash_flow_on_entry'),
@@ -476,7 +476,7 @@ const columnDefs = computed<ColDef[]>(() => [
   }, 
   { 
     field: 'cash_flow_on_exercise', 
-    headerName: 'Cash Flow on Exercise',
+    headerName: 'Excercise cash flow',
     width: 160,
     type: 'rightAligned',
     hide: !isColVisible('cash_flow_on_exercise'),
@@ -628,13 +628,13 @@ const allColumnOptions2: Array<{ field: ColumnField2; label: string }> = [
   { field: 'conid', label: 'Conid' },
   { field: 'undConid', label: 'Underlying Conid' },
   { field: 'multiplier', label: 'Multiplier' },
-  { field: 'qty', label: 'Quantity' },
+  { field: 'qty', label: 'Qty' },
   { field: 'avgPrice', label: 'Avg Price' },
   { field: 'price', label: 'Market Price' },
   { field: 'market_value', label: 'Market Value' },
-  { field: 'unrealized_pnl', label: 'Unrealized P&L' },
-  { field: 'cash_flow_on_entry', label: 'Cash Flow on Entry' },
-  { field: 'cash_flow_on_exercise', label: 'Cash Flow on Exercise' }
+  { field: 'unrealized_pnl', label: 'P&L Unrealized' },
+  { field: 'cash_flow_on_entry', label: 'Entry cash flow' },
+  { field: 'cash_flow_on_exercise', label: 'Excercise cash flow' }
 ]
 
 const visibleCols2 = ref<ColumnField2[]>(parseVisibleColsFromUrl2())
