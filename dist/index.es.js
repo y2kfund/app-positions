@@ -38796,13 +38796,13 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       { field: "conid", label: "Conid" },
       { field: "undConid", label: "Underlying Conid" },
       { field: "multiplier", label: "Multiplier" },
-      { field: "qty", label: "Quantity" },
+      { field: "qty", label: "Qty" },
       { field: "avgPrice", label: "Avg Price" },
       { field: "price", label: "Market Price" },
       { field: "market_value", label: "Market Value" },
-      { field: "unrealized_pnl", label: "Unrealized P&L" },
-      { field: "cash_flow_on_entry", label: "Cash Flow on Entry" },
-      { field: "cash_flow_on_exercise", label: "Cash Flow on Exercise" }
+      { field: "unrealized_pnl", label: "P&L Unrealized" },
+      { field: "cash_flow_on_entry", label: "Entry cash flow" },
+      { field: "cash_flow_on_exercise", label: "Excercise cash flow" }
     ];
     function a() {
       const C = new URL(window.location.href).searchParams.get("position_cols");
@@ -38999,7 +38999,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       },
       {
         field: "qty",
-        headerName: "Quantity",
+        headerName: "Qty",
         width: 120,
         type: "rightAligned",
         hide: !h("qty"),
@@ -39043,7 +39043,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       },
       {
         field: "unrealized_pnl",
-        headerName: "Unrealized P&L",
+        headerName: "P&L Unrealized",
         width: 150,
         type: "rightAligned",
         hide: !h("unrealized_pnl"),
@@ -39068,7 +39068,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       },
       {
         field: "cash_flow_on_entry",
-        headerName: "Cash Flow on Entry",
+        headerName: "Entry cash flow",
         width: 160,
         type: "rightAligned",
         hide: !h("cash_flow_on_entry"),
@@ -39093,7 +39093,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       },
       {
         field: "cash_flow_on_exercise",
-        headerName: "Cash Flow on Exercise",
+        headerName: "Excercise cash flow",
         width: 160,
         type: "rightAligned",
         hide: !h("cash_flow_on_exercise"),
@@ -39177,13 +39177,13 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
       { field: "conid", label: "Conid" },
       { field: "undConid", label: "Underlying Conid" },
       { field: "multiplier", label: "Multiplier" },
-      { field: "qty", label: "Quantity" },
+      { field: "qty", label: "Qty" },
       { field: "avgPrice", label: "Avg Price" },
       { field: "price", label: "Market Price" },
       { field: "market_value", label: "Market Value" },
-      { field: "unrealized_pnl", label: "Unrealized P&L" },
-      { field: "cash_flow_on_entry", label: "Cash Flow on Entry" },
-      { field: "cash_flow_on_exercise", label: "Cash Flow on Exercise" }
+      { field: "unrealized_pnl", label: "P&L Unrealized" },
+      { field: "cash_flow_on_entry", label: "Entry cash flow" },
+      { field: "cash_flow_on_exercise", label: "Excercise cash flow" }
     ], j = Z(Oe());
     function re(v) {
       return j.value.includes(v);
@@ -39825,7 +39825,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, dT = /* @__PURE__ */ oT(sT, [["__scopeId", "data-v-6937e65a"]]);
+}, dT = /* @__PURE__ */ oT(sT, [["__scopeId", "data-v-0361cf90"]]);
 export {
   dT as Positions,
   dT as default
