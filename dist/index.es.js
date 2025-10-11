@@ -39388,7 +39388,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
     async function Su() {
       if (!(!Ii.value || !He.value.title.trim()))
         try {
-          const { error: v } = await m.schema("hf").from("thesis").update({
+          const { error: v } = await m.schema("hf").from("thesisMaster").update({
             title: He.value.title.trim(),
             description: He.value.description.trim() || null
           }).eq("id", Ii.value.id);
@@ -39438,7 +39438,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
     async function Ru() {
       if (it.value.title.trim())
         try {
-          const { data: v, error: C } = await m.schema("hf").from("thesis").insert([{
+          const { data: v, error: C } = await m.schema("hf").from("thesisMaster").insert([{
             title: it.value.title.trim(),
             description: it.value.description.trim() || null
           }]).select();
@@ -39459,7 +39459,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
     async function Fu(v, C) {
       if (confirm(`Are you sure you want to delete "${C}"?`))
         try {
-          const { error: D } = await m.schema("hf").from("thesis").delete().eq("id", v);
+          const { error: D } = await m.schema("hf").from("thesisMaster").delete().eq("id", v);
           if (D) throw D;
           await w.invalidateQueries({ queryKey: ["thesis"] }), await w.invalidateQueries({ queryKey: ["positions"] }), ft({
             type: "success",
@@ -39825,7 +39825,7 @@ const t0 = { ref: "root" }, i0 = /* @__PURE__ */ Qn({
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, dT = /* @__PURE__ */ oT(sT, [["__scopeId", "data-v-0bb66647"]]);
+}, dT = /* @__PURE__ */ oT(sT, [["__scopeId", "data-v-d5ba8667"]]);
 export {
   dT as Positions,
   dT as default

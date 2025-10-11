@@ -1037,7 +1037,7 @@ async function saveEditThesis() {
   try {
     const { error } = await supabase
       .schema('hf')
-      .from('thesis')
+      .from('thesisMaster')
       .update({
         title: editThesisForm.value.title.trim(),
         description: editThesisForm.value.description.trim() || null
@@ -1140,7 +1140,7 @@ async function addNewThesis() {
   try {
     const { data, error } = await supabase
       .schema('hf')  // Add this line
-      .from('thesis')
+      .from('thesisMaster')
       .insert([{
         title: newThesis.value.title.trim(),
         description: newThesis.value.description.trim() || null
@@ -1179,7 +1179,7 @@ async function deleteThesis(thesisId: string, thesisTitle: string) {
   try {
     const { error } = await supabase
       .schema('hf')  // Add this line
-      .from('thesis')
+      .from('thesisMaster')
       .delete()
       .eq('id', thesisId)
     
