@@ -77,7 +77,7 @@ watch(() => thesisQuery.error.value, (error) => {
 }, { immediate: true })
 
 // Column metadata for visibility control
-type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry' | 'cash_flow_on_exercise' | 'be_price' | 'thesis'
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry' | 'cash_flow_on_exercise' | 'be_price' | 'thesis'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'thesis', label: 'Thesis' },
@@ -89,6 +89,7 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'qty', label: 'Qty' },
   { field: 'avgPrice', label: 'Avg Price' },
   { field: 'price', label: 'Market Price' },
+  { field: 'market_price', label: 'Ul CM Price' },
   { field: 'market_value', label: 'Market Value' },
   { field: 'unrealized_pnl', label: 'P&L Unrealized' },
   { field: 'cash_flow_on_entry', label: 'Entry cash flow' },
@@ -470,6 +471,19 @@ const columnDefs = computed<ColDef[]>(() => [
     }
   },
   { 
+    field: 'market_price', 
+    headerName: 'Ul CM Price',
+    width: 130,
+    type: 'rightAligned',
+    hide: !isColVisible('market_price'),
+    valueFormatter: (params: any) => {
+      if (params.data?.isThesisHeader) return ''
+      if (params.value === null || params.value === undefined) return '-'
+      return formatCurrency(params.value)
+    },
+    cellStyle: { backgroundColor: '#f8f9fa' }
+  },
+  { 
     field: 'market_value', 
     headerName: 'Market Value',
     width: 140,
@@ -683,7 +697,7 @@ const filteredPositions = computed(() => {
 })
 
 // Column metadata for visibility control
-type ColumnField2 = 'id' | 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry' | 'cash_flow_on_exercise' | 'be_price'
+type ColumnField2 = 'id' | 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry' | 'cash_flow_on_exercise' | 'be_price'
 const allColumnOptions2: Array<{ field: ColumnField2; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'symbol', label: 'Symbol' },
@@ -694,6 +708,7 @@ const allColumnOptions2: Array<{ field: ColumnField2; label: string }> = [
   { field: 'qty', label: 'Qty' },
   { field: 'avgPrice', label: 'Avg Price' },
   { field: 'price', label: 'Market Price' },
+  { field: 'market_price', label: 'Ul CM Price' },
   { field: 'market_value', label: 'Market Value' },
   { field: 'unrealized_pnl', label: 'P&L Unrealized' },
   { field: 'cash_flow_on_entry', label: 'Entry cash flow' },
