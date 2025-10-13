@@ -514,7 +514,7 @@ const columnDefs = computed<ColDef[]>(() => [
   }, 
   { 
     field: 'cash_flow_on_exercise', 
-    headerName: 'Excercise cash flow',
+    headerName: 'If excercised cash flow',
     width: 160,
     type: 'rightAligned',
     hide: !isColVisible('cash_flow_on_exercise'),

@@ -39107,7 +39107,7 @@ const n0 = { ref: "root" }, r0 = /* @__PURE__ */ Qn({
       },
       {
         field: "cash_flow_on_exercise",
-        headerName: "Excercise cash flow",
+        headerName: "If excercised cash flow",
         width: 160,
         type: "rightAligned",
         hide: !p("cash_flow_on_exercise"),
@@ -39863,7 +39863,7 @@ const n0 = { ref: "root" }, r0 = /* @__PURE__ */ Qn({
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, gT = /* @__PURE__ */ lT(aT, [["__scopeId", "data-v-43dcaf83"]]);
+}, gT = /* @__PURE__ */ lT(aT, [["__scopeId", "data-v-0d447ad0"]]);
 export {
   gT as Positions,
   gT as default
