@@ -43,7 +43,7 @@ watch(() => thesisQuery.error.value, (error) => {
 }, { immediate: true })
 
 // Column metadata for visibility control
-type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry'
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry' | 'cash_flow_on_exercise' | 'be_price' | 'thesis'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'thesis', label: 'Thesis' },
@@ -58,7 +58,8 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'market_value', label: 'Market Value' },
   { field: 'unrealized_pnl', label: 'P&L Unrealized' },
   { field: 'cash_flow_on_entry', label: 'Entry cash flow' },
-  { field: 'cash_flow_on_exercise', label: 'Excercise cash flow' }
+  { field: 'cash_flow_on_exercise', label: 'Excercise cash flow' },
+  { field: 'be_price', label: 'BE Price' }
 ]
 
 // URL param helpers
@@ -492,6 +493,19 @@ const columnDefs = computed<ColDef[]>(() => [
       'pnl-negative': (params: any) => !params.data?.isThesisHeader && params.value < 0,
       'pnl-zero': (params: any) => !params.data?.isThesisHeader && params.value === 0
     },
+  },
+  { 
+    field: 'be_price', 
+    headerName: 'BE Price',
+    width: 120,
+    type: 'rightAligned',
+    hide: !isColVisible('be_price'),
+    valueFormatter: (params: any) => {
+      if (params.data?.isThesisHeader) return ''
+      // BE Price is only for options, so it might be null for stocks
+      if (params.value === null || params.value === undefined) return '-'
+      return formatCurrency(params.value)
+    }
   }, 
 ])
 
@@ -635,7 +649,7 @@ const filteredPositions = computed(() => {
 })
 
 // Column metadata for visibility control
-type ColumnField2 = 'id' | 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry'
+type ColumnField2 = 'id' | 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry' | 'cash_flow_on_exercise' | 'be_price'
 const allColumnOptions2: Array<{ field: ColumnField2; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'symbol', label: 'Symbol' },
@@ -649,7 +663,8 @@ const allColumnOptions2: Array<{ field: ColumnField2; label: string }> = [
   { field: 'market_value', label: 'Market Value' },
   { field: 'unrealized_pnl', label: 'P&L Unrealized' },
   { field: 'cash_flow_on_entry', label: 'Entry cash flow' },
-  { field: 'cash_flow_on_exercise', label: 'Excercise cash flow' }
+  { field: 'cash_flow_on_exercise', label: 'Excercise cash flow' },
+  { field: 'be_price', label: 'BE Price' }
 ]
 
 const visibleCols2 = ref<ColumnField2[]>(parseVisibleColsFromUrl2())

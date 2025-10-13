@@ -4,7 +4,7 @@ var ki = (e, t, i) => Au(e, typeof t != "symbol" ? t + "" : t, i);
 import { defineComponent as Qn, mergeModels as _r, useTemplateRef as Iu, ref as X, toRefs as ku, watch as $e, useModel as Lu, getCurrentInstance as Rs, createElementBlock as $, onMounted as pl, markRaw as Ou, onUnmounted as Hu, openBlock as U, mergeDefaults as Gu, toRaw as Ur, isRef as Bu, isReactive as Vu, isProxy as Nu, createVNode as pn, render as $r, computed as Fs, inject as Wu, onBeforeUnmount as zu, resolveComponent as _u, createCommentVNode as ot, createElementVNode as V, unref as Re, createTextVNode as Li, toDisplayString as Fe, createBlock as Uu, withCtx as Kr, normalizeClass as jr, withModifiers as Ps, Fragment as Es, renderList as xs, withDirectives as Oi, vModelCheckbox as $u, vModelText as Ds, TransitionGroup as Ku } from "vue";
 import { usePositionsQuery as ju, useThesisQuery as qu, useSupabase as Yu } from "@y2kfund/core";
 import { useQueryClient as Qu } from "@tanstack/vue-query";
-var _t = class {
+var Ut = class {
   constructor() {
     this.allSyncListeners = /* @__PURE__ */ new Map(), this.allAsyncListeners = /* @__PURE__ */ new Map(), this.globalSyncListeners = /* @__PURE__ */ new Set(), this.globalAsyncListeners = /* @__PURE__ */ new Set(), this.asyncFunctionsQueue = [], this.scheduled = !1, this.firedEvents = {};
   }
@@ -287,7 +287,7 @@ function is(e, t) {
   for (const n of o)
     s(n);
 }
-function Gt(e, t, i) {
+function Bt(e, t, i) {
   let s = 0;
   for (; e; ) {
     if (e.classList.contains(t))
@@ -300,7 +300,7 @@ function Gt(e, t, i) {
   }
   return !1;
 }
-function Yt(e) {
+function Qt(e) {
   const {
     height: t,
     width: i,
@@ -337,23 +337,23 @@ function Yt(e) {
   };
 }
 function Xn(e) {
-  const t = Yt(e);
+  const t = Qt(e);
   return t.boxSizing === "border-box" ? t.height - t.paddingTop - t.paddingBottom : t.height;
 }
 function ss(e) {
-  const t = Yt(e);
+  const t = Qt(e);
   return t.boxSizing === "border-box" ? t.width - t.paddingLeft - t.paddingRight : t.width;
 }
 function Fl(e) {
-  const { height: t, marginBottom: i, marginTop: s } = Yt(e);
+  const { height: t, marginBottom: i, marginTop: s } = Qt(e);
   return Math.floor(t + i + s);
 }
 function Qs(e) {
-  const { width: t, marginLeft: i, marginRight: s } = Yt(e);
+  const { width: t, marginLeft: i, marginRight: s } = Qt(e);
   return Math.floor(t + i + s);
 }
 function Pl(e) {
-  const t = e.getBoundingClientRect(), { borderTopWidth: i, borderLeftWidth: s, borderRightWidth: o, borderBottomWidth: n } = Yt(e);
+  const t = e.getBoundingClientRect(), { borderTopWidth: i, borderLeftWidth: s, borderRightWidth: o, borderBottomWidth: n } = Qt(e);
   return {
     top: t.top + (i || 0),
     left: t.left + (s || 0),
@@ -587,7 +587,7 @@ var tt = class {
   }
   /** Add a local event listener against this BeanStub */
   addEventListener(e, t, i) {
-    this.localEventService || (this.localEventService = new _t()), this.localEventService.addEventListener(e, t, i);
+    this.localEventService || (this.localEventService = new Ut()), this.localEventService.addEventListener(e, t, i);
   }
   /** Remove a local event listener from this BeanStub */
   removeEventListener(e, t, i) {
@@ -784,16 +784,16 @@ function ve(e, t, i = !0, s = !1) {
 function Jr(e) {
   return typeof e == "object" && e !== null;
 }
-var nr = class kt {
+var nr = class Lt {
   /**
    * @param providedOptions
    * @returns Shallow copy of the provided options with global options merged in.
    */
   static applyGlobalGridOptions(t) {
-    if (!kt.gridOptions)
+    if (!Lt.gridOptions)
       return { ...t };
     let i = {};
-    return ve(i, kt.gridOptions, !0, !0), kt.mergeStrategy === "deep" ? ve(i, t, !0, !0) : i = { ...i, ...t }, kt.gridOptions.context && (i.context = kt.gridOptions.context), t.context && (kt.mergeStrategy === "deep" && i.context && ve(t.context, i.context, !0, !0), i.context = t.context), i;
+    return ve(i, Lt.gridOptions, !0, !0), Lt.mergeStrategy === "deep" ? ve(i, t, !0, !0) : i = { ...i, ...t }, Lt.gridOptions.context && (i.context = Lt.gridOptions.context), t.context && (Lt.mergeStrategy === "deep" && i.context && ve(t.context, i.context, !0, !0), i.context = t.context), i;
   }
 };
 nr.gridOptions = void 0;
@@ -1068,7 +1068,7 @@ function Di(e, t) {
 function pe(e, t) {
   return e.get("domLayout") === t;
 }
-function Bt(e) {
+function Vt(e) {
   return io(e) !== void 0;
 }
 function Nl(e) {
@@ -1100,7 +1100,7 @@ function Qh(e) {
   const t = e.get("detailRowHeight");
   return wn(t) ? { height: t, estimated: !1 } : { height: 300, estimated: !1 };
 }
-function Vt(e) {
+function Nt(e) {
   const { environment: t, gos: i } = e, s = i.get("rowHeight");
   if (!s || J(s))
     return t.getDefaultRowHeight();
@@ -1114,7 +1114,7 @@ function Wl(e, t, i) {
   const s = t[e.getDomDataKey()];
   return s ? s[i] : void 0;
 }
-function Ut(e, t, i, s) {
+function $t(e, t, i, s) {
   const o = e.getDomDataKey();
   let n = t[o];
   J(n) && (n = {}, t[o] = n), n[i] = s;
@@ -1303,11 +1303,11 @@ function Yl() {
   return dg++;
 }
 function Et(e) {
-  return e instanceof Qt;
+  return e instanceof Zt;
 }
-var Qt = class extends P {
+var Zt = class extends P {
   constructor(e, t, i, s) {
-    super(), this.colDef = e, this.userProvidedColDef = t, this.colId = i, this.primary = s, this.isColumn = !0, this.instanceId = Yl(), this.autoHeaderHeight = null, this.moving = !1, this.resizing = !1, this.menuVisible = !1, this.lastLeftPinned = !1, this.firstRightPinned = !1, this.filterActive = !1, this.colEventSvc = new _t(), this.tooltipEnabled = !1, this.rowGroupActive = !1, this.pivotActive = !1, this.aggregationActive = !1, this.flex = null, this.colIdSanitised = $i(i);
+    super(), this.colDef = e, this.userProvidedColDef = t, this.colId = i, this.primary = s, this.isColumn = !0, this.instanceId = Yl(), this.autoHeaderHeight = null, this.moving = !1, this.resizing = !1, this.menuVisible = !1, this.lastLeftPinned = !1, this.firstRightPinned = !1, this.filterActive = !1, this.colEventSvc = new Ut(), this.tooltipEnabled = !1, this.rowGroupActive = !1, this.pivotActive = !1, this.aggregationActive = !1, this.flex = null, this.colIdSanitised = $i(i);
   }
   destroy() {
     var e;
@@ -2007,7 +2007,7 @@ function vg(e, t, i, s, o, n) {
     a.setColDef(d, i, n), wg(e, a, d, n);
   } else {
     const d = o.getUniqueKey(i.colId, i.field), c = yn(e, i, d);
-    a = new Qt(c, i, d, t), e.context.createBean(a);
+    a = new Zt(c, i, d, t), e.context.createBean(a);
   }
   return (l = e.dataTypeSvc) == null || l.addColumnListeners(a), a;
 }
@@ -2218,7 +2218,7 @@ function Ve(e, t, i) {
   }, b = (E, M, B) => {
     var Ss, Mi;
     const L = rd(e, i), N = M.slice(), H = {}, _ = {}, j = [], re = [], He = [];
-    let Xt = 0;
+    let ei = 0;
     const ae = (o == null ? void 0 : o.columns.slice()) ?? [], Io = (n == null ? void 0 : n.columns.slice()) ?? [];
     E.forEach((se) => {
       const it = se.colId;
@@ -2231,7 +2231,7 @@ function Ve(e, t, i) {
         return;
       }
       const ft = B(it);
-      ft ? (w(ft, se, H, _, !1), ke(N, ft)) : (He.push(se), Xt += 1);
+      ft ? (w(ft, se, H, _, !1), ke(N, ft)) : (He.push(se), ei += 1);
     });
     const bs = (se) => w(se, null, H, _, !1);
     N.forEach(bs), o == null || o.sortColumns(ra.bind(o, H, ae)), n == null || n.sortColumns(ra.bind(n, _, Io)), s.refreshCols(!1);
@@ -2252,7 +2252,7 @@ function Ve(e, t, i) {
     ), xg(t, s, p), d.refresh(i), g.dispatchEvent({
       type: "columnEverythingChanged",
       source: i
-    }), L(), { unmatchedAndAutoStates: He, unmatchedCount: Xt };
+    }), L(), { unmatchedAndAutoStates: He, unmatchedCount: ei };
   };
   l == null || l.start();
   let { unmatchedAndAutoStates: S, unmatchedCount: F } = b(
@@ -2624,7 +2624,7 @@ var ra = (e, t, i, s) => {
       let p = null, f = null;
       for (const m of g.getChildren())
         if (!(m === h || m === u)) {
-          if (m instanceof Qt) {
+          if (m instanceof Zt) {
             const w = o.get(m);
             if (w == null)
               continue;
@@ -3274,7 +3274,7 @@ function pd() {
 function fd() {
   return No === void 0 && (No = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)), No;
 }
-function Nt() {
+function Wt() {
   return Wo === void 0 && (Wo = /iPad|iPhone|iPod/.test(navigator.platform) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1), Wo;
 }
 function Pn(e) {
@@ -3487,7 +3487,7 @@ function pi(e, t, i = !1) {
   const n = Array.prototype.slice.apply(e.querySelectorAll(s)).filter((l) => et(l)), r = Array.prototype.slice.apply(e.querySelectorAll(o));
   return r.length ? ((l, d) => l.filter((c) => d.indexOf(c) === -1))(n, r) : n;
 }
-function $t(e, t = !1, i = !1, s = !1) {
+function Kt(e, t = !1, i = !1, s = !1) {
   const o = pi(
     e,
     s ? ".ag-tab-guard" : null,
@@ -3495,7 +3495,7 @@ function $t(e, t = !1, i = !1, s = !1) {
   ), n = t ? Y(o) : o[0];
   return n ? (n.focus({ preventScroll: !0 }), !0) : !1;
 }
-function Zt(e, t, i, s) {
+function Jt(e, t, i, s) {
   const o = pi(t, i ? ':not([tabindex="-1"])' : null), n = te(e);
   let r;
   i ? r = o.findIndex((l) => l.contains(n)) : r = o.indexOf(n);
@@ -3609,7 +3609,7 @@ function Ep(e) {
     ]
   };
 }
-var Ot = class extends bd {
+var Ht = class extends bd {
   constructor(e, t, i = "text", s = "input") {
     super(e, (e == null ? void 0 : e.template) ?? Ep(s), [], t), this.inputType = i, this.displayFieldTag = s, this.eLabel = A, this.eWrapper = A, this.eInput = A;
   }
@@ -3662,7 +3662,7 @@ var Ot = class extends bd {
     }
     return this;
   }
-}, ur = class extends Ot {
+}, ur = class extends Ht {
   constructor(e, t = "ag-checkbox", i = "checkbox") {
     super(e, t, i), this.labelAlignment = "right", this.selected = !1, this.readOnly = !1, this.passive = !1;
   }
@@ -3762,7 +3762,7 @@ var Ot = class extends bd {
     const t = this.eInput;
     e.selected && e.name && t.name && t.name === e.name && e.id && t.id !== e.id && this.setValue(!1, !0);
   }
-}, Jt = class extends Ot {
+}, Xt = class extends Ht {
   constructor(e, t = "ag-text-field", i = "text") {
     super(e, t, i);
   }
@@ -3792,8 +3792,8 @@ var Ot = class extends bd {
   }
 }, yo = {
   selector: "AG-INPUT-TEXT-FIELD",
-  component: Jt
-}, Dp = class extends Ot {
+  component: Xt
+}, Dp = class extends Ht {
   constructor(e) {
     super(e, "ag-text-area", null, "textarea");
   }
@@ -3810,7 +3810,7 @@ var Ot = class extends bd {
 }, Tp = {
   selector: "AG-INPUT-TEXT-AREA",
   component: Dp
-}, gr = class extends Jt {
+}, gr = class extends Xt {
   constructor(e) {
     super(e, "ag-number-field", "number");
   }
@@ -3906,7 +3906,7 @@ var Ot = class extends bd {
 }, Mp = {
   selector: "AG-INPUT-NUMBER-FIELD",
   component: gr
-}, Ap = class extends Jt {
+}, Ap = class extends Xt {
   constructor(e) {
     super(e, "ag-date-field", "date");
   }
@@ -4971,7 +4971,7 @@ ${n}}
   }
 }, vf = class extends tt {
   constructor() {
-    super(...arguments), this.beanName = "eventSvc", this.eventServiceType = "global", this.globalSvc = new _t();
+    super(...arguments), this.beanName = "eventSvc", this.eventServiceType = "global", this.globalSvc = new Ut();
   }
   addListener(e, t, i) {
     this.globalSvc.addEventListener(e, t, i);
@@ -5073,7 +5073,7 @@ ${n}}
     return !e || e === "hover" ? 0 : 1;
   }
   onMouseEnter(e) {
-    this.interactionEnabled && this.interactiveTooltipTimeoutId && (this.unlockService(), this.startHideTimeout()), !Nt() && (Ms ? this.showTooltipTimeoutId = window.setTimeout(() => {
+    this.interactionEnabled && this.interactiveTooltipTimeoutId && (this.unlockService(), this.startHideTimeout()), !Wt() && (Ms ? this.showTooltipTimeoutId = window.setTimeout(() => {
       this.prepareToShowTooltip(e);
     }, fa) : this.prepareToShowTooltip(e));
   }
@@ -6106,7 +6106,7 @@ var ls = class extends P {
       }
     }), this.dispatchLocalEvent({ type: "displayedChildrenChanged" });
   }
-}, Mn = "row-group-", Cr = "t-", vr = "b-", Tf = 0, Kt = class {
+}, Mn = "row-group-", Cr = "t-", vr = "b-", Tf = 0, jt = class {
   constructor(e) {
     this.master = !1, this.detail = void 0, this.rowIndex = null, this.key = null, this.sourceRowIndex = -1, this.childrenMapped = null, this.treeParent = null, this.treeNodeFlags = 0, this.displayed = !1, this.rowTop = null, this.oldRowTop = null, this.selectable = !0, this.__objectId = Tf++, this.alreadyRendered = !1, this.hovered = !1, this.__selected = !1, this.beans = e;
   }
@@ -6337,7 +6337,7 @@ var ls = class extends P {
     return !!this.rowPinned;
   }
   __addEventListener(e, t) {
-    this.__localEventService || (this.__localEventService = new _t()), this.__localEventService.addEventListener(e, t);
+    this.__localEventService || (this.__localEventService = new Ut()), this.__localEventService.addEventListener(e, t);
   }
   __removeEventListener(e, t) {
     this.removeLocalListener(e, t);
@@ -6347,7 +6347,7 @@ var ls = class extends P {
    */
   addEventListener(e, t) {
     var s, o, n, r;
-    (s = this.beans.validation) == null || s.checkRowEvents(e), this.__localEventService || (this.__localEventService = new _t()), this.frameworkEventListenerService = (n = (o = this.beans.frameworkOverrides).createLocalEventListenerWrapper) == null ? void 0 : n.call(
+    (s = this.beans.validation) == null || s.checkRowEvents(e), this.__localEventService || (this.__localEventService = new Ut()), this.frameworkEventListenerService = (n = (o = this.beans.frameworkOverrides).createLocalEventListenerWrapper) == null ? void 0 : n.call(
       o,
       this.frameworkEventListenerService,
       this.__localEventService
@@ -6422,7 +6422,7 @@ function Mf(e, t, i) {
 }
 var Af = /* @__PURE__ */ new Set(["__localEventService", "__objectId", "sticky", "__autoHeights", "__checkAutoHeightsDebounced", "childStore"]);
 function If(e, t) {
-  const i = new Kt(t);
+  const i = new jt(t);
   return Object.keys(e).forEach((s) => {
     Af.has(s) || (i[s] = e[s]);
   }), i.oldRowTop = null, i;
@@ -7342,7 +7342,7 @@ var Od = "ag-resizer-wrapper", vt = (e, t) => ({
     super.destroy(), this.moveElementDragListener && ((e = this.dragSvc) == null || e.removeDragSource(this.moveElementDragListener)), this.constrainSizeToAvailableHeight(!1), this.clearResizeListeners(), this.removeResizers();
   }
 }, Hd = "__ag_Grid_Stop_Propagation";
-function jt(e) {
+function qt(e) {
   e[Hd] = !0;
 }
 function ct(e) {
@@ -7355,7 +7355,7 @@ var qf = "ag-focus-managed", Ti = class extends P {
       onTabKeyDown: (i) => {
         if (i.defaultPrevented)
           return;
-        const s = Zt(this.beans, this.eFocusable, !1, i.shiftKey);
+        const s = Jt(this.beans, this.eFocusable, !1, i.shiftKey);
         s && (s.focus(), i.preventDefault());
       },
       ...t
@@ -7375,7 +7375,7 @@ var qf = "ag-focus-managed", Ti = class extends P {
           return;
         const { callbacks: i } = this;
         if (i.shouldStopEventPropagation(t)) {
-          jt(t);
+          qt(t);
           return;
         }
         t.key === R.TAB ? i.onTabKeyDown(t) : i.handleKeyDown && i.handleKeyDown(t);
@@ -7724,7 +7724,7 @@ var Ge = {
     }, Ko);
   }
   shouldBlockScrollUpdate(e, t, i = !1) {
-    return i && !Nt() ? !1 : e === 0 ? this.shouldBlockVerticalScroll(t) : this.shouldBlockHorizontalScroll(t);
+    return i && !Wt() ? !1 : e === 0 ? this.shouldBlockVerticalScroll(t) : this.shouldBlockHorizontalScroll(t);
   }
   shouldBlockVerticalScroll(e) {
     const t = Xn(this.eBodyViewport), { scrollHeight: i } = this.eBodyViewport;
@@ -7853,9 +7853,9 @@ var Ge = {
       let u, h, g = 0;
       this.invalidateVerticalScroll();
       do {
-        const { stickyTopHeight: m, stickyBottomHeight: w } = d, b = c.rowTop, S = c.rowHeight, F = r.getPixelOffset(), y = c.rowTop - F, E = y + c.rowHeight, M = this.getVScrollPosition(), B = a.divStretchOffset, L = M.top + B, N = M.bottom + B, H = N - L, _ = a.getScrollPositionForPixel(y), j = a.getScrollPositionForPixel(E - H), re = Math.min((_ + j) / 2, y), He = L + m > y, Xt = N - w < E;
+        const { stickyTopHeight: m, stickyBottomHeight: w } = d, b = c.rowTop, S = c.rowHeight, F = r.getPixelOffset(), y = c.rowTop - F, E = y + c.rowHeight, M = this.getVScrollPosition(), B = a.divStretchOffset, L = M.top + B, N = M.bottom + B, H = N - L, _ = a.getScrollPositionForPixel(y), j = a.getScrollPositionForPixel(E - H), re = Math.min((_ + j) / 2, y), He = L + m > y, ei = N - w < E;
         let ae = null;
-        t === "top" ? ae = _ - m : t === "bottom" ? ae = j + w : t === "middle" ? ae = re : He ? ae = _ - m : Xt && (j - _ > H ? ae = _ - m : ae = j + w), ae !== null && (this.setVerticalScrollPosition(ae), l.redraw({ afterScroll: !0 })), u = b !== c.rowTop || S !== c.rowHeight, h = m !== d.stickyTopHeight || w !== d.stickyBottomHeight, g++;
+        t === "top" ? ae = _ - m : t === "bottom" ? ae = j + w : t === "middle" ? ae = re : He ? ae = _ - m : ei && (j - _ > H ? ae = _ - m : ae = j + w), ae !== null && (this.setVerticalScrollPosition(ae), l.redraw({ afterScroll: !0 })), u = b !== c.rowTop || S !== c.rowHeight, h = m !== d.stickyTopHeight || w !== d.stickyBottomHeight, g++;
       } while ((u || h) && g < 10);
       if ((p = this.animationFrameSvc) == null || p.flushAllFrames(), i < 10 && (c != null && c.stub || !((f = this.beans.rowAutoHeight) != null && f.areRowsMeasured()))) {
         const m = this.getVScrollPosition().top;
@@ -8601,16 +8601,16 @@ var hm = ["topCenter", "topLeft", "topRight"], gm = ["bottomCenter", "bottomLeft
     e.forEach((t) => {
       this.addManagedElementListeners(t, {
         focusin: (i) => {
-          const { target: s } = i, o = Gt(s, "ag-root", t);
+          const { target: s } = i, o = Bt(s, "ag-root", t);
           t.classList.toggle("ag-has-focus", !o);
         },
         focusout: (i) => {
-          const { target: s, relatedTarget: o } = i, n = t.contains(o), r = Gt(
+          const { target: s, relatedTarget: o } = i, n = t.contains(o), r = Bt(
             o,
             "ag-root",
             t
           );
-          Gt(s, "ag-root", t) || (!n || r) && t.classList.remove("ag-has-focus");
+          Bt(s, "ag-root", t) || (!n || r) && t.classList.remove("ag-has-focus");
         }
       });
     });
@@ -8797,7 +8797,7 @@ var $d = class extends q {
   postConstruct() {
     this.addManagedEventListeners({
       scrollVisibilityChanged: this.onScrollVisibilityChanged.bind(this)
-    }), this.onScrollVisibilityChanged(), this.toggleCss("ag-apple-scrollbar", fd() || Nt());
+    }), this.onScrollVisibilityChanged(), this.toggleCss("ag-apple-scrollbar", fd() || Wt());
   }
   destroy() {
     super.destroy(), window.clearTimeout(this.hideTimeout);
@@ -8984,7 +8984,7 @@ function Hm(e, t, i) {
     keydown: (s) => {
       if (!s.defaultPrevented && s.key === R.TAB) {
         const o = s.shiftKey;
-        Zt(e, i, !1, o) || Pi(e, o) && s.preventDefault();
+        Jt(e, i, !1, o) || Pi(e, o) && s.preventDefault();
       }
     }
   });
@@ -8992,7 +8992,7 @@ function Hm(e, t, i) {
 function Gm(e, t) {
   return e.ctrlsSvc.get("gridCtrl").focusInnerElement(t);
 }
-function Wt(e) {
+function zt(e) {
   var t;
   return e.gos.get("suppressHeaderFocus") || !!((t = e.overlays) != null && t.isExclusive());
 }
@@ -9468,7 +9468,7 @@ var Wm = class extends P {
     const { wrapperElement: t, checkMeasuringCallback: i, compBean: s } = e, { beans: o } = this, n = (u) => {
       if (!this.isAlive() || !s.isAlive())
         return;
-      const { paddingTop: h, paddingBottom: g, borderBottomWidth: p, borderTopWidth: f } = Yt(this.eGui), m = h + g + p + f, b = t.offsetHeight + m;
+      const { paddingTop: h, paddingBottom: g, borderBottomWidth: p, borderTopWidth: f } = Qt(this.eGui), m = h + g + p + f, b = t.offsetHeight + m;
       if (u < 5) {
         const S = ue(o), F = !S || !S.contains(t), y = b == 0;
         if (F || y) {
@@ -9504,7 +9504,7 @@ var Wm = class extends P {
     });
   }
   refreshTabIndex() {
-    const e = Wt(this.beans);
+    const e = zt(this.beans);
     this.eGui && Pe(this.eGui, "tabindex", e ? null : "-1");
   }
   onGuiKeyDown(e) {
@@ -9554,7 +9554,7 @@ var Wm = class extends P {
   }
   addDomData(e) {
     const t = Qd, { eGui: i, gos: s } = this;
-    Ut(s, i, t, this), e.addDestroyFunc(() => Ut(s, i, t, null));
+    $t(s, i, t, this), e.addDestroyFunc(() => $t(s, i, t, null));
   }
   focus(e) {
     if (!this.isAlive())
@@ -10268,7 +10268,7 @@ var Zm = 0, Qo = class extends P {
   }
   isHeaderMenuButtonEnabled() {
     const e = !this.isSuppressMenuHide();
-    return !(Nt() && e);
+    return !(Wt() && e);
   }
   isHeaderFilterButtonEnabled(e) {
     return this.isFilterMenuInHeaderEnabled(e) && !Ee(this.gos) && !this.isFloatingFilterButtonDisplayed(e);
@@ -10471,13 +10471,13 @@ var nC = (
     const { eCheckbox: t, beans: i } = this, s = t.getInputElement();
     s.setAttribute("tabindex", "-1"), wl(s, "polite"), this.addManagedListeners(s, {
       click: (o) => {
-        if (jt(o), t.isDisabled())
+        if (qt(o), t.isDisabled())
           return;
         const n = t.getValue();
         this.onCheckboxChanged(n);
       },
       dblclick: (o) => {
-        jt(o);
+        qt(o);
       }
     }), this.addManagedElementListeners(e.eGridCell, {
       keydown: (o) => {
@@ -10937,7 +10937,7 @@ var Aa = class extends P {
       if (h !== void 0)
         h.data !== c && h.updateData(c), l += this.setRowTopAndRowIndex(h, l, d), n.delete(u);
       else {
-        const g = new Kt(this.beans);
+        const g = new jt(this.beans);
         g.id = u, g.data = c, g.rowPinned = t, l += this.setRowTopAndRowIndex(g, l, d), i.cache[u] = g, i.order.push(u);
       }
     }
@@ -11245,7 +11245,7 @@ var vC = class extends P {
     return e < 0 || e >= t || Number.isNaN(e) ? t : Math.ceil(e);
   }
   createRowNode(e, t) {
-    const i = new Kt(this.beans);
+    const i = new jt(this.beans);
     return i.parent = this.rootNode, i.level = 0, i.group = !1, i.expanded = !1, i.sourceRowIndex = t, i.setDataAndId(e, String(this.nextId)), this.allNodesMap[i.id] && T(2, { nodeId: i.id }), this.allNodesMap[i.id] = i, this.nextId++, i;
   }
   lookupRowNode(e, t) {
@@ -11326,10 +11326,10 @@ var SC = {
   init(e) {
     if (this.rowNode = e.rowNode, this.column = e.column, this.overrides = e.overrides, this.onSelectionChanged(), this.addManagedListeners(this.eCheckbox.getInputElement(), {
       // we don't want double click on this icon to open a group
-      dblclick: jt,
+      dblclick: qt,
       click: (s) => {
         var o;
-        jt(s), (o = this.beans.selectionSvc) == null || o.handleSelectionEvent(s, this.rowNode, "checkboxSelected");
+        qt(s), (o = this.beans.selectionSvc) == null || o.handleSelectionEvent(s, this.rowNode, "checkboxSelected");
       }
     }), this.addManagedListeners(this.rowNode, {
       rowSelected: this.onSelectionChanged.bind(this),
@@ -11628,7 +11628,7 @@ var PC = class extends P {
     (o = this.beans.ariaAnnounce) == null || o.announceValue(s, "rowSelection");
   }
   isRowSelectionBlocked(e) {
-    return !e.selectable || e.rowPinned && !ws(e) || !Bt(this.gos);
+    return !e.selectable || e.rowPinned && !ws(e) || !Vt(this.gos);
   }
   updateRowSelectable(e, t) {
     var s;
@@ -11883,7 +11883,7 @@ var PC = class extends P {
     return this.tabGuardsAreActive() && (t.splice(0, 1), t.splice(t.length - 1, 1)), t.length ? (t[e ? t.length - 1 : 0].focus({ preventScroll: !0 }), !0) : !1;
   }
   getNextFocusableElement(e) {
-    return Zt(this.beans, this.eFocusableElement, !1, e);
+    return Jt(this.beans, this.eFocusableElement, !1, e);
   }
   forceFocusOutOfContainer(e = !1) {
     if (this.forcingFocusOut)
@@ -11981,9 +11981,9 @@ var PC = class extends P {
   appendChild(e, t) {
     this.tabGuardFeature.appendChild(super.appendChild.bind(this), e, t);
   }
-}, Lt = class {
+}, Ot = class {
   constructor(e, t = !1) {
-    this.DOUBLE_TAP_MILLIS = 500, this.destroyFuncs = [], this.touching = !1, this.localEventService = new _t(), this.preventMouseClick = t;
+    this.DOUBLE_TAP_MILLIS = 500, this.destroyFuncs = [], this.touching = !1, this.localEventService = new Ut(), this.preventMouseClick = t;
     const i = this.onTouchStart.bind(this), s = this.onTouchMove.bind(this), o = this.onTouchEnd.bind(this);
     e.addEventListener("touchstart", i, { passive: !0 }), e.addEventListener("touchmove", s, { passive: !0 }), e.addEventListener("touchend", o, { passive: !1 }), this.destroyFuncs.push(() => {
       e.removeEventListener("touchstart", i, { passive: !0 }), e.removeEventListener("touchmove", s, { passive: !0 }), e.removeEventListener("touchend", o, { passive: !1 });
@@ -12884,11 +12884,11 @@ var $C = class extends q {
       if (s.focusGridView({ column: r, backwards: e }))
         return !0;
     }
-    if (this.gos.get("headerHeight") === 0 || Wt(this.beans)) {
+    if (this.gos.get("headerHeight") === 0 || zt(this.beans)) {
       if (s.focusGridView({ column: n[0], backwards: e }))
         return !0;
       for (let r = 1; r < i.length; r++)
-        if ($t(i[r].getGui(), e))
+        if (Kt(i[r].getGui(), e))
           return !0;
       return !1;
     }
@@ -12917,7 +12917,7 @@ var $C = class extends q {
   isFocusable() {
     var t, i;
     const e = this.beans;
-    return !Po(e) || !Wt(e) || !!((i = (t = e.sideBar) == null ? void 0 : t.comp) != null && i.isDisplayed());
+    return !Po(e) || !zt(e) || !!((i = (t = e.sideBar) == null ? void 0 : t.comp) != null && i.isDisplayed());
   }
   getNextFocusableIndex(e, t) {
     const i = te(this.beans), s = e.findIndex((n) => n.getGui().contains(i)), o = s + (t ? -1 : 1);
@@ -12929,7 +12929,7 @@ var $C = class extends q {
   focusContainer(e, t) {
     var s, o;
     (s = e.setAllowFocus) == null || s.call(e, !0);
-    const i = $t(e.getGui(), t, !1, !0);
+    const i = Kt(e.getGui(), t, !1, !0);
     return (o = e.setAllowFocus) == null || o.call(e, !1), i;
   }
   getFocusableContainers() {
@@ -16036,7 +16036,7 @@ var yw = class extends P {
     const e = (t) => {
       this.colsAndGroupsMap[t.getUniqueId()] = t;
     };
-    zt(this.treeCenter, !1, e), zt(this.treeLeft, !1, e), zt(this.treeRight, !1, e);
+    _t(this.treeCenter, !1, e), _t(this.treeLeft, !1, e), _t(this.treeRight, !1, e);
   }
   isVisible(e) {
     return this.colsAndGroupsMap[e.getUniqueId()] === e;
@@ -16083,20 +16083,20 @@ var yw = class extends P {
     return (s ? i[0] : Y(i)) === o;
   }
 };
-function zt(e, t, i) {
+function _t(e, t, i) {
   if (e)
     for (let s = 0; s < e.length; s++) {
       const o = e[s];
       if (oe(o)) {
         const n = t ? o.getDisplayedChildren() : o.getChildren();
-        zt(n, t, i);
+        _t(n, t, i);
       }
       i(o);
     }
 }
 function on(e) {
   const t = [];
-  return zt(e, !0, (i) => {
+  return _t(e, !0, (i) => {
     Et(i) && t.push(i);
   }), t;
 }
@@ -16173,7 +16173,7 @@ var Rw = class extends P {
   }
   updateOpenClosedVisibility() {
     const e = this.beans.visibleCols.getAllTrees();
-    zt(e, !1, (t) => {
+    _t(e, !1, (t) => {
       oe(t) && t.calculateDisplayedColumns();
     });
   }
@@ -16186,7 +16186,7 @@ var Rw = class extends P {
       return e;
     const i = this.beans.visibleCols.getAllTrees(), s = typeof t == "number";
     let o = null;
-    return zt(i, !1, (n) => {
+    return _t(i, !1, (n) => {
       if (oe(n)) {
         const r = n;
         let a;
@@ -18413,7 +18413,7 @@ var lS = class extends P {
       headerRowIndex: e.headerRowIndex,
       column: a ?? n
     } : {
-      headerRowIndex: n instanceof Qt && n.isSpanHeaderHeight() ? s.headerGroupRowCount : e.headerRowIndex,
+      headerRowIndex: n instanceof Zt && n.isSpanHeaderHeight() ? s.headerGroupRowCount : e.headerRowIndex,
       column: n
     };
   }
@@ -18426,7 +18426,7 @@ var lS = class extends P {
 function dS(e, t, i) {
   const s = i - 1;
   if (e !== "filter") {
-    const o = t instanceof Qt && t.isSpanHeaderHeight();
+    const o = t instanceof Zt && t.isSpanHeaderHeight();
     let n = t.getParent();
     for (; n && // skip if row isn't visible or col is padding and spanned
     (n.getProvidedColumnGroup().getLevel() > s || o && n.isPadding()); )
@@ -18466,7 +18466,7 @@ function cS(e, t, i) {
       const l = r.getDisplayedLeafColumns()[0];
       l.isSpanHeaderHeight() && (r = l);
     }
-    o.column = r, r instanceof Qt && r.isSpanHeaderHeight() && (o.headerRowIndex = i, o.headerRowIndexWithoutSpan = s);
+    o.column = r, r instanceof Zt && r.isSpanHeaderHeight() && (o.headerRowIndex = i, o.headerRowIndexWithoutSpan = s);
   }
   return o;
 }
@@ -18601,7 +18601,7 @@ var uS = class extends P {
   }
   focusHeaderPosition(e) {
     var l;
-    if (this.setFocusRecovered(), Wt(this.beans))
+    if (this.setFocusRecovered(), zt(this.beans))
       return !1;
     const { direction: t, fromTab: i, allowUserOverride: s, event: o, fromCell: n, rowWithoutSpanValue: r } = e;
     let { headerPosition: a } = e;
@@ -18641,7 +18641,7 @@ var uS = class extends P {
     }) : !1;
   }
   focusHeaderPositionFromUserFunc(e) {
-    if (Wt(this.beans))
+    if (zt(this.beans))
       return !1;
     const { userFunc: t, headerPosition: i, direction: s, event: o } = e, n = this.focusedHeader, r = Ye(this.beans), a = this.getHeaderPositionFromUserFunc({
       userFunc: t,
@@ -18710,7 +18710,7 @@ var uS = class extends P {
   focusOverlay(e) {
     var i, s;
     const t = ((i = this.overlays) == null ? void 0 : i.isVisible()) && ((s = this.overlays.eWrapper) == null ? void 0 : s.getGui());
-    return !!t && $t(t, e);
+    return !!t && Kt(t, e);
   }
   focusGridView(e) {
     var n, r, a, l, d, c;
@@ -18718,7 +18718,7 @@ var uS = class extends P {
     if ((n = this.overlays) != null && n.isExclusive())
       return i && this.focusOverlay(t);
     if (Po(this.beans))
-      return t && !Wt(this.beans) ? this.focusLastHeader() : i && this.focusOverlay(t) ? !0 : t ? !1 : Pi(this.beans, t);
+      return t && !zt(this.beans) ? this.focusLastHeader() : i && this.focusOverlay(t) ? !0 : t ? !1 : Pi(this.beans, t);
     const o = t ? wv(this.beans) : vv(this.beans);
     if (o) {
       const u = e.column ?? ((r = this.focusedHeader) == null ? void 0 : r.column), { rowIndex: h, rowPinned: g } = o, p = ht(this.beans, o);
@@ -20341,7 +20341,7 @@ var AS = {
   validations: IS()
 }), LS = 0, OS = 0, qa = "__ag_grid_instance", HS = class extends P {
   constructor() {
-    super(...arguments), this.beanName = "gos", this.domDataKey = "__AG_" + Math.random().toString(), this.instanceId = OS++, this.gridReadyFired = !1, this.queueEvents = [], this.propEventSvc = new _t(), this.globalEventHandlerFactory = (e) => (t, i) => {
+    super(...arguments), this.beanName = "gos", this.domDataKey = "__AG_" + Math.random().toString(), this.instanceId = OS++, this.gridReadyFired = !1, this.queueEvents = [], this.propEventSvc = new Ut(), this.globalEventHandlerFactory = (e) => (t, i) => {
       if (!this.isAlive())
         return;
       const s = Qi.has(t);
@@ -20715,7 +20715,7 @@ var BS = Rc(!0), VS = Rc(!1), NS = class extends q {
     };
     this.addTouchAndClickListeners(s, t, o), this.addTouchAndClickListeners(s, e, o);
     const n = (l) => {
-      jt(l);
+      qt(l);
     };
     this.addManagedElementListeners(t, { dblclick: n }), this.addManagedElementListeners(e, { dblclick: n }), this.addManagedElementListeners(this.getGui(), { dblclick: o }), this.updateIconVisibility();
     const r = i.getProvidedColumnGroup(), a = this.updateIconVisibility.bind(this);
@@ -20886,7 +20886,7 @@ var BS = Rc(!0), VS = Rc(!1), NS = class extends q {
     this.mockContextMenu(e, e.eGui, t);
   }
   mockRowContextMenu(e) {
-    if (!Nt())
+    if (!Wt())
       return;
     const t = (i, s, o) => {
       var a;
@@ -20897,7 +20897,7 @@ var BS = Rc(!0), VS = Rc(!1), NS = class extends q {
   }
   handleCellDoubleClick(e, t) {
     return (() => {
-      if (!Nt() || Al("dblclick"))
+      if (!Wt() || Al("dblclick"))
         return !1;
       const s = Date.now(), o = s - e.lastIPadMouseClickEvent < 200;
       return e.lastIPadMouseClickEvent = s, o;
@@ -20907,7 +20907,7 @@ var BS = Rc(!0), VS = Rc(!1), NS = class extends q {
     const { gos: t, sortSvc: i, menuSvc: s } = this.beans;
     if (t.get("suppressTouch"))
       return;
-    const { params: o, eMenu: n, eFilterButton: r } = e, a = new Lt(e.getGui(), !0), l = e.shouldSuppressMenuHide(), d = l && I(n) && o.enableMenu, c = d ? new Lt(n, !0) : a;
+    const { params: o, eMenu: n, eFilterButton: r } = e, a = new Ot(e.getGui(), !0), l = e.shouldSuppressMenuHide(), d = l && I(n) && o.enableMenu, c = d ? new Ot(n, !0) : a;
     if (o.enableMenu || s != null && s.isHeaderContextMenuEnabled(o.column)) {
       const u = d ? "tap" : "longTap", h = (g) => o.showColumnMenuAfterMouseClick(g.touchStart);
       e.addManagedListeners(c, { [u]: h });
@@ -20920,7 +20920,7 @@ var BS = Rc(!0), VS = Rc(!1), NS = class extends q {
       e.addManagedListeners(a, { tap: u });
     }
     if (o.enableFilterButton && r) {
-      const u = new Lt(r, !0);
+      const u = new Ot(r, !0);
       e.addManagedListeners(u, {
         tap: () => o.showFilter(r)
       }), e.addDestroyFunc(() => u.destroy());
@@ -20933,18 +20933,18 @@ var BS = Rc(!0), VS = Rc(!1), NS = class extends q {
     if ((i = this.beans.menuSvc) != null && i.isHeaderContextMenuEnabled(
       t.columnGroup.getProvidedColumnGroup()
     )) {
-      const s = new Lt(t.eGridHeader, !0), o = (n) => t.showColumnMenuAfterMouseClick(n.touchStart);
+      const s = new Ot(t.eGridHeader, !0), o = (n) => t.showColumnMenuAfterMouseClick(n.touchStart);
       e.addManagedListeners(s, { longTap: o }), e.addDestroyFunc(() => s.destroy());
     }
   }
   setupForHeaderGroupElement(e, t, i) {
-    const s = new Lt(t, !0);
+    const s = new Ot(t, !0);
     e.addManagedListeners(s, { tap: i }), e.addDestroyFunc(() => s.destroy());
   }
   mockContextMenu(e, t, i) {
-    if (!Nt())
+    if (!Wt())
       return;
-    const s = new Lt(t), o = (n) => {
+    const s = new Ot(t), o = (n) => {
       os(this.beans, n.touchEvent) && i(void 0, n.touchStart, n.touchEvent);
     };
     e.addManagedListeners(s, { longTap: o }), e.addDestroyFunc(() => s.destroy());
@@ -21543,7 +21543,7 @@ function Tc(e, t) {
   var i;
   return t instanceof KeyboardEvent && e.column.getColDef().cellEditor === "agNumberCellEditor" ? e.suppressPreventDefault = ["-", "+", ".", "e"].includes((t == null ? void 0 : t.key) ?? "") || e.suppressPreventDefault : (i = t == null ? void 0 : t.preventDefault) == null || i.call(t), e;
 }
-function Ht(e, t) {
+function Gt(e, t) {
   var i;
   (i = e.editModelSvc) == null || i.getEditPositions().forEach((s) => {
     var d, c;
@@ -21642,7 +21642,7 @@ function Ar(e) {
   }), n = e.gridApi.getCellEditorInstances().some((a) => a.getValidationElement || a.getValidationErrors);
   return o || s || n;
 }
-function qt(e, t) {
+function Yt(e, t) {
   var h, g, p, f, m, w, b, S;
   if (!(t || Ar(e)))
     return;
@@ -21663,7 +21663,7 @@ function qt(e, t) {
       }
     );
   }
-  Ht(e, { persist: !1 }), r == null || r.setCellValidationModel(s);
+  Gt(e, { persist: !1 }), r == null || r.setCellValidationModel(s);
   const u = /* @__PURE__ */ new Set();
   for (const { ctrl: F } of i)
     u.add(F.rowCtrl);
@@ -21713,7 +21713,7 @@ var dy = (e) => {
 };
 function cy(e) {
   var s;
-  qt(e, !0);
+  Yt(e, !0);
   const t = (s = e.editModelSvc) == null ? void 0 : s.getCellValidationModel().getCellValidationMap();
   if (!t)
     return null;
@@ -21830,7 +21830,7 @@ var gy = class extends P {
         s == null || s.applyBulkEdit(t, ((d = i == null ? void 0 : i.rangeSvc) == null ? void 0 : d.getCellRanges()) || []);
         return;
       }
-      if (qt(i), (s == null ? void 0 : s.checkNavWithValidation(void 0, e)) === "block-stop")
+      if (Yt(i), (s == null ? void 0 : s.checkNavWithValidation(void 0, e)) === "block-stop")
         return;
       s != null && s.isEditing(t, { withOpenEditor: !0 }) ? s == null || s.stopEditing(t, {
         event: e,
@@ -21853,7 +21853,7 @@ var gy = class extends P {
       cellCtrl: t,
       beans: { editSvc: i }
     } = this;
-    i != null && i.isEditing() && (qt(this.beans), (i == null ? void 0 : i.checkNavWithValidation(void 0, e)) === "block-stop") || i == null || i.startEditing(t, { startedEdit: !0, event: e });
+    i != null && i.isEditing() && (Yt(this.beans), (i == null ? void 0 : i.checkNavWithValidation(void 0, e)) === "block-stop") || i == null || i.startEditing(t, { startedEdit: !0, event: e });
   }
   onEscapeKeyDown(e) {
     const {
@@ -21886,7 +21886,7 @@ var gy = class extends P {
   onSpaceKeyDown(e) {
     var o;
     const { gos: t, editSvc: i } = this.beans, { rowNode: s } = this.cellCtrl;
-    !(i != null && i.isEditing(this.cellCtrl, { withOpenEditor: !0 })) && Bt(t) && ((o = this.beans.selectionSvc) == null || o.handleSelectionEvent(e, s, "spaceKey")), e.preventDefault();
+    !(i != null && i.isEditing(this.cellCtrl, { withOpenEditor: !0 })) && Vt(t) && ((o = this.beans.selectionSvc) == null || o.handleSelectionEvent(e, s, "spaceKey")), e.preventDefault();
   }
 }, py = class extends P {
   constructor(e, t, i) {
@@ -22014,7 +22014,7 @@ var gy = class extends P {
     return !1;
   }
   containsWidget(e) {
-    return Gt(e, "ag-selection-checkbox", 3) || Gt(e, "ag-drag-handle", 3);
+    return Bt(e, "ag-selection-checkbox", 3) || Bt(e, "ag-drag-handle", 3);
   }
   onMouseOut(e) {
     if (this.mouseStayingInsideCell(e))
@@ -22120,7 +22120,7 @@ var gy = class extends P {
   _legacyApplyRowSpan(e) {
     if (this.rowSpan === 1 && !e)
       return;
-    const i = Vt(this.beans) * this.rowSpan;
+    const i = Nt(this.beans) * this.rowSpan;
     this.eContent.style.height = `${i}px`, this.eContent.style.zIndex = "1";
   }
   // overriding to make public, as we don't dispose this bean via context
@@ -22158,7 +22158,7 @@ var gy = class extends P {
   }
   enableEditorTooltipFeature(e) {
     var t;
-    this.editorTooltipFeature && this.disableEditorTooltipFeature(), this.editorTooltipFeature = (t = this.beans.tooltipSvc) == null ? void 0 : t.setupCellEditorTooltip(this, e), qt(this.beans);
+    this.editorTooltipFeature && this.disableEditorTooltipFeature(), this.editorTooltipFeature = (t = this.beans.tooltipSvc) == null ? void 0 : t.setupCellEditorTooltip(this, e), Yt(this.beans);
   }
   disableEditorTooltipFeature() {
     this.editorTooltipFeature = this.beans.context.destroyBean(this.editorTooltipFeature);
@@ -22343,7 +22343,7 @@ var gy = class extends P {
   }
   addDomData(e) {
     const t = this.eGui;
-    Ut(this.beans.gos, t, uo, this), e.addDestroyFunc(() => Ut(this.beans.gos, t, uo, null));
+    $t(this.beans.gos, t, uo, this), e.addDestroyFunc(() => $t(this.beans.gos, t, uo, null));
   }
   createEvent(e, t) {
     const { rowNode: i, column: s, value: o, beans: n } = this;
@@ -22729,9 +22729,9 @@ var Py = class extends P {
   }
   initialiseRowComp(e) {
     const t = this.gos;
-    this.onSuppressCellFocusChanged(this.beans.gos.get("suppressCellFocus")), this.listenOnDomOrder(e), this.onRowHeightChanged(e), this.updateRowIndexes(e), this.setFocusedClasses(e), this.setStylesFromGridOptions(!1, e), Bt(t) && this.rowNode.selectable && this.onRowSelected(e), this.updateColumnLists(!this.useAnimationFrameForCreate);
+    this.onSuppressCellFocusChanged(this.beans.gos.get("suppressCellFocus")), this.listenOnDomOrder(e), this.onRowHeightChanged(e), this.updateRowIndexes(e), this.setFocusedClasses(e), this.setStylesFromGridOptions(!1, e), Vt(t) && this.rowNode.selectable && this.onRowSelected(e), this.updateColumnLists(!this.useAnimationFrameForCreate);
     const i = e.rowComp;
-    this.getInitialRowClasses(e.containerType).forEach((o) => i.toggleCss(o, !0)), this.executeSlideAndFadeAnimations(e), this.rowNode.group && mn(e.element, this.rowNode.expanded == !0), this.setRowCompRowId(i), this.setRowCompRowBusinessKey(i), Ut(t, e.element, ho, this), e.compBean.addDestroyFunc(() => Ut(t, e.element, ho, null)), this.useAnimationFrameForCreate ? this.beans.animationFrameSvc.createTask(
+    this.getInitialRowClasses(e.containerType).forEach((o) => i.toggleCss(o, !0)), this.executeSlideAndFadeAnimations(e), this.rowNode.group && mn(e.element, this.rowNode.expanded == !0), this.setRowCompRowId(i), this.setRowCompRowBusinessKey(i), $t(t, e.element, ho, this), e.compBean.addDestroyFunc(() => $t(t, e.element, ho, null)), this.useAnimationFrameForCreate ? this.beans.animationFrameSvc.createTask(
       this.addHoverFunctionality.bind(this, e),
       this.rowNode.rowIndex,
       "p2",
@@ -23097,7 +23097,7 @@ var Py = class extends P {
     let n = !1;
     i && o && (n = i.contains(o) && o.classList.contains("ag-cell"));
     let r = null;
-    !s && !n && (r = Zt(this.beans, i, !1, e.shiftKey)), (this.isFullWidth() && s || !r) && ((a = this.beans.navigation) == null || a.onTabKeyDown(this, e));
+    !s && !n && (r = Jt(this.beans, i, !1, e.shiftKey)), (this.isFullWidth() && s || !r) && ((a = this.beans.navigation) == null || a.onTabKeyDown(this, e));
   }
   getFullWidthElement() {
     return this.fullWidthGui ? this.fullWidthGui.element : null;
@@ -23196,7 +23196,7 @@ var Py = class extends P {
     }
   }
   onRowMouseDown(e) {
-    if (this.lastMouseDownOnDragger = Gt(e.target, "ag-row-drag", 3), !this.isFullWidth() || this.isSuppressMouseEvent(e))
+    if (this.lastMouseDownOnDragger = Bt(e.target, "ag-row-drag", 3), !this.isFullWidth() || this.isSuppressMouseEvent(e))
       return;
     const { rangeSvc: t, focusSvc: i } = this.beans;
     t == null || t.removeAllCellRanges();
@@ -23689,7 +23689,7 @@ var Py = class extends P {
     }
     if (i) {
       const { rowIndex: d, rowPinned: c } = e.getRowPosition();
-      (c ? d === 0 : d === r.getFirstRow()) && (l.get("headerHeight") === 0 || Wt(o) ? Pi(o, !0, !0) : (t.preventDefault(), a.focusPreviousFromFirstCell(t)));
+      (c ? d === 0 : d === r.getFirstRow()) && (l.get("headerHeight") === 0 || zt(o) ? Pi(o, !0, !0) : (t.preventDefault(), a.focusPreviousFromFirstCell(t)));
     } else
       e instanceof wi && e.focusCell(!0), (!i && a.focusOverlay(!1) || Pi(o, i)) && t.preventDefault();
   }
@@ -24220,7 +24220,7 @@ var _y = (
     if (e.key !== R.TAB || e.defaultPrevented || ct(e))
       return;
     const t = this.beans;
-    if (Zt(t, this.eOverlayWrapper, !1, e.shiftKey))
+    if (Jt(t, this.eOverlayWrapper, !1, e.shiftKey))
       return;
     let s = !1;
     e.shiftKey ? s = t.focusSvc.focusGridView({
@@ -24259,7 +24259,7 @@ var _y = (
               (a = n.refresh) == null || a.call(n, W(this.gos, { ...r ?? {} }));
             });
           }
-          i && this.isGridFocused() && $t(this.eOverlayWrapper);
+          i && this.isGridFocused() && Kt(this.eOverlayWrapper);
         }
       });
     }
@@ -25072,7 +25072,7 @@ var _y = (
     return this.gos.get("rowBuffer");
   }
   getRowBufferInPixels() {
-    const e = this.getRowBuffer(), t = Vt(this.beans);
+    const e = this.getRowBuffer(), t = Nt(this.beans);
     return e * t;
   }
   workOutFirstAndLastRowsToRender() {
@@ -27362,7 +27362,7 @@ var $R = class extends P {
     const { beans: t } = this;
     if (te(t) === this.eGui)
       return;
-    const o = Zt(t, this.eGui, null, e.shiftKey);
+    const o = Jt(t, this.eGui, null, e.shiftKey);
     if (o) {
       (r = t.headerNavigation) == null || r.scrollToColumn(this.column), e.preventDefault(), o.focus();
       return;
@@ -27395,9 +27395,9 @@ var $R = class extends P {
       case R.RIGHT:
         if (t)
           return;
-        jt(e);
+        qt(e);
       case R.ENTER:
-        t && $t(this.eGui) && e.preventDefault();
+        t && Kt(this.eGui) && e.preventDefault();
         break;
       case R.ESCAPE:
         t || this.eGui.focus();
@@ -27406,12 +27406,12 @@ var $R = class extends P {
   onFocusIn(e) {
     if (this.eGui.contains(e.relatedTarget))
       return;
-    const i = !!e.relatedTarget && !e.relatedTarget.classList.contains("ag-floating-filter"), s = !!e.relatedTarget && Gt(e.relatedTarget, "ag-floating-filter");
+    const i = !!e.relatedTarget && !e.relatedTarget.classList.contains("ag-floating-filter"), s = !!e.relatedTarget && Bt(e.relatedTarget, "ag-floating-filter");
     if (i && s && e.target === this.eGui) {
       const o = this.lastFocusEvent, n = !!(o && o.key === R.TAB);
       if (o && n) {
         const r = o.shiftKey;
-        $t(this.eGui, r);
+        Kt(this.eGui, r);
       }
     }
     this.focusThis();
@@ -28954,7 +28954,7 @@ var gF = class extends P {
     }), Pa(e, !0, "contextMenu"), this.dispatchVisibleChangedEvent(!0, i, e);
   }
   trapFocusWithin(e, t) {
-    e.key !== R.TAB || e.defaultPrevented || Zt(this.beans, t, !1, e.shiftKey) || (e.preventDefault(), $t(t, e.shiftKey));
+    e.key !== R.TAB || e.defaultPrevented || Jt(this.beans, t, !1, e.shiftKey) || (e.preventDefault(), Kt(t, e.shiftKey));
   }
   dispatchVisibleChangedEvent(e, t, i) {
     this.eventSvc.dispatchEvent({
@@ -29312,7 +29312,7 @@ var Lr = class extends Yf {
       let i;
       if (!this.isReadOnly()) {
         const s = this.getInputs(0)[0];
-        s instanceof Ot && this.isConditionBodyVisible(0) ? i = s.getInputElement() : i = (t = this.eTypes[0]) == null ? void 0 : t.getFocusableElement();
+        s instanceof Ht && this.isConditionBodyVisible(0) ? i = s.getInputElement() : i = (t = this.eTypes[0]) == null ? void 0 : t.getFocusableElement();
       }
       (i ?? this.getGui()).focus({ preventScroll: !0 });
     }
@@ -29358,7 +29358,7 @@ var Lr = class extends Yf {
   resetPlaceholder() {
     const e = this.getLocaleTextFunc();
     this.forEachInput((t, i, s, o) => {
-      if (!(t instanceof Ot))
+      if (!(t instanceof Ht))
         return;
       const n = i === 0 && o > 1 ? "inRangeStart" : i === 0 ? "filterOoo" : "inRangeEnd", r = i === 0 && o > 1 ? e("ariaFilterFromValue", "Filter from value") : i === 0 ? e("ariaFilterValue", "Filter Value") : e("ariaFilterToValue", "Filter to Value");
       t.setInputPlaceholder(this.getPlaceholderText(n, s)), t.setInputAriaLabel(r);
@@ -29366,7 +29366,7 @@ var Lr = class extends Yf {
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setElementValue(e, t, i) {
-    e instanceof Ot && e.setValue(t != null ? String(t) : null, !0);
+    e instanceof Ht && e.setValue(t != null ? String(t) : null, !0);
   }
   setElementDisplayed(e, t) {
     aa(e) && Z(e.getGui(), t);
@@ -29375,7 +29375,7 @@ var Lr = class extends Yf {
     aa(e) && is(e.getGui(), t);
   }
   attachElementOnChange(e, t) {
-    e instanceof Ot && e.onValueChange(t);
+    e instanceof Ht && e.onValueChange(t);
   }
   forEachInput(e) {
     this.getConditionTypes().forEach((t, i) => {
@@ -30193,7 +30193,7 @@ var TF = class extends Lr {
   }
   createFromToElement(e, t, i, s) {
     const o = this.createManagedBean(
-      s ? new Jt({ allowedCharPattern: s }) : new gr()
+      s ? new Xt({ allowedCharPattern: s }) : new gr()
     );
     o.addCss(`ag-filter-${i}`), o.addCss("ag-filter-filter"), t.push(o), e.appendChild(o.getGui());
   }
@@ -30275,7 +30275,7 @@ var TF = class extends Lr {
   }
   setupGui(e) {
     var s;
-    this.eInput = this.createManagedBean(new Jt((s = this.params) == null ? void 0 : s.config));
+    this.eInput = this.createManagedBean(new Xt((s = this.params) == null ? void 0 : s.config));
     const t = this.eInput.getGui();
     e.appendChild(t);
     const i = (o) => this.onValueChanged(o);
@@ -30383,7 +30383,7 @@ var AF = {
     }, this.numberInputActive = !0;
   }
   setupGui(e) {
-    this.eNumberInput = this.createManagedBean(new gr()), this.eTextInput = this.createManagedBean(new Jt()), this.eTextInput.setDisabled(!0);
+    this.eNumberInput = this.createManagedBean(new gr()), this.eTextInput = this.createManagedBean(new Xt()), this.eTextInput.setDisabled(!0);
     const t = this.eNumberInput.getGui(), i = this.eTextInput.getGui();
     e.appendChild(t), e.appendChild(i), this.setupListeners(t, (s) => this.onValueChanged(s)), this.setupListeners(i, (s) => this.onValueChanged(s));
   }
@@ -30472,7 +30472,7 @@ var AF = {
     return this.createFromToElement(e, t, "from"), this.createFromToElement(e, i, "to"), e;
   }
   createFromToElement(e, t, i) {
-    const s = this.createManagedBean(new Jt());
+    const s = this.createManagedBean(new Xt());
     s.addCss(`ag-filter-${i}`), s.addCss("ag-filter-filter"), t.push(s), e.appendChild(s.getGui());
   }
   removeEValues(e, t) {
@@ -31719,7 +31719,7 @@ function DP(e, t = !1) {
   const { editSvc: i } = e;
   i != null && i.isBatchEditing() ? (t ? (s = e.editModelSvc) == null || s.getEditPositions().forEach((o) => {
     o.state === "editing" && i.revertSingleCellEdit(o);
-  }) : Ht(e, { persist: !0 }), vi(e, void 0, { cancel: t })) : i == null || i.stopEditing(void 0, { cancel: t, source: "edit", forceStop: !t, forceCancel: t });
+  }) : Gt(e, { persist: !0 }), vi(e, void 0, { cancel: t })) : i == null || i.stopEditing(void 0, { cancel: t, source: "edit", forceStop: !t, forceCancel: t });
 }
 function TP(e, t) {
   var s;
@@ -31770,7 +31770,7 @@ var LP = { tag: "div", cls: "ag-popup-editor", attrs: { tabindex: "-1" } }, OP =
     super(LP), this.params = e;
   }
   postConstruct() {
-    Ut(this.gos, this.getGui(), "popupEditorWrapper", !0), this.addKeyDownListener();
+    $t(this.gos, this.getGui(), "popupEditorWrapper", !0), this.addKeyDownListener();
   }
   addKeyDownListener() {
     const e = this.getGui(), t = this.params, i = (s) => {
@@ -32005,7 +32005,7 @@ var VP = class extends P {
     let g = d.getEditMap(!0), p = !1;
     const f = !s && (!!this.shouldStopEditing(e, i, c) || this.committing && !this.batch) || (a ?? !1), m = s && !!this.shouldCancelEditing(e, i, c) || (r ?? !1);
     if (f || m) {
-      Ht(l, { persist: !0, isCancelling: m || s, isStopping: f });
+      Gt(l, { persist: !0, isCancelling: m || s, isStopping: f });
       const F = d.getEditMap(), y = this.processEdits(F, s, o);
       (w = this.strategy) == null || w.stop(s, i), y.forEach((E) => {
         d.clearEditValue(E);
@@ -32015,9 +32015,9 @@ var VP = class extends P {
       }), g = F, p || (p = f);
     } else if (i instanceof KeyboardEvent && this.batch && ((b = this.strategy) != null && b.midBatchInputsAllowed(e)) && this.isEditing(e, { withOpenEditor: !0 })) {
       const F = i.key, y = F === R.ENTER, E = F === R.ESCAPE, M = F === R.TAB;
-      (y || M || E) && (y || M ? Ht(l, { persist: !0 }) : E && this.revertSingleCellEdit(h), this.isBatchEditing() ? (S = this.strategy) == null || S.cleanupEditors() : vi(l, d.getEditPositions(), { event: i, cancel: E }), i.preventDefault(), this.bulkRefresh(e, g, { suppressFlash: !0 }), g = d.getEditMap());
+      (y || M || E) && (y || M ? Gt(l, { persist: !0 }) : E && this.revertSingleCellEdit(h), this.isBatchEditing() ? (S = this.strategy) == null || S.cleanupEditors() : vi(l, d.getEditPositions(), { event: i, cancel: E }), i.preventDefault(), this.bulkRefresh(e, g, { suppressFlash: !0 }), g = d.getEditMap());
     } else
-      Ht(l, { persist: !0 }), g = d.getEditMap();
+      Gt(l, { persist: !0 }), g = d.getEditMap();
     return p && e && this.model.removeEdits(e), !n && h && this.navigateAfterEdit(i instanceof KeyboardEvent && i.shiftKey, h.cellPosition), _n(l), this.model.hasEdits() || (this.model.getCellValidationModel().clearCellValidationMap(), this.model.getRowValidationModel().clearRowValidationMap()), this.bulkRefresh(), m && this.beans.rowRenderer.refreshRows({ rowNodes: Array.from(g.keys()) }), this.isBatchEditing() && (this.beans.rowRenderer.refreshRows({ suppressFlash: !0, force: !0 }), p && f && this.dispatchBatchEvent("batchEditingStopped", g)), this.stopping = !1, p;
   }
   navigateAfterEdit(e, t) {
@@ -32125,11 +32125,11 @@ var VP = class extends P {
   revertSingleCellEdit(e, t = !1) {
     var s, o, n, r, a;
     const i = ee(this.beans, e);
-    (s = i == null ? void 0 : i.comp) != null && s.getCellEditor() && (vi(this.beans, [e], { silent: !0 }), this.model.clearEditValue(e), Ei(this.beans, e, { silent: !0 }), qt(this.beans), i == null || i.refreshCell(Ni), (o = i.rowCtrl.rowEditStyleFeature) == null || o.applyRowStyles(), t && (i == null || i.focusCell(), (a = (r = (n = i == null ? void 0 : i.comp) == null ? void 0 : n.getCellEditor()) == null ? void 0 : r.focusIn) == null || a.call(r)));
+    (s = i == null ? void 0 : i.comp) != null && s.getCellEditor() && (vi(this.beans, [e], { silent: !0 }), this.model.clearEditValue(e), Ei(this.beans, e, { silent: !0 }), Yt(this.beans), i == null || i.refreshCell(Ni), (o = i.rowCtrl.rowEditStyleFeature) == null || o.applyRowStyles(), t && (i == null || i.focusCell(), (a = (r = (n = i == null ? void 0 : i.comp) == null ? void 0 : n.getCellEditor()) == null ? void 0 : r.focusIn) == null || a.call(r)));
   }
   hasValidationErrors(e) {
     var s;
-    qt(this.beans);
+    Yt(this.beans);
     const t = ee(this.beans, e);
     t && (t.refreshCell(Ni), (s = t.rowCtrl.rowEditStyleFeature) == null || s.applyRowStyles());
     let i = !1;
@@ -32240,7 +32240,7 @@ var VP = class extends P {
     if (!i || i.length === 0)
       return;
     const { beans: s, rangeSvc: o, valueSvc: n } = this;
-    Ht(s, { persist: !0 });
+    Gt(s, { persist: !0 });
     const r = this.model.getEditMap(!0), a = (c = (d = r.get(e)) == null ? void 0 : d.get(t)) == null ? void 0 : c.pendingValue;
     this.batch || this.eventSvc.dispatchEvent({ type: "bulkEditingStarted" }), i.forEach((u) => {
       if (o == null || o.forEachRowInRange(u, (h) => {
@@ -32390,7 +32390,7 @@ var su = class extends P {
     }), !0;
   }
   cleanupEditors({ rowNode: e } = {}, t) {
-    Ht(this.beans, { persist: !1 });
+    Gt(this.beans, { persist: !1 });
     const i = this.model.getEditPositions(), s = [];
     e ? i.forEach((o) => {
       !e || o.rowNode === e || s.push(o);
@@ -32510,7 +32510,7 @@ var su = class extends P {
             break;
           }
       }
-    }), qt(this.beans), !e && ((o = this.editSvc) == null ? void 0 : o.checkNavWithValidation({ rowNode: i })) === "block-stop" ? !1 : (super.stop(e, t), s.forEach((n) => this.dispatchRowEvent({ rowNode: n }, "rowValueChanged")), this.cleanupEditors({ rowNode: i }, !0), this.rowNode = void 0, !0);
+    }), Yt(this.beans), !e && ((o = this.editSvc) == null ? void 0 : o.checkNavWithValidation({ rowNode: i })) === "block-stop" ? !1 : (super.stop(e, t), s.forEach((n) => this.dispatchRowEvent({ rowNode: n }, "rowValueChanged")), this.cleanupEditors({ rowNode: i }, !0), this.rowNode = void 0, !0);
   }
   onCellFocusChanged(e) {
     const { rowIndex: t } = e, i = e.previousParams;
@@ -32784,7 +32784,7 @@ var su = class extends P {
   isSelectionColumnEnabled() {
     var r, a;
     const { gos: e, beans: t } = this, i = e.get("rowSelection");
-    if (typeof i != "object" || !Bt(e))
+    if (typeof i != "object" || !Vt(e))
       return !1;
     const s = (((a = (r = t.autoColSvc) == null ? void 0 : r.getColumns()) == null ? void 0 : a.length) ?? 0) > 0;
     if (i.checkboxLocation === "autoGroupColumn" && s)
@@ -32821,7 +32821,7 @@ var su = class extends P {
       return [];
     const e = this.createSelectionColDef(), t = e.colId;
     this.gos.validateColDef(e, t, !0);
-    const i = new Qt(e, null, t, !1);
+    const i = new Zt(e, null, t, !1);
     return this.createBean(i), [i];
   }
   onSelectionOptionsChanged(e, t, i) {
@@ -32957,7 +32957,7 @@ var CE = class extends PC {
   }) {
     var d;
     const { gos: a } = this;
-    if (!Bt(a) && e)
+    if (!Vt(a) && e)
       return T(132), 0;
     if (s.length === 0)
       return 0;
@@ -33067,7 +33067,7 @@ var CE = class extends PC {
   createDaemonNode(e) {
     if (!e.id)
       return;
-    const t = new Kt(this.beans);
+    const t = new jt(this.beans);
     return t.id = e.id, t.data = e.data, t.__daemon = !0, t.__selected = e.__selected, t.level = e.level, t;
   }
   // if the id has changed for the node, then this means the rowNode
@@ -33190,7 +33190,7 @@ var CE = class extends PC {
   }
   selectAllRowNodes(e) {
     const { gos: t, selectionCtx: i } = this;
-    if (!Bt(t)) {
+    if (!Vt(t)) {
       T(132);
       return;
     }
@@ -33243,7 +33243,7 @@ var CE = class extends PC {
   updateSelectable(e) {
     var l;
     const { gos: t, rowModel: i } = this.beans;
-    if (!Bt(t))
+    if (!Vt(t))
       return;
     const s = "selectableChanged", o = e !== void 0, n = ce(t) && this.groupSelectsDescendants, r = [], a = (d) => {
       var u;
@@ -33761,7 +33761,7 @@ var xE = {
       gridStylesChanged: this.onGridStylesChanges.bind(this),
       gridReady: this.onGridReady.bind(this),
       rowExpansionStateChanged: this.onRowGroupOpened.bind(this)
-    }), this.addPropertyListeners(), this.rootNode = new Kt(this.beans);
+    }), this.addPropertyListeners(), this.rootNode = new jt(this.beans);
     const i = this.getNewNodeManager();
     this.nodeManager = i, i.activate(this.rootNode);
   }
@@ -34701,7 +34701,7 @@ var ix = {
       rowNodes: o
     } = this;
     for (let n = 0; n < e; n++) {
-      const r = i + n, a = new Kt(s);
+      const r = i + n, a = new jt(s);
       a.setRowHeight(t), a.uiLevel = 0, a.setRowIndex(r), a.setRowTop(t * r), o.push(a);
     }
   }
@@ -34762,7 +34762,7 @@ var ix = {
     const { rowNodes: t, beans: i } = this;
     t.forEach((o, n) => {
       const r = e.rowData ? e.rowData[n] : void 0;
-      !o.id && o.alreadyRendered && r && (t[n] = new Kt(i), t[n].setRowIndex(o.rowIndex), t[n].setRowTop(o.rowTop), t[n].setRowHeight(o.rowHeight), o.clearRowTopAndRowIndex()), this.setDataAndId(t[n], r, this.startRow + n);
+      !o.id && o.alreadyRendered && r && (t[n] = new jt(i), t[n].setRowIndex(o.rowIndex), t[n].setRowTop(o.rowTop), t[n].setRowHeight(o.rowHeight), o.clearRowTopAndRowIndex()), this.setDataAndId(t[n], r, this.startRow + n);
     });
     const s = e.rowCount != null && e.rowCount >= 0 ? e.rowCount : void 0;
     this.parentCache.pageLoaded(this, s);
@@ -34918,7 +34918,7 @@ var ix = {
     return !1;
   }
   postConstruct() {
-    this.gos.get("rowModelType") === "infinite" && (this.rowHeight = Vt(this.beans), this.addEventListeners(), this.addDestroyFunc(() => this.destroyCache()));
+    this.gos.get("rowModelType") === "infinite" && (this.rowHeight = Nt(this.beans), this.addEventListeners(), this.addDestroyFunc(() => this.destroyCache()));
   }
   start() {
     this.setDatasource(this.gos.get("datasource"));
@@ -34936,7 +34936,7 @@ var ix = {
       newColumnsLoaded: this.onColumnEverything.bind(this),
       storeUpdated: this.dispatchModelUpdatedEvent.bind(this)
     }), this.addManagedPropertyListener("datasource", () => this.setDatasource(this.gos.get("datasource"))), this.addManagedPropertyListener("cacheBlockSize", () => this.resetCache()), this.addManagedPropertyListener("rowHeight", () => {
-      this.rowHeight = Vt(this.beans), this.cacheParams.rowHeight = this.rowHeight, this.updateRowHeights();
+      this.rowHeight = Nt(this.beans), this.cacheParams.rowHeight = this.rowHeight, this.updateRowHeights();
     });
   }
   onColumnEverything() {
@@ -34993,7 +34993,7 @@ var ix = {
       // or a new datasource is set
       initialRowCount: n.get("infiniteInitialRowCount"),
       maxBlocksInCache: n.get("maxBlocksInCache"),
-      rowHeight: Vt(e),
+      rowHeight: Nt(e),
       // if user doesn't provide overflow, we use default overflow of 1, so user can scroll past
       // the current page and request first row of next page
       overflowSize: n.get("cacheOverflowSize"),
@@ -35901,7 +35901,7 @@ var Vx = class extends P {
     const e = this.centerRowsCtrl.viewportSizeFeature.getBodyHeight();
     if (e > 0) {
       const t = this.beans, i = () => {
-        const s = Math.max(Vt(t), 1), o = Math.floor(e / s);
+        const s = Math.max(Nt(t), 1), o = Math.floor(e / s);
         t.pagination.setPageSize(o, "autoCalculated");
       };
       this.isBodyRendered ? he(this, i, 50)() : (i(), this.isBodyRendered = !0);
@@ -36445,7 +36445,7 @@ function lD(e) {
 }
 function dD(e) {
   return {
-    rowHeight: Vt(e),
+    rowHeight: Nt(e),
     headerHeight: vs(e)
   };
 }
@@ -36593,7 +36593,7 @@ var pD = class extends P {
       this.autoSizeColumn(t, "uiColumnResized", i);
     };
     e.addEventListener("dblclick", s);
-    const o = new Lt(e);
+    const o = new Ot(e);
     return o.addEventListener("doubleTap", s), () => {
       e.removeEventListener("dblclick", s), o.removeEventListener("doubleTap", s), o.destroy();
     };
@@ -37521,7 +37521,7 @@ var $D = {
       var b;
       if ((b = this.beans.editSvc) != null && b.isEditing(e) || !e.isAlive() || !i.isAlive())
         return;
-      const { paddingTop: u, paddingBottom: h, borderBottomWidth: g, borderTopWidth: p } = Yt(s), f = u + h + g + p, w = t.offsetHeight + f;
+      const { paddingTop: u, paddingBottom: h, borderBottomWidth: g, borderTopWidth: p } = Qt(s), f = u + h + g + p, w = t.offsetHeight + f;
       if (c < 5) {
         const S = ue(r), F = !S || !S.contains(t), y = w == 0;
         if (F || y) {
@@ -38802,7 +38802,8 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
       { field: "market_value", label: "Market Value" },
       { field: "unrealized_pnl", label: "P&L Unrealized" },
       { field: "cash_flow_on_entry", label: "Entry cash flow" },
-      { field: "cash_flow_on_exercise", label: "Excercise cash flow" }
+      { field: "cash_flow_on_exercise", label: "Excercise cash flow" },
+      { field: "be_price", label: "BE Price" }
     ];
     function a() {
       const C = new URL(window.location.href).searchParams.get("position_cols");
@@ -39016,7 +39017,7 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
         hide: !h("avgPrice"),
         valueFormatter: (v) => {
           var C;
-          return (C = v.data) != null && C.isThesisHeader ? "" : ei(v.value);
+          return (C = v.data) != null && C.isThesisHeader ? "" : kt(v.value);
         }
       },
       {
@@ -39027,7 +39028,7 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
         hide: !h("price"),
         valueFormatter: (v) => {
           var C;
-          return (C = v.data) != null && C.isThesisHeader ? "" : ei(v.value);
+          return (C = v.data) != null && C.isThesisHeader ? "" : kt(v.value);
         }
       },
       {
@@ -39038,7 +39039,7 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
         hide: !h("market_value"),
         valueFormatter: (v) => {
           var C;
-          return (C = v.data) != null && C.isThesisHeader ? "" : ei(v.value);
+          return (C = v.data) != null && C.isThesisHeader ? "" : kt(v.value);
         }
       },
       {
@@ -39049,7 +39050,7 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
         hide: !h("unrealized_pnl"),
         valueFormatter: (v) => {
           var C;
-          return (C = v.data) != null && C.isThesisHeader ? "" : ei(v.value);
+          return (C = v.data) != null && C.isThesisHeader ? "" : kt(v.value);
         },
         cellClassRules: {
           "pnl-positive": (v) => {
@@ -39074,7 +39075,7 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
         hide: !h("cash_flow_on_entry"),
         valueFormatter: (v) => {
           var C;
-          return (C = v.data) != null && C.isThesisHeader ? "" : ei(v.value);
+          return (C = v.data) != null && C.isThesisHeader ? "" : kt(v.value);
         },
         cellClassRules: {
           "pnl-positive": (v) => {
@@ -39099,7 +39100,7 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
         hide: !h("cash_flow_on_exercise"),
         valueFormatter: (v) => {
           var C;
-          return (C = v.data) != null && C.isThesisHeader ? "" : ei(v.value);
+          return (C = v.data) != null && C.isThesisHeader ? "" : kt(v.value);
         },
         cellClassRules: {
           "pnl-positive": (v) => {
@@ -39114,6 +39115,17 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
             var C;
             return !((C = v.data) != null && C.isThesisHeader) && v.value === 0;
           }
+        }
+      },
+      {
+        field: "be_price",
+        headerName: "BE Price",
+        width: 120,
+        type: "rightAligned",
+        hide: !h("be_price"),
+        valueFormatter: (v) => {
+          var C;
+          return (C = v.data) != null && C.isThesisHeader ? "" : v.value === null || v.value === void 0 ? "-" : kt(v.value);
         }
       }
     ]), S = X(null), F = X(null), y = X([]), E = ["qty", "avgPrice", "price", "market_value", "unrealized_pnl", "cash_flow_on_entry", "cash_flow_on_exercise"], M = X([]);
@@ -39190,7 +39202,8 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
       { field: "market_value", label: "Market Value" },
       { field: "unrealized_pnl", label: "P&L Unrealized" },
       { field: "cash_flow_on_entry", label: "Entry cash flow" },
-      { field: "cash_flow_on_exercise", label: "Excercise cash flow" }
+      { field: "cash_flow_on_exercise", label: "Excercise cash flow" },
+      { field: "be_price", label: "BE Price" }
     ], j = X(He());
     function re(v) {
       return j.value.includes(v);
@@ -39202,12 +39215,12 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
       const x = C.split("-and-").map((G) => G.trim()).filter(Boolean), O = new Set(_.map((G) => G.field)), D = x.filter((G) => O.has(G));
       return D.length ? D : _.map((G) => G.field);
     }
-    function Xt(v) {
+    function ei(v) {
       const C = new URL(window.location.href);
       C.searchParams.set("position_cols", v.join("-and-")), window.history.replaceState({}, "", C.toString());
     }
     $e(j, (v) => {
-      Xt(v);
+      ei(v);
       for (const C of _)
         Mi(C.field, re(C.field));
     }, { deep: !0 }), $e(() => o.data.value, () => {
@@ -39375,7 +39388,7 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
         source: "positions"
       }), B();
     }
-    function ei(v) {
+    function kt(v) {
       if (v == null) return "";
       const C = typeof v == "string" ? parseFloat(v) : v;
       return Number.isFinite(C) ? new Intl.NumberFormat("en-US", {
@@ -39832,7 +39845,7 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, hT = /* @__PURE__ */ aT(rT, [["__scopeId", "data-v-dfc48bdf"]]);
+}, hT = /* @__PURE__ */ aT(rT, [["__scopeId", "data-v-59c108a8"]]);
 export {
   hT as Positions,
   hT as default
