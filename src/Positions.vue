@@ -697,7 +697,7 @@ const allColumnOptions2: Array<{ field: ColumnField2; label: string }> = [
   { field: 'market_value', label: 'Market Value' },
   { field: 'unrealized_pnl', label: 'P&L Unrealized' },
   { field: 'cash_flow_on_entry', label: 'Entry cash flow' },
-  { field: 'cash_flow_on_exercise', label: 'Excercise cash flow' },
+  { field: 'cash_flow_on_exercise', label: 'If excercised cash flow' },
   { field: 'be_price', label: 'BE Price' }
 ]
 
