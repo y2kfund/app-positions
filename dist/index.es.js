@@ -39528,10 +39528,10 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
                 to: "/positions"
               }, {
                 default: Kr(() => [...C[18] || (C[18] = [
-                  Li("Positions:", -1)
+                  Li("Positions", -1)
                 ])]),
                 _: 1
-              })) : (U(), $("span", u0, "Positions:"))
+              })) : (U(), $("span", u0, "Positions"))
             ]),
             V("div", h0, [
               V("div", g0, Fe(((O = Re(o).data.value) == null ? void 0 : O.length) || 0) + " positions", 1),
@@ -39845,7 +39845,7 @@ const o0 = { ref: "root" }, n0 = /* @__PURE__ */ Qn({
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, hT = /* @__PURE__ */ aT(rT, [["__scopeId", "data-v-59c108a8"]]);
+}, hT = /* @__PURE__ */ aT(rT, [["__scopeId", "data-v-eb51e2cf"]]);
 export {
   hT as Positions,
   hT as default
