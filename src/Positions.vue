@@ -20,10 +20,44 @@ const emit = defineEmits<{
   'row-click': [row: Position]
   'minimize': []
 }>()
-
+const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'cash_flow_on_entry', 'cash_flow_on_exercise'] as const
 // Query positions data with realtime updates - pass userId for access control
 const q = usePositionsQuery(props.accountId, props.userId)
+const sourcePositions = computed(() => {
+  // 1. Get raw data from the query (q.data.value)
+  const positions = q.data.value || [] 
+  
+  if (!positions.length) return []
+  
+  // 2. Log and proceed with truncation
+  if (positions.length > 0) {
+    console.log('✅ Raw data received. Starting truncation...')
+  }
 
+  return positions.map(p => {
+    // Create a mutable copy of the position object
+    const newP = { ...p }
+    
+    // Truncate decimal part for all numeric fields
+    for (const field of numericFields) {
+      // It is recommended to use an explicit 'as any' for dynamic property access/assignment in TypeScript
+      const value = (newP as any)[field] 
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        const decimalPart = value % 1
+        if (Math.abs(value) * 1/100 > decimalPart || value == 0)
+        {
+          (newP as any)[field] = Math.trunc(value)
+        }
+        else
+        {
+          (newP as any)[field] = value
+        }
+        
+      }
+    }
+    return newP
+  })
+})
 // Query thesis data for dropdowns
 const thesisQuery = useThesisQuery()
 
@@ -499,7 +533,7 @@ const columnDefs = computed<ColDef[]>(() => [
 const gridApi = ref<any | null>(null)
 const columnApiRef = ref<any | null>(null)
 const pinnedBottomRowDataRef = ref<any[]>([])
-const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'cash_flow_on_entry', 'cash_flow_on_exercise'] as const
+
 
 // Active filters tracking for tag UI
 type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'; value: string }
@@ -626,7 +660,7 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
 
 // Filter position data by account ID (client ID)
 const filteredPositions = computed(() => {
-  const positions = q.data.value || []
+  const positions = sourcePositions.value || []
   if (!props.accountId || props.accountId === 'demo') {
     return positions
   }
@@ -688,7 +722,7 @@ watch(visibleCols2, (cols) => {
 }, { deep: true })
 
 // Recalculate when upstream data changes
-watch(() => q.data.value, () => {
+watch(() => sourcePositions.value, () => {
   recalcPinnedTotals()
 })
 
@@ -719,12 +753,12 @@ watch(() => gridApi.value, (api) => {
 
 const groupByThesis = ref(false)
 const groupedData = computed(() => {
-  if (!groupByThesis.value || !q.data.value) {
-    return q.data.value || []
+  if (!groupByThesis.value || !sourcePositions.value) {
+    return sourcePositions.value || []
   }
   
   // Filter only positions with thesis assigned
-  const positionsWithThesis = q.data.value.filter(pos => pos.thesis && pos.thesis.id)
+  const positionsWithThesis = sourcePositions.value.filter(pos => pos.thesis && pos.thesis.id)
   
   // Group by thesis
   const grouped = new Map<string, Position[]>()
@@ -789,7 +823,7 @@ const groupedData = computed(() => {
 
 // Update the grid row data computed property
 const gridRowData = computed(() => {
-  return groupByThesis.value ? groupedData.value : (q.data.value || [])
+  return groupByThesis.value ? groupedData.value : (sourcePositions.value || [])
 })
 
 // Update the recalcPinnedTotals function to handle grouped data
@@ -804,7 +838,7 @@ function recalcPinnedTotals() {
   
   // Original totals logic for non-grouped view
   if (!api) {
-    const rows = q.data.value || []
+    const rows = sourcePositions.value || []
     const totals: any = { symbol: 'Total', asset_class: '' }
     for (const field of numericFields) {
       totals[field] = rows.reduce((sum: number, row: any) => {
@@ -1045,6 +1079,14 @@ function formatCurrency(value: number | string | null | undefined): string {
   if (value === null || value === undefined) return ''
   const num = typeof value === 'string' ? parseFloat(value) : value
   if (!Number.isFinite(num)) return ''
+  if (num % 1 == 0){
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(num)
+  }
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
