@@ -38815,7 +38815,7 @@ const n0 = { ref: "root" }, r0 = /* @__PURE__ */ Qn({
       { field: "market_value", label: "Market Value" },
       { field: "unrealized_pnl", label: "P&L Unrealized" },
       { field: "cash_flow_on_entry", label: "Entry cash flow" },
-      { field: "cash_flow_on_exercise", label: "Excercise cash flow" },
+      { field: "cash_flow_on_exercise", label: "If excercised cash flow" },
       { field: "be_price", label: "BE Price" }
     ];
     function d() {
@@ -39863,7 +39863,7 @@ const n0 = { ref: "root" }, r0 = /* @__PURE__ */ Qn({
   for (const [s, o] of t)
     i[s] = o;
   return i;
-}, gT = /* @__PURE__ */ lT(aT, [["__scopeId", "data-v-cefdfcef"]]);
+}, gT = /* @__PURE__ */ lT(aT, [["__scopeId", "data-v-6879ea43"]]);
 export {
   gT as Positions,
   gT as default
