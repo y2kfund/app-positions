@@ -856,7 +856,29 @@ watch(() => gridApi.value, (api) => {
   api.addEventListener?.('filterChanged', listener)
 }, { immediate: true })
 
-const groupByThesis = ref(false)
+// Group by thesis state with URL persistence
+function parseGroupByThesisFromUrl(): boolean {
+  const url = new URL(window.location.href)
+  return url.searchParams.get('group_by_thesis') === 'true'
+}
+
+function writeGroupByThesisToUrl(isGrouped: boolean) {
+  const url = new URL(window.location.href)
+  if (isGrouped) {
+    url.searchParams.set('group_by_thesis', 'true')
+  } else {
+    url.searchParams.delete('group_by_thesis')
+  }
+  window.history.replaceState({}, '', url.toString())
+}
+
+const groupByThesis = ref(parseGroupByThesisFromUrl())
+
+// Watch for changes and persist to URL
+watch(groupByThesis, (value) => {
+  writeGroupByThesisToUrl(value)
+}, { immediate: false })
+
 const groupedData = computed(() => {
   if (!groupByThesis.value || !sourcePositions.value) {
     return sourcePositions.value || []
