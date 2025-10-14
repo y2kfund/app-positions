@@ -5,7 +5,7 @@ import { AllCommunityModule } from 'ag-grid-community'
 import type { ColDef } from 'ag-grid-community'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
-import { usePositionsQuery, useThesisQuery, type Position, type Thesis, useSupabase } from '@y2kfund/core'
+import { usePositionsQuery, useThesisQuery, useThesisConnectionsQuery, extractSymbolRoot, type Position, type Thesis, type ThesisConnection, useSupabase } from '@y2kfund/core'
 import { useQueryClient } from '@tanstack/vue-query'
 import type { PositionsProps } from './index'
 
@@ -74,6 +74,14 @@ watch(() => thesisQuery.error.value, (error) => {
   if (error) {
     console.error('📊 Thesis query error:', error)
   }
+}, { immediate: true })
+
+// Query thesis connections data
+const thesisConnectionsQuery = useThesisConnectionsQuery()
+
+// Add debugging for thesis connections
+watch(() => thesisConnectionsQuery.data.value, (data) => {
+  console.log('📊 Thesis connections data updated:', data)
 }, { immediate: true })
 
 // Column metadata for visibility control
@@ -232,28 +240,28 @@ class ThesisCellEditor {
       
       console.log('📝 Thesis selection changed to:', this.currentValue)
       
-      // Get position ID from the row data
-      const positionId = this.params.data?.id
-      if (!positionId) {
-        console.error('No position ID found in row data:', this.params.data)
+      // Get symbol from the row data
+      const symbol = this.params.data?.symbol
+      if (!symbol) {
+        console.error('No symbol found in row data:', this.params.data)
+        return
+      }
+
+      // Extract symbol root
+      const symbolRoot = extractSymbolRoot(symbol)
+      if (!symbolRoot) {
+        console.error('Could not extract symbol root from:', symbol)
         return
       }
       
       // Call update function immediately
       try {
-        console.log('🚀 Updating thesis immediately for position:', positionId)
-        await updatePositionThesis(String(positionId), this.currentValue?.id || null)
+        console.log('🚀 Updating thesis for symbol root:', symbolRoot)
+        await updateThesisConnection(symbolRoot, this.currentValue?.id || null)
         
-        // Update the local data
-        this.params.data.thesis = this.currentValue
-        
-        // Refresh the cell to show the updated value
-        if (this.params.api && typeof this.params.api.refreshCells === 'function') {
-          this.params.api.refreshCells({ 
-            rowNodes: [this.params.node],
-            columns: ['thesis']
-          })
-        }
+        // Refresh positions data to show updated thesis for all matching symbols
+        queryClient.invalidateQueries({ queryKey: ['positions'] })
+        queryClient.invalidateQueries({ queryKey: ['thesisConnections'] })
         
         // Stop editing after successful update
         this.params.stopEditing()
@@ -294,8 +302,6 @@ class ThesisCellEditor {
     console.log('📝 Thesis editor attached, focusing select')
     if (this.eSelect) {
       this.eSelect.focus()
-      // Remove the showPicker() call to avoid the error
-      // The select will still be focused and ready for interaction
     }
   }
 
@@ -309,7 +315,6 @@ class ThesisCellEditor {
 
   destroy() {
     console.log('📝 Destroying thesis editor')
-    // Cleanup if needed
   }
 }
 
@@ -1271,22 +1276,36 @@ async function deleteThesis(id: string, title: string) {
   }
 }
 
-async function updatePositionThesis(positionId: string, thesisId: string | null) {
+async function updateThesisConnection(symbolRoot: string, thesisId: string | null) {
   try {
-    const { error } = await supabase
-      .schema('hf')
-      .from('positions')
-      .update({ thesis_id: thesisId })
-      .eq('id', positionId)
+    if (thesisId) {
+      // Upsert the connection
+      const { error } = await supabase
+        .schema('hf')
+        .from('positionsAndThesisConnection')
+        .upsert({
+          symbol_root: symbolRoot,
+          thesis_id: thesisId,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'symbol_root,thesis_id'
+        })
+      
+      if (error) throw error
+    } else {
+      // Delete all connections for this symbol root
+      const { error } = await supabase
+        .schema('hf')
+        .from('positionsAndThesisConnection')
+        .delete()
+        .eq('symbol_root', symbolRoot)
+      
+      if (error) throw error
+    }
     
-    if (error) throw error
-    
-    // Refresh positions data
-    queryClient.invalidateQueries({ queryKey: ['positions'] })
-    
-    showToast('success', 'Thesis Updated', 'Position thesis has been updated')
+    showToast('success', 'Thesis Updated', `All ${symbolRoot} positions have been updated`)
   } catch (error: any) {
-    console.error('Error updating position thesis:', error)
+    console.error('Error updating thesis connection:', error)
     showToast('error', 'Error', `Failed to update thesis: ${error.message}`)
     throw error
   }
