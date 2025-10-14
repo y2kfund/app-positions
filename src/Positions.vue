@@ -863,7 +863,31 @@ const groupedData = computed(() => {
   }
   
   // Filter only positions with thesis assigned
-  const positionsWithThesis = sourcePositions.value.filter(pos => pos.thesis && pos.thesis.id)
+  let positionsWithThesis = sourcePositions.value.filter(pos => pos.thesis && pos.thesis.id)
+  
+  // Apply external filters to positions before grouping
+  positionsWithThesis = positionsWithThesis.filter(position => {
+    // Check symbol filters
+    if (symbolTagFilters.value.length > 0) {
+      const symbolText = position.symbol
+      if (!symbolText) return false
+      
+      const tags = extractTagsFromSymbol(symbolText)
+      const symbolPass = symbolTagFilters.value.every(selectedTag => tags.includes(selectedTag))
+      if (!symbolPass) return false
+    }
+    
+    // Check thesis filters
+    if (thesisTagFilters.value.length > 0) {
+      const thesis = position.thesis
+      if (!thesis || !thesis.title) return false
+      
+      const thesisPass = thesisTagFilters.value.includes(thesis.title)
+      if (!thesisPass) return false
+    }
+    
+    return true
+  })
   
   // Group by thesis
   const grouped = new Map<string, Position[]>()
@@ -882,7 +906,7 @@ const groupedData = computed(() => {
   for (const [thesisId, positions] of grouped.entries()) {
     const thesis = positions[0].thesis
     
-    // Add thesis header row
+    // Add thesis header row with filtered position count
     result.push({
       isThesisHeader: true,
       thesis,
@@ -899,10 +923,10 @@ const groupedData = computed(() => {
       cash_flow_on_exercise: null
     })
     
-    // Add all positions for this thesis
+    // Add all filtered positions for this thesis
     result.push(...positions)
     
-    // Calculate totals for this thesis
+    // Calculate totals for filtered positions only
     const totals: any = {
       isThesisTotal: true,
       thesisId,
@@ -1320,6 +1344,11 @@ function isExternalFilterPresent(): boolean {
 }
 
 function doesExternalFilterPass(node: any): boolean {
+  // Always pass thesis header and total rows (structural rows for grouping)
+  if (node.data?.isThesisHeader || node.data?.isThesisTotal) {
+    return true
+  }
+  
   // Check symbol filters
   if (symbolTagFilters.value.length > 0) {
     const symbolText = node.data?.symbol
