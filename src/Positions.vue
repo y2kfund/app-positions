@@ -128,13 +128,15 @@ function writeVisibleColsToUrl(cols: ColumnField[]) {
 }
 
 // Filter URL helpers (fsym: symbol, fac: asset_class)
-function parseFiltersFromUrl(): { symbol?: string; asset_class?: string; legal_entity?: string } {
+function parseFiltersFromUrl(): { symbol?: string; asset_class?: string; legal_entity?: string; thesis?: string } {
   const url = new URL(window.location.href)
   const symbolParam = url.searchParams.get('all_cts_fi')
   const symbol = symbolParam ? symbolParam.split('-and-').join(',') : undefined
   const asset = url.searchParams.get('fac') || undefined
   const account = url.searchParams.get('all_cts_clientId') || undefined
-  return { symbol, asset_class: asset, legal_entity: account }
+  const thesisParam = url.searchParams.get('all_cts_thesis')
+  const thesis = thesisParam ? thesisParam.split('-and-').join(',') : undefined
+  return { symbol, asset_class: asset, legal_entity: account, thesis }
 }
 
 function writeFiltersToUrlFromModel(model: any) {
@@ -147,6 +149,13 @@ function writeFiltersToUrlFromModel(model: any) {
     // Only handle ag-Grid symbol filter if no external filters
     const sym = model?.symbol?.filter || ''
     if (sym) url.searchParams.set('all_cts_fi', sym); else url.searchParams.delete('all_cts_fi')
+  }
+  
+  // Handle external thesis filters
+  if (thesisTagFilters.value.length > 0) {
+    url.searchParams.set('all_cts_thesis', thesisTagFilters.value.join('-and-'))
+  } else {
+    url.searchParams.delete('all_cts_thesis')
   }
   
   // Handle other ag-Grid filters
@@ -165,14 +174,19 @@ function isColVisible(field: ColumnField): boolean {
 
 // Symbol tag filters for exact tag matching (supports multiple tags)
 const symbolTagFilters = ref<string[]>([])
+// Thesis tag filters for exact tag matching (supports multiple tags)
+const thesisTagFilters = ref<string[]>([])
 
 // Custom cell renderers
-// Update the thesis cell renderer to remove grouping indicator
+// Update the thesis cell renderer to show as clickable tag
 const thesisCellRenderer = (params: any) => {
   const thesis = params.value
   if (!thesis) return '<span style="color: #6c757d; font-style: italic;">No thesis</span>'
   
-  return `<span title="${thesis.description || ''}">${thesis.title}</span>`
+  const isSelected = thesisTagFilters.value.includes(thesis.title)
+  const className = isSelected ? 'thesis-tag thesis-tag-selected' : 'thesis-tag'
+  
+  return `<span class="${className}" title="${thesis.description || ''}">${thesis.title}</span>`
 }
 
 // Thesis cell editor as a proper ag-grid component class
@@ -581,6 +595,11 @@ function syncActiveFiltersFromGrid() {
     next.push({ field: 'symbol', value: symbolTagFilters.value.join(', ') })
   }
   
+  // Add external thesis filters if active (group all tags under one Thesis filter)
+  if (thesisTagFilters.value.length > 0) {
+    next.push({ field: 'thesis', value: thesisTagFilters.value.join(', ') })
+  }
+  
   if (api) {
     const model = api.getFilterModel?.() || {}
     const getFilterValue = (field: string) => model?.[field]?.filter || model?.[field]?.values || null
@@ -595,9 +614,12 @@ function syncActiveFiltersFromGrid() {
     if (typeof asset === 'string' && asset.length) next.push({ field: 'asset_class', value: asset })
     const account = getFilterValue('legal_entity')
     if (typeof account === 'string' && account.length) next.push({ field: 'legal_entity', value: account })
-    // ADD THIS LINE - Handle thesis filter
-    const thesis = getFilterValue('thesis')
-    if (typeof thesis === 'string' && thesis.length) next.push({ field: 'thesis', value: thesis })
+    
+    // Only add ag-Grid thesis filter if no external filters are active
+    if (thesisTagFilters.value.length === 0) {
+      const thesis = getFilterValue('thesis')
+      if (typeof thesis === 'string' && thesis.length) next.push({ field: 'thesis', value: thesis })
+    }
   }
   
   activeFilters.value = next
@@ -634,8 +656,26 @@ function handleThesisCellFilterClick(event: any) {
   const thesis = event?.value
   if (!thesis || !thesis.title) return
   
-  // Use the thesis title for filtering
-  handleCellFilterClick('thesis', thesis.title)
+  // Use tag-based filtering like Financial Instrument
+  const clickedTag = thesis.title
+  
+  // Toggle the tag: add if not present, remove if present
+  const currentIndex = thesisTagFilters.value.indexOf(clickedTag)
+  if (currentIndex >= 0) {
+    // Tag already exists, remove it
+    thesisTagFilters.value.splice(currentIndex, 1)
+  } else {
+    // Tag doesn't exist, add it
+    thesisTagFilters.value.push(clickedTag)
+  }
+  
+  // Trigger external filter
+  const api = event.api || gridApi.value
+  if (api && typeof api.onFilterChanged === 'function') {
+    api.onFilterChanged()
+  }
+  
+  syncActiveFiltersFromGrid()
 }
 
 function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis', value: any) {
@@ -662,8 +702,26 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
     }
     
     // URL update will be handled by the gridApi watcher via writeFiltersToUrlFromModel
+  } else if (field === 'thesis') {
+    // For thesis field, also use external filter for exact tag matching
+    const clickedTag = String(value).trim()
+    
+    // Toggle the tag: add if not present, remove if present
+    const currentIndex = thesisTagFilters.value.indexOf(clickedTag)
+    if (currentIndex >= 0) {
+      // Tag already exists, remove it
+      thesisTagFilters.value.splice(currentIndex, 1)
+    } else {
+      // Tag doesn't exist, add it
+      thesisTagFilters.value.push(clickedTag)
+    }
+    
+    // Trigger external filter
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
   } else {
-    // For other fields (including thesis), use normal ag-Grid filters
+    // For other fields, use normal ag-Grid filters
     const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
     currentModel[field] = { 
       filterType: 'text',
@@ -770,6 +828,18 @@ watch(symbolTagFilters, () => {
   const api = gridApi.value
   if (api && typeof api.refreshCells === 'function') {
     api.refreshCells({ columns: ['symbol'] })
+  }
+}, { deep: true })
+
+// Recalculate when external thesis filters change
+watch(thesisTagFilters, () => {
+  syncActiveFiltersFromGrid()
+  recalcPinnedTotals()
+  
+  // Force re-render of Thesis column to update selected tag styling
+  const api = gridApi.value
+  if (api && typeof api.refreshCells === 'function') {
+    api.refreshCells({ columns: ['thesis'] })
   }
 }, { deep: true })
 
@@ -1053,6 +1123,12 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'
     if (typeof api.onFilterChanged === 'function') {
       api.onFilterChanged()
     }
+  } else if (field === 'thesis') {
+    // Clear external thesis filters
+    thesisTagFilters.value = []
+    if (typeof api.onFilterChanged === 'function') {
+      api.onFilterChanged()
+    }
   } else {
     // Clear ag-Grid filter for other fields
     const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
@@ -1089,6 +1165,9 @@ function clearAllFilters() {
   
   // Clear external symbol filters
   symbolTagFilters.value = []
+  
+  // Clear external thesis filters
+  thesisTagFilters.value = []
   
   // Clear all ag-Grid filters
   if (typeof api.setFilterModel === 'function') {
@@ -1237,19 +1316,33 @@ function removeToast(id: number) {
 
 // External filter for symbol tags
 function isExternalFilterPresent(): boolean {
-  return symbolTagFilters.value.length > 0
+  return symbolTagFilters.value.length > 0 || thesisTagFilters.value.length > 0
 }
 
 function doesExternalFilterPass(node: any): boolean {
-  if (symbolTagFilters.value.length === 0) return true
+  // Check symbol filters
+  if (symbolTagFilters.value.length > 0) {
+    const symbolText = node.data?.symbol
+    if (!symbolText) return false
+    
+    const tags = extractTagsFromSymbol(symbolText)
+    
+    // ALL selected tags must be present in the symbol
+    const symbolPass = symbolTagFilters.value.every(selectedTag => tags.includes(selectedTag))
+    if (!symbolPass) return false
+  }
   
-  const symbolText = node.data?.symbol
-  if (!symbolText) return false
+  // Check thesis filters
+  if (thesisTagFilters.value.length > 0) {
+    const thesis = node.data?.thesis
+    if (!thesis || !thesis.title) return false
+    
+    // The thesis title must be in the selected thesis filters
+    const thesisPass = thesisTagFilters.value.includes(thesis.title)
+    if (!thesisPass) return false
+  }
   
-  const tags = extractTagsFromSymbol(symbolText)
-  
-  // ALL selected tags must be present in the symbol
-  return symbolTagFilters.value.every(selectedTag => tags.includes(selectedTag))
+  return true
 }
 
 // Grid ready handler
@@ -1265,6 +1358,10 @@ function onGridReady(params: any) {
     // For symbol filter from URL, use external filter
     symbolTagFilters.value = filters.symbol.split(',').map(s => s.trim())
   }
+  if (filters.thesis) {
+    // For thesis filter from URL, use external filter
+    thesisTagFilters.value = filters.thesis.split(',').map(s => s.trim())
+  }
   if (filters.asset_class) {
     model.asset_class = { type: 'equals', filter: filters.asset_class }
   }
@@ -1274,6 +1371,11 @@ function onGridReady(params: any) {
   
   if (Object.keys(model).length > 0) {
     params.api.setFilterModel(model)
+  }
+  
+  // Trigger external filter if symbol or thesis tags were set from URL
+  if ((symbolTagFilters.value.length > 0 || thesisTagFilters.value.length > 0) && typeof params.api.onFilterChanged === 'function') {
+    params.api.onFilterChanged()
   }
   
   syncActiveFiltersFromGrid()
@@ -1739,6 +1841,34 @@ h1 {
   background: #007bff !important;
   color: white !important;
   border-color: #0056b3 !important;
+}
+
+/* Thesis tags - similar styling to financial instrument tags */
+:deep(.thesis-tag) {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid #dbe2ea;
+  border-radius: 999px;
+  background: #f5f7fa;
+  color: #425466;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:deep(.thesis-tag:hover) {
+  background: #e8eef6;
+  border-color: #b8c5d1;
+}
+
+:deep(.thesis-tag-selected) {
+  background: #28a745 !important;
+  color: white !important;
+  border-color: #1e7e34 !important;
 }
 
 .filters-bar {
