@@ -917,10 +917,17 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'
     thesisTagFilters.value = []
   } else if (field === 'legal_entity') {
     accountFilter.value = null
-    // Remove account filter from URL
     const url = new URL(window.location.href)
     url.searchParams.delete('all_cts_clientId')
     window.history.replaceState({}, '', url.toString())
+    // --- ADD THIS ---
+    if (eventBus) {
+      eventBus.emit('account-filter-changed', {
+        accountId: null,
+        source: 'positions'
+      })
+    }
+    // --- END ---
   }
   updateFilters()
 }
@@ -929,12 +936,19 @@ function clearAllFilters() {
   symbolTagFilters.value = []
   thesisTagFilters.value = []
   accountFilter.value = null
-  // Remove all filter params from URL
   const url = new URL(window.location.href)
   url.searchParams.delete('all_cts_clientId')
   url.searchParams.delete('all_cts_fi')
   url.searchParams.delete('all_cts_thesis')
   window.history.replaceState({}, '', url.toString())
+  // --- ADD THIS ---
+  if (eventBus) {
+    eventBus.emit('account-filter-changed', {
+      accountId: null,
+      source: 'positions'
+    })
+  }
+  // --- END ---
   updateFilters()
 }
 
@@ -1148,7 +1162,17 @@ onBeforeUnmount(() => {
 function handleExternalAccountFilter(payload: { accountId: string | null, source: string }) {
   console.log('📍 [Positions] Received account filter:', payload)
   if (payload.source === 'positions') return
-  // Implement external filter logic here if needed
+
+  // Apply or clear the filter
+  accountFilter.value = payload.accountId
+  const url = new URL(window.location.href)
+  if (payload.accountId) {
+    url.searchParams.set('all_cts_clientId', payload.accountId)
+  } else {
+    url.searchParams.delete('all_cts_clientId')
+  }
+  window.history.replaceState({}, '', url.toString())
+  updateFilters()
 }
 
 function handleHeaderClick() {
