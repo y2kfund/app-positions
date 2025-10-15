@@ -1,0 +1,107 @@
+/* Tabulator theme overrides */
+.tabulator {
+  font-size: 0.875rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.tabulator-header {
+  background-color: #f8f9fa !important;
+  border-bottom: 2px solid #dee2e6 !important;
+}
+
+.tabulator-col {
+  border-right: 1px solid #dee2e6;
+  font-weight: 600;
+}
+
+.tabulator-row {
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.tabulator-row:hover {
+  background-color: #f8f9fa !important;
+}
+
+.tabulator-cell {
+  border-right: 1px solid #f1f3f5;
+  padding: 8px;
+}
+
+/* Financial Instrument tags */
+.fi-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid #dbe2ea;
+  border-radius: 999px;
+  background: #f5f7fa;
+  color: #425466;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 4px;
+}
+
+.fi-tag:hover {
+  background: #e8eef6;
+  border-color: #b8c5d1;
+}
+
+.fi-tag-selected {
+  background: #007bff !important;
+  color: white !important;
+  border-color: #0056b3 !important;
+}
+
+/* Thesis tags */
+.thesis-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid #dbe2ea;
+  border-radius: 999px;
+  background: #f5f7fa;
+  color: #425466;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.thesis-tag:hover {
+  background: #e8eef6;
+  border-color: #b8c5d1;
+}
+
+.thesis-tag-selected {
+  background: #28a745 !important;
+  color: white !important;
+  border-color: #1e7e34 !important;
+}
+
+/* P&L styling */
+.pnl-positive {
+  color: #28a745 !important;
+  font-weight: 600;
+}
+
+.pnl-negative {
+  color: #dc3545 !important;
+  font-weight: 600;
+}
+
+.pnl-zero {
+  color: #6c757d !important;
+}
+
+/* Bottom calc row (totals) */
+.tabulator-row.tabulator-calcs {
+  background-color: #f1f3f5 !important;
+  font-weight: 600;
+  border-top: 2px solid #dee2e6 !important;
+}

@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, computed, ref, watch, inject } from 'vue'
-import { AgGridVue } from 'ag-grid-vue3'
-import { AllCommunityModule } from 'ag-grid-community'
-import type { ColDef } from 'ag-grid-community'
-import 'ag-grid-community/styles/ag-grid.css'
-import 'ag-grid-community/styles/ag-theme-alpine.css'
+import { onMounted, onBeforeUnmount, computed, ref, watch, inject, nextTick } from 'vue'
+import { TabulatorFull as Tabulator } from 'tabulator-tables'
 import { usePositionsQuery, useThesisQuery, useThesisConnectionsQuery, extractSymbolRoot, type Position, type Thesis, type ThesisConnection, useSupabase } from '@y2kfund/core'
 import { useQueryClient } from '@tanstack/vue-query'
 import type { PositionsProps } from './index'
@@ -20,76 +16,53 @@ const emit = defineEmits<{
   'row-click': [row: Position]
   'minimize': []
 }>()
+
 const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'cash_flow_on_entry', 'cash_flow_on_exercise'] as const
-// Query positions data with realtime updates - pass userId for access control
+
+// Query positions data
 const q = usePositionsQuery(props.accountId, props.userId)
 const sourcePositions = computed(() => {
-  // 1. Get raw data from the query (q.data.value)
-  const positions = q.data.value || [] 
-  
+  const positions = q.data.value || []
   if (!positions.length) return []
   
-  // 2. Log and proceed with truncation
-  if (positions.length > 0) {
-    console.log('✅ Raw data received. Starting truncation...')
-  }
-
   return positions.map(p => {
-    // Create a mutable copy of the position object
     const newP = { ...p }
-    
-    // Truncate decimal part for all numeric fields
     for (const field of numericFields) {
-      // It is recommended to use an explicit 'as any' for dynamic property access/assignment in TypeScript
-      const value = (newP as any)[field] 
+      const value = (newP as any)[field]
       if (typeof value === 'number' && Number.isFinite(value)) {
         const decimalPart = value % 1
-        if (Math.abs(value) * 1/100 > decimalPart || value == 0)
-        {
+        if (Math.abs(value) * 1/100 > decimalPart || value == 0) {
           (newP as any)[field] = Math.trunc(value)
         }
-        else
-        {
-          (newP as any)[field] = value
-        }
-        
       }
     }
     return newP
   })
 })
-// Query thesis data for dropdowns
+
+// Query thesis data
 const thesisQuery = useThesisQuery()
-
-// Add debugging for thesis data
-watch(() => thesisQuery.data.value, (thesisData) => {
-  console.log('📊 Thesis data updated:', thesisData)
-}, { immediate: true })
-
-watch(() => thesisQuery.isLoading.value, (isLoading) => {
-  console.log('📊 Thesis loading state:', isLoading)
-}, { immediate: true })
-
-watch(() => thesisQuery.error.value, (error) => {
-  if (error) {
-    console.error('📊 Thesis query error:', error)
-  }
-}, { immediate: true })
-
-// Query thesis connections data
 const thesisConnectionsQuery = useThesisConnectionsQuery()
 
-// Add debugging for thesis connections
-watch(() => thesisConnectionsQuery.data.value, (data) => {
-  console.log('📊 Thesis connections data updated:', data)
-}, { immediate: true })
+// Tabulator instance
+const tableDiv = ref<HTMLDivElement | null>(null)
+let tabulator: Tabulator | null = null
 
-// Column metadata for visibility control
+// Symbol and thesis filters
+const symbolTagFilters = ref<string[]>([])
+const thesisTagFilters = ref<string[]>([])
+const groupByThesis = ref(false)
+
+// Active filters
+type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'; value: string }
+const activeFilters = ref<ActiveFilter[]>([])
+
+// Column visibility
 type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry' | 'cash_flow_on_exercise' | 'be_price' | 'thesis'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'thesis', label: 'Thesis' },
-  { field: 'symbol', label: 'Symbol' },
+  { field: 'symbol', label: 'Financial Instrument' },
   { field: 'asset_class', label: 'Asset Class' },
   { field: 'conid', label: 'Conid' },
   { field: 'undConid', label: 'Underlying Conid' },
@@ -105,527 +78,48 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'be_price', label: 'BE Price' }
 ]
 
-// URL param helpers
 function parseVisibleColsFromUrl(): ColumnField[] {
   const url = new URL(window.location.href)
   const colsParam = url.searchParams.get('position_cols')
   if (!colsParam) {
-    // Default visible columns (exclude asset_class, conid, undConid, multiplier, qty)
     return allColumnOptions
       .map(c => c.field)
       .filter(field => !['asset_class', 'conid', 'undConid', 'multiplier', 'qty'].includes(field))
   }
   const fromUrl = colsParam.split('-and-').map(s => s.trim()).filter(Boolean) as ColumnField[]
   const valid = new Set(allColumnOptions.map(c => c.field))
-  const filtered = fromUrl.filter(c => valid.has(c))
-  return filtered.length ? filtered : allColumnOptions.map(c => c.field)
-}
-
-function writeVisibleColsToUrl(cols: ColumnField[]) {
-  const url = new URL(window.location.href)
-  url.searchParams.set('position_cols', cols.join('-and-'))
-  window.history.replaceState({}, '', url.toString())
-}
-
-// Filter URL helpers (fsym: symbol, fac: asset_class)
-function parseFiltersFromUrl(): { symbol?: string; asset_class?: string; legal_entity?: string; thesis?: string } {
-  const url = new URL(window.location.href)
-  const symbolParam = url.searchParams.get('all_cts_fi')
-  const symbol = symbolParam ? symbolParam.split('-and-').join(',') : undefined
-  const asset = url.searchParams.get('fac') || undefined
-  const account = url.searchParams.get('all_cts_clientId') || undefined
-  const thesisParam = url.searchParams.get('all_cts_thesis')
-  const thesis = thesisParam ? thesisParam.split('-and-').join(',') : undefined
-  return { symbol, asset_class: asset, legal_entity: account, thesis }
-}
-
-function writeFiltersToUrlFromModel(model: any) {
-  const url = new URL(window.location.href)
-  
-  // Handle external symbol filters first
-  if (symbolTagFilters.value.length > 0) {
-    url.searchParams.set('all_cts_fi', symbolTagFilters.value.join('-and-'))
-  } else {
-    // Only handle ag-Grid symbol filter if no external filters
-    const sym = model?.symbol?.filter || ''
-    if (sym) url.searchParams.set('all_cts_fi', sym); else url.searchParams.delete('all_cts_fi')
-  }
-  
-  // Handle external thesis filters
-  if (thesisTagFilters.value.length > 0) {
-    url.searchParams.set('all_cts_thesis', thesisTagFilters.value.join('-and-'))
-  } else {
-    url.searchParams.delete('all_cts_thesis')
-  }
-  
-  // Handle other ag-Grid filters
-  const ac = model?.asset_class?.filter || ''
-  if (ac) url.searchParams.set('fac', ac); else url.searchParams.delete('fac')
-  const acc = model?.legal_entity?.filter || ''
-  if (acc) url.searchParams.set('all_cts_clientId', acc); else url.searchParams.delete('all_cts_clientId')
-  
-  window.history.replaceState({}, '', url.toString())
+  return fromUrl.filter(c => valid.has(c))
 }
 
 const visibleCols = ref<ColumnField[]>(parseVisibleColsFromUrl())
-function isColVisible(field: ColumnField): boolean {
-  return visibleCols.value.includes(field)
+
+// Helper functions
+function formatCurrency(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return ''
+  if (value % 1 == 0) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value)
+  }
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(value)
 }
 
-// Symbol tag filters for exact tag matching (supports multiple tags)
-const symbolTagFilters = ref<string[]>([])
-// Thesis tag filters for exact tag matching (supports multiple tags)
-const thesisTagFilters = ref<string[]>([])
-
-// Custom cell renderers
-// Update the thesis cell renderer to show as clickable tag
-const thesisCellRenderer = (params: any) => {
-  const thesis = params.value
-  if (!thesis) return '<span style="color: #6c757d; font-style: italic;">No thesis</span>'
-  
-  const isSelected = thesisTagFilters.value.includes(thesis.title)
-  const className = isSelected ? 'thesis-tag thesis-tag-selected' : 'thesis-tag'
-  
-  return `<span class="${className}" title="${thesis.description || ''}">${thesis.title}</span>`
+function formatNumber(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return ''
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  }).format(value)
 }
 
-// Thesis cell editor as a proper ag-grid component class
-class ThesisCellEditor {
-  private eGui!: HTMLElement
-  private eSelect!: HTMLSelectElement
-  private currentValue: any = null
-  private params: any
-
-  init(params: any) {
-    console.log('📝 Initializing thesis cell editor with value:', params.value)
-    
-    this.params = params
-    this.currentValue = params.value
-
-    // Create the select element
-    this.eSelect = document.createElement('select')
-    this.eSelect.style.width = '100%'
-    this.eSelect.style.height = '100%'
-    this.eSelect.style.border = 'none'
-    this.eSelect.style.outline = 'none'
-    this.eSelect.style.fontSize = '14px'
-
-    // Add options
-    const noThesisOption = document.createElement('option')
-    noThesisOption.value = ''
-    noThesisOption.textContent = 'No thesis'
-    this.eSelect.appendChild(noThesisOption)
-
-    // Get thesis options from cell editor params
-    const thesisOptions = params.thesisOptions || []
-    console.log('📊 Available thesis options:', thesisOptions)
-    
-    thesisOptions.forEach((thesis: Thesis) => {
-      const option = document.createElement('option')
-      option.value = thesis.id
-      option.textContent = thesis.title
-      if (this.currentValue && this.currentValue.id === thesis.id) {
-        option.selected = true
-      }
-      this.eSelect.appendChild(option)
-    })
-
-    // Set initial value
-    if (this.currentValue) {
-      this.eSelect.value = this.currentValue.id || ''
-    }
-
-    // Create container
-    this.eGui = document.createElement('div')
-    this.eGui.style.width = '100%'
-    this.eGui.style.height = '100%'
-    this.eGui.appendChild(this.eSelect)
-
-    // Handle value changes - UPDATE IMMEDIATELY
-    this.eSelect.addEventListener('change', async () => {
-      const selectedId = this.eSelect.value
-      const oldValue = this.currentValue
-      
-      if (selectedId) {
-        this.currentValue = thesisOptions.find((t: Thesis) => t.id === selectedId) || null
-      } else {
-        this.currentValue = null
-      }
-      
-      console.log('📝 Thesis selection changed to:', this.currentValue)
-      
-      // Get symbol from the row data
-      const symbol = this.params.data?.symbol
-      if (!symbol) {
-        console.error('No symbol found in row data:', this.params.data)
-        return
-      }
-
-      // Extract symbol root
-      const symbolRoot = extractSymbolRoot(symbol)
-      if (!symbolRoot) {
-        console.error('Could not extract symbol root from:', symbol)
-        return
-      }
-      
-      // Call update function immediately
-      try {
-        console.log('🚀 Updating thesis for symbol root:', symbolRoot)
-        await updateThesisConnection(symbolRoot, this.currentValue?.id || null)
-        
-        // Refresh positions data to show updated thesis for all matching symbols
-        queryClient.invalidateQueries({ queryKey: ['positions'] })
-        queryClient.invalidateQueries({ queryKey: ['thesisConnections'] })
-        
-        // Stop editing after successful update
-        this.params.stopEditing()
-        
-      } catch (error) {
-        console.error('❌ Failed to update thesis, reverting selection:', error)
-        
-        // Revert the selection on error
-        this.currentValue = oldValue
-        if (oldValue) {
-          this.eSelect.value = oldValue.id || ''
-        } else {
-          this.eSelect.value = ''
-        }
-      }
-    })
-
-    // Handle keydown events
-    this.eSelect.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        this.params.stopEditing()
-      } else if (event.key === 'Escape') {
-        this.params.stopEditing(true) // Cancel editing
-      }
-    })
-  }
-
-  getGui() {
-    return this.eGui
-  }
-
-  getValue() {
-    console.log('📝 Getting thesis editor value:', this.currentValue)
-    return this.currentValue
-  }
-
-  afterGuiAttached() {
-    console.log('📝 Thesis editor attached, focusing select')
-    if (this.eSelect) {
-      this.eSelect.focus()
-    }
-  }
-
-  isCancelBeforeStart() {
-    return false
-  }
-
-  isCancelAfterEnd() {
-    return false
-  }
-
-  destroy() {
-    console.log('📝 Destroying thesis editor')
-  }
-}
-
-// Move these outside the function to be available in component scope
-const supabase = useSupabase()
-const queryClient = useQueryClient()
-
-// Column definitions for ag-grid
-const columnDefs = computed<ColDef[]>(() => [
-  { 
-    field: 'legal_entity',
-    headerName: 'Account',
-    width: 160,
-    pinned: 'left' as const,
-    hide: !isColVisible('legal_entity'),
-    onCellClicked: (event: any) => {
-      // Don't allow filtering on header/total rows
-      if (event.data?.isThesisHeader || event.data?.isThesisTotal) return
-      handleCellFilterClick('legal_entity', event?.value)
-    }
-  },
-  { 
-    field: 'thesis',
-    headerName: 'Thesis',
-    width: 180,
-    hide: !isColVisible('thesis'),
-    cellRenderer: (params: any) => {
-      // Don't show thesis cell for header/total rows
-      if (params.data?.isThesisHeader || params.data?.isThesisTotal) {
-        return ''
-      }
-      return thesisCellRenderer(params)
-    },
-    cellEditor: ThesisCellEditor,
-    editable: (params: any) => {
-      // Only allow editing for regular position rows
-      return !params.data?.isThesisHeader && !params.data?.isThesisTotal
-    },
-    singleClickEdit: false,
-    cellEditorParams: {
-      thesisOptions: thesisQuery.data.value || []
-    },
-    valueGetter: (params: any) => params.data.thesis,
-    valueSetter: (params: any) => {
-      params.data.thesis = params.newValue
-      return true
-    },
-    getQuickFilterText: (params: any) => params.value?.title || '',
-    filterValueGetter: (params: any) => params.data.thesis?.title || '',
-    sortable: true,
-    onCellClicked: (event: any) => {
-      // Don't handle clicks on header/total rows
-      if (event.data?.isThesisHeader || event.data?.isThesisTotal) return
-      
-      if (!event.event?.detail || event.event.detail === 1) {
-        setTimeout(() => {
-          if (event.api && !event.api.getEditingCells().length) {
-            handleThesisCellFilterClick(event)
-          }
-        }, 200)
-      }
-    },
-    onCellDoubleClicked: (event: any) => {
-      // Don't allow editing header/total rows
-      if (event.data?.isThesisHeader || event.data?.isThesisTotal) return
-      
-      console.log('📝 Double-clicked thesis cell, starting edit mode')
-      if (event.api && typeof event.api.startEditingCell === 'function') {
-        event.api.startEditingCell({
-          rowIndex: event.rowIndex,
-          colKey: 'thesis'
-        })
-      }
-    }
-  },
-  { 
-    field: 'symbol', 
-    headerName: 'Financial Instrument',
-    width: 120,
-    pinned: 'left' as const,
-    hide: !isColVisible('symbol'),
-    cellRenderer: (params: any) => {
-      // For thesis header/total rows, show the symbol as-is
-      if (params.data?.isThesisHeader || params.data?.isThesisTotal) {
-        return `<span style="font-weight: 600; color: ${params.data?.isThesisHeader ? '#495057' : '#007bff'};">${params.value || ''}</span>`
-      }
-      return renderFinancialInstrumentCell(params.value)
-    },
-    onCellClicked: (event: any) => {
-      // Don't allow filtering on header/total rows
-      if (event.data?.isThesisHeader || event.data?.isThesisTotal) return
-      
-      const clickedTag = extractClickedTagText(event)
-      if (clickedTag) {
-        handleCellFilterClick('symbol', clickedTag)
-      }
-    }
-  },
-  { 
-    field: 'asset_class', 
-    headerName: 'Asset Class',
-    width: 100,
-    hide: !isColVisible('asset_class'),
-  },
-  { 
-    field: 'conid', 
-    headerName: 'Conid',
-    width: 120,
-    hide: !isColVisible('conid')
-  },
-  { 
-    field: 'undConid', 
-    headerName: 'Underlying Conid',
-    width: 140,
-    hide: !isColVisible('undConid')
-  },
-  { 
-    field: 'multiplier', 
-    headerName: 'Multiplier',
-    width: 110,
-    type: 'rightAligned',
-    hide: !isColVisible('multiplier'),
-    valueFormatter: (params: any) => {
-      if (params.data?.isThesisHeader) return ''
-      return formatNumber(params.value)
-    }
-  },
-  { 
-    field: 'qty', 
-    headerName: 'Qty',
-    width: 120,
-    type: 'rightAligned',
-    hide: !isColVisible('qty'),
-    valueFormatter: (params: any) => {
-      if (params.data?.isThesisHeader) return ''
-      return formatNumber(params.value)
-    }
-  },
-  { 
-    field: 'avgPrice', 
-    headerName: 'Avg Price',
-    width: 120,
-    type: 'rightAligned',
-    hide: !isColVisible('avgPrice'),
-    valueFormatter: (params: any) => {
-      if (params.data?.isThesisHeader) return ''
-      return formatCurrency(params.value)
-    }
-  },
-  { 
-    field: 'price', 
-    headerName: 'Market Price',
-    width: 130,
-    type: 'rightAligned',
-    hide: !isColVisible('price'),
-    valueFormatter: (params: any) => {
-      if (params.data?.isThesisHeader) return ''
-      return formatCurrency(params.value)
-    }
-  },
-  { 
-    field: 'market_price', 
-    headerName: 'Ul CM Price',
-    width: 130,
-    type: 'rightAligned',
-    hide: !isColVisible('market_price'),
-    valueFormatter: (params: any) => {
-      if (params.data?.isThesisHeader) return ''
-      if (params.value === null || params.value === undefined) return '-'
-      return formatCurrency(params.value)
-    },
-    cellStyle: { backgroundColor: '#f8f9fa' }
-  },
-  { 
-    field: 'market_value', 
-    headerName: 'Market Value',
-    width: 140,
-    type: 'rightAligned',
-    hide: !isColVisible('market_value'),
-    valueFormatter: (params: any) => {
-      if (params.data?.isThesisHeader) return ''
-      return formatCurrency(params.value)
-    }
-  },
-  { 
-    field: 'unrealized_pnl', 
-    headerName: 'P&L Unrealized',
-    width: 150,
-    type: 'rightAligned',
-    hide: !isColVisible('unrealized_pnl'),
-    valueFormatter: (params: any) => {
-      if (params.data?.isThesisHeader) return ''
-      return formatCurrency(params.value)
-    },
-    cellClassRules: {
-      'pnl-positive': (params: any) => !params.data?.isThesisHeader && params.value > 0,
-      'pnl-negative': (params: any) => !params.data?.isThesisHeader && params.value < 0,
-      'pnl-zero': (params: any) => !params.data?.isThesisHeader && params.value === 0
-    }
-  },
-  { 
-    field: 'cash_flow_on_entry', 
-    headerName: 'Entry cash flow',
-    width: 160,
-    type: 'rightAligned',
-    hide: !isColVisible('cash_flow_on_entry'),
-    valueFormatter: (params: any) => {
-      if (params.data?.isThesisHeader) return ''
-      return formatCurrency(params.value)
-    },
-    cellClassRules: {
-      'pnl-positive': (params: any) => !params.data?.isThesisHeader && params.value > 0,
-      'pnl-negative': (params: any) => !params.data?.isThesisHeader && params.value < 0,
-      'pnl-zero': (params: any) => !params.data?.isThesisHeader && params.value === 0
-    }
-  }, 
-  { 
-    field: 'cash_flow_on_exercise', 
-    headerName: 'If exercised cash flow',
-    width: 160,
-    type: 'rightAligned',
-    hide: !isColVisible('cash_flow_on_exercise'),
-    valueFormatter: (params: any) => {
-      if (params.data?.isThesisHeader) return ''
-      return formatCurrency(params.value)
-    },
-    cellClassRules: {
-      'pnl-positive': (params: any) => !params.data?.isThesisHeader && params.value > 0,
-      'pnl-negative': (params: any) => !params.data?.isThesisHeader && params.value < 0,
-      'pnl-zero': (params: any) => !params.data?.isThesisHeader && params.value === 0
-    },
-  },
-  { 
-    field: 'be_price', 
-    headerName: 'BE Price',
-    width: 120,
-    type: 'rightAligned',
-    hide: !isColVisible('be_price'),
-    valueFormatter: (params: any) => {
-      if (params.data?.isThesisHeader) return ''
-      // BE Price is only for options, so it might be null for stocks
-      if (params.value === null || params.value === undefined) return '-'
-      return formatCurrency(params.value)
-    }
-  }, 
-])
-
-// Grid API and totals that respect filtering/sorting
-const gridApi = ref<any | null>(null)
-const columnApiRef = ref<any | null>(null)
-const pinnedBottomRowDataRef = ref<any[]>([])
-
-
-// Active filters tracking for tag UI
-type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'; value: string }
-const activeFilters = ref<ActiveFilter[]>([])
-
-function syncActiveFiltersFromGrid() {
-  const api = gridApi.value
-  const next: ActiveFilter[] = []
-  
-  // Add external symbol filters if active (group all tags under one Financial Instrument filter)
-  if (symbolTagFilters.value.length > 0) {
-    next.push({ field: 'symbol', value: symbolTagFilters.value.join(', ') })
-  }
-  
-  // Add external thesis filters if active (group all tags under one Thesis filter)
-  if (thesisTagFilters.value.length > 0) {
-    next.push({ field: 'thesis', value: thesisTagFilters.value.join(', ') })
-  }
-  
-  if (api) {
-    const model = api.getFilterModel?.() || {}
-    const getFilterValue = (field: string) => model?.[field]?.filter || model?.[field]?.values || null
-    
-    // Only add ag-Grid symbol filter if no external filters are active
-    if (symbolTagFilters.value.length === 0) {
-      const symbol = getFilterValue('symbol')
-      if (typeof symbol === 'string' && symbol.length) next.push({ field: 'symbol', value: symbol })
-    }
-    
-    const asset = getFilterValue('asset_class')
-    if (typeof asset === 'string' && asset.length) next.push({ field: 'asset_class', value: asset })
-    const account = getFilterValue('legal_entity')
-    if (typeof account === 'string' && account.length) next.push({ field: 'legal_entity', value: account })
-    
-    // Only add ag-Grid thesis filter if no external filters are active
-    if (thesisTagFilters.value.length === 0) {
-      const thesis = getFilterValue('thesis')
-      if (typeof thesis === 'string' && thesis.length) next.push({ field: 'thesis', value: thesis })
-    }
-  }
-  
-  activeFilters.value = next
-}
-
-// Helper function to extract tags from symbol text
 function extractTagsFromSymbol(symbolText: string): string[] {
   if (!symbolText) return []
   const text = String(symbolText)
@@ -637,226 +131,961 @@ function extractTagsFromSymbol(symbolText: string): string[] {
   const strike = strikeMatch?.[1] ?? ''
   const codeMatch = text.match(/\b(\d{6})[CP]/)
   const expiry = codeMatch ? formatExpiryFromYyMmDd(codeMatch[1]) : ''
-  
   return [base, expiry, strike, right].filter(Boolean)
 }
 
-function handleThesisCellFilterClick(event: any) {
-  // Don't trigger filter when in edit mode or when clicking select elements
-  if (event.event?.target?.tagName === 'SELECT' || 
-      event.event?.target?.closest('.ag-cell-edit-input')) {
-    return
-  }
-  
-  // Check if any cell is currently being edited
-  if (event.api && event.api.getEditingCells().length > 0) {
-    return
-  }
-  
-  const thesis = event?.value
-  if (!thesis || !thesis.title) return
-  
-  // Use tag-based filtering like Financial Instrument
-  const clickedTag = thesis.title
-  
-  // Toggle the tag: add if not present, remove if present
-  const currentIndex = thesisTagFilters.value.indexOf(clickedTag)
-  if (currentIndex >= 0) {
-    // Tag already exists, remove it
-    thesisTagFilters.value.splice(currentIndex, 1)
-  } else {
-    // Tag doesn't exist, add it
-    thesisTagFilters.value.push(clickedTag)
-  }
-  
-  // Trigger external filter
-  const api = event.api || gridApi.value
-  if (api && typeof api.onFilterChanged === 'function') {
-    api.onFilterChanged()
-  }
-  
-  syncActiveFiltersFromGrid()
+function formatExpiryFromYyMmDd(code: string): string {
+  if (!code || code.length !== 6) return ''
+  const yy = code.substring(0, 2)
+  const mm = code.substring(2, 4)
+  const dd = code.substring(4, 6)
+  return `20${yy}-${mm}-${dd}`
 }
 
-function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis', value: any) {
-  const api = gridApi.value
-  if (!api || value === undefined || value === null) return
-  
-  if (field === 'symbol') {
-    // For symbol field, use external filter for exact tag matching
-    const clickedTag = String(value).trim()
-    
-    // Toggle the tag: add if not present, remove if present
-    const currentIndex = symbolTagFilters.value.indexOf(clickedTag)
-    if (currentIndex >= 0) {
-      // Tag already exists, remove it
-      symbolTagFilters.value.splice(currentIndex, 1)
+// Thesis cell editor
+const supabase = useSupabase()
+const queryClient = useQueryClient()
+
+async function updateThesisConnection(symbolRoot: string, thesisId: string | null) {
+  try {
+    if (thesisId) {
+      const { error } = await supabase
+        .schema('hf')
+        .from('positionsAndThesisConnection')
+        .upsert({
+          symbol_root: symbolRoot,
+          thesis_id: thesisId,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'symbol_root,thesis_id'
+        })
+      if (error) throw error
     } else {
-      // Tag doesn't exist, add it
-      symbolTagFilters.value.push(clickedTag)
+      const { error } = await supabase
+        .schema('hf')
+        .from('positionsAndThesisConnection')
+        .delete()
+        .eq('symbol_root', symbolRoot)
+      if (error) throw error
     }
     
-    // Trigger external filter
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
-    }
+    // Invalidate queries and wait for them to complete
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['positions'] }),
+      queryClient.invalidateQueries({ queryKey: ['thesisConnections'] })
+    ])
     
-    // URL update will be handled by the gridApi watcher via writeFiltersToUrlFromModel
-  } else if (field === 'thesis') {
-    // For thesis field, also use external filter for exact tag matching
-    const clickedTag = String(value).trim()
-    
-    // Toggle the tag: add if not present, remove if present
-    const currentIndex = thesisTagFilters.value.indexOf(clickedTag)
-    if (currentIndex >= 0) {
-      // Tag already exists, remove it
-      thesisTagFilters.value.splice(currentIndex, 1)
-    } else {
-      // Tag doesn't exist, add it
-      thesisTagFilters.value.push(clickedTag)
-    }
-    
-    // Trigger external filter
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
-    }
-  } else {
-    // For other fields, use normal ag-Grid filters
-    const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
-    currentModel[field] = { 
-      filterType: 'text',
-      type: 'equals', 
-      filter: String(value) 
-    }
-    
-    if (typeof api.setFilterModel === 'function') {
-      api.setFilterModel(currentModel)
-    }
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
-    }
-    
-    // Emit event for account filter changes
-    if (field === 'legal_entity' && eventBus) {
-      console.log('📍 [Positions] Emitting account filter change')
-      eventBus.emit('account-filter-changed', {
-        accountId: String(value),
-        source: 'positions'
-      })
-    }
+    showToast('success', 'Thesis Updated', `All ${symbolRoot} positions have been updated`)
+  } catch (error: any) {
+    console.error('Error updating thesis connection:', error)
+    showToast('error', 'Error', `Failed to update thesis: ${error.message}`)
+    throw error
   }
-  
-  syncActiveFiltersFromGrid()
 }
 
-// Filter position data by account ID (client ID)
-const filteredPositions = computed(() => {
-  const positions = sourcePositions.value || []
-  if (!props.accountId || props.accountId === 'demo') {
-    return positions
+// Toast system
+type ToastType = 'success' | 'error' | 'warning' | 'info'
+interface Toast {
+  id: number
+  type: ToastType
+  title: string
+  message?: string
+}
+
+const toasts = ref<Toast[]>([])
+let toastIdCounter = 0
+
+function showToast(type: ToastType, title: string, message?: string) {
+  const id = toastIdCounter++
+  toasts.value.push({ id, type, title, message })
+  setTimeout(() => removeToast(id), 5000)
+}
+
+function removeToast(id: number) {
+  const index = toasts.value.findIndex(t => t.id === id)
+  if (index !== -1) toasts.value.splice(index, 1)
+}
+
+// Initialize Tabulator
+const isTabulatorReady = ref(false)
+
+function initializeTabulator() {
+  if (!tableDiv.value) return
+
+  // Destroy existing table before creating new one
+  if (tabulator) {
+    try { tabulator.destroy() } catch (error) {}
+    tabulator = null
   }
-  
-  return positions.filter(p => p.legal_entity?.id === props.accountId)
+
+  isTabulatorReady.value = false // Reset before creating
+
+  // Determine if we should show bottom calcs
+  const shouldShowBottomCalcs = !groupByThesis.value
+
+  const columns: any[] = [
+    {
+      title: 'Account',
+      field: 'legal_entity',
+      minWidth: 120,
+      frozen: true,
+      visible: visibleCols.value.includes('legal_entity'),
+      // Set bottom calc during initialization
+      bottomCalc: shouldShowBottomCalcs ? () => 'All Accounts' : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? () => 'All Accounts' : undefined,
+      formatter: (cell: any) => {
+        const data = cell.getRow().getData()
+        if (data?._isThesisGroup) {
+          return cell.getValue() || ''
+        }
+        const value = cell.getValue()
+        if (typeof value === 'object' && value !== null) {
+          return value.name || value.id || ''
+        }
+        return value || ''
+      },
+      cellClick: (e: any, cell: any) => {
+        if (cell.getRow().getData()?._isThesisGroup) return
+        const value = cell.getValue()
+        const accountName = typeof value === 'object' && value !== null ? (value.name || value.id) : value
+        handleCellFilterClick('legal_entity', accountName)
+      }
+    },
+    {
+      title: 'Financial Instrument',
+      field: 'symbol',
+      minWidth: 200,
+      frozen: true,
+      visible: visibleCols.value.includes('symbol'),
+      formatter: (cell: any) => {
+        const data = cell.getRow().getData()
+        if (data?._isThesisGroup) {
+          const color = '#495057'
+          const symbolValue = cell.getValue() || ''
+          return `<span style="font-weight: 600; color: ${color};">${symbolValue}</span>`
+        }
+        const tags = extractTagsFromSymbol(cell.getValue())
+        const selectedTags = new Set(symbolTagFilters.value)
+        return tags.map(tag => {
+          const isSelected = selectedTags.has(tag)
+          const className = isSelected ? 'fi-tag fi-tag-selected' : 'fi-tag'
+          return `<span class="${className}">${tag}</span>`
+        }).join(' ')
+      },
+      cellClick: (e: any, cell: any) => {
+        const data = cell.getRow().getData()
+        if (data?._isThesisGroup) return
+        const target = (e as MouseEvent).target as HTMLElement
+        const tagSpan = target.closest('.fi-tag')
+        if (tagSpan) {
+          const clickedTag = tagSpan.textContent?.trim()
+          if (clickedTag) handleCellFilterClick('symbol', clickedTag)
+        }
+      }
+    },
+    {
+      title: 'Thesis',
+      field: 'thesis',
+      minWidth: 150,
+      visible: visibleCols.value.includes('thesis'),
+      formatter: (cell: any) => {
+        try {
+          const data = cell.getRow().getData()
+          if (data?._isThesisGroup) return ''
+          const thesis = cell.getValue()
+          if (!thesis) return '<span style="color: #6c757d; font-style: italic;">No thesis</span>'
+          const isSelected = thesisTagFilters.value.includes(thesis.title)
+          const className = isSelected ? 'thesis-tag thesis-tag-selected' : 'thesis-tag'
+          return `<span class="${className}" title="${thesis.description || ''}">${thesis.title}</span>`
+        } catch (error) {
+          console.warn('Thesis formatter error:', error)
+          return '<span style="color: #6c757d; font-style: italic;">Error</span>'
+        }
+      },
+      accessor: (value: any) => {
+        return value?.id || ''
+      },
+      editor: 'list',
+      editorParams: (cell: any) => {
+        try {
+          const options: any = { '': 'No thesis' }
+          ;(thesisQuery.data.value || []).forEach((t: Thesis) => {
+            options[t.id] = t.title
+          })
+          
+          const rowData = cell.getRow().getData()
+          const currentThesis = rowData.thesis
+          const currentValue = currentThesis?.id || ''
+          
+          return {
+            values: options,
+            defaultValue: currentValue,
+            clearable: true,
+            verticalNavigation: "editor"
+          }
+        } catch (error) {
+          console.warn('Thesis editor params error:', error)
+          return { values: { '': 'No thesis' } }
+        }
+      },
+      mutator: (value: any, data: any, type: string) => {
+        try {
+          if (typeof value === 'object' && value !== null) {
+            return value
+          }
+          if (typeof value === 'string') {
+            if (!value) return null
+            const thesis = (thesisQuery.data.value || []).find((t: Thesis) => t.id === value)
+            return thesis ? { id: thesis.id, title: thesis.title, description: thesis.description } : null
+          }
+          return null
+        } catch (error) {
+          console.warn('Thesis mutator error:', error)
+          return null
+        }
+      },
+      cellEdited: async (cell: any) => {
+        try {
+          const newThesis = cell.getValue()
+          const newThesisId = newThesis?.id || null
+          const rowData = cell.getRow().getData()
+          const symbol = rowData?.symbol
+          
+          if (!symbol) return
+          
+          const symbolRoot = extractSymbolRoot(symbol)
+          if (!symbolRoot) return
+          
+          await updateThesisConnection(symbolRoot, newThesisId)
+        } catch (error) {
+          console.error('Failed to update thesis:', error)
+          try {
+            cell.restoreOldValue()
+          } catch (revertError) {
+            console.warn('Could not revert cell value:', revertError)
+          }
+        }
+      },
+      cellClick: (e: any, cell: any) => {
+        try {
+          const data = cell.getRow().getData()
+          if (data?._isThesisGroup) return
+          if (e.detail === 1) {
+            setTimeout(() => handleThesisCellFilterClick(cell), 200)
+          }
+        } catch (error) {
+          console.warn('Thesis cell click error:', error)
+        }
+      },
+      cellDblClick: (e: any, cell: any) => {
+        try {
+          const data = cell.getRow().getData()
+          if (!data?._isThesisGroup) {
+            cell.edit()
+          }
+        } catch (error) {
+          console.warn('Thesis cell double click error:', error)
+        }
+      }
+    },
+    {
+      title: 'Asset Class',
+      field: 'asset_class',
+      minWidth: 100,
+      visible: visibleCols.value.includes('asset_class'),
+      formatter: (cell: any) => {
+        const data = cell.getRow().getData()
+        if (data?._isThesisGroup) return ''
+        return cell.getValue() || ''
+      }
+    },
+    {
+      title: 'Conid',
+      field: 'conid',
+      minWidth: 80,
+      visible: visibleCols.value.includes('conid'),
+      formatter: (cell: any) => {
+        const data = cell.getRow().getData()
+        if (data?._isThesisGroup) return ''
+        return cell.getValue() || ''
+      }
+    },
+    {
+      title: 'Underlying Conid',
+      field: 'undConid',
+      minWidth: 110,
+      visible: visibleCols.value.includes('undConid'),
+      formatter: (cell: any) => {
+        const data = cell.getRow().getData()
+        if (data?._isThesisGroup) return ''
+        return cell.getValue() || ''
+      }
+    },
+    {
+      title: 'Multiplier',
+      field: 'multiplier',
+      minWidth: 80,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('multiplier'),
+      // Set bottom calc during initialization
+      bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
+      formatter: (cell: any) => {
+        if (cell.getRow().getData()?._isThesisGroup) return ''
+        return formatNumber(cell.getValue())
+      }
+    },
+    {
+      title: 'Qty',
+      field: 'qty',
+      minWidth: 70,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('qty'),
+      // Set bottom calc during initialization
+      bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
+      formatter: (cell: any) => {
+        if (cell.getRow().getData()?._isThesisGroup) return formatNumber(cell.getValue())
+        return formatNumber(cell.getValue())
+      }
+    },
+    {
+      title: 'Avg Price',
+      field: 'avgPrice',
+      minWidth: 90,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('avgPrice'),
+      formatter: (cell: any) => {
+        if (cell.getRow().getData()?._isThesisGroup) return ''
+        return formatCurrency(cell.getValue())
+      }
+    },
+    {
+      title: 'Market Price',
+      field: 'price',
+      minWidth: 100,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('price'),
+      formatter: (cell: any) => {
+        if (cell.getRow().getData()?._isThesisGroup) return ''
+        return formatCurrency(cell.getValue())
+      }
+    },
+    {
+      title: 'Ul CM Price',
+      field: 'market_price',
+      minWidth: 100,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('market_price'),
+      formatter: (cell: any) => {
+        if (cell.getRow().getData()?._isThesisGroup) return ''
+        const value = cell.getValue()
+        return value === null || value === undefined ? '-' : formatCurrency(value)
+      }
+    },
+    {
+      title: 'Market Value',
+      field: 'market_value',
+      minWidth: 110,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('market_value'),
+      // Set bottom calc during initialization
+      bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      formatter: (cell: any) => {
+        const data = cell.getRow().getData()
+        if (data?._isThesisGroup) return formatCurrency(cell.getValue())
+        return formatCurrency(cell.getValue())
+      }
+    },
+    {
+      title: 'P&L Unrealized',
+      field: 'unrealized_pnl',
+      minWidth: 120,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('unrealized_pnl'),
+      // Set bottom calc during initialization
+      bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      formatter: (cell: any) => {
+        const value = cell.getValue()
+        let className = ''
+        if (value > 0) className = 'pnl-positive'
+        else if (value < 0) className = 'pnl-negative'
+        else className = 'pnl-zero'
+        return `<span class="${className}">${formatCurrency(value)}</span>`
+      }
+    },
+    {
+      title: 'Entry cash flow',
+      field: 'cash_flow_on_entry',
+      minWidth: 120,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('cash_flow_on_entry'),
+      // Set bottom calc during initialization
+      bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      formatter: (cell: any) => {
+        const value = cell.getValue()
+        let className = ''
+        if (value > 0) className = 'pnl-positive'
+        else if (value < 0) className = 'pnl-negative'
+        else className = 'pnl-zero'
+        return `<span class="${className}">${formatCurrency(value)}</span>`
+      }
+    },
+    {
+      title: 'If exercised cash flow',
+      field: 'cash_flow_on_exercise',
+      minWidth: 130,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('cash_flow_on_exercise'),
+      // Set bottom calc during initialization
+      bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      formatter: (cell: any) => {
+        const value = cell.getValue()
+        let className = ''
+        if (value > 0) className = 'pnl-positive'
+        else if (value < 0) className = 'pnl-negative'
+        else className = 'pnl-zero'
+        return `<span class="${className}">${formatCurrency(value)}</span>`
+      }
+    },
+    {
+      title: 'BE Price',
+      field: 'be_price',
+      minWidth: 100,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('be_price'),
+      formatter: (cell: any) => {
+        const value = cell.getValue()
+        return value === null || value === undefined ? '-' : formatNumber(value)
+      }
+    }
+  ]
+
+  const tabulatorConfig: any = {
+    data: gridRowData.value,
+    columns,
+    layout: 'fitColumns',
+    height: '100%',
+    renderHorizontal: 'basic',
+    renderVertical: 'basic',
+    placeholder: 'No positions available',
+    columnDefaults: {
+      resizable: true,
+      headerSort: true,
+      vertAlign: 'middle'
+    },
+    virtualDom: false,
+    pagination: true,
+    paginationSize: 100,
+    paginationSizeSelector: [50, 100, 200, 500],
+    rowFormatter: (row: any) => {
+      try {
+        const data = row.getData()
+        const element = row.getElement()
+        
+        if (data?._isThesisGroup && element) {
+          element.style.backgroundColor = '#f8f9fa'
+          element.style.fontWeight = 'bold'
+          element.style.borderTop = '2px solid #dee2e6'
+        }
+      } catch (error) {
+        console.warn('Row formatter error:', error)
+      }
+    },
+    rowClick: (e: any, row: any) => {
+      try {
+        const data = row.getData()
+        if (!data._isThesisGroup) {
+          emit('row-click', data)
+          if (props.onRowClick) props.onRowClick(data)
+        }
+      } catch (error) {
+        console.warn('Row click error:', error)
+      }
+    }
+  }
+
+  // Enable tree view when grouping by thesis
+  if (groupByThesis.value) {
+    tabulatorConfig.dataTree = true
+    tabulatorConfig.dataTreeChildField = '_children'
+    tabulatorConfig.dataTreeStartExpanded = true
+    tabulatorConfig.dataTreeChildIndent = 20
+    tabulatorConfig.dataTreeElementColumn = 'symbol'
+    tabulatorConfig.pagination = false
+  }
+
+  try {
+    tabulator = new Tabulator(tableDiv.value, tabulatorConfig)
+    tabulator.on('tableBuilt', () => {
+      isTabulatorReady.value = true
+      setTimeout(() => {
+        updateFilters()
+        toggleBottomCalc()
+      }, 50)
+    })
+  } catch (error) {
+    console.error('Error creating Tabulator:', error)
+  }
+}
+
+// Update data
+const gridRowData = computed(() => {
+  if (!groupByThesis.value) {
+    return sourcePositions.value || []
+  }
+  return groupedHierarchicalData.value
 })
 
-// Column metadata for visibility control
-type ColumnField2 = 'id' | 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry' | 'cash_flow_on_exercise' | 'be_price'
-const allColumnOptions2: Array<{ field: ColumnField2; label: string }> = [
-  { field: 'legal_entity', label: 'Account' },
-  { field: 'symbol', label: 'Symbol' },
-  { field: 'asset_class', label: 'Asset Class' },
-  { field: 'conid', label: 'Conid' },
-  { field: 'undConid', label: 'Underlying Conid' },
-  { field: 'multiplier', label: 'Multiplier' },
-  { field: 'qty', label: 'Qty' },
-  { field: 'avgPrice', label: 'Avg Price' },
-  { field: 'price', label: 'Market Price' },
-  { field: 'market_price', label: 'Ul CM Price' },
-  { field: 'market_value', label: 'Market Value' },
-  { field: 'unrealized_pnl', label: 'P&L Unrealized' },
-  { field: 'cash_flow_on_entry', label: 'Entry cash flow' },
-  { field: 'cash_flow_on_exercise', label: 'If exercised cash flow' },
-  { field: 'be_price', label: 'BE Price' }
-]
-
-const visibleCols2 = ref<ColumnField2[]>(parseVisibleColsFromUrl2())
-function isColVisible2(field: ColumnField2): boolean {
-  return visibleCols2.value.includes(field)
-}
-
-// URL param helpers
-function parseVisibleColsFromUrl2(): ColumnField2[] {
-  const url = new URL(window.location.href)
-  const colsParam = url.searchParams.get('position_cols')
-  if (!colsParam) {
-    // Default visible columns (exclude asset_class, conid, undConid, multiplier, qty)
-    return allColumnOptions2
-      .map(c => c.field)
-      .filter(field => !['asset_class', 'conid', 'undConid', 'multiplier', 'qty'].includes(field))
+const groupedHierarchicalData = computed(() => {
+  if (!groupByThesis.value || !sourcePositions.value || !thesisQuery.data.value) {
+    return sourcePositions.value || []
   }
-  const fromUrl = colsParam.split('-and-').map(s => s.trim()).filter(Boolean) as ColumnField2[]
-  const valid = new Set(allColumnOptions2.map(c => c.field))
-  const filtered = fromUrl.filter(c => valid.has(c))
-  return filtered.length ? filtered : allColumnOptions2.map(c => c.field)
+
+  // --- ADD THIS BLOCK ---
+  let positionsWithThesis = sourcePositions.value.filter(pos => pos.thesis && pos.thesis.id)
+
+  // Apply account filter
+  if (accountFilter.value) {
+    positionsWithThesis = positionsWithThesis.filter(position => {
+      const accountVal = typeof position.legal_entity === 'object' && position.legal_entity !== null
+        ? (position.legal_entity.name || position.legal_entity.id)
+        : position.legal_entity
+      return accountVal === accountFilter.value
+    })
+  }
+  // --- END BLOCK ---
+
+  // Apply symbol and thesis filters
+  positionsWithThesis = positionsWithThesis.filter(position => {
+    if (symbolTagFilters.value.length > 0) {
+      const symbolText = position.symbol
+      if (!symbolText) return false
+      const tags = extractTagsFromSymbol(symbolText)
+      const symbolPass = symbolTagFilters.value.every(selectedTag => tags.includes(selectedTag))
+      if (!symbolPass) return false
+    }
+
+    if (thesisTagFilters.value.length > 0) {
+      const thesis = position.thesis
+      if (!thesis || !thesis.title) return false
+      const thesisPass = thesisTagFilters.value.includes(thesis.title)
+      if (!thesisPass) return false
+    }
+
+    return true
+  })
+  
+  // Build thesis hierarchy map
+  const thesisMap = new Map<string, any>()
+  ;(thesisQuery.data.value || []).forEach((t: Thesis) => {
+    thesisMap.set(t.id, { ...t })
+  })
+  
+  // Group positions by thesis
+  const positionsByThesis = new Map<string, Position[]>()
+  positionsWithThesis.forEach(position => {
+    const thesisId = position.thesis.id
+    if (!positionsByThesis.has(thesisId)) {
+      positionsByThesis.set(thesisId, [])
+    }
+    positionsByThesis.get(thesisId)!.push(position)
+  })
+  
+  // Build all thesis groups (including parents without direct positions)
+  const allThesisGroups = new Map<string, any>()
+  
+  // Helper function to create a thesis group
+  function createThesisGroup(thesisId: string, positions: Position[] = []) {
+    const thesis = thesisMap.get(thesisId)
+    if (!thesis) return null
+    
+    const thesisGroup = {
+      id: `thesis-${thesisId}`,
+      _isThesisGroup: true,
+      thesis,
+      symbol: `📋 ${thesis.title}`,
+      legal_entity: `${positions.length} position${positions.length !== 1 ? 's' : ''}`,
+      _children: positions.map(p => ({
+        ...p,
+        id: `pos-${p.conid}-${p.internal_account_id}`
+      }))
+    }
+    
+    // Calculate totals for the thesis group from direct positions
+    for (const field of numericFields) {
+      ;(thesisGroup as any)[field] = positions.reduce((sum: number, pos: any) => {
+        const value = pos[field]
+        return sum + (typeof value === 'number' && Number.isFinite(value) ? value : 0)
+      }, 0)
+    }
+    
+    return thesisGroup
+  }
+  
+  // Helper function to aggregate child values into parent
+  function aggregateChildValues(parentGroup: any, childGroup: any) {
+    for (const field of numericFields) {
+      const parentValue = (parentGroup as any)[field] || 0
+      const childValue = (childGroup as any)[field] || 0
+      ;(parentGroup as any)[field] = parentValue + childValue
+    }
+  }
+  
+  // First pass: Create groups for all theses that have positions OR have children with positions
+  positionsByThesis.forEach((positions, thesisId) => {
+    const group = createThesisGroup(thesisId, positions)
+    if (group) {
+      allThesisGroups.set(thesisId, group)
+    }
+  })
+  
+  // Second pass: Ensure parent thesis exist (even without direct positions)
+  const thesisIdsWithData = new Set(allThesisGroups.keys())
+  
+  function ensureParentExists(thesisId: string): void {
+    const thesis = thesisMap.get(thesisId)
+    if (!thesis || !thesis.parent_thesis_id) return
+    
+    const parentId = thesis.parent_thesis_id
+    
+    // If parent doesn't exist, create it
+    if (!allThesisGroups.has(parentId)) {
+      const parentGroup = createThesisGroup(parentId, [])
+      if (parentGroup) {
+        allThesisGroups.set(parentId, parentGroup)
+      }
+    }
+    
+    // Recursively ensure grandparents exist
+    ensureParentExists(parentId)
+  }
+  
+  // Ensure all parent theses exist
+  thesisIdsWithData.forEach(thesisId => {
+    ensureParentExists(thesisId)
+  })
+  
+  // Third pass: Build the hierarchy and aggregate values
+  const childThesisMap = new Map<string, any[]>()
+  
+  allThesisGroups.forEach((group, thesisId) => {
+    const thesis = thesisMap.get(thesisId)
+    if (!thesis) return
+    
+    if (thesis.parent_thesis_id && allThesisGroups.has(thesis.parent_thesis_id)) {
+      // This is a child thesis with an existing parent
+      if (!childThesisMap.has(thesis.parent_thesis_id)) {
+        childThesisMap.set(thesis.parent_thesis_id, [])
+      }
+      childThesisMap.get(thesis.parent_thesis_id)!.push(group)
+    }
+  })
+  
+  // Fourth pass: Attach children to parents and aggregate values
+  const processedParents = new Set<string>()
+  
+  function attachChildrenAndAggregate(parentId: string): void {
+    if (processedParents.has(parentId)) return
+    processedParents.add(parentId)
+    
+    const parentGroup = allThesisGroups.get(parentId)
+    if (!parentGroup) return
+    
+    const children = childThesisMap.get(parentId) || []
+    
+    // First, recursively process all children
+    children.forEach(child => {
+      attachChildrenAndAggregate(child.thesis.id)
+    })
+    
+    // Then attach children and aggregate their values
+    if (children.length > 0) {
+      // Update the position count to include child positions
+      const totalPositions = parentGroup._children.length + 
+        children.reduce((sum, child) => {
+          const childPositionCount = child.legal_entity.match(/\d+/)?.[0] || '0'
+          return sum + parseInt(childPositionCount)
+        }, 0)
+      
+      parentGroup.legal_entity = `${totalPositions} position${totalPositions !== 1 ? 's' : ''}`
+      
+      // Aggregate child values into parent
+      children.forEach(child => {
+        aggregateChildValues(parentGroup, child)
+      })
+      
+      // Add children to parent
+      parentGroup._children = [...parentGroup._children, ...children]
+    }
+  }
+  
+  // Process all root theses (and their descendants)
+  allThesisGroups.forEach((group, thesisId) => {
+    const thesis = thesisMap.get(thesisId)
+    if (thesis && !thesis.parent_thesis_id) {
+      attachChildrenAndAggregate(thesisId)
+    }
+  })
+  
+  // Fifth pass: Collect root thesis groups
+  const rootThesisGroups: any[] = []
+  allThesisGroups.forEach((group, thesisId) => {
+    const thesis = thesisMap.get(thesisId)
+    if (thesis && !thesis.parent_thesis_id) {
+      rootThesisGroups.push(group)
+    }
+  })
+  
+  return rootThesisGroups
+})
+
+// Update filters to work with tree structure
+function updateFilters() {
+  if (!tabulator || !isTabulatorReady.value) return
+
+  try {
+    if (groupByThesis.value) {
+      tabulator.replaceData(gridRowData.value)
+    } else {
+      tabulator.clearFilter()
+
+      tabulator.setFilter((data: any) => {
+        if (!data) return false
+
+        // Account filter
+        if (accountFilter.value) {
+          // Support both string and object for legal_entity
+          const accountVal = typeof data.legal_entity === 'object' && data.legal_entity !== null
+            ? (data.legal_entity.name || data.legal_entity.id)
+            : data.legal_entity
+          if (accountVal !== accountFilter.value) return false
+        }
+
+        // Symbol filter
+        if (symbolTagFilters.value.length > 0) {
+          const symbolText = data.symbol
+          if (!symbolText) return false
+          const tags = extractTagsFromSymbol(symbolText)
+          const symbolPass = symbolTagFilters.value.every(selectedTag => tags.includes(selectedTag))
+          if (!symbolPass) return false
+        }
+
+        // Thesis filter
+        if (thesisTagFilters.value.length > 0) {
+          const thesis = data.thesis
+          if (!thesis || !thesis.title) return false
+          const thesisPass = thesisTagFilters.value.includes(thesis.title)
+          if (!thesisPass) return false
+        }
+
+        return true
+      })
+    }
+
+    syncActiveFiltersFromTable()
+    nextTick(() => {
+      if (tabulator) toggleBottomCalc()
+    })
+  } catch (error) {
+    console.warn('Error in updateFilters:', error)
+  }
 }
 
-function writeVisibleColsToUrl2(cols: ColumnField2[]) {
+function syncActiveFiltersFromTable() {
+  const next: ActiveFilter[] = []
+  if (accountFilter.value) {
+    next.push({ field: 'legal_entity', value: accountFilter.value })
+  }
+  if (symbolTagFilters.value.length > 0) {
+    next.push({ field: 'symbol', value: symbolTagFilters.value.join(', ') })
+  }
+  if (thesisTagFilters.value.length > 0) {
+    next.push({ field: 'thesis', value: thesisTagFilters.value.join(', ') })
+  }
+  activeFilters.value = next
+}
+
+function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis') {
+  if (field === 'symbol') {
+    symbolTagFilters.value = []
+  } else if (field === 'thesis') {
+    thesisTagFilters.value = []
+  } else if (field === 'legal_entity') {
+    accountFilter.value = null
+    // Remove account filter from URL
+    const url = new URL(window.location.href)
+    url.searchParams.delete('all_cts_clientId')
+    window.history.replaceState({}, '', url.toString())
+  }
+  updateFilters()
+}
+
+function clearAllFilters() {
+  symbolTagFilters.value = []
+  thesisTagFilters.value = []
+  accountFilter.value = null
+  // Remove all filter params from URL
+  const url = new URL(window.location.href)
+  url.searchParams.delete('all_cts_clientId')
+  url.searchParams.delete('all_cts_fi')
+  url.searchParams.delete('all_cts_thesis')
+  window.history.replaceState({}, '', url.toString())
+  updateFilters()
+}
+
+// Column visibility popup
+const showColumnsPopup = ref(false)
+const columnsBtnRef = ref<HTMLElement | null>(null)
+const columnsPopupRef = ref<HTMLElement | null>(null)
+
+function toggleColumnsPopup() {
+  showColumnsPopup.value = !showColumnsPopup.value
+}
+
+function closeColumnsPopup() {
+  showColumnsPopup.value = false
+}
+
+function handleClickOutside(event: Event) {
+  if (showColumnsPopup.value && 
+      columnsPopupRef.value && 
+      columnsBtnRef.value &&
+      !columnsPopupRef.value.contains(event.target as Node) && 
+      !columnsBtnRef.value.contains(event.target as Node)) {
+    closeColumnsPopup()
+  }
+}
+
+// Watch for BOTH data ready AND DOM ready
+const isTableInitialized = ref(false)
+
+watch([() => q.isSuccess.value, tableDiv], async ([isSuccess, divRef]) => {
+  if (isSuccess && divRef && !isTableInitialized.value) {
+    // Wait for next tick to ensure DOM is fully ready
+    await nextTick()
+    console.log('🚀 Initializing Tabulator with data:', gridRowData.value.length, 'rows')
+    initializeTabulator()
+    isTableInitialized.value = true
+  }
+}, { immediate: true })
+
+watch(gridRowData, async (newData) => {
+  if (!tabulator || !newData) return
+  
+  try {
+    // Check if the table structure needs to change (grouping vs non-grouping)
+    const needsRebuild = (groupByThesis.value && !tabulator.options.dataTree) || 
+                        (!groupByThesis.value && tabulator.options.dataTree)
+    
+    if (needsRebuild) {
+      // Rebuild the table when switching between grouped/non-grouped views
+      initializeTabulator()
+    } else {
+      // For simple data updates, just replace the data
+      tabulator.replaceData(newData)
+    }
+    
+    // Update calculations after data change
+    await nextTick()
+    toggleBottomCalc()
+  } catch (error) {
+    console.warn('Error updating table data:', error)
+    // If there's an error, rebuild the table as fallback
+    try {
+      initializeTabulator()
+    } catch (rebuildError) {
+      console.error('Failed to rebuild table:', rebuildError)
+    }
+  }
+}, { deep: true })
+
+watch(visibleCols, async (cols) => {
+  // Write to URL first
+  writeVisibleColsToUrl(cols)
+  
+  if (!tabulator) return
+  
+  try {
+    // For column visibility changes, it's safest to rebuild the table
+    // This prevents virtual DOM conflicts completely
+    initializeTabulator()
+  } catch (error) {
+    console.warn('Error updating column visibility:', error)
+  }
+}, { deep: true })
+
+watch(symbolTagFilters, () => {
+  writeFiltersToUrl()
+  if (tabulator && isTabulatorReady.value) {
+    updateFilters()
+    tabulator.redraw(true)
+  }
+}, { deep: true })
+
+watch(thesisTagFilters, () => {
+  writeFiltersToUrl()
+  updateFilters()
+  if (tabulator) {
+    tabulator.redraw(true)
+  }
+}, { deep: true })
+
+watch(groupByThesis, async (value) => {
+  writeGroupByThesisToUrl(value)
+  if (tabulator) {
+    tabulator.destroy()
+    tabulator = null
+  }
+  await nextTick()
+  initializeTabulator()
+  // Do NOT call updateFilters() here!
+})
+
+// Add URL synchronization for column visibility
+function writeVisibleColsToUrl(cols: ColumnField[]) {
   const url = new URL(window.location.href)
   url.searchParams.set('position_cols', cols.join('-and-'))
   window.history.replaceState({}, '', url.toString())
 }
 
-// Persist visibility to URL and update grid when changed
-watch(visibleCols2, (cols) => {
-  writeVisibleColsToUrl2(cols)
-  for (const opt of allColumnOptions2) {
-    setColumnVisibility(opt.field, isColVisible2(opt.field))
-  }
-}, { deep: true })
+// Add URL synchronization for filters
+function parseFiltersFromUrl(): { symbol?: string; asset_class?: string; legal_entity?: string; thesis?: string } {
+  const url = new URL(window.location.href)
+  const symbolParam = url.searchParams.get('all_cts_fi')
+  const symbol = symbolParam ? symbolParam.split('-and-').join(',') : undefined
+  const asset = url.searchParams.get('fac') || undefined
+  const account = url.searchParams.get('all_cts_clientId') || undefined
+  const thesisParam = url.searchParams.get('all_cts_thesis')
+  const thesis = thesisParam ? thesisParam.split('-and-').join(',') : undefined
+  return { symbol, asset_class: asset, legal_entity: account, thesis }
+}
 
-// Recalculate when upstream data changes
-watch(() => sourcePositions.value, () => {
-  recalcPinnedTotals()
-})
-
-// Recalculate when external symbol filters change
-watch(symbolTagFilters, () => {
-  syncActiveFiltersFromGrid()
-  recalcPinnedTotals()
+function writeFiltersToUrl() {
+  const url = new URL(window.location.href)
   
-  // Force re-render of Financial Instrument column to update selected tag styling
-  const api = gridApi.value
-  if (api && typeof api.refreshCells === 'function') {
-    api.refreshCells({ columns: ['symbol'] })
+  // Handle symbol filters
+  if (symbolTagFilters.value.length > 0) {
+    url.searchParams.set('all_cts_fi', symbolTagFilters.value.join('-and-'))
+  } else {
+    url.searchParams.delete('all_cts_fi')
   }
-}, { deep: true })
-
-// Recalculate when external thesis filters change
-watch(thesisTagFilters, () => {
-  syncActiveFiltersFromGrid()
-  recalcPinnedTotals()
   
-  // Force re-render of Thesis column to update selected tag styling
-  const api = gridApi.value
-  if (api && typeof api.refreshCells === 'function') {
-    api.refreshCells({ columns: ['thesis'] })
+  // Handle thesis filters
+  if (thesisTagFilters.value.length > 0) {
+    url.searchParams.set('all_cts_thesis', thesisTagFilters.value.join('-and-'))
+  } else {
+    url.searchParams.delete('all_cts_thesis')
   }
-}, { deep: true })
+  
+  window.history.replaceState({}, '', url.toString())
+}
 
-// Keep active filter tags in sync whenever filters change via UI
-watch(() => gridApi.value, (api) => {
-  if (!api) return
-  const listener = () => {
-    syncActiveFiltersFromGrid()
-    // Persist filter model to URL
-    const model = api.getFilterModel?.() || {}
-    writeFiltersToUrlFromModel(model)
-    recalcPinnedTotals()
-  }
-  api.addEventListener?.('filterChanged', listener)
-}, { immediate: true })
-
-// Group by thesis state with URL persistence
+// Add URL synchronization for group by thesis
 function parseGroupByThesisFromUrl(): boolean {
   const url = new URL(window.location.href)
   return url.searchParams.get('group_by_thesis') === 'true'
@@ -872,222 +1101,35 @@ function writeGroupByThesisToUrl(isGrouped: boolean) {
   window.history.replaceState({}, '', url.toString())
 }
 
-const groupByThesis = ref(parseGroupByThesisFromUrl())
+// Initialize group by thesis from URL
+//const groupByThesis = ref(parseGroupByThesisFromUrl())
 
-// Watch for changes and persist to URL
-watch(groupByThesis, (value) => {
-  writeGroupByThesisToUrl(value)
-}, { immediate: false })
-
-const groupedData = computed(() => {
-  if (!groupByThesis.value || !sourcePositions.value) {
-    return sourcePositions.value || []
-  }
-  
-  // Filter only positions with thesis assigned
-  let positionsWithThesis = sourcePositions.value.filter(pos => pos.thesis && pos.thesis.id)
-  
-  // Apply external filters to positions before grouping
-  positionsWithThesis = positionsWithThesis.filter(position => {
-    // Check symbol filters
-    if (symbolTagFilters.value.length > 0) {
-      const symbolText = position.symbol
-      if (!symbolText) return false
-      
-      const tags = extractTagsFromSymbol(symbolText)
-      const symbolPass = symbolTagFilters.value.every(selectedTag => tags.includes(selectedTag))
-      if (!symbolPass) return false
-    }
-    
-    // Check thesis filters
-    if (thesisTagFilters.value.length > 0) {
-      const thesis = position.thesis
-      if (!thesis || !thesis.title) return false
-      
-      const thesisPass = thesisTagFilters.value.includes(thesis.title)
-      if (!thesisPass) return false
-    }
-    
-    return true
-  })
-  
-  // Group by thesis
-  const grouped = new Map<string, Position[]>()
-  
-  positionsWithThesis.forEach(position => {
-    const thesisId = position.thesis.id
-    if (!grouped.has(thesisId)) {
-      grouped.set(thesisId, [])
-    }
-    grouped.get(thesisId)!.push(position)
-  })
-  
-  // Create flat array with thesis groups and their totals
-  const result: any[] = []
-  
-  for (const [thesisId, positions] of grouped.entries()) {
-    const thesis = positions[0].thesis
-    
-    // Add thesis header row with filtered position count
-    result.push({
-      isThesisHeader: true,
-      thesis,
-      symbol: `📋 ${thesis.title}`,
-      legal_entity: `${positions.length} position${positions.length !== 1 ? 's' : ''}`,
-      asset_class: '',
-      // Set all numeric fields to empty/null for header
-      qty: null,
-      avgPrice: null,
-      price: null,
-      market_value: null,
-      unrealized_pnl: null,
-      cash_flow_on_entry: null,
-      cash_flow_on_exercise: null
-    })
-    
-    // Add all filtered positions for this thesis
-    result.push(...positions)
-    
-    // Calculate totals for filtered positions only
-    const totals: any = {
-      isThesisTotal: true,
-      thesisId,
-      symbol: `Total for ${thesis.title}`,
-      legal_entity: '',
-      asset_class: '',
-      thesis: null
-    }
-    
-    for (const field of numericFields) {
-      totals[field] = positions.reduce((sum: number, pos: any) => {
-        const value = pos[field]
-        const num = typeof value === 'number' && Number.isFinite(value) ? value : 0
-        return sum + num
-      }, 0)
-    }
-    
-    result.push(totals)
-  }
-  
-  return result
-})
-
-// Update the grid row data computed property
-const gridRowData = computed(() => {
-  return groupByThesis.value ? groupedData.value : (sourcePositions.value || [])
-})
-
-// Update the recalcPinnedTotals function to handle grouped data
-function recalcPinnedTotals() {
-  const api = gridApi.value
-  
-  if (groupByThesis.value) {
-    // When grouping by thesis, don't show overall pinned totals
-    pinnedBottomRowDataRef.value = []
-    return
-  }
-  
-  // Original totals logic for non-grouped view
-  if (!api) {
-    const rows = sourcePositions.value || []
-    const totals: any = { symbol: 'Total', asset_class: '' }
-    for (const field of numericFields) {
-      totals[field] = rows.reduce((sum: number, row: any) => {
-        const v = row?.[field]
-        const n = typeof v === 'number' && Number.isFinite(v) ? v : 0
-        return sum + n
-      }, 0)
-    }
-    pinnedBottomRowDataRef.value = [totals]
-    return
-  }
-
-  const totals: any = { symbol: 'Total', asset_class: '' }
-  for (const field of numericFields) totals[field] = 0
-
-  api.forEachNodeAfterFilterAndSort((node: any) => {
-    const data = node.data || {}
-    // Skip thesis header and total rows when calculating overall totals
-    if (data.isThesisHeader || data.isThesisTotal) return
-    
-    for (const field of numericFields) {
-      const v = data?.[field]
-      const n = typeof v === 'number' && Number.isFinite(v) ? v : 0
-      totals[field] += n
-    }
-  })
-
-  pinnedBottomRowDataRef.value = [totals]
-}
-
-// Update the rowClicked function to handle grouped rows
-function rowClicked(position: Position) {
-  // Don't emit row click for thesis header/total rows
-  if ((position as any).isThesisHeader || (position as any).isThesisTotal) {
-    return
-  }
-  
-  emit('row-click', position)
-  if (props.onRowClick) {
-    props.onRowClick(position)
-  }
-}
-
-function setColumnVisibility(field: string, visible: boolean) {
-  const api = gridApi.value
-  if (!api) return
-  
-  try {
-    if (typeof api.setColumnsVisible === 'function') {
-      api.setColumnsVisible([field], visible)
-    } else if (typeof api.setColumnVisible === 'function') {
-      api.setColumnVisible(field, visible)
-    }
-  } catch (error) {
-    console.warn('Could not set column visibility:', error)
-  }
-}
-
-// Column visibility controls
-const showColumnsPopup = ref(false)
-const columnsBtnRef = ref<HTMLElement | null>(null)
-const columnsPopupRef = ref<HTMLElement | null>(null)
-
-function toggleColumnsPopup() {
-  showColumnsPopup.value = !showColumnsPopup.value
-}
-
-function closeColumnsPopup() {
-  showColumnsPopup.value = false
-}
-
-// Close popup when clicking outside
-function handleClickOutside(event: Event) {
-  if (showColumnsPopup.value && 
-      columnsPopupRef.value && 
-      columnsBtnRef.value &&
-      !columnsPopupRef.value.contains(event.target as Node) && 
-      !columnsBtnRef.value.contains(event.target as Node)) {
-    closeColumnsPopup()
-  }
-}
-
-// Persist visibility to URL and update grid when changed
-watch(visibleCols, (cols) => {
-  writeVisibleColsToUrl(cols)
-  for (const opt of allColumnOptions) {
-    setColumnVisibility(opt.field, isColVisible(opt.field))
-  }
-}, { deep: true })
-
-// Inject event bus
+// Lifecycle
 const eventBus = inject<any>('eventBus')
 
-// Add listener for external filter changes
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
-  
-  // Listen for account filter changes from other components
+
+  // Initialize filters from URL
+  const filters = parseFiltersFromUrl()
+  if (filters.symbol) symbolTagFilters.value = filters.symbol.split(',').map(s => s.trim())
+  if (filters.thesis) thesisTagFilters.value = filters.thesis.split(',').map(s => s.trim())
+  if (filters.legal_entity) accountFilter.value = filters.legal_entity
+
+  // --- ADD THIS LINE ---
+  groupByThesis.value = parseGroupByThesisFromUrl()
+  // --- END ---
+
+  // Try to initialize if data is already loaded
+  if (q.isSuccess.value && tableDiv.value && !isTableInitialized.value) {
+    await nextTick()
+    console.log('🚀 Initializing Tabulator on mount with data:', gridRowData.value.length, 'rows')
+    initializeTabulator()
+    isTableInitialized.value = true
+  }
+
+  updateFilters()
+
   if (eventBus) {
     eventBus.on('account-filter-changed', handleExternalAccountFilter)
   }
@@ -1095,370 +1137,133 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
-  
-  // Clean up event listener
+  if (tabulator) {
+    tabulator.destroy()
+  }
   if (eventBus) {
     eventBus.off('account-filter-changed', handleExternalAccountFilter)
   }
 })
 
-// Handle external account filter changes
 function handleExternalAccountFilter(payload: { accountId: string | null, source: string }) {
   console.log('📍 [Positions] Received account filter:', payload)
-  
-  // Ignore if this component is the source
   if (payload.source === 'positions') return
-  
-  const api = gridApi.value
-  if (!api) {
-    console.warn('📍 [Positions] Grid API not ready')
-    return
-  }
-  
-  if (payload.accountId) {
-    // Apply filter
-    const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
-    currentModel.legal_entity = { 
-      filterType: 'text',
-      type: 'equals', 
-      filter: payload.accountId 
-    }
-    
-    console.log('📍 [Positions] Applying filter model:', currentModel)
-    
-    if (typeof api.setFilterModel === 'function') {
-      api.setFilterModel(currentModel)
-    }
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
-    }
-    
-    // Update URL
-    writeFiltersToUrlFromModel(currentModel)
-  } else {
-    // Clear filter
-    const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
-    delete currentModel.legal_entity
-    
-    console.log('📍 [Positions] Clearing account filter')
-    
-    if (typeof api.setFilterModel === 'function') {
-      api.setFilterModel(currentModel)
-    }
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
-    }
-    
-    // Update URL
-    writeFiltersToUrlFromModel(currentModel)
-  }
-  
-  syncActiveFiltersFromGrid()
+  // Implement external filter logic here if needed
 }
 
-// Update the handleCellFilterClick function to emit events
-
-// Update clearFilter to emit events
-function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis') {
-  const api = gridApi.value
-  if (!api) return
-  
-  if (field === 'symbol') {
-    // Clear external symbol filters
-    symbolTagFilters.value = []
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
-    }
-  } else if (field === 'thesis') {
-    // Clear external thesis filters
-    thesisTagFilters.value = []
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
-    }
+function handleHeaderClick() {
+  // Try to navigate if router is available
+  if (typeof window !== 'undefined' && (window as any).$router) {
+    (window as any).$router.push('/positions')
   } else {
-    // Clear ag-Grid filter for other fields
-    const currentModel = (api.getFilterModel && api.getFilterModel()) || {}
-    delete currentModel[field]
-    
-    if (typeof api.setFilterModel === 'function') {
-      api.setFilterModel(currentModel)
+    // Fallback to regular navigation
+    window.location.href = '/positions'
+  }
+}
+
+// Remove the toggleBottomCalc function completely since we're setting it up during initialization
+// Or keep it simple for just redrawing if needed
+function toggleBottomCalc() {
+  if (!tabulator || !isTabulatorReady.value) return
+  try {
+    tabulator.redraw()
+  } catch (error) {
+    console.warn('Error in toggleBottomCalc:', error)
+  }
+}
+
+// Filter handlers
+function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis', value: any) {
+  if (field === 'symbol') {
+    const tag = String(value).trim()
+    const currentIndex = symbolTagFilters.value.indexOf(tag)
+    if (currentIndex >= 0) {
+      symbolTagFilters.value.splice(currentIndex, 1)
+    } else {
+      symbolTagFilters.value.push(tag)
     }
-    if (typeof api.onFilterChanged === 'function') {
-      api.onFilterChanged()
+    updateFilters()
+    return
+  } else if (field === 'thesis') {
+    const thesisTitle = value?.title || String(value)
+    const currentIndex = thesisTagFilters.value.indexOf(thesisTitle)
+    if (currentIndex >= 0) {
+      thesisTagFilters.value.splice(currentIndex, 1)
+    } else {
+      thesisTagFilters.value.push(thesisTitle)
     }
-    
-    // Emit event for account filter clear
-    if (field === 'legal_entity' && eventBus) {
-      console.log('📍 [Positions] Clearing account filter via event')
+    updateFilters()
+    return
+  } else if (field === 'legal_entity') {
+    const accountId = String(value)
+    accountFilter.value = accountId // <-- Track filter
+    const url = new URL(window.location.href)
+    url.searchParams.set('all_cts_clientId', accountId)
+    window.history.replaceState({}, '', url.toString())
+
+    updateFilters() // <-- Only call updateFilters, don't set Tabulator filter directly
+
+    if (eventBus) {
       eventBus.emit('account-filter-changed', {
-        accountId: null,
+        accountId,
         source: 'positions'
       })
     }
+    return
   }
-  
-  syncActiveFiltersFromGrid()
+  // ...existing code for asset_class if needed...
 }
 
-// Update clearAllFilters to emit events
-function clearAllFilters() {
-  const api = gridApi.value
-  if (!api) return
-  
-  // Check if account filter was active
-  const currentModel = api.getFilterModel?.() || {}
-  const hadAccountFilter = !!currentModel.legal_entity
-  
-  // Clear external symbol filters
-  symbolTagFilters.value = []
-  
-  // Clear external thesis filters
-  thesisTagFilters.value = []
-  
-  // Clear all ag-Grid filters
-  if (typeof api.setFilterModel === 'function') {
-    api.setFilterModel({})
-  }
-  if (typeof api.onFilterChanged === 'function') {
-    api.onFilterChanged()
-  }
-  
-  // Emit event if account filter was cleared
-  if (hadAccountFilter && eventBus) {
-    eventBus.emit('account-filter-changed', {
-      accountId: null,
-      source: 'positions'
-    })
-  }
-  
-  syncActiveFiltersFromGrid()
-}
+const accountFilter = ref<string | null>(null)
 
-// Add these helper functions before columnDefs
-function formatCurrency(value: number | string | null | undefined): string {
-  if (value === null || value === undefined) return ''
-  const num = typeof value === 'string' ? parseFloat(value) : value
-  if (!Number.isFinite(num)) return ''
-  if (num % 1 == 0){
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(num)
-  }
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(num)
-}
-
-function formatNumber(value: number | string | null | undefined): string {
-  if (value === null || value === undefined) return ''
-  const num = typeof value === 'string' ? parseFloat(value) : value
-  if (!Number.isFinite(num)) return ''
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-  }).format(num)
-}
-
-function formatExpiryFromYyMmDd(code: string): string {
-  if (!code || code.length !== 6) return ''
-  const yy = code.substring(0, 2)
-  const mm = code.substring(2, 4)
-  const dd = code.substring(4, 6)
-  return `20${yy}-${mm}-${dd}`
-}
-
-function renderFinancialInstrumentCell(symbolText: string): string {
-  if (!symbolText) return ''
-  
-  const tags = extractTagsFromSymbol(symbolText)
-  const selectedTags = new Set(symbolTagFilters.value)
-  
-  return tags.map(tag => {
-    const isSelected = selectedTags.has(tag)
-    const className = isSelected ? 'fi-tag fi-tag-selected' : 'fi-tag'
-    return `<span class="${className}">${tag}</span>`
-  }).join(' ')
-}
-
-function extractClickedTagText(event: any): string | null {
-  const target = event.event?.target
-  if (!target) return null
-  
-  const tagSpan = target.closest('.fi-tag')
-  if (!tagSpan) return null
-  
-  return tagSpan.textContent?.trim() || null
-}
-
-// Keep only the updateThesisConnection function (around line 1279)
-async function updateThesisConnection(symbolRoot: string, thesisId: string | null) {
-  try {
-    if (thesisId) {
-      // Upsert the connection
-      const { error } = await supabase
-        .schema('hf')
-        .from('positionsAndThesisConnection')
-        .upsert({
-          symbol_root: symbolRoot,
-          thesis_id: thesisId,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'symbol_root,thesis_id'
-        })
-      
-      if (error) throw error
-    } else {
-      // Delete all connections for this symbol root
-      const { error } = await supabase
-        .schema('hf')
-        .from('positionsAndThesisConnection')
-        .delete()
-        .eq('symbol_root', symbolRoot)
-      
-      if (error) throw error
+// Watch for BOTH data ready AND DOM ready
+watch(
+  [() => q.isSuccess.value, accountFilter, symbolTagFilters, thesisTagFilters, groupByThesis],
+  async ([isSuccess]) => {
+    if (isSuccess && isTableInitialized.value) {
+      updateFilters()
+      if (tabulator) tabulator.redraw(true)
     }
-    
-    showToast('success', 'Thesis Updated', `All ${symbolRoot} positions have been updated`)
-  } catch (error: any) {
-    console.error('Error updating thesis connection:', error)
-    showToast('error', 'Error', `Failed to update thesis: ${error.message}`)
-    throw error
+  },
+  { immediate: true }
+)
+
+watch([() => q.isSuccess.value, isTableInitialized], ([isSuccess, isTableReady]) => {
+  if (isSuccess && isTableReady) {
+    updateFilters()
   }
-}
+})
 
-// Toast notification system
-type ToastType = 'success' | 'error' | 'warning' | 'info'
-interface Toast {
-  id: number
-  type: ToastType
-  title: string
-  message?: string
-}
-
-const toasts = ref<Toast[]>([])
-let toastIdCounter = 0
-
-function showToast(type: ToastType, title: string, message?: string) {
-  const id = toastIdCounter++
-  toasts.value.push({ id, type, title, message })
-  
-  setTimeout(() => {
-    removeToast(id)
-  }, 5000)
-}
-
-function removeToast(id: number) {
-  const index = toasts.value.findIndex(t => t.id === id)
-  if (index !== -1) {
-    toasts.value.splice(index, 1)
-  }
-}
-
-// External filter for symbol tags
-function isExternalFilterPresent(): boolean {
-  return symbolTagFilters.value.length > 0 || thesisTagFilters.value.length > 0
-}
-
-function doesExternalFilterPass(node: any): boolean {
-  // Always pass thesis header and total rows (structural rows for grouping)
-  if (node.data?.isThesisHeader || node.data?.isThesisTotal) {
-    return true
-  }
-  
-  // Check symbol filters
-  if (symbolTagFilters.value.length > 0) {
-    const symbolText = node.data?.symbol
-    if (!symbolText) return false
-    
-    const tags = extractTagsFromSymbol(symbolText)
-    
-    // ALL selected tags must be present in the symbol
-    const symbolPass = symbolTagFilters.value.every(selectedTag => tags.includes(selectedTag))
-    if (!symbolPass) return false
-  }
-  
-  // Check thesis filters
-  if (thesisTagFilters.value.length > 0) {
-    const thesis = node.data?.thesis
-    if (!thesis || !thesis.title) return false
-    
-    // The thesis title must be in the selected thesis filters
-    const thesisPass = thesisTagFilters.value.includes(thesis.title)
-    if (!thesisPass) return false
-  }
-  
-  return true
-}
-
-// Grid ready handler
-function onGridReady(params: any) {
-  gridApi.value = params.api
-  columnApiRef.value = params.columnApi
-  
-  // Apply initial filters from URL
+window.addEventListener('popstate', () => {
   const filters = parseFiltersFromUrl()
-  const model: any = {}
-  
-  if (filters.symbol) {
-    // For symbol filter from URL, use external filter
-    symbolTagFilters.value = filters.symbol.split(',').map(s => s.trim())
-  }
-  if (filters.thesis) {
-    // For thesis filter from URL, use external filter
-    thesisTagFilters.value = filters.thesis.split(',').map(s => s.trim())
-  }
-  if (filters.asset_class) {
-    model.asset_class = { type: 'equals', filter: filters.asset_class }
-  }
-  if (filters.legal_entity) {
-    model.legal_entity = { type: 'equals', filter: filters.legal_entity }
-  }
-  
-  if (Object.keys(model).length > 0) {
-    params.api.setFilterModel(model)
-  }
-  
-  // Trigger external filter if symbol or thesis tags were set from URL
-  if ((symbolTagFilters.value.length > 0 || thesisTagFilters.value.length > 0) && typeof params.api.onFilterChanged === 'function') {
-    params.api.onFilterChanged()
-  }
-  
-  syncActiveFiltersFromGrid()
-  recalcPinnedTotals()
-}
+  symbolTagFilters.value = filters.symbol ? filters.symbol.split(',').map(s => s.trim()) : []
+  thesisTagFilters.value = filters.thesis ? filters.thesis.split(',').map(s => s.trim()) : []
+  accountFilter.value = filters.legal_entity || null
+  updateFilters()
+})
 </script>
 
 <template>
   <div class="positions-card">
-    <!-- Loading state -->
     <div v-if="q.isLoading.value" class="loading">
       <div class="loading-spinner"></div>
       Loading positions...
     </div>
     
-    <!-- Error state -->
     <div v-else-if="q.isError.value" class="error">
       <h3>Error loading positions</h3>
       <p>{{ q.error.value }}</p>
     </div>
     
-    <!-- Success state with ag-grid -->
     <div v-else-if="q.isSuccess.value" class="positions-container">
       <div class="positions-header">
         <h2>
-          <router-link v-if="showHeaderLink" to="/positions">Positions</router-link>
+          <span v-if="showHeaderLink" class="positions-link" @click="handleHeaderClick">Positions</span>
           <span v-else>Positions</span>
         </h2>
         <div class="positions-tools">
           <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
           
-          <!-- Keep the Group by Thesis button -->
           <button 
             class="thesis-group-btn" 
             :class="{ active: groupByThesis }"
@@ -1469,17 +1274,13 @@ function onGridReady(params: any) {
             {{ groupByThesis ? 'Ungroup' : 'Group by Thesis' }}
           </button>
           
-          <button ref="columnsBtnRef" class="columns-btn" aria-label="Column settings" @click.stop="toggleColumnsPopup">
-            <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <button ref="columnsBtnRef" class="columns-btn" @click.stop="toggleColumnsPopup">
+            <svg class="icon" viewBox="0 0 24 24" width="18" height="18">
               <path fill="currentColor" d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.21-.37-.3-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.03-.22-.22-.39-.44-.39h-3.84c-.22 0-.41.16-.44.39l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.09-.47 0-.59.22l-1.92 3.32c-.12.21-.07.47.12.61l2.03 1.58c.04.31.06.63.06.94s-.02.63-.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.21.37.3.59.22l2.39.96c.5.38 1.03.7 1.62.94l.36 2.54c.03.22.22.39.44.39h3.84c.22 0 .41-.16.44-.39l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.09.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.03-1.58ZM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5Z"/>
             </svg>
           </button>
           
-          <button 
-            @click="emit('minimize')"
-            class="minimize-button"
-            title="Minimize Positions"
-          >
+          <button @click="emit('minimize')" class="minimize-button" title="Minimize Positions">
             −
           </button>
           
@@ -1499,7 +1300,6 @@ function onGridReady(params: any) {
         </div>
       </div>
       
-      <!-- Active filter tags -->
       <div v-if="activeFilters.length" class="filters-bar">
         <span class="filters-label">Filtered by:</span>
         <div class="filters-tags">
@@ -1510,60 +1310,15 @@ function onGridReady(params: any) {
               f.field === 'thesis' ? 'Thesis' :
               'Asset Class' 
             }}:</strong> {{ f.value }}
-            <button class="tag-clear" @click="clearFilter(f.field)" aria-label="Clear filter">✕</button>
+            <button class="tag-clear" @click="clearFilter(f.field)">✕</button>
           </span>
           <button class="btn btn-clear-all" @click="clearAllFilters">Clear all</button>
         </div>
       </div>
 
-      <div class="ag-theme-alpine positions-grid">
-        <AgGridVue
-          :columnDefs="columnDefs"
-          :rowData="gridRowData"
-          :modules="[AllCommunityModule]"
-          :defaultColDef="{
-            sortable: true,
-            filter: true,
-            resizable: true,
-            flex: 1,
-            minWidth: 100
-          }"
-          :animateRows="true"
-          :domLayout="'autoHeight'"
-          :pinnedBottomRowData="pinnedBottomRowDataRef"
-          :isExternalFilterPresent="isExternalFilterPresent"
-          :doesExternalFilterPass="doesExternalFilterPass"
-          :gridOptions="{
-            getRowStyle: (params) => {
-              if (params.data?.isThesisHeader) {
-                return { 
-                  'background-color': '#f8f9fa', 
-                  'font-weight': 'bold',
-                  'border-top': '2px solid #dee2e6'
-                };
-              }
-              if (params.data?.isThesisTotal) {
-                return { 
-                  'background-color': '#e9ecef', 
-                  'font-weight': 'bold',
-                  'font-style': 'italic',
-                  'border-bottom': '2px solid #dee2e6'
-                };
-              }
-              return null;
-            }
-          }"
-          @grid-ready="onGridReady"
-          @filter-changed="recalcPinnedTotals"
-          @sort-changed="recalcPinnedTotals"
-          @row-data-updated="recalcPinnedTotals"
-          @row-clicked="(event: any) => event.data && rowClicked(event.data)"
-          style="width: 100%;"
-        />
-      </div>
+      <div ref="tableDiv" class="positions-grid"></div>
     </div>
 
-    <!-- Toast Container -->
     <div class="toast-container">
       <TransitionGroup name="toast" tag="div">
         <div
@@ -1576,28 +1331,111 @@ function onGridReady(params: any) {
             <span v-if="toast.type === 'success'">✅</span>
             <span v-else-if="toast.type === 'error'">❌</span>
             <span v-else-if="toast.type === 'warning'">⚠️</span>
-            <span v-else-if="toast.type === 'info'">ℹ️</span>
+            <span v-else>ℹ️</span>
           </div>
           <div class="toast-content">
             <div class="toast-title">{{ toast.title }}</div>
             <div v-if="toast.message" class="toast-message">{{ toast.message }}</div>
           </div>
-          <button class="toast-close" @click.stop="removeToast(toast.id)" aria-label="Close notification">
-            ×
-          </button>
+          <button class="toast-close" @click.stop="removeToast(toast.id)">×</button>
         </div>
       </TransitionGroup>
     </div>
   </div>
 </template>
 
+<style>
+/* Import Tabulator CSS globally (not scoped) */
+@import 'tabulator-tables/dist/css/tabulator_modern.min.css';
+
+/* Tree expand/collapse icons - make them more visible */
+.tabulator .tabulator-row .tabulator-data-tree-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background: #fff;
+  margin-right: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabulator .tabulator-row .tabulator-data-tree-control:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.tabulator .tabulator-row .tabulator-data-tree-control .tabulator-data-tree-control-collapse:after {
+  content: "−";
+  font-size: 16px;
+  font-weight: bold;
+  color: #495057;
+  line-height: 1;
+}
+
+.tabulator .tabulator-row .tabulator-data-tree-control .tabulator-data-tree-control-expand:after {
+  content: "+";
+  font-size: 16px;
+  font-weight: bold;
+  color: #495057;
+  line-height: 1;
+}
+
+/* Style for thesis group rows */
+.tabulator .tabulator-row.tabulator-tree-level-0, 
+.tabulator-row.tabulator-tree-level-0 .tabulator-cell {
+  background-color: #e3f2fd !important;
+  font-weight: 600;
+}
+
+/* Style for child thesis rows (level 1) */
+.tabulator .tabulator-row.tabulator-tree-level-1,
+.tabulator-row.tabulator-tree-level-1 .tabulator-cell {
+  background-color: #f3e5f5 !important;
+  font-weight: 500;
+}
+
+/* Style for position rows (level 2+) */
+.tabulator .tabulator-row.tabulator-tree-level-2 {
+  background-color: #fff;
+}
+
+/* Add subtle indentation visual guide */
+.tabulator .tabulator-row.tabulator-tree-level-1 .tabulator-cell:first-child,
+.tabulator .tabulator-row.tabulator-tree-level-2 .tabulator-cell:first-child {
+  border-left: 2px solid #e9ecef;
+}
+
+/* Make the tree branch lines more visible */
+.tabulator .tabulator-row .tabulator-data-tree-branch {
+  border-left: 2px solid #dee2e6;
+  border-bottom: 2px solid #dee2e6;
+}
+
+/* Clear column borders - make them visible like the demo */
+.tabulator .tabulator-col {
+  border-right: 1px solid #dee2e6 !important;
+}
+
+.tabulator .tabulator-cell {
+  border-right: 1px solid #dee2e6 !important;
+}
+
+/* Make sure the last column also has a border */
+.tabulator .tabulator-col:last-child,
+.tabulator .tabulator-cell:last-child {
+  border-right: 1px solid #dee2e6 !important;
+}
+</style>
+
 <style scoped>
 .positions-card {
-  /* padding: 1.5rem; */
   border-radius: 0.75rem;
-  /* border: 1px solid rgba(0,0,0,.1); */
-  /* box-shadow: 0 4px 12px rgba(0,0,0,.1); */
   background: white;
+  padding: 1rem;
 }
 
 h1 { 
@@ -1611,9 +1449,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  /* padding-bottom: 1rem; */
-  /*border-bottom: 1px solid #e9ecef;*/
+  margin-bottom: 0.5rem;
 }
 
 .positions-header h2 {
@@ -1626,6 +1462,16 @@ h1 {
 .positions-header h2 a {
   color: #3b82f6;
   text-decoration: none;
+}
+
+.positions-link {
+  color: #3b82f6;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.positions-link:hover {
+  text-decoration: underline;
 }
 
 .positions-count {
@@ -1648,7 +1494,7 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 4px 8px;
   border: 1px solid #dee2e6;
   background: white;
   border-radius: 6px;
@@ -1673,30 +1519,12 @@ h1 {
   border-color: #0056b3;
 }
 
-.thesis-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border: 1px solid #dee2e6;
-  background: white;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.thesis-btn:hover {
-  background: #f8f9fa;
-}
-
 .columns-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 6px;
   border: 1px solid #dee2e6;
   background: #fff;
@@ -1710,8 +1538,8 @@ h1 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 6px;
   border: 1px solid #dee2e6;
   background: #fff;
@@ -1785,34 +1613,6 @@ h1 {
 .columns-popup .btn:hover { background: #f8f9fa; }
 .columns-popup .btn-clear { color: #6c757d; }
 
-.columns-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  margin: 0.5rem 0 0.25rem 0;
-}
-
-.columns-controls .label {
-  font-size: 0.875rem;
-  color: #495057;
-  font-weight: 600;
-}
-
-.columns-list {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.col-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.875rem;
-  color: #495057;
-}
-
 .loading, .error {
   padding: 2rem;
   text-align: center;
@@ -1862,7 +1662,7 @@ h1 {
 
 .positions-grid {
   margin-top: 0.5rem;
-  height: 100%;
+  height: 600px;
   min-height: 200px;
 }
 
@@ -1881,6 +1681,7 @@ h1 {
   line-height: 1;
   cursor: pointer;
   transition: all 0.2s ease;
+  margin-right: 4px;
 }
 
 :deep(.fi-tag:hover) {
@@ -1894,7 +1695,7 @@ h1 {
   border-color: #0056b3 !important;
 }
 
-/* Thesis tags - similar styling to financial instrument tags */
+/* Thesis tags */
 :deep(.thesis-tag) {
   display: inline-flex;
   align-items: center;
@@ -1926,7 +1727,8 @@ h1 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 .filters-label {
   font-size: 0.875rem;
@@ -1966,72 +1768,59 @@ h1 {
   font-size: 0.8125rem;
 }
 
-/* ag-Grid styling */
-::deep(.ag-theme-alpine) {
-  --ag-header-background-color: #f8f9fa;
-  --ag-header-foreground-color: #495057;
-  --ag-border-color: #dee2e6;
-  --ag-row-hover-color: #f8f9fa;
-  --ag-selected-row-background-color: #e3f2fd;
-}
-
-::deep(.ag-theme-alpine .ag-header-cell) {
-  font-weight: 600;
-  font-size: 0.875rem;
-  border-right: 1px solid #dee2e6;
-}
-
-::deep(.ag-theme-alpine .ag-cell) {
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  border-right: 1px solid #dee2e6;
-}
-
-/* Highlight pinned bottom total row */
-::deep(.ag-theme-alpine .ag-row-pinned-bottom) {
-  background-color: #f1f3f5 !important;
-  font-weight: 600;
-}
-::deep(.ag-theme-alpine .ag-row-pinned-bottom .ag-cell) {
-  border-top: 2px solid #dee2e6;
-}
-
-::deep(.symbol) {
-  font-weight: 600;
-  color: #007bff;
-}
-
-::deep(.symbol-click) { cursor: pointer; }
-
-::deep(.pnl-positive) {
+/* P&L styling */
+:deep(.pnl-positive) {
   color: #28a745 !important;
   font-weight: 600;
 }
 
-::deep(.pnl-negative) {
+:deep(.pnl-negative) {
   color: #dc3545 !important;
   font-weight: 600;
 }
 
-::deep(.pnl-zero) {
+:deep(.pnl-zero) {
   color: #6c757d !important;
 }
 
-@media (max-width: 768px) {
-  /* .positions-card {
-    padding: 1rem;
-  } */
-  
-  .positions-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .positions-grid {
-    height: 300px;
-  }
+/* Tabulator theme overrides */
+:deep(.tabulator) {
+  font-size: 0.875rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+:deep(.tabulator-header) {
+  background-color: #f8f9fa !important;
+  border-bottom: 2px solid #dee2e6 !important;
+  padding-left: 0;
+}
+
+:deep(.tabulator-col) {
+  border-right: 1px solid #dee2e6 !important;
+  font-weight: 600;
+}
+
+:deep(.tabulator-row) {
+  border-bottom: 1px solid #f1f3f5;
+  margin-bottom: 0;
+}
+
+:deep(.tabulator-row:hover) {
+  background-color: #f8f9fa !important;
+}
+
+:deep(.tabulator-cell) {
+  border-right: 1px solid #dee2e6 !important;
+  padding: 4px 8px;
+}
+
+/* Bottom calc row (totals) */
+:deep(.tabulator-row.tabulator-calcs) {
+  background-color: #f1f3f5 !important;
+  font-weight: 600;
+  border-top: 2px solid #dee2e6 !important;
 }
 
 /* Toast notification styles */
@@ -2085,7 +1874,7 @@ h1 {
 }
 
 .toast-icon {
-   font-size: 20px;
+  font-size: 20px;
   flex-shrink: 0;
   line-height: 1;
 }
@@ -2128,7 +1917,7 @@ h1 {
 
 .toast-close:hover {
   opacity: 1;
-  background: rgba(0, 0, 0,    0.1);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 /* Toast animations */
@@ -2154,8 +1943,17 @@ h1 {
   transition: transform 0.3s ease;
 }
 
-/* Responsive adjustments */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  .positions-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .positions-grid {
+    height: 400px;
+  }
+  
   .toast-container {
     left: 10px;
     right: 10px;
