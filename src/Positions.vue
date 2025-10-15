@@ -1459,7 +1459,6 @@ window.addEventListener('popstate', () => {
 .positions-card {
   border-radius: 0.75rem;
   background: white;
-  padding: 1rem;
 }
 
 h1 { 
