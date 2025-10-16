@@ -621,13 +621,35 @@ function initializeTabulator() {
 
   try {
     tabulator = new Tabulator(tableDiv.value, tabulatorConfig)
-    tabulator.on('tableBuilt', () => {
-      isTabulatorReady.value = true
-      setTimeout(() => {
-        updateFilters()
-        toggleBottomCalc()
-      }, 50)
+
+    // Listen for columnResized event
+    tabulator.on('columnResized', function(column){
+      if (column.getField() === 'be_price') {
+        const width = column.getWidth()
+        column.updateDefinition({
+          title: width >= 140 ? 'Break even price' : 'BE Price'
+        })
+        tabulator.redraw(true)
+      }
     })
+
+    // Optionally, update after table is built
+    tabulator.on('tableBuilt', function(){
+      const column = tabulator.getColumn('be_price')
+      if (column) {
+        const width = column.getWidth()
+        column.updateDefinition({
+          title: width >= 140 ? 'Break even price' : 'BE Price'
+        })
+        tabulator.redraw(true)
+      }
+    })
+
+    isTabulatorReady.value = true
+    setTimeout(() => {
+      updateFilters()
+      toggleBottomCalc()
+    }, 50)
   } catch (error) {
     console.error('Error creating Tabulator:', error)
   }
