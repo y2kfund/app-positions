@@ -481,7 +481,66 @@ function initializeTabulator() {
         if (cell.getRow().getData()?._isThesisGroup) return ''
         const value = cell.getValue()
         return value === null || value === undefined ? '-' : formatCurrency(value)
-      }
+      },
+      contextMenu: [
+        {
+          label: (component: any) => {
+            const rowData = component.getData()
+            const fetchedAt = rowData.market_price_fetched_at
+            
+            if (!fetchedAt) {
+              return '⏱️ Last Updated: Not available'
+            }
+            
+            try {
+              const date = new Date(fetchedAt)
+              
+              // Detect user's timezone
+              const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+              
+              // Map common timezones to their abbreviations with DST support
+              const timezoneMap: { [key: string]: string } = {
+                'Asia/Kolkata': 'IST',
+                'Asia/Calcutta': 'IST',
+                'America/New_York': date.getMonth() >= 2 && date.getMonth() < 10 ? 'EDT' : 'EST',
+                'America/Los_Angeles': date.getMonth() >= 2 && date.getMonth() < 10 ? 'PDT' : 'PST',
+                'America/Chicago': date.getMonth() >= 2 && date.getMonth() < 10 ? 'CDT' : 'CST',
+                'America/Denver': date.getMonth() >= 2 && date.getMonth() < 10 ? 'MDT' : 'MST',
+                'Europe/London': date.getMonth() >= 2 && date.getMonth() < 9 ? 'BST' : 'GMT',
+                'Europe/Paris': date.getMonth() >= 2 && date.getMonth() < 9 ? 'CEST' : 'CET',
+                'Australia/Sydney': date.getMonth() >= 9 || date.getMonth() < 3 ? 'AEDT' : 'AEST',
+              }
+              
+              // Get the timezone abbreviation
+              const timezoneName = timezoneMap[userTimeZone] || userTimeZone
+              
+              const formattedDate = date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                timeZone: userTimeZone
+              })
+              
+              const formattedTime = date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true,
+                timeZone: userTimeZone
+              })
+              
+              return `⏱️ Last Updated: ${formattedDate} at ${formattedTime} ${timezoneName}`
+            } catch (error) {
+              return `⏱️ Last Updated: ${fetchedAt}`
+            }
+          },
+          action: () => {},
+          disabled: true
+        },
+        {
+          separator: true
+        }
+      ]
     },
     {
       title: 'Market Value',
