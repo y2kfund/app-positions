@@ -93,6 +93,46 @@ function parseVisibleColsFromUrl(): ColumnField[] {
 
 const visibleCols = ref<ColumnField[]>(parseVisibleColsFromUrl())
 
+// Add URL parameter helpers for column widths
+function parseColumnWidthsFromUrl(): Record<string, number> {
+  const url = new URL(window.location.href)
+  const widthsParam = url.searchParams.get('position_col_widths')
+  if (!widthsParam) return {}
+  
+  try {
+    const pairs = widthsParam.split('-and-')
+    const widths: Record<string, number> = {}
+    pairs.forEach(pair => {
+      const [field, width] = pair.split(':')
+      if (field && width) {
+        widths[field] = parseInt(width)
+      }
+    })
+    return widths
+  } catch (error) {
+    console.warn('Error parsing column widths from URL:', error)
+    return {}
+  }
+}
+
+function writeColumnWidthsToUrl(widths: Record<string, number>) {
+  const url = new URL(window.location.href)
+  const widthPairs = Object.entries(widths)
+    .filter(([_, width]) => width > 0)
+    .map(([field, width]) => `${field}:${width}`)
+    .join('-and-')
+  
+  if (widthPairs) {
+    url.searchParams.set('position_col_widths', widthPairs)
+  } else {
+    url.searchParams.delete('position_col_widths')
+  }
+  window.history.replaceState({}, '', url.toString())
+}
+
+// Store column widths
+const columnWidths = ref<Record<string, number>>(parseColumnWidthsFromUrl())
+
 // Helper functions
 function formatCurrency(value: number | null | undefined): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return ''
@@ -308,6 +348,7 @@ function initializeTabulator() {
       title: 'Account',
       field: 'legal_entity',
       minWidth: 120,
+      width: columnWidths.value['legal_entity'] || undefined, // ADD THIS LINE
       frozen: true,
       visible: visibleCols.value.includes('legal_entity'),
       // Set bottom calc during initialization
@@ -341,6 +382,7 @@ function initializeTabulator() {
       title: 'Financial Instrument',
       field: 'symbol',
       minWidth: 200,
+      width: columnWidths.value['symbol'] || undefined, // ADD THIS LINE
       frozen: true,
       visible: visibleCols.value.includes('symbol'),
       titleFormatter: (cell: any) => {
@@ -380,6 +422,7 @@ function initializeTabulator() {
       title: 'Thesis',
       field: 'thesis',
       minWidth: 150,
+      width: columnWidths.value['thesis'] || undefined, // ADD THIS LINE
       visible: visibleCols.value.includes('thesis'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
@@ -492,6 +535,7 @@ function initializeTabulator() {
       title: 'Asset Class',
       field: 'asset_class',
       minWidth: 100,
+      width: columnWidths.value['asset_class'] || undefined, // ADD THIS LINE
       visible: visibleCols.value.includes('asset_class'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
@@ -510,6 +554,7 @@ function initializeTabulator() {
       title: 'Conid',
       field: 'conid',
       minWidth: 80,
+      width: columnWidths.value['conid'] || undefined, // ADD THIS LINE
       visible: visibleCols.value.includes('conid'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
@@ -528,6 +573,7 @@ function initializeTabulator() {
       title: 'Underlying Conid',
       field: 'undConid',
       minWidth: 110,
+      width: columnWidths.value['undConid'] || undefined, // ADD THIS LINE
       visible: visibleCols.value.includes('undConid'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
@@ -546,6 +592,7 @@ function initializeTabulator() {
       title: 'Multiplier',
       field: 'multiplier',
       minWidth: 80,
+      width: columnWidths.value['multiplier'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('multiplier'),
       // Set bottom calc during initialization
@@ -567,6 +614,7 @@ function initializeTabulator() {
       title: 'Qty',
       field: 'qty',
       minWidth: 70,
+      width: columnWidths.value['qty'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('qty'),
       // Set bottom calc during initialization
@@ -588,6 +636,7 @@ function initializeTabulator() {
       title: 'Avg Price',
       field: 'avgPrice',
       minWidth: 90,
+      width: columnWidths.value['avgPrice'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('avgPrice'),
       titleFormatter: (cell: any) => {
@@ -606,6 +655,7 @@ function initializeTabulator() {
       title: 'Market Price',
       field: 'price',
       minWidth: 100,
+      width: columnWidths.value['price'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('price'),
       titleFormatter: (cell: any) => {
@@ -624,6 +674,7 @@ function initializeTabulator() {
       title: 'Ul CM Price',
       field: 'market_price',
       minWidth: 100,
+      width: columnWidths.value['market_price'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('market_price'),
       titleFormatter: (cell: any) => {
@@ -692,6 +743,7 @@ function initializeTabulator() {
       title: 'Market Value',
       field: 'market_value',
       minWidth: 110,
+      width: columnWidths.value['market_value'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('market_value'),
       // Set bottom calc during initialization
@@ -714,6 +766,7 @@ function initializeTabulator() {
       title: 'P&L Unrealized',
       field: 'unrealized_pnl',
       minWidth: 120,
+      width: columnWidths.value['unrealized_pnl'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('unrealized_pnl'),
       // Set bottom calc during initialization
@@ -739,6 +792,7 @@ function initializeTabulator() {
       title: 'Entry cash flow',
       field: 'cash_flow_on_entry',
       minWidth: 120,
+      width: columnWidths.value['cash_flow_on_entry'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('cash_flow_on_entry'),
       // Set bottom calc during initialization
@@ -764,6 +818,7 @@ function initializeTabulator() {
       title: 'If exercised cash flow',
       field: 'cash_flow_on_exercise',
       minWidth: 130,
+      width: columnWidths.value['cash_flow_on_exercise'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('cash_flow_on_exercise'),
       // Set bottom calc during initialization
@@ -789,11 +844,17 @@ function initializeTabulator() {
       title: 'BE Price',
       field: 'be_price',
       minWidth: 100,
+      width: columnWidths.value['be_price'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('be_price'),
       titleFormatter: (cell: any) => {
+        
+        console.log('BE Price column width:', columnWidths.value['be_price'])
+        const bePriceCol = columnWidths.value['be_price'] && columnWidths.value['be_price'] >= 140 
+          ? 'Break even price' 
+          : 'BE Price'
         return `<div class="header-with-close">
-          <span>BE Price</span>
+          <span>${bePriceCol}</span>
           <button class="header-close-btn" data-field="be_price" title="Hide column">✕</button>
         </div>`
       },
@@ -862,33 +923,49 @@ function initializeTabulator() {
   try {
     tabulator = new Tabulator(tableDiv.value, tabulatorConfig)
 
+    // Add event listener for column width persistence
+    tabulator.on('columnResized', (column: any) => {
+      const field = column.getField()
+      const width = column.getWidth()
+      
+      // Update the stored widths
+      columnWidths.value[field] = width
+      
+      // Save to URL
+      writeColumnWidthsToUrl(columnWidths.value)
+
+      // BE Price specific title update
+      if (field === 'be_price') {
+        const newTitle = width >= 140 ? 'Break even price' : 'BE Price'
+        
+        // Update the column definition
+        column.updateDefinition({
+          titleFormatter: (cell: any) => {
+            return `<div class="header-with-close">
+              <span>${newTitle}</span>
+              <button class="header-close-btn" data-field="be_price" title="Hide column">✕</button>
+            </div>`
+          }
+        })
+        
+        // Force redraw the header
+        tabulator.redraw(true)
+      }
+    })
+
     // Add event listener for header close buttons
     tabulator.on('tableBuilt', () => {
       const headers = tableDiv.value?.querySelectorAll('.header-close-btn')
       headers?.forEach(btn => {
         btn.addEventListener('click', (e) => {
-          e.stopPropagation() // Prevent sorting
+          e.stopPropagation()
           const field = (e.target as HTMLElement).getAttribute('data-field') as ColumnField
           if (field) {
             hideColumnFromHeader(field)
           }
         })
       })
-    })
 
-    // Listen for columnResized event
-    tabulator.on('columnResized', function(column){
-      if (column.getField() === 'be_price') {
-        const width = column.getWidth()
-        column.updateDefinition({
-          title: width >= 140 ? 'Break even price' : 'BE Price'
-        })
-        tabulator.redraw(true)
-      }
-    })
-
-    // Optionally, update after table is built
-    tabulator.on('tableBuilt', function(){
       const column = tabulator.getColumn('be_price')
       if (column) {
         const width = column.getWidth()
@@ -934,7 +1011,7 @@ const groupedHierarchicalData = computed(() => {
       return accountVal === accountFilter.value
     })
   }
-  // --- END BLOCK ---
+  // --- END ---
 
   // Apply symbol and thesis filters
   positionsWithThesis = positionsWithThesis.filter(position => {
@@ -1868,6 +1945,7 @@ h1 {
   box-shadow: 0 8px 24px rgba(0,0,0,.12);
   border-radius: 8px;
   z-index: 10;
+  overflow: hidden; /* ADD THIS */
 }
 
 .columns-popup .popup-header {
@@ -1878,40 +1956,35 @@ h1 {
 
 .columns-popup .popup-list {
   max-height: 260px;
-  overflow: auto;
-  padding: 0.5rem 0.75rem;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.35rem;
+  overflow-y: auto; /* ADD THIS */
+  padding: 0.5rem 0.75rem; /* ADD THIS */
 }
 
 .columns-popup .popup-item {
-  display: inline-flex;
+  display: flex; /* CHANGE from inline-flex to flex */
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
   color: #495057;
+  padding: 0.4rem 0; /* ADD THIS for better spacing */
+  cursor: pointer; /* ADD THIS */
 }
 
-.columns-popup .popup-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem 0.75rem 0.75rem;
-  border-top: 1px solid #f1f3f5;
+.columns-popup .popup-item:hover {
+  background: #f8f9fa; /* ADD THIS */
 }
 
-.columns-popup .btn {
-  padding: 0.35rem 0.6rem;
-  border-radius: 6px;
-  border: 1px solid #dee2e6;
-  background: #fff;
-  cursor: pointer;
-  font-size: 0.8125rem;
+.columns-popup .popup-item input[type="checkbox"] {
+  flex-shrink: 0; /* ADD THIS to prevent checkbox from shrinking */
+  cursor: pointer; /* ADD THIS */
 }
-.columns-popup .btn:hover { background: #f8f9fa; }
-.columns-popup .btn-clear { color: #6c757d; }
 
+.columns-popup .popup-item span {
+  flex: 1; /* ADD THIS to allow text to take remaining space */
+  cursor: pointer; /* ADD THIS */
+}
+
+/* Loading and error states */
 .loading, .error {
   padding: 2rem;
   text-align: center;
@@ -2093,7 +2166,7 @@ h1 {
 :deep(.tabulator-header) {
   background-color: #f8f9fa !important;
   border-bottom: 2px solid #dee2e6 !important;
-  padding-left: 0;
+  padding-left: 0 !important;
 }
 
 :deep(.tabulator-col) {
@@ -2310,5 +2383,39 @@ h1 {
 
 :deep(.header-close-btn:active) {
   background: rgba(239, 68, 68, 0.2);
+}
+
+.columns-popup .popup-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-top: 1px solid #f1f3f5;
+  flex-shrink: 0;
+}
+
+.columns-popup .popup-actions .btn {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.columns-popup .popup-actions .btn:hover {
+  background: #0056b3;
+}
+
+.columns-popup .popup-actions .btn-clear {
+  background: white;
+  color: #495057;
+}
+
+.columns-popup .popup-actions .btn-clear:hover {
+  background: #f8f9fa;
 }
 </style>
