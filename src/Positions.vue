@@ -206,6 +206,72 @@ function removeToast(id: number) {
   if (index !== -1) toasts.value.splice(index, 1)
 }
 
+// Generic timezone formatting function
+function formatTimestampWithTimezone(timestamp: string | null | undefined): string {
+  if (!timestamp) {
+    return '⏱️ Last Updated: Not available'
+  }
+  
+  try {
+    const date = new Date(timestamp)
+    
+    // Detect user's timezone
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    
+    // Map common timezones to their abbreviations with DST support
+    const timezoneMap: { [key: string]: string } = {
+      'Asia/Kolkata': 'IST',
+      'Asia/Calcutta': 'IST',
+      'America/New_York': date.getMonth() >= 2 && date.getMonth() < 10 ? 'EDT' : 'EST',
+      'America/Los_Angeles': date.getMonth() >= 2 && date.getMonth() < 10 ? 'PDT' : 'PST',
+      'America/Chicago': date.getMonth() >= 2 && date.getMonth() < 10 ? 'CDT' : 'CST',
+      'America/Denver': date.getMonth() >= 2 && date.getMonth() < 10 ? 'MDT' : 'MST',
+      'Europe/London': date.getMonth() >= 2 && date.getMonth() < 9 ? 'BST' : 'GMT',
+      'Europe/Paris': date.getMonth() >= 2 && date.getMonth() < 9 ? 'CEST' : 'CET',
+      'Australia/Sydney': date.getMonth() >= 9 || date.getMonth() < 3 ? 'AEDT' : 'AEST',
+    }
+    
+    // Get the timezone abbreviation
+    const timezoneName = timezoneMap[userTimeZone] || userTimeZone
+    
+    const formattedDate = date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: userTimeZone
+    })
+    
+    const formattedTime = date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+      timeZone: userTimeZone
+    })
+    
+    return `⏱️ Last Updated: ${formattedDate} at ${formattedTime} ${timezoneName}`
+  } catch (error) {
+    return `⏱️ Last Updated: ${timestamp}`
+  }
+}
+
+// Generic context menu for columns showing fetched_at timestamp
+function createFetchedAtContextMenu() {
+  return [
+    {
+      label: (component: any) => {
+        const rowData = component.getData()
+        return formatTimestampWithTimezone(rowData.fetched_at)
+      },
+      action: () => {},
+      disabled: true
+    },
+    {
+      separator: true
+    }
+  ]
+}
+
 // Initialize Tabulator
 const isTabulatorReady = ref(false)
 
@@ -249,7 +315,8 @@ function initializeTabulator() {
         const value = cell.getValue()
         const accountName = typeof value === 'object' && value !== null ? (value.name || value.id) : value
         handleCellFilterClick('legal_entity', accountName)
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'Financial Instrument',
@@ -281,7 +348,8 @@ function initializeTabulator() {
           const clickedTag = tagSpan.textContent?.trim()
           if (clickedTag) handleCellFilterClick('symbol', clickedTag)
         }
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'Thesis',
@@ -386,7 +454,8 @@ function initializeTabulator() {
         } catch (error) {
           console.warn('Thesis cell double click error:', error)
         }
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'Asset Class',
@@ -397,7 +466,8 @@ function initializeTabulator() {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) return ''
         return cell.getValue() || ''
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'Conid',
@@ -408,7 +478,8 @@ function initializeTabulator() {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) return ''
         return cell.getValue() || ''
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'Underlying Conid',
@@ -419,7 +490,8 @@ function initializeTabulator() {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) return ''
         return cell.getValue() || ''
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'Multiplier',
@@ -433,7 +505,8 @@ function initializeTabulator() {
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return ''
         return formatNumber(cell.getValue())
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'Qty',
@@ -447,7 +520,8 @@ function initializeTabulator() {
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return formatNumber(cell.getValue())
         return formatNumber(cell.getValue())
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'Avg Price',
@@ -458,7 +532,8 @@ function initializeTabulator() {
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return ''
         return formatCurrency(cell.getValue())
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'Market Price',
@@ -469,7 +544,8 @@ function initializeTabulator() {
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return ''
         return formatCurrency(cell.getValue())
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'Ul CM Price',
@@ -555,7 +631,8 @@ function initializeTabulator() {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) return formatCurrency(cell.getValue())
         return formatCurrency(cell.getValue())
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'P&L Unrealized',
@@ -573,7 +650,8 @@ function initializeTabulator() {
         else if (value < 0) className = 'pnl-negative'
         else className = 'pnl-zero'
         return `<span class="${className}">${formatCurrency(value)}</span>`
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'Entry cash flow',
@@ -591,7 +669,8 @@ function initializeTabulator() {
         else if (value < 0) className = 'pnl-negative'
         else className = 'pnl-zero'
         return `<span class="${className}">${formatCurrency(value)}</span>`
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'If exercised cash flow',
@@ -609,7 +688,8 @@ function initializeTabulator() {
         else if (value < 0) className = 'pnl-negative'
         else className = 'pnl-zero'
         return `<span class="${className}">${formatCurrency(value)}</span>`
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     },
     {
       title: 'BE Price',
@@ -620,7 +700,8 @@ function initializeTabulator() {
       formatter: (cell: any) => {
         const value = cell.getValue()
         return value === null || value === undefined ? '-' : formatNumber(value)
-      }
+      },
+      contextMenu: createFetchedAtContextMenu()
     }
   ]
 
