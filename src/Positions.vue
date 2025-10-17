@@ -272,6 +272,20 @@ function createFetchedAtContextMenu() {
   ]
 }
 
+// Add function to hide column from header (add BEFORE initializeTabulator function)
+function hideColumnFromHeader(field: ColumnField) {
+  const index = visibleCols.value.indexOf(field)
+  if (index > -1) {
+    visibleCols.value.splice(index, 1)
+    writeVisibleColsToUrl(visibleCols.value)
+    
+    // Rebuild table with new columns
+    nextTick(() => {
+      initializeTabulator()
+    })
+  }
+}
+
 // Initialize Tabulator
 const isTabulatorReady = ref(false)
 
@@ -299,6 +313,11 @@ function initializeTabulator() {
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? () => 'All Accounts' : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? () => 'All Accounts' : undefined,
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Account</span>
+        </div>`
+      },
       formatter: (cell: any) => {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) {
@@ -324,6 +343,12 @@ function initializeTabulator() {
       minWidth: 200,
       frozen: true,
       visible: visibleCols.value.includes('symbol'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Financial Instrument</span>
+          <button class="header-close-btn" data-field="symbol" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) {
@@ -356,6 +381,12 @@ function initializeTabulator() {
       field: 'thesis',
       minWidth: 150,
       visible: visibleCols.value.includes('thesis'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Thesis</span>
+          <button class="header-close-btn" data-field="thesis" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         try {
           const data = cell.getRow().getData()
@@ -462,6 +493,12 @@ function initializeTabulator() {
       field: 'asset_class',
       minWidth: 100,
       visible: visibleCols.value.includes('asset_class'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Asset Class</span>
+          <button class="header-close-btn" data-field="asset_class" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) return ''
@@ -474,6 +511,12 @@ function initializeTabulator() {
       field: 'conid',
       minWidth: 80,
       visible: visibleCols.value.includes('conid'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Conid</span>
+          <button class="header-close-btn" data-field="conid" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) return ''
@@ -486,6 +529,12 @@ function initializeTabulator() {
       field: 'undConid',
       minWidth: 110,
       visible: visibleCols.value.includes('undConid'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Underlying Conid</span>
+          <button class="header-close-btn" data-field="undConid" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) return ''
@@ -502,6 +551,12 @@ function initializeTabulator() {
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Multiplier</span>
+          <button class="header-close-btn" data-field="multiplier" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return ''
         return formatNumber(cell.getValue())
@@ -517,6 +572,12 @@ function initializeTabulator() {
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Qty</span>
+          <button class="header-close-btn" data-field="qty" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return formatNumber(cell.getValue())
         return formatNumber(cell.getValue())
@@ -529,6 +590,12 @@ function initializeTabulator() {
       minWidth: 90,
       hozAlign: 'right',
       visible: visibleCols.value.includes('avgPrice'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Avg Price</span>
+          <button class="header-close-btn" data-field="avgPrice" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return ''
         return formatCurrency(cell.getValue())
@@ -541,6 +608,12 @@ function initializeTabulator() {
       minWidth: 100,
       hozAlign: 'right',
       visible: visibleCols.value.includes('price'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Market Price</span>
+          <button class="header-close-btn" data-field="price" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return ''
         return formatCurrency(cell.getValue())
@@ -553,6 +626,12 @@ function initializeTabulator() {
       minWidth: 100,
       hozAlign: 'right',
       visible: visibleCols.value.includes('market_price'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Ul CM Price</span>
+          <button class="header-close-btn" data-field="market_price" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return ''
         const value = cell.getValue()
@@ -570,11 +649,7 @@ function initializeTabulator() {
             
             try {
               const date = new Date(fetchedAt)
-              
-              // Detect user's timezone
               const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-              
-              // Map common timezones to their abbreviations with DST support
               const timezoneMap: { [key: string]: string } = {
                 'Asia/Kolkata': 'IST',
                 'Asia/Calcutta': 'IST',
@@ -586,17 +661,13 @@ function initializeTabulator() {
                 'Europe/Paris': date.getMonth() >= 2 && date.getMonth() < 9 ? 'CEST' : 'CET',
                 'Australia/Sydney': date.getMonth() >= 9 || date.getMonth() < 3 ? 'AEDT' : 'AEST',
               }
-              
-              // Get the timezone abbreviation
               const timezoneName = timezoneMap[userTimeZone] || userTimeZone
-              
               const formattedDate = date.toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',
                 year: 'numeric',
                 timeZone: userTimeZone
               })
-              
               const formattedTime = date.toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -604,7 +675,6 @@ function initializeTabulator() {
                 hour12: true,
                 timeZone: userTimeZone
               })
-              
               return `⏱️ Last Updated: ${formattedDate} at ${formattedTime} ${timezoneName}`
             } catch (error) {
               return `⏱️ Last Updated: ${fetchedAt}`
@@ -627,6 +697,12 @@ function initializeTabulator() {
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Market Value</span>
+          <button class="header-close-btn" data-field="market_value" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) return formatCurrency(cell.getValue())
@@ -643,6 +719,12 @@ function initializeTabulator() {
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>P&L Unrealized</span>
+          <button class="header-close-btn" data-field="unrealized_pnl" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         const value = cell.getValue()
         let className = ''
@@ -662,6 +744,12 @@ function initializeTabulator() {
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Entry cash flow</span>
+          <button class="header-close-btn" data-field="cash_flow_on_entry" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         const value = cell.getValue()
         let className = ''
@@ -681,6 +769,12 @@ function initializeTabulator() {
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>If exercised cash flow</span>
+          <button class="header-close-btn" data-field="cash_flow_on_exercise" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         const value = cell.getValue()
         let className = ''
@@ -697,6 +791,12 @@ function initializeTabulator() {
       minWidth: 100,
       hozAlign: 'right',
       visible: visibleCols.value.includes('be_price'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>BE Price</span>
+          <button class="header-close-btn" data-field="be_price" title="Hide column">✕</button>
+        </div>`
+      },
       formatter: (cell: any) => {
         const value = cell.getValue()
         return value === null || value === undefined ? '-' : formatNumber(value)
@@ -719,9 +819,9 @@ function initializeTabulator() {
       vertAlign: 'middle'
     },
     virtualDom: false,
-    pagination: true,
+    pagination: false,
     paginationSize: 100,
-    paginationSizeSelector: [50, 100, 200, 500],
+    paginationSizeSelector: [100, 200, 500],
     rowFormatter: (row: any) => {
       try {
         const data = row.getData()
@@ -761,6 +861,20 @@ function initializeTabulator() {
 
   try {
     tabulator = new Tabulator(tableDiv.value, tabulatorConfig)
+
+    // Add event listener for header close buttons
+    tabulator.on('tableBuilt', () => {
+      const headers = tableDiv.value?.querySelectorAll('.header-close-btn')
+      headers?.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation() // Prevent sorting
+          const field = (e.target as HTMLElement).getAttribute('data-field') as ColumnField
+          if (field) {
+            hideColumnFromHeader(field)
+          }
+        })
+      })
+    })
 
     // Listen for columnResized event
     tabulator.on('columnResized', function(column){
@@ -2158,5 +2272,43 @@ h1 {
 }
 .ag-input-wrapper:before {
   content: none;
+}
+</style>
+
+<style scoped>
+/* Header close button styles */
+:deep(.header-with-close) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+:deep(.header-close-btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+:deep(.header-close-btn:hover) {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+:deep(.header-close-btn:active) {
+  background: rgba(239, 68, 68, 0.2);
 }
 </style>
