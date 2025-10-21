@@ -17,6 +17,9 @@ const emit = defineEmits<{
   'minimize': []
 }>()
 
+const accountFilter = ref<string | null>(null)
+const assetClassFilter = ref<string | null>(null)
+
 const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'cash_flow_on_entry', 'cash_flow_on_exercise'] as const
 
 // Query positions data
@@ -535,7 +538,7 @@ function initializeTabulator() {
       title: 'Asset Class',
       field: 'asset_class',
       minWidth: 100,
-      width: columnWidths.value['asset_class'] || undefined, // ADD THIS LINE
+      width: columnWidths.value['asset_class'] || undefined,
       visible: visibleCols.value.includes('asset_class'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
@@ -547,6 +550,12 @@ function initializeTabulator() {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) return ''
         return cell.getValue() || ''
+      },
+      cellClick: (e: any, cell: any) => {
+        const data = cell.getRow().getData()
+        if (data?._isThesisGroup) return
+        const value = cell.getValue()
+        handleCellFilterClick('asset_class', value)
       },
       contextMenu: createFetchedAtContextMenu()
     },
@@ -1219,6 +1228,11 @@ function updateFilters() {
           if (accountVal !== accountFilter.value) return false
         }
 
+        // Asset class filter
+        if (assetClassFilter.value) {
+          if (data.asset_class !== assetClassFilter.value) return false
+        }
+
         // Symbol filter
         if (symbolTagFilters.value.length > 0) {
           const symbolText = data.symbol
@@ -1254,6 +1268,9 @@ function syncActiveFiltersFromTable() {
   if (accountFilter.value) {
     next.push({ field: 'legal_entity', value: accountFilter.value })
   }
+  if (assetClassFilter.value) {
+    next.push({ field: 'asset_class', value: assetClassFilter.value })
+  }
   if (symbolTagFilters.value.length > 0) {
     next.push({ field: 'symbol', value: symbolTagFilters.value.join(', ') })
   }
@@ -1281,6 +1298,8 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'
       })
     }
     // --- END ---
+  } else if (field === 'asset_class') {
+    assetClassFilter.value = null
   }
   updateFilters()
 }
@@ -1289,10 +1308,14 @@ function clearAllFilters() {
   symbolTagFilters.value = []
   thesisTagFilters.value = []
   accountFilter.value = null
+  assetClassFilter.value = null 
+
   const url = new URL(window.location.href)
   url.searchParams.delete('all_cts_clientId')
   url.searchParams.delete('all_cts_fi')
   url.searchParams.delete('all_cts_thesis')
+  url.searchParams.delete('fac')
+  
   window.history.replaceState({}, '', url.toString())
   // --- ADD THIS ---
   if (eventBus) {
@@ -1402,6 +1425,12 @@ watch(thesisTagFilters, () => {
   }
 }, { deep: true })
 
+watch(assetClassFilter, () => {
+  writeFiltersToUrl()
+  updateFilters()
+  if (tabulator) tabulator.redraw(true)
+})
+
 watch(groupByThesis, async (value) => {
   writeGroupByThesisToUrl(value)
   if (tabulator) {
@@ -1448,7 +1477,15 @@ function writeFiltersToUrl() {
   } else {
     url.searchParams.delete('all_cts_thesis')
   }
-  
+
+  // --- ADD THIS BLOCK ---
+  if (assetClassFilter.value) {
+    url.searchParams.set('fac', assetClassFilter.value)
+  } else {
+    url.searchParams.delete('fac')
+  }
+  // --- END ---
+
   window.history.replaceState({}, '', url.toString())
 }
 
@@ -1484,8 +1521,10 @@ onMounted(async () => {
   if (filters.legal_entity) accountFilter.value = filters.legal_entity
 
   // --- ADD THIS LINE ---
-  groupByThesis.value = parseGroupByThesisFromUrl()
+  if (filters.asset_class) assetClassFilter.value = filters.asset_class
   // --- END ---
+
+  groupByThesis.value = parseGroupByThesisFromUrl()
 
   // Try to initialize if data is already loaded
   if (q.isSuccess.value && tableDiv.value && !isTableInitialized.value) {
@@ -1587,11 +1626,16 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
       })
     }
     return
+  } else if (field === 'asset_class') {
+    const assetClass = String(value)
+    assetClassFilter.value = assetClass
+    updateFilters()
+    return
   }
-  // ...existing code for asset_class if needed...
 }
 
-const accountFilter = ref<string | null>(null)
+//const accountFilter = ref<string | null>(null)
+//const assetClassFilter = ref<string | null>(null)
 
 // Watch for BOTH data ready AND DOM ready
 watch(
@@ -1901,7 +1945,7 @@ h1 {
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius:  6px;
   border: 1px solid #dee2e6;
   background: #fff;
   color: #495057;
