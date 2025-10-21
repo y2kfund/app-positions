@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<PositionsProps>(), {
   highlightPnL: false,
   showHeaderLink: false,
   userId: null
+  //userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
 })
 
 const emit = defineEmits<{ 
@@ -379,7 +380,24 @@ function initializeTabulator() {
         const accountName = typeof value === 'object' && value !== null ? (value.name || value.id) : value
         handleCellFilterClick('legal_entity', accountName)
       },
-      contextMenu: createFetchedAtContextMenu()
+      contextMenu: [
+        ...createFetchedAtContextMenu(),
+        {
+          label: 'Rename Account',
+          action: (e: any, cell: any) => {
+            // Defensive: check if cell is a Tabulator CellComponent
+            if (cell && typeof cell.getRow === 'function') {
+              const rowData = cell.getRow().getData()
+              openRenameAccountDialog(rowData.internal_account_id, rowData.legal_entity)
+            } else {
+              console.warn('Rename Account: Invalid cell in context menu action', cell)
+              showToast('error', 'Rename failed', 'Could not get account info for renaming.')
+            }
+          },
+          disabled: (component: any) => !!component.getData()?._isThesisGroup
+        },
+        { separator: true }
+      ]
     },
     {
       title: 'Financial Instrument',
@@ -1662,6 +1680,43 @@ window.addEventListener('popstate', () => {
   accountFilter.value = filters.legal_entity || null
   updateFilters()
 })
+
+// ...existing code...
+const showRenameDialog = ref(false)
+const renameAccountId = ref<string | null>(null)
+const renameAccountCurrent = ref<string>('')
+const renameAccountValue = ref<string>('')
+
+function openRenameAccountDialog(accountId: string, currentName: string) {
+  renameAccountId.value = accountId
+  renameAccountCurrent.value = currentName
+  renameAccountValue.value = currentName
+  showRenameDialog.value = true
+
+  console.log('Opening rename dialog for account:', accountId, 'current name:', currentName)
+}
+
+async function saveAccountAlias() {
+  console.log('Saving account alias:', props.userId, 'for account ID:', renameAccountId.value)
+  if (!props.userId || !renameAccountId.value) return
+  try {
+    const { error } = await supabase
+      .schema('hf')
+      .from('user_account_alias')
+      .upsert({
+        user_id: props.userId,
+        internal_account_id: renameAccountId.value,
+        alias: renameAccountValue.value,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,internal_account_id' })
+    if (error) throw error
+    showRenameDialog.value = false
+    await queryClient.invalidateQueries({ queryKey: ['positions'] })
+    showToast('success', 'Account renamed', `Account name updated to "${renameAccountValue.value}"`)
+  } catch (err: any) {
+    showToast('error', 'Rename failed', err.message)
+  }
+}
 </script>
 
 <template>
@@ -1761,6 +1816,17 @@ window.addEventListener('popstate', () => {
           <button class="toast-close" @click.stop="removeToast(toast.id)">×</button>
         </div>
       </TransitionGroup>
+    </div>
+
+    <div v-if="showRenameDialog" class="rename-dialog-backdrop">
+      <div class="rename-dialog">
+        <h3>Rename Account</h3>
+        <input v-model="renameAccountValue" :placeholder="renameAccountCurrent" />
+        <div class="dialog-actions">
+          <button @click="saveAccountAlias">Save</button>
+          <button @click="showRenameDialog = false">Cancel</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -2461,5 +2527,27 @@ h1 {
 
 .columns-popup .popup-actions .btn-clear:hover {
   background: #f8f9fa;
+}
+.rename-dialog-backdrop {
+  position: fixed !important;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 99999 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rename-dialog {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  z-index: 100000 !important;
+  min-width: 320px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+.dialog-actions button {
+    width: auto;
+    margin: 5px 4px;
+    padding: 8px 10px;
 }
 </style>
