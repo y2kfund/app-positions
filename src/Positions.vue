@@ -77,8 +77,10 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'market_price', label: 'Ul CM Price' },
   { field: 'market_value', label: 'Market Value' },
   { field: 'unrealized_pnl', label: 'P&L Unrealized' },
+  { field: 'be_price_pnl', label: 'Break even price P&L' },
   { field: 'cash_flow_on_entry', label: 'Entry cash flow' },
   { field: 'cash_flow_on_exercise', label: 'If exercised cash flow' },
+  { field: 'entry_exercise_cash_flow_pct', label: '(Entry / If exercised) cash flow' },
   { field: 'be_price', label: 'BE Price' }
 ]
 
@@ -818,6 +820,48 @@ function initializeTabulator() {
       },
       contextMenu: createFetchedAtContextMenu()
     },
+    // ...inside columns array, after 'unrealized_pnl' column...
+    {
+      title: 'Break even price P&L',
+      field: 'be_price_pnl',
+      minWidth: 140,
+      width: columnWidths.value['be_price_pnl'] || undefined,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('be_price_pnl'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Break even price P&L</span>
+          <button class="header-close-btn" data-field="be_price_pnl" title="Hide column">✕</button>
+        </div>`
+      },
+      formatter: (cell: any) => {
+        const row = cell.getRow().getData()
+        // Only for put options
+        if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
+          const ulCmPrice = row.market_price
+          const bePrice = row.be_price
+          const qty = row.qty
+          const multiplier = row.multiplier
+          if (
+            ulCmPrice !== null && ulCmPrice !== undefined &&
+            bePrice !== null && bePrice !== undefined &&
+            qty !== null && qty !== undefined &&
+            multiplier !== null && multiplier !== undefined
+          ) {
+            const pnl = (ulCmPrice - bePrice) * qty * multiplier
+            let className = ''
+            if (pnl > 0) className = 'pnl-positive'
+            else if (pnl < 0) className = 'pnl-negative'
+            else className = 'pnl-zero'
+
+            return `<span class="${className}">${formatCurrency(pnl)}</span>`
+          }
+        }
+        return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
+      },
+      bottomCalc: false,
+      contextMenu: createFetchedAtContextMenu()
+    },
     {
       title: 'Entry cash flow',
       field: 'cash_flow_on_entry',
@@ -868,6 +912,37 @@ function initializeTabulator() {
         else className = 'pnl-zero'
         return `<span class="${className}">${formatCurrency(value)}</span>`
       },
+      contextMenu: createFetchedAtContextMenu()
+    },
+    {
+      title: '(Entry / If exercised) cash flow',
+      field: 'entry_exercise_cash_flow_pct',
+      minWidth: 170,
+      width: columnWidths.value['entry_exercise_cash_flow_pct'] || undefined,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('entry_exercise_cash_flow_pct'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>(Entry / If exercised) cash flow</span>
+          <button class="header-close-btn" data-field="entry_exercise_cash_flow_pct" title="Hide column">✕</button>
+        </div>`
+      },
+      formatter: (cell: any) => {
+        const row = cell.getRow().getData()
+        // Only for options (puts/calls)
+        if (row.asset_class === 'OPT' && row.cash_flow_on_entry != null && row.cash_flow_on_exercise != null && row.cash_flow_on_exercise !== 0) {
+          const pct = (row.cash_flow_on_entry / row.cash_flow_on_exercise) * 100
+          // Show as +12.34% or -12.34%
+          const formatted = `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`
+          let className = ''
+          if (pct > 0) className = 'pnl-positive'
+          else if (pct < 0) className = 'pnl-negative'
+          else className = 'pnl-zero'
+          return `<span class="${className}">${formatted}</span>`
+        }
+        return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
+      },
+      bottomCalc: false,
       contextMenu: createFetchedAtContextMenu()
     },
     {
