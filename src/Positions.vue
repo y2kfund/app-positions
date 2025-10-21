@@ -1730,6 +1730,18 @@ function handleDrop(index: number) {
   visibleCols.value = cols
   dragIndex.value = null
 }
+function moveColumnUp(idx: number) {
+  if (idx <= 0) return
+  const cols = [...visibleCols.value]
+  ;[cols[idx - 1], cols[idx]] = [cols[idx], cols[idx - 1]]
+  visibleCols.value = cols
+}
+function moveColumnDown(idx: number) {
+  if (idx >= visibleCols.value.length - 1) return
+  const cols = [...visibleCols.value]
+  ;[cols[idx], cols[idx + 1]] = [cols[idx + 1], cols[idx]]
+  visibleCols.value = cols
+}
 
 //const accountFilter = ref<string | null>(null)
 //const assetClassFilter = ref<string | null>(null)
@@ -1850,9 +1862,30 @@ async function saveAccountAlias() {
                 @dragstart="handleDragStart(idx)"
                 @dragover="handleDragOver"
                 @drop="handleDrop(idx)"
+                style="align-items: center;"
               >
                 <input type="checkbox" :value="opt.field" v-model="visibleCols" />
                 <span>{{ opt.label }}</span>
+                <span class="move-icons" style="display: flex; flex-direction: column; margin-left: 8px;">
+                  <button
+                    type="button"
+                    @click.stop="moveColumnUp(idx)"
+                    :disabled="idx === 0"
+                    title="Move up"
+                    style="background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 2px;"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    @click.stop="moveColumnDown(idx)"
+                    :disabled="idx === visibleCols.length - 1"
+                    title="Move down"
+                    style="background: none; border: none; cursor: pointer; padding: 0;"
+                  >
+                    ▼
+                  </button>
+                </span>
               </label>
               <!-- Show unchecked columns at the end -->
               <label
@@ -2645,5 +2678,9 @@ h1 {
     width: auto;
     margin: 5px 4px;
     padding: 8px 10px;
+}
+.columns-popup .move-icons button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 </style>
