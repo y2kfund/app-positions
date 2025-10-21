@@ -349,15 +349,19 @@ function initializeTabulator() {
   // Determine if we should show bottom calcs
   const shouldShowBottomCalcs = !groupByThesis.value
 
-  const columns: any[] = [
+  // --- Build all column definitions as a map ---
+  const allColumnsMap = new Map<string, any>()
+  const allColumns: any[] = [
+    // Copy all your column objects here, as in your current columns array
+    // (You can copy-paste from your current columns array, no changes needed)
+    // ...START COPY...
     {
       title: 'Account',
       field: 'legal_entity',
       minWidth: 120,
-      width: columnWidths.value['legal_entity'] || undefined, // ADD THIS LINE
+      width: columnWidths.value['legal_entity'] || undefined,
       frozen: true,
       visible: visibleCols.value.includes('legal_entity'),
-      // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? () => 'All Accounts' : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? () => 'All Accounts' : undefined,
       titleFormatter: (cell: any) => {
@@ -385,24 +389,6 @@ function initializeTabulator() {
       contextMenu: [
         ...createFetchedAtContextMenu()
       ]
-      /*contextMenu: [
-        ...createFetchedAtContextMenu(),
-        {
-          label: 'Rename Account',
-          action: (e: any, cell: any) => {
-            // Defensive: check if cell is a Tabulator CellComponent
-            if (cell && typeof cell.getRow === 'function') {
-              const rowData = cell.getRow().getData()
-              openRenameAccountDialog(rowData.internal_account_id, rowData.legal_entity)
-            } else {
-              console.warn('Rename Account: Invalid cell in context menu action', cell)
-              showToast('error', 'Rename failed', 'Could not get account info for renaming.')
-            }
-          },
-          disabled: (component: any) => !!component.getData()?._isThesisGroup
-        },
-        { separator: true }
-      ]*/
     },
     {
       title: 'Financial Instrument',
@@ -970,6 +956,12 @@ function initializeTabulator() {
       contextMenu: createFetchedAtContextMenu()
     }
   ]
+  allColumns.forEach(col => allColumnsMap.set(col.field, col))
+
+  // --- Build columns array in the order of visibleCols ---
+  const columns: any[] = visibleCols.value
+    .map(field => allColumnsMap.get(field))
+    .filter(Boolean)
 
   const tabulatorConfig: any = {
     data: gridRowData.value,
@@ -992,7 +984,6 @@ function initializeTabulator() {
       try {
         const data = row.getData()
         const element = row.getElement()
-        
         if (data?._isThesisGroup && element) {
           element.style.backgroundColor = '#f8f9fa'
           element.style.fontWeight = 'bold'
@@ -1033,18 +1024,10 @@ function initializeTabulator() {
     tabulator.on('columnResized', (column: any) => {
       const field = column.getField()
       const width = column.getWidth()
-      
-      // Update the stored widths
       columnWidths.value[field] = width
-      
-      // Save to URL
       writeColumnWidthsToUrl(columnWidths.value)
-
-      // BE Price specific title update
       if (field === 'be_price') {
         const newTitle = width >= 140 ? 'Break even price' : 'BE Price'
-        
-        // Update the column definition
         column.updateDefinition({
           titleFormatter: (cell: any) => {
             return `<div class="header-with-close">
@@ -1053,8 +1036,6 @@ function initializeTabulator() {
             </div>`
           }
         })
-        
-        // Force redraw the header
         tabulator.redraw(true)
       }
     })
@@ -1731,6 +1712,25 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
   }
 }
 
+const dragIndex = ref<number | null>(null)
+
+function handleDragStart(index: number) {
+  dragIndex.value = index
+}
+
+function handleDragOver(event: DragEvent) {
+  event.preventDefault()
+}
+
+function handleDrop(index: number) {
+  if (dragIndex.value === null || dragIndex.value === index) return
+  const cols = [...visibleCols.value]
+  const [moved] = cols.splice(dragIndex.value, 1)
+  cols.splice(index, 0, moved)
+  visibleCols.value = cols
+  dragIndex.value = null
+}
+
 //const accountFilter = ref<string | null>(null)
 //const assetClassFilter = ref<string | null>(null)
 
@@ -1842,7 +1842,24 @@ async function saveAccountAlias() {
           <div v-if="showColumnsPopup" ref="columnsPopupRef" class="columns-popup" @click.stop>
             <div class="popup-header">Columns</div>
             <div class="popup-list">
-              <label v-for="opt in allColumnOptions" :key="opt.field" class="popup-item">
+              <label
+                v-for="(opt, idx) in visibleCols.map(f => allColumnOptions.find(c => c.field === f)).filter(Boolean)"
+                :key="opt.field"
+                class="popup-item"
+                draggable="true"
+                @dragstart="handleDragStart(idx)"
+                @dragover="handleDragOver"
+                @drop="handleDrop(idx)"
+              >
+                <input type="checkbox" :value="opt.field" v-model="visibleCols" />
+                <span>{{ opt.label }}</span>
+              </label>
+              <!-- Show unchecked columns at the end -->
+              <label
+                v-for="opt in allColumnOptions.filter(c => !visibleCols.includes(c.field))"
+                :key="opt.field"
+                class="popup-item"
+              >
                 <input type="checkbox" :value="opt.field" v-model="visibleCols" />
                 <span>{{ opt.label }}</span>
               </label>
