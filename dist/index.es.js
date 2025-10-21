@@ -11823,7 +11823,8 @@ const wr = { class: "positions-card" }, Cr = {
           } catch (w) {
             console.warn("Row click error:", w);
           }
-        }
+        },
+        movableColumns: !0
       };
       v.value && (x.dataTree = !0, x.dataTreeChildField = "_children", x.dataTreeStartExpanded = !0, x.dataTreeChildIndent = 20, x.dataTreeElementColumn = "symbol", x.pagination = !1);
       try {
@@ -12323,7 +12324,7 @@ const wr = { class: "positions-card" }, Cr = {
   for (const [i, s] of e)
     t[i] = s;
   return t;
-}, to = /* @__PURE__ */ Kr(Jr, [["__scopeId", "data-v-91391035"]]);
+}, to = /* @__PURE__ */ Kr(Jr, [["__scopeId", "data-v-4176d39f"]]);
 export {
   to as Positions,
   to as default

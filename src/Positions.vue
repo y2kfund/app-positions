@@ -1012,7 +1012,8 @@ function initializeTabulator() {
       } catch (error) {
         console.warn('Row click error:', error)
       }
-    }
+    },
+    movableColumns: true
   }
 
   // Enable tree view when grouping by thesis
