@@ -381,6 +381,9 @@ function initializeTabulator() {
         handleCellFilterClick('legal_entity', accountName)
       },
       contextMenu: [
+        ...createFetchedAtContextMenu()
+      ]
+      /*contextMenu: [
         ...createFetchedAtContextMenu(),
         {
           label: 'Rename Account',
@@ -397,7 +400,7 @@ function initializeTabulator() {
           disabled: (component: any) => !!component.getData()?._isThesisGroup
         },
         { separator: true }
-      ]
+      ]*/
     },
     {
       title: 'Financial Instrument',
