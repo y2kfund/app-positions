@@ -419,7 +419,7 @@ function initializeTabulator() {
     {
       title: 'Account',
       field: 'legal_entity',
-      minWidth: 120,
+      minWidth: 80,
       width: columnWidths.value['legal_entity'] || undefined,
       frozen: true,
       visible: visibleCols.value.includes('legal_entity'),
@@ -428,7 +428,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('legal_entity')}</span>
-          <button class="header-rename-btn" data-field="legal_entity" title="Rename column">✎</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -462,7 +461,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('symbol')}</span>
-          <button class="header-rename-btn" data-field="symbol" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="symbol" title="Hide column">✕</button>
         </div>`
       },
@@ -496,13 +494,12 @@ function initializeTabulator() {
     {
       title: 'Thesis',
       field: 'thesis',
-      minWidth: 150,
+      minWidth: 80,
       width: columnWidths.value['thesis'] || undefined, // ADD THIS LINE
       visible: visibleCols.value.includes('thesis'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('thesis')}</span>
-          <button class="header-rename-btn" data-field="thesis" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="thesis" title="Hide column">✕</button>
         </div>`
       },
@@ -610,13 +607,12 @@ function initializeTabulator() {
     {
       title: 'Asset Class',
       field: 'asset_class',
-      minWidth: 100,
+      minWidth: 80,
       width: columnWidths.value['asset_class'] || undefined,
       visible: visibleCols.value.includes('asset_class'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('asset_class')}</span>
-          <button class="header-rename-btn" data-field="asset_class" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="asset_class" title="Hide column">✕</button>
         </div>`
       },
@@ -642,7 +638,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('conid')}</span>
-          <button class="header-rename-btn" data-field="conid" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="conid" title="Hide column">✕</button>
         </div>`
       },
@@ -656,13 +651,12 @@ function initializeTabulator() {
     {
       title: 'Underlying Conid',
       field: 'undConid',
-      minWidth: 110,
+      minWidth: 80,
       width: columnWidths.value['undConid'] || undefined, // ADD THIS LINE
       visible: visibleCols.value.includes('undConid'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('undConid')}</span>
-          <button class="header-rename-btn" data-field="undConid" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="undConid" title="Hide column">✕</button>
         </div>`
       },
@@ -686,7 +680,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('multiplier')}</span>
-          <button class="header-rename-btn" data-field="multiplier" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="multiplier" title="Hide column">✕</button>
         </div>`
       },
@@ -709,7 +702,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('qty')}</span>
-          <button class="header-rename-btn" data-field="qty" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="qty" title="Hide column">✕</button>
         </div>`
       },
@@ -722,14 +714,13 @@ function initializeTabulator() {
     {
       title: 'Avg Price',
       field: 'avgPrice',
-      minWidth: 90,
+      minWidth: 80,
       width: columnWidths.value['avgPrice'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('avgPrice'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('avgPrice')}</span>
-          <button class="header-rename-btn" data-field="avgPrice" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="avgPrice" title="Hide column">✕</button>
         </div>`
       },
@@ -742,14 +733,13 @@ function initializeTabulator() {
     {
       title: 'Market Price',
       field: 'price',
-      minWidth: 100,
+      minWidth: 80,
       width: columnWidths.value['price'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('price'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('price')}</span>
-          <button class="header-rename-btn" data-field="price" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="price" title="Hide column">✕</button>
         </div>`
       },
@@ -762,14 +752,13 @@ function initializeTabulator() {
     {
       title: 'Ul CM Price',
       field: 'market_price',
-      minWidth: 100,
+      minWidth: 80,
       width: columnWidths.value['market_price'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('market_price'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('market_price')}</span>
-          <button class="header-rename-btn" data-field="market_price" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="market_price" title="Hide column">✕</button>
         </div>`
       },
@@ -832,7 +821,7 @@ function initializeTabulator() {
     {
       title: 'Market Value',
       field: 'market_value',
-      minWidth: 110,
+      minWidth: 80,
       width: columnWidths.value['market_value'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('market_value'),
@@ -842,7 +831,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('market_value')}</span>
-          <button class="header-rename-btn" data-field="market_value" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="market_value" title="Hide column">✕</button>
         </div>`
       },
@@ -856,7 +844,7 @@ function initializeTabulator() {
     {
       title: 'P&L Unrealized',
       field: 'unrealized_pnl',
-      minWidth: 120,
+      minWidth: 80,
       width: columnWidths.value['unrealized_pnl'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('unrealized_pnl'),
@@ -866,7 +854,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('unrealized_pnl')}</span>
-          <button class="header-rename-btn" data-field="unrealized_pnl" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="unrealized_pnl" title="Hide column">✕</button>
         </div>`
       },
@@ -884,14 +871,13 @@ function initializeTabulator() {
     {
       title: 'Break even price P&L',
       field: 'be_price_pnl',
-      minWidth: 140,
+      minWidth: 80,
       width: columnWidths.value['be_price_pnl'] || undefined,
       hozAlign: 'right',
       visible: visibleCols.value.includes('be_price_pnl'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('be_price_pnl')}</span>
-          <button class="header-rename-btn" data-field="be_price_pnl" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="be_price_pnl" title="Hide column">✕</button>
         </div>`
       },
@@ -901,15 +887,27 @@ function initializeTabulator() {
         if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
           const ulCmPrice = row.market_price
           const bePrice = row.be_price
-          const qty = row.qty
+          let qty = row.qty
           const multiplier = row.multiplier
+
+          // Get strike price from third tag of symbol
+          const tags = extractTagsFromSymbol(row.symbol)
+          const strikeTag = tags[2]
+          const strikePrice = strikeTag ? parseFloat(strikeTag) : null
+
+          // Use absolute value for qty
+          qty = Math.abs(qty)
+
           if (
             ulCmPrice !== null && ulCmPrice !== undefined &&
             bePrice !== null && bePrice !== undefined &&
             qty !== null && qty !== undefined &&
-            multiplier !== null && multiplier !== undefined
+            multiplier !== null && multiplier !== undefined &&
+            strikePrice !== null && !isNaN(strikePrice)
           ) {
-            const pnl = (ulCmPrice - bePrice) * qty * multiplier
+            // min(UI CM Price, Strike price)
+            const minPrice = Math.min(ulCmPrice, strikePrice)
+            const pnl = (minPrice - bePrice) * qty * multiplier
             let className = ''
             if (pnl > 0) className = 'pnl-positive'
             else if (pnl < 0) className = 'pnl-negative'
@@ -926,7 +924,7 @@ function initializeTabulator() {
     {
       title: 'Entry cash flow',
       field: 'cash_flow_on_entry',
-      minWidth: 120,
+      minWidth: 80,
       width: columnWidths.value['cash_flow_on_entry'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('cash_flow_on_entry'),
@@ -936,7 +934,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('cash_flow_on_entry')}</span>
-          <button class="header-rename-btn" data-field="cash_flow_on_entry" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="cash_flow_on_entry" title="Hide column">✕</button>
         </div>`
       },
@@ -953,7 +950,7 @@ function initializeTabulator() {
     {
       title: 'If exercised cash flow',
       field: 'cash_flow_on_exercise',
-      minWidth: 130,
+      minWidth: 80,
       width: columnWidths.value['cash_flow_on_exercise'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('cash_flow_on_exercise'),
@@ -963,7 +960,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('cash_flow_on_exercise')}</span>
-          <button class="header-rename-btn" data-field="cash_flow_on_exercise" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="cash_flow_on_exercise" title="Hide column">✕</button>
         </div>`
       },
@@ -980,14 +976,13 @@ function initializeTabulator() {
     {
       title: '(Entry / If exercised) cash flow',
       field: 'entry_exercise_cash_flow_pct',
-      minWidth: 170,
+      minWidth: 100,
       width: columnWidths.value['entry_exercise_cash_flow_pct'] || undefined,
       hozAlign: 'right',
       visible: visibleCols.value.includes('entry_exercise_cash_flow_pct'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('entry_exercise_cash_flow_pct')}</span>
-          <button class="header-rename-btn" data-field="entry_exercise_cash_flow_pct" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="entry_exercise_cash_flow_pct" title="Hide column">✕</button>
         </div>`
       },
@@ -1012,7 +1007,7 @@ function initializeTabulator() {
     {
       title: 'BE Price',
       field: 'be_price',
-      minWidth: 100,
+      minWidth: 80,
       width: columnWidths.value['be_price'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('be_price'),
@@ -1026,7 +1021,6 @@ function initializeTabulator() {
         </div>`*/
         return `<div class="header-with-close">
           <span>${getColLabel('be_price')}</span>
-          <button class="header-rename-btn" data-field="be_price" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="be_price" title="Hide column">✕</button>
         </div>`
       },
