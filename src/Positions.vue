@@ -77,10 +77,10 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'market_price', label: 'Ul CM Price' },
   { field: 'market_value', label: 'Market Value' },
   { field: 'unrealized_pnl', label: 'P&L Unrealized' },
-  { field: 'be_price_pnl', label: 'Break even price P&L' },
+  { field: 'be_price_pnl', label: 'Break even price P&L (computed)' },
   { field: 'cash_flow_on_entry', label: 'Entry cash flow' },
   { field: 'cash_flow_on_exercise', label: 'If exercised cash flow' },
-  { field: 'entry_exercise_cash_flow_pct', label: '(Entry / If exercised) cash flow' },
+  { field: 'entry_exercise_cash_flow_pct', label: '(Entry / If exercised) cash flow (computed)' },
   { field: 'be_price', label: 'BE Price' }
 ]
 
@@ -671,7 +671,15 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('multiplier'),
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
-      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
+      //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
+        const value = cell.getValue()
+        let className = ''
+        if (value > 0) className = 'pnl-positive'
+        else if (value < 0) className = 'pnl-negative'
+        else className = 'pnl-zero'
+        return `<span class="${className}">${formatNumber(value)}</span>`
+      } : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('multiplier')}</span>
@@ -692,7 +700,15 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('qty'),
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
-      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
+      //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
+        const value = cell.getValue()
+        let className = ''
+        if (value > 0) className = 'pnl-positive'
+        else if (value < 0) className = 'pnl-negative'
+        else className = 'pnl-zero'
+        return `<span class="${className}">${formatNumber(value)}</span>`
+      } : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('qty')}</span>
@@ -817,7 +833,15 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('market_value'),
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
-      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
+        const value = cell.getValue()
+        let className = ''
+        if (value > 0) className = 'pnl-positive'
+        else if (value < 0) className = 'pnl-negative'
+        else className = 'pnl-zero'
+        return `<span class="${className}">${formatCurrency(value)}</span>`
+      } : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('market_value')}</span>
@@ -839,7 +863,15 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('unrealized_pnl'),
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
-      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
+        const value = cell.getValue()
+        let className = ''
+        if (value > 0) className = 'pnl-positive'
+        else if (value < 0) className = 'pnl-negative'
+        else className = 'pnl-zero'
+        return `<span class="${className}">${formatCurrency(value)}</span>`
+      } : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('unrealized_pnl')}</span>
@@ -994,7 +1026,15 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('cash_flow_on_entry'),
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
-      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
+        const value = cell.getValue()
+        let className = ''
+        if (value > 0) className = 'pnl-positive'
+        else if (value < 0) className = 'pnl-negative'
+        else className = 'pnl-zero'
+        return `<span class="${className}">${formatCurrency(value)}</span>`
+      } : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('cash_flow_on_entry')}</span>
@@ -1019,7 +1059,15 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('cash_flow_on_exercise'),
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
-      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
+        const value = cell.getValue()
+        let className = ''
+        if (value > 0) className = 'pnl-positive'
+        else if (value < 0) className = 'pnl-negative'
+        else className = 'pnl-zero'
+        return `<span class="${className}">${formatCurrency(value)}</span>`
+      } : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('cash_flow_on_exercise')}</span>
@@ -2022,7 +2070,12 @@ async function saveAccountAlias() {
                 style="align-items: center;"
               >
                 <input type="checkbox" :value="opt.field" v-model="visibleCols" />
-                <span>{{ columnRenames[opt.field] || opt.label }}</span>
+                <span>
+                  {{ columnRenames[opt.field] || opt.label }}
+                  <span v-if="columnRenames[opt.field]" style="font-size: 11px; color: #888; font-style: italic; display: inline-block;">
+                    ({{ opt.label }})
+                  </span>
+                </span>
                 <button
                   class="col-rename-btn"
                   type="button"
