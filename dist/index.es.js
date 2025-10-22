@@ -11088,7 +11088,7 @@ const Pr = { class: "positions-card" }, Ar = {
   },
   emits: ["row-click", "minimize"],
   setup(l, { emit: e }) {
-    const t = l, i = e, s = G(null), n = G(null), r = ["qty", "avgPrice", "price", "market_value", "unrealized_pnl", "cash_flow_on_entry", "cash_flow_on_exercise"], o = as(t.accountId, t.userId), a = wt(() => {
+    const t = l, i = e, s = G(null), n = G(null), r = ["qty", "avgPrice", "price", "market_value", "unrealized_pnl", "computed_cash_flow_on_entry", "computed_cash_flow_on_exercise"], o = as(t.accountId, t.userId), a = wt(() => {
       const f = o.data.value || [];
       return f.length ? f.map((m) => {
         const T = { ...m };
@@ -11120,10 +11120,10 @@ const Pr = { class: "positions-card" }, Ar = {
       { field: "market_value", label: "Market Value" },
       { field: "unrealized_pnl", label: "P&L Unrealized" },
       { field: "be_price_pnl", label: "Break even price P&L (computed)" },
-      { field: "cash_flow_on_entry", label: "Entry cash flow" },
-      { field: "cash_flow_on_exercise", label: "If exercised cash flow" },
+      { field: "computed_cash_flow_on_entry", label: "Entry cash flow" },
+      { field: "computed_cash_flow_on_exercise", label: "If exercised cash flow" },
       { field: "entry_exercise_cash_flow_pct", label: "(Entry / If exercised) cash flow (computed)" },
-      { field: "be_price", label: "BE Price" }
+      { field: "computed_be_price", label: "BE Price" }
     ], C = G({});
     function A() {
       const m = new URL(window.location.href).searchParams.get("position_col_renames");
@@ -11724,7 +11724,7 @@ const Pr = { class: "positions-card" }, Ar = {
           formatter: (b) => {
             const p = b.getRow().getData();
             if (p.asset_class === "OPT" && p.symbol && p.symbol.includes("P")) {
-              const v = p.market_price, k = p.be_price;
+              const v = p.market_price, k = p.computed_be_price;
               let D = p.qty;
               const P = p.multiplier, L = Me(p.symbol)[2], S = L ? parseFloat(L) : null;
               if (D = Math.abs(D), v != null && k !== null && k !== void 0 && D !== null && D !== void 0 && P !== null && P !== void 0 && S !== null && !isNaN(S)) {
@@ -11740,7 +11740,7 @@ const Pr = { class: "positions-card" }, Ar = {
             let p = 0;
             for (const v of d.getData())
               if (v.asset_class === "OPT" && v.symbol && v.symbol.includes("P")) {
-                const k = v.market_price, D = v.be_price;
+                const k = v.market_price, D = v.computed_be_price;
                 let P = v.qty;
                 const J = v.multiplier, S = Me(v.symbol)[2], z = S ? parseFloat(S) : null;
                 if (P = Math.abs(P), k != null && D !== null && D !== void 0 && P !== null && P !== void 0 && J !== null && J !== void 0 && z !== null && !isNaN(z)) {
@@ -11762,7 +11762,7 @@ const Pr = { class: "positions-card" }, Ar = {
               label: (b) => {
                 const p = b.getData();
                 if (p.asset_class === "OPT" && p.symbol && p.symbol.includes("P")) {
-                  const v = p.market_price, k = p.be_price;
+                  const v = p.market_price, k = p.computed_be_price;
                   let D = p.qty;
                   const P = p.multiplier, L = Me(p.symbol)[2], S = L ? parseFloat(L) : null;
                   if (D = Math.abs(D), v != null && k !== null && k !== void 0 && D !== null && D !== void 0 && P !== null && P !== void 0 && S !== null && !isNaN(S)) {
@@ -11789,12 +11789,12 @@ const Pr = { class: "positions-card" }, Ar = {
         },
         {
           title: "Entry cash flow",
-          field: "cash_flow_on_entry",
+          field: "computed_cash_flow_on_entry",
           minWidth: 80,
-          width: $.value.cash_flow_on_entry || void 0,
+          width: $.value.computed_cash_flow_on_entry || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("cash_flow_on_entry"),
+          visible: _.value.includes("computed_cash_flow_on_entry"),
           // Set bottom calc during initialization
           bottomCalc: f ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
@@ -11804,7 +11804,7 @@ const Pr = { class: "positions-card" }, Ar = {
             return p > 0 ? v = "pnl-positive" : p < 0 ? v = "pnl-negative" : v = "pnl-zero", `<span class="${v}">${X(p)}</span>`;
           } : void 0,
           titleFormatter: (b) => `<div class="header-with-close">
-          <span>${Q("cash_flow_on_entry")}</span>
+          <span>${Q("computed_cash_flow_on_entry")}</span>
         </div>`,
           formatter: (b) => {
             const p = b.getValue();
@@ -11815,12 +11815,12 @@ const Pr = { class: "positions-card" }, Ar = {
         },
         {
           title: "If exercised cash flow",
-          field: "cash_flow_on_exercise",
+          field: "computed_cash_flow_on_exercise",
           minWidth: 80,
-          width: $.value.cash_flow_on_exercise || void 0,
+          width: $.value.computed_cash_flow_on_exercise || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("cash_flow_on_exercise"),
+          visible: _.value.includes("computed_cash_flow_on_exercise"),
           // Set bottom calc during initialization
           bottomCalc: f ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
@@ -11830,7 +11830,7 @@ const Pr = { class: "positions-card" }, Ar = {
             return p > 0 ? v = "pnl-positive" : p < 0 ? v = "pnl-negative" : v = "pnl-zero", `<span class="${v}">${X(p)}</span>`;
           } : void 0,
           titleFormatter: (b) => `<div class="header-with-close">
-          <span>${Q("cash_flow_on_exercise")}</span>
+          <span>${Q("computed_cash_flow_on_exercise")}</span>
         </div>`,
           formatter: (b) => {
             const p = b.getValue();
@@ -11851,8 +11851,8 @@ const Pr = { class: "positions-card" }, Ar = {
         </div>`,
           formatter: (b) => {
             const p = b.getRow().getData();
-            if (p.asset_class === "OPT" && p.cash_flow_on_entry != null && p.cash_flow_on_exercise != null && p.cash_flow_on_exercise !== 0) {
-              const v = p.cash_flow_on_entry / p.cash_flow_on_exercise * 100, k = `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
+            if (p.asset_class === "OPT" && p.computed_cash_flow_on_entry != null && p.computed_cash_flow_on_exercise != null && p.computed_cash_flow_on_exercise !== 0) {
+              const v = p.computed_cash_flow_on_entry / p.computed_cash_flow_on_exercise * 100, k = `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
               let D = "";
               return v > 0 ? D = "pnl-positive" : v < 0 ? D = "pnl-negative" : D = "pnl-zero", `<span class="${D}">${k}</span>`;
             }
@@ -11863,14 +11863,14 @@ const Pr = { class: "positions-card" }, Ar = {
         },
         {
           title: "BE Price",
-          field: "be_price",
+          field: "computed_be_price",
           minWidth: 80,
-          width: $.value.be_price || void 0,
+          width: $.value.computed_be_price || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("be_price"),
+          visible: _.value.includes("computed_be_price"),
           titleFormatter: (b) => `<div class="header-with-close">
-          <span>${Q("be_price")}</span>
+          <span>${Q("computed_be_price")}</span>
         </div>`,
           formatter: (b) => {
             const p = b.getValue();
@@ -11929,7 +11929,7 @@ const Pr = { class: "positions-card" }, Ar = {
               L && Ai(L);
             });
           });
-          const p = d.getColumn("be_price");
+          const p = d.getColumn("computed_be_price");
           if (p) {
             const P = p.getWidth();
             p.updateDefinition({

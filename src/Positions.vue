@@ -21,7 +21,7 @@ const emit = defineEmits<{
 const accountFilter = ref<string | null>(null)
 const assetClassFilter = ref<string | null>(null)
 
-const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'cash_flow_on_entry', 'cash_flow_on_exercise'] as const
+const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'computed_cash_flow_on_entry', 'computed_cash_flow_on_exercise'] as const
 
 // Query positions data
 const q = usePositionsQuery(props.accountId, props.userId)
@@ -62,7 +62,7 @@ type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis
 const activeFilters = ref<ActiveFilter[]>([])
 
 // Column visibility
-type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'market_value' | 'unrealized_pnl' | 'cash_flow_on_entry' | 'cash_flow_on_exercise' | 'be_price' | 'thesis'
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'market_value' | 'unrealized_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'computed_be_price' | 'thesis'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'thesis', label: 'Thesis' },
@@ -78,10 +78,10 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'market_value', label: 'Market Value' },
   { field: 'unrealized_pnl', label: 'P&L Unrealized' },
   { field: 'be_price_pnl', label: 'Break even price P&L (computed)' },
-  { field: 'cash_flow_on_entry', label: 'Entry cash flow' },
-  { field: 'cash_flow_on_exercise', label: 'If exercised cash flow' },
+  { field: 'computed_cash_flow_on_entry', label: 'Entry cash flow' },
+  { field: 'computed_cash_flow_on_exercise', label: 'If exercised cash flow' },
   { field: 'entry_exercise_cash_flow_pct', label: '(Entry / If exercised) cash flow (computed)' },
-  { field: 'be_price', label: 'BE Price' }
+  { field: 'computed_be_price', label: 'BE Price' }
 ]
 
 type ColumnRenames = Record<ColumnField, string>
@@ -905,7 +905,7 @@ function initializeTabulator() {
         // Only for put options
         if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
           const ulCmPrice = row.market_price
-          const bePrice = row.be_price
+          const bePrice = row.computed_be_price
           let qty = row.qty
           const multiplier = row.multiplier
 
@@ -944,7 +944,7 @@ function initializeTabulator() {
         for (const row of tabulator.getData()) {
           if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
             const ulCmPrice = row.market_price
-            const bePrice = row.be_price
+            const bePrice = row.computed_be_price
             let qty = row.qty
             const multiplier = row.multiplier
             const tags = extractTagsFromSymbol(row.symbol)
@@ -982,7 +982,7 @@ function initializeTabulator() {
             const row = component.getData()
             if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
               const ulCmPrice = row.market_price
-              const bePrice = row.be_price
+              const bePrice = row.computed_be_price
               let qty = row.qty
               const multiplier = row.multiplier
               const tags = extractTagsFromSymbol(row.symbol)
@@ -1019,11 +1019,11 @@ function initializeTabulator() {
     },
     {
       title: 'Entry cash flow',
-      field: 'cash_flow_on_entry',
+      field: 'computed_cash_flow_on_entry',
       minWidth: 80,
-      width: columnWidths.value['cash_flow_on_entry'] || undefined, // ADD THIS LINE
+      width: columnWidths.value['computed_cash_flow_on_entry'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
-      visible: visibleCols.value.includes('cash_flow_on_entry'),
+      visible: visibleCols.value.includes('computed_cash_flow_on_entry'),
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
@@ -1037,7 +1037,7 @@ function initializeTabulator() {
       } : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>${getColLabel('cash_flow_on_entry')}</span>
+          <span>${getColLabel('computed_cash_flow_on_entry')}</span>
         </div>`
       },
       formatter: (cell: any) => {
@@ -1052,11 +1052,11 @@ function initializeTabulator() {
     },
     {
       title: 'If exercised cash flow',
-      field: 'cash_flow_on_exercise',
+      field: 'computed_cash_flow_on_exercise',
       minWidth: 80,
-      width: columnWidths.value['cash_flow_on_exercise'] || undefined, // ADD THIS LINE
+      width: columnWidths.value['computed_cash_flow_on_exercise'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
-      visible: visibleCols.value.includes('cash_flow_on_exercise'),
+      visible: visibleCols.value.includes('computed_cash_flow_on_exercise'),
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
@@ -1070,7 +1070,7 @@ function initializeTabulator() {
       } : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>${getColLabel('cash_flow_on_exercise')}</span>
+          <span>${getColLabel('computed_cash_flow_on_exercise')}</span>
         </div>`
       },
       formatter: (cell: any) => {
@@ -1098,8 +1098,8 @@ function initializeTabulator() {
       formatter: (cell: any) => {
         const row = cell.getRow().getData()
         // Only for options (puts/calls)
-        if (row.asset_class === 'OPT' && row.cash_flow_on_entry != null && row.cash_flow_on_exercise != null && row.cash_flow_on_exercise !== 0) {
-          const pct = (row.cash_flow_on_entry / row.cash_flow_on_exercise) * 100
+        if (row.asset_class === 'OPT' && row.computed_cash_flow_on_entry != null && row.computed_cash_flow_on_exercise != null && row.computed_cash_flow_on_exercise !== 0) {
+          const pct = (row.computed_cash_flow_on_entry / row.computed_cash_flow_on_exercise) * 100
           // Show as +12.34% or -12.34%
           const formatted = `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`
           let className = ''
@@ -1115,21 +1115,21 @@ function initializeTabulator() {
     },
     {
       title: 'BE Price',
-      field: 'be_price',
+      field: 'computed_be_price',
       minWidth: 80,
-      width: columnWidths.value['be_price'] || undefined, // ADD THIS LINE
+      width: columnWidths.value['computed_be_price'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
-      visible: visibleCols.value.includes('be_price'),
+      visible: visibleCols.value.includes('computed_be_price'),
       titleFormatter: (cell: any) => {
-        /*const bePriceCol = columnWidths.value['be_price'] && columnWidths.value['be_price'] >= 140 
+        /*const bePriceCol = columnWidths.value['computed_be_price'] && columnWidths.value['computed_be_price'] >= 140 
           ? 'Break even price' 
           : 'BE Price'
         return `<div class="header-with-close">
           <span>${bePriceCol}</span>
-          <button class="header-close-btn" data-field="be_price" title="Hide column">✕</button>
+          <button class="header-close-btn" data-field="computed_be_price" title="Hide column">✕</button>
         </div>`*/
         return `<div class="header-with-close">
-          <span>${getColLabel('be_price')}</span>
+          <span>${getColLabel('computed_be_price')}</span>
         </div>`
       },
       formatter: (cell: any) => {
@@ -1209,13 +1209,13 @@ function initializeTabulator() {
       const width = column.getWidth()
       columnWidths.value[field] = width
       writeColumnWidthsToUrl(columnWidths.value)
-      /*if (field === 'be_price') {
+      /*if (field === 'computed_be_price') {
         const newTitle = width >= 140 ? 'Break even price' : 'BE Price'
         column.updateDefinition({
           titleFormatter: (cell: any) => {
             return `<div class="header-with-close">
               <span>${newTitle}</span>
-              <button class="header-close-btn" data-field="be_price" title="Hide column">✕</button>
+              <button class="header-close-btn" data-field="computed_be_price" title="Hide column">✕</button>
             </div>`
           }
         })
@@ -1236,7 +1236,7 @@ function initializeTabulator() {
         })
       })
 
-      const column = tabulator.getColumn('be_price')
+      const column = tabulator.getColumn('computed_be_price')
       if (column) {
         const width = column.getWidth()
         column.updateDefinition({
