@@ -84,6 +84,67 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'be_price', label: 'BE Price' }
 ]
 
+type ColumnRenames = Record<ColumnField, string>
+const columnRenames = ref<ColumnRenames>({})
+
+// --- Helpers for URL sync of column renames ---
+function parseColumnRenamesFromUrl(): ColumnRenames {
+  const url = new URL(window.location.href)
+  const param = url.searchParams.get('position_col_renames')
+  if (!param) return {}
+  try {
+    const pairs = param.split('-and-')
+    const renames: ColumnRenames = {}
+    pairs.forEach(pair => {
+      const [field, ...rest] = pair.split(':')
+      if (field && rest.length) {
+        renames[field as ColumnField] = decodeURIComponent(rest.join(':'))
+      }
+    })
+    return renames
+  } catch {
+    return {}
+  }
+}
+function writeColumnRenamesToUrl(renames: ColumnRenames) {
+  const url = new URL(window.location.href)
+  const pairs = Object.entries(renames)
+    .filter(([_, name]) => name && name.trim())
+    .map(([field, name]) => `${field}:${encodeURIComponent(name)}`)
+    .join('-and-')
+  if (pairs) {
+    url.searchParams.set('position_col_renames', pairs)
+  } else {
+    url.searchParams.delete('position_col_renames')
+  }
+  window.history.replaceState({}, '', url.toString())
+}
+
+// --- Dialog state for renaming columns ---
+const showColRenameDialog = ref(false)
+const colRenameField = ref<ColumnField | null>(null)
+const colRenameValue = ref('')
+
+function openColRenameDialog(field: ColumnField, current: string) {
+  colRenameField.value = field
+  colRenameValue.value = current
+  showColRenameDialog.value = true
+}
+function saveColRename() {
+  if (colRenameField.value) {
+    columnRenames.value = {
+      ...columnRenames.value,
+      [colRenameField.value]: colRenameValue.value.trim()
+    }
+    writeColumnRenamesToUrl(columnRenames.value)
+    showColRenameDialog.value = false
+    nextTick(() => initializeTabulator())
+  }
+}
+function cancelColRename() {
+  showColRenameDialog.value = false
+}
+
 function parseVisibleColsFromUrl(): ColumnField[] {
   const url = new URL(window.location.href)
   const colsParam = url.searchParams.get('position_cols')
@@ -366,7 +427,8 @@ function initializeTabulator() {
       bottomCalcFormatter: shouldShowBottomCalcs ? () => 'All Accounts' : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Account</span>
+          <span>${getColLabel('legal_entity')}</span>
+          <button class="header-rename-btn" data-field="legal_entity" title="Rename column">✎</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -399,7 +461,8 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('symbol'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Financial Instrument</span>
+          <span>${getColLabel('symbol')}</span>
+          <button class="header-rename-btn" data-field="symbol" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="symbol" title="Hide column">✕</button>
         </div>`
       },
@@ -438,7 +501,8 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('thesis'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Thesis</span>
+          <span>${getColLabel('thesis')}</span>
+          <button class="header-rename-btn" data-field="thesis" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="thesis" title="Hide column">✕</button>
         </div>`
       },
@@ -551,7 +615,8 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('asset_class'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Asset Class</span>
+          <span>${getColLabel('asset_class')}</span>
+          <button class="header-rename-btn" data-field="asset_class" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="asset_class" title="Hide column">✕</button>
         </div>`
       },
@@ -576,7 +641,8 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('conid'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Conid</span>
+          <span>${getColLabel('conid')}</span>
+          <button class="header-rename-btn" data-field="conid" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="conid" title="Hide column">✕</button>
         </div>`
       },
@@ -595,7 +661,8 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('undConid'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Underlying Conid</span>
+          <span>${getColLabel('undConid')}</span>
+          <button class="header-rename-btn" data-field="undConid" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="undConid" title="Hide column">✕</button>
         </div>`
       },
@@ -618,7 +685,8 @@ function initializeTabulator() {
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Multiplier</span>
+          <span>${getColLabel('multiplier')}</span>
+          <button class="header-rename-btn" data-field="multiplier" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="multiplier" title="Hide column">✕</button>
         </div>`
       },
@@ -640,7 +708,8 @@ function initializeTabulator() {
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Qty</span>
+          <span>${getColLabel('qty')}</span>
+          <button class="header-rename-btn" data-field="qty" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="qty" title="Hide column">✕</button>
         </div>`
       },
@@ -659,7 +728,8 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('avgPrice'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Avg Price</span>
+          <span>${getColLabel('avgPrice')}</span>
+          <button class="header-rename-btn" data-field="avgPrice" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="avgPrice" title="Hide column">✕</button>
         </div>`
       },
@@ -678,7 +748,8 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('price'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Market Price</span>
+          <span>${getColLabel('price')}</span>
+          <button class="header-rename-btn" data-field="price" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="price" title="Hide column">✕</button>
         </div>`
       },
@@ -697,7 +768,8 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('market_price'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Ul CM Price</span>
+          <span>${getColLabel('market_price')}</span>
+          <button class="header-rename-btn" data-field="market_price" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="market_price" title="Hide column">✕</button>
         </div>`
       },
@@ -769,7 +841,8 @@ function initializeTabulator() {
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Market Value</span>
+          <span>${getColLabel('market_value')}</span>
+          <button class="header-rename-btn" data-field="market_value" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="market_value" title="Hide column">✕</button>
         </div>`
       },
@@ -792,7 +865,8 @@ function initializeTabulator() {
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>P&L Unrealized</span>
+          <span>${getColLabel('unrealized_pnl')}</span>
+          <button class="header-rename-btn" data-field="unrealized_pnl" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="unrealized_pnl" title="Hide column">✕</button>
         </div>`
       },
@@ -816,7 +890,8 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('be_price_pnl'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Break even price P&L</span>
+          <span>${getColLabel('be_price_pnl')}</span>
+          <button class="header-rename-btn" data-field="be_price_pnl" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="be_price_pnl" title="Hide column">✕</button>
         </div>`
       },
@@ -860,7 +935,8 @@ function initializeTabulator() {
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>Entry cash flow</span>
+          <span>${getColLabel('cash_flow_on_entry')}</span>
+          <button class="header-rename-btn" data-field="cash_flow_on_entry" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="cash_flow_on_entry" title="Hide column">✕</button>
         </div>`
       },
@@ -886,7 +962,8 @@ function initializeTabulator() {
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>If exercised cash flow</span>
+          <span>${getColLabel('cash_flow_on_exercise')}</span>
+          <button class="header-rename-btn" data-field="cash_flow_on_exercise" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="cash_flow_on_exercise" title="Hide column">✕</button>
         </div>`
       },
@@ -909,7 +986,8 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('entry_exercise_cash_flow_pct'),
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>(Entry / If exercised) cash flow</span>
+          <span>${getColLabel('entry_exercise_cash_flow_pct')}</span>
+          <button class="header-rename-btn" data-field="entry_exercise_cash_flow_pct" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="entry_exercise_cash_flow_pct" title="Hide column">✕</button>
         </div>`
       },
@@ -939,13 +1017,16 @@ function initializeTabulator() {
       hozAlign: 'right',
       visible: visibleCols.value.includes('be_price'),
       titleFormatter: (cell: any) => {
-        
-        console.log('BE Price column width:', columnWidths.value['be_price'])
-        const bePriceCol = columnWidths.value['be_price'] && columnWidths.value['be_price'] >= 140 
+        /*const bePriceCol = columnWidths.value['be_price'] && columnWidths.value['be_price'] >= 140 
           ? 'Break even price' 
           : 'BE Price'
         return `<div class="header-with-close">
           <span>${bePriceCol}</span>
+          <button class="header-close-btn" data-field="be_price" title="Hide column">✕</button>
+        </div>`*/
+        return `<div class="header-with-close">
+          <span>${getColLabel('be_price')}</span>
+          <button class="header-rename-btn" data-field="be_price" title="Rename column">✎</button>
           <button class="header-close-btn" data-field="be_price" title="Hide column">✕</button>
         </div>`
       },
@@ -1061,6 +1142,18 @@ function initializeTabulator() {
         })
         tabulator.redraw(true)
       }
+
+      const renameBtns = tableDiv.value?.querySelectorAll('.header-rename-btn')
+      renameBtns?.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation()
+          const field = (e.target as HTMLElement).getAttribute('data-field') as ColumnField
+          if (field) {
+            const opt = allColumnOptions.find(c => c.field === field)
+            openColRenameDialog(field, columnRenames.value[field] || (opt?.label ?? field))
+          }
+        })
+      })
     })
 
     isTabulatorReady.value = true
@@ -1602,6 +1695,8 @@ onMounted(async () => {
   if (filters.asset_class) assetClassFilter.value = filters.asset_class
   // --- END ---
 
+  columnRenames.value = parseColumnRenamesFromUrl()
+
   groupByThesis.value = parseGroupByThesisFromUrl()
 
   // Try to initialize if data is already loaded
@@ -1769,8 +1864,16 @@ window.addEventListener('popstate', () => {
   symbolTagFilters.value = filters.symbol ? filters.symbol.split(',').map(s => s.trim()) : []
   thesisTagFilters.value = filters.thesis ? filters.thesis.split(',').map(s => s.trim()) : []
   accountFilter.value = filters.legal_entity || null
+
+  columnRenames.value = parseColumnRenamesFromUrl()
   updateFilters()
 })
+
+// --- In initializeTabulator(), update column titles and add rename button ---
+function getColLabel(field: ColumnField) {
+  const opt = allColumnOptions.find(c => c.field === field)
+  return columnRenames.value[field] || (opt?.label ?? field)
+}
 
 // ...existing code...
 const showRenameDialog = ref(false)
@@ -1865,7 +1968,14 @@ async function saveAccountAlias() {
                 style="align-items: center;"
               >
                 <input type="checkbox" :value="opt.field" v-model="visibleCols" />
-                <span>{{ opt.label }}</span>
+                <span>{{ columnRenames[opt.field] || opt.label }}</span>
+                <button
+                  class="col-rename-btn"
+                  type="button"
+                  @click.stop="openColRenameDialog(opt.field, columnRenames[opt.field] || opt.label)"
+                  title="Rename column"
+                  style="margin-left: 6px; font-size: 13px; background: none; border: none; color: #888; cursor: pointer;"
+                >✎</button>
                 <span class="move-icons" style="display: flex; flex-direction: column; margin-left: 8px;">
                   <button
                     type="button"
@@ -1954,6 +2064,17 @@ async function saveAccountAlias() {
         <div class="dialog-actions">
           <button @click="saveAccountAlias">Save</button>
           <button @click="showRenameDialog = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showColRenameDialog" class="rename-dialog-backdrop">
+      <div class="rename-dialog">
+        <h3>Rename Column</h3>
+        <input v-model="colRenameValue" placeholder="Column name" />
+        <div class="dialog-actions">
+          <button @click="saveColRename">Save</button>
+          <button @click="cancelColRename">Cancel</button>
         </div>
       </div>
     </div>
@@ -2682,5 +2803,128 @@ h1 {
 .columns-popup .move-icons button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+:deep(.header-rename-btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 2px;
+  opacity: 0.5;
+  transition: background 0.2s, opacity 0.2s;
+  outline: none;
+}
+:deep(.header-rename-btn svg) {
+  display: block;
+}
+:deep(.header-with-close:hover .header-rename-btn),
+:deep(.header-rename-btn:focus) {
+  opacity: 1;
+  background: #f1f3f5;
+}
+:deep(.header-rename-btn:hover) {
+  background: #e3e8ef;
+  color: #007bff;
+  opacity: 1;
+}
+.rename-dialog-backdrop {
+  position: fixed !important;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.18);
+  z-index: 99999 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rename-dialog {
+  background: #fff;
+  padding: 2rem 2.5rem 1.5rem 2.5rem;
+  border-radius: 1.25rem;
+  min-width: 320px;
+  max-width: 90vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: popup-fade-in 0.2s;
+}
+
+@keyframes popup-fade-in {
+  from { opacity: 0; transform: scale(0.98);}
+  to   { opacity: 1; transform: scale(1);}
+}
+
+.rename-dialog h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #22223b;
+  letter-spacing: -0.5px;
+}
+
+.rename-dialog input {
+  width: 100%;
+  font-size: 1.05rem;
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid #dbe2ef;
+  border-radius: 7px;
+  margin-bottom: 0.5rem;
+  outline: none;
+  transition: border 0.2s;
+  background: #f8fafc;
+  color: #22223b;
+  box-sizing: border-box;
+}
+
+.rename-dialog input:focus {
+  border-color: #007bff;
+  background: #fff;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 0.7rem;
+  width: 100%;
+  justify-content: left;
+}
+
+.dialog-actions button {
+  min-width: 90px;
+  padding: 0.55rem 1.2rem;
+  border-radius: 7px;
+  border: 1.5px solid #007bff;
+  background: #007bff;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.dialog-actions button:last-child {
+  background: #fff;
+  color: #007bff;
+  border: 1.5px solid #007bff;
+}
+
+.dialog-actions button:hover {
+  background: #0056b3;
+  color: #fff;
+  border-color: #0056b3;
+}
+
+.dialog-actions button:last-child:hover {
+  background: #f1f3f5;
+  color: #0056b3;
+  border-color: #0056b3;
 }
 </style>
