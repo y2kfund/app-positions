@@ -1299,12 +1299,19 @@ function initializeTabulator() {
           }
         })
       })
+
+      updateFilteredPositionsCount()
+    })
+
+    tabulator.on('dataFiltered', function() {
+      updateFilteredPositionsCount()
     })
 
     isTabulatorReady.value = true
     setTimeout(() => {
       updateFilters()
       toggleBottomCalc()
+      updateFilteredPositionsCount()
     }, 50)
   } catch (error) {
     console.error('Error creating Tabulator:', error)
@@ -1530,6 +1537,7 @@ function updateFilters() {
     if (groupByThesis.value) {
       tabulator.replaceData(gridRowData.value)
     } else {
+      tabulator.replaceData(gridRowData.value) 
       tabulator.clearFilter()
 
       tabulator.setFilter((data: any) => {
@@ -1573,6 +1581,7 @@ function updateFilters() {
     syncActiveFiltersFromTable()
     nextTick(() => {
       if (tabulator) toggleBottomCalc()
+      updateFilteredPositionsCount()
     })
   } catch (error) {
     console.warn('Error in updateFilters:', error)
@@ -1857,6 +1866,10 @@ onMounted(async () => {
   if (eventBus) {
     eventBus.on('account-filter-changed', handleExternalAccountFilter)
   }
+
+  nextTick(() => {
+    updateFilteredPositionsCount()
+  })
 })
 
 onBeforeUnmount(() => {
@@ -1887,6 +1900,8 @@ function handleExternalAccountFilter(payload: { accountId: string | null, source
 
 function handleHeaderClick() {
   // Try to navigate if router is available
+
+
 
   if (typeof window !== 'undefined' && (window as any).$router) {
     (window as any).$router.push('/positions')
@@ -2056,6 +2071,18 @@ async function saveAccountAlias() {
     showToast('error', 'Rename failed', err.message)
   }
 }
+
+const filteredPositionsCount = ref(0)
+
+function updateFilteredPositionsCount() {
+  if (!tabulator) {
+    filteredPositionsCount.value = 0
+    return
+  }
+
+  const filteredRows = tabulator.rowManager.getDisplayRows().filter(row => row.type === "row")
+  filteredPositionsCount.value = filteredRows.length
+}
 </script>
 
 <template>
@@ -2077,7 +2104,7 @@ async function saveAccountAlias() {
           <span v-else>Positions</span>
         </h2>
         <div class="positions-tools">
-          <div class="positions-count">{{ q.data.value?.length || 0 }} positions</div>
+          <div class="positions-count">{{ filteredPositionsCount }} positions</div>
           
           <button 
             class="thesis-group-btn" 
