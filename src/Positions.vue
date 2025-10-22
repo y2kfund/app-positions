@@ -461,7 +461,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('symbol')}</span>
-          <button class="header-close-btn" data-field="symbol" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -500,7 +499,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('thesis')}</span>
-          <button class="header-close-btn" data-field="thesis" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -613,7 +611,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('asset_class')}</span>
-          <button class="header-close-btn" data-field="asset_class" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -638,7 +635,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('conid')}</span>
-          <button class="header-close-btn" data-field="conid" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -657,7 +653,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('undConid')}</span>
-          <button class="header-close-btn" data-field="undConid" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -680,7 +675,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('multiplier')}</span>
-          <button class="header-close-btn" data-field="multiplier" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -702,7 +696,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('qty')}</span>
-          <button class="header-close-btn" data-field="qty" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -721,7 +714,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('avgPrice')}</span>
-          <button class="header-close-btn" data-field="avgPrice" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -740,7 +732,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('price')}</span>
-          <button class="header-close-btn" data-field="price" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -759,7 +750,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('market_price')}</span>
-          <button class="header-close-btn" data-field="market_price" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -831,7 +821,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('market_value')}</span>
-          <button class="header-close-btn" data-field="market_value" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -854,7 +843,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('unrealized_pnl')}</span>
-          <button class="header-close-btn" data-field="unrealized_pnl" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -878,7 +866,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('be_price_pnl')}</span>
-          <button class="header-close-btn" data-field="be_price_pnl" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -934,7 +921,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('cash_flow_on_entry')}</span>
-          <button class="header-close-btn" data-field="cash_flow_on_entry" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -960,7 +946,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('cash_flow_on_exercise')}</span>
-          <button class="header-close-btn" data-field="cash_flow_on_exercise" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -983,7 +968,6 @@ function initializeTabulator() {
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('entry_exercise_cash_flow_pct')}</span>
-          <button class="header-close-btn" data-field="entry_exercise_cash_flow_pct" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
@@ -1021,7 +1005,6 @@ function initializeTabulator() {
         </div>`*/
         return `<div class="header-with-close">
           <span>${getColLabel('be_price')}</span>
-          <button class="header-close-btn" data-field="be_price" title="Hide column">✕</button>
         </div>`
       },
       formatter: (cell: any) => {
