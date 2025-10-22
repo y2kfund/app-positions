@@ -1100,18 +1100,41 @@ function initializeTabulator() {
         // Only for options (puts/calls)
         if (row.asset_class === 'OPT' && row.computed_cash_flow_on_entry != null && row.computed_cash_flow_on_exercise != null && row.computed_cash_flow_on_exercise !== 0) {
           const pct = (row.computed_cash_flow_on_entry / row.computed_cash_flow_on_exercise) * 100
-          // Show as +12.34% or -12.34%
+          
+          const formatted = Math.abs(pct.toFixed(2)) + '%'
+          return `<span>${formatted}</span>`
+
+          /*// Show as +12.34% or -12.34%
           const formatted = `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`
           let className = ''
           if (pct > 0) className = 'pnl-positive'
           else if (pct < 0) className = 'pnl-negative'
           else className = 'pnl-zero'
-          return `<span class="${className}">${formatted}</span>`
+          return `<span class="${className}">${formatted}</span>`*/
         }
         return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
       },
       bottomCalc: false,
-      contextMenu: createFetchedAtContextMenu()
+      //contextMenu: createFetchedAtContextMenu(),
+      contextMenu: [
+        {
+          label: (component: any) => {
+            const row = component.getData()
+            if (row.asset_class === 'OPT' && row.computed_cash_flow_on_entry != null && row.computed_cash_flow_on_exercise != null && row.computed_cash_flow_on_exercise !== 0) {
+              const pct = (row.computed_cash_flow_on_entry / row.computed_cash_flow_on_exercise) * 100
+              return [
+                `Calculation: (Entry cash flow / If exercised cash flow) × 100`,
+                `= (${formatCurrency(row.computed_cash_flow_on_entry)} / ${formatCurrency(row.computed_cash_flow_on_exercise)}) × 100`,
+                `= ${pct.toFixed(2)}%`
+              ].join('<br>')
+            }
+            return 'Not applicable for this row'
+          },
+          action: () => {},
+          disabled: true
+        },
+        { separator: true }
+      ]
     },
     {
       title: 'BE Price',
