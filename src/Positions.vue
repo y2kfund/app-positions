@@ -927,17 +927,29 @@ function initializeTabulator() {
             // min(UI CM Price, Strike price)
             const minPrice = Math.min(ulCmPrice, strikePrice)
             const pnl = (minPrice - bePrice) * qty * multiplier
+
+            // --- DECIMAL DISPLAY LOGIC ---
+            // If decimal part is less than 1% of the absolute value, show integer only
+            const absPnl = Math.abs(pnl)
+            const decimalPart = Math.abs(pnl % 1)
+            let formatted
+            if (absPnl === 0 || decimalPart < absPnl * 0.01) {
+              formatted = formatCurrency(Math.trunc(pnl))
+            } else {
+              formatted = formatCurrency(pnl)
+            }
+            // --- END DECIMAL LOGIC ---
+
             let className = ''
             if (pnl > 0) className = 'pnl-positive'
             else if (pnl < 0) className = 'pnl-negative'
             else className = 'pnl-zero'
 
-            return `<span class="${className}">${formatCurrency(pnl)}</span>`
+            return `<span class="${className}">${formatted}</span>`
           }
         }
         return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
       },
-      // --- ADD THESE LINES ---
       bottomCalc: shouldShowBottomCalcs ? (values: any[]) => {
         // Sum only valid P&L values (skip "Not applicable")
         let total = 0
@@ -968,14 +980,22 @@ function initializeTabulator() {
       } : false,
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
         const value = cell.getValue()
+        // --- DECIMAL DISPLAY LOGIC FOR TOTAL ---
+        const absVal = Math.abs(value)
+        const decimalPart = Math.abs(value % 1)
+        let formatted
+        if (absVal === 0 || decimalPart < absVal * 0.01) {
+          formatted = formatCurrency(Math.trunc(value))
+        } else {
+          formatted = formatCurrency(value)
+        }
         let className = ''
         if (value > 0) className = 'pnl-positive'
         else if (value < 0) className = 'pnl-negative'
         else className = 'pnl-zero'
-        return `<span class="${className}">${formatCurrency(value)}</span>`
+        return `<span class="${className}">${formatted}</span>`
       } : undefined,
-      // --- END ---
-      // --- ADD CONTEXT MENU FOR CALCULATION DETAILS ---
+      // --- CONTEXT MENU FOR FULL DECIMAL CALCULATION ---
       contextMenu: [
         {
           label: (component: any) => {
@@ -998,13 +1018,14 @@ function initializeTabulator() {
               ) {
                 const minPrice = Math.min(ulCmPrice, strikePrice)
                 const pnl = (minPrice - bePrice) * qty * multiplier
+                // Always show full decimal in context menu
                 return [
                   `Calculation: (min(Market Price, Strike Price) - BE Price) × |Qty| × Multiplier`,
                   `= (min(${formatCurrency(ulCmPrice)}, ${formatCurrency(strikePrice)}) - ${formatCurrency(bePrice)}) × ${qty} × ${multiplier}`,
                   `= (${formatCurrency(minPrice)} - ${formatCurrency(bePrice)}) × ${qty} × ${multiplier}`,
                   `= ${formatCurrency(minPrice - bePrice)} × ${qty} × ${multiplier}`,
                   `= ${formatCurrency((minPrice - bePrice) * qty)} × ${multiplier}`,
-                  `= ${formatCurrency(pnl)}`
+                  `<b>= ${formatCurrency(pnl)}</b> <span style="color:#888">(full decimal)</span>`
                 ].join('<br>')
               }
             }
@@ -1015,7 +1036,6 @@ function initializeTabulator() {
         },
         { separator: true }
       ]
-      // --- END CONTEXT MENU ---
     },
     {
       title: 'Entry cash flow',
@@ -1867,6 +1887,7 @@ function handleExternalAccountFilter(payload: { accountId: string | null, source
 
 function handleHeaderClick() {
   // Try to navigate if router is available
+
   if (typeof window !== 'undefined' && (window as any).$router) {
     (window as any).$router.push('/positions')
   } else {
@@ -2000,7 +2021,6 @@ function getColLabel(field: ColumnField) {
   return columnRenames.value[field] || (opt?.label ?? field)
 }
 
-// ...existing code...
 const showRenameDialog = ref(false)
 const renameAccountId = ref<string | null>(null)
 const renameAccountCurrent = ref<string>('')
