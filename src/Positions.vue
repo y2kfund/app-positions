@@ -1107,7 +1107,7 @@ function initializeTabulator() {
       const width = column.getWidth()
       columnWidths.value[field] = width
       writeColumnWidthsToUrl(columnWidths.value)
-      if (field === 'be_price') {
+      /*if (field === 'be_price') {
         const newTitle = width >= 140 ? 'Break even price' : 'BE Price'
         column.updateDefinition({
           titleFormatter: (cell: any) => {
@@ -1118,7 +1118,7 @@ function initializeTabulator() {
           }
         })
         tabulator.redraw(true)
-      }
+      }*/
     })
 
     // Add event listener for header close buttons

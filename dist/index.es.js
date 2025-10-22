@@ -11869,15 +11869,7 @@ const Ao = { class: "positions-card" }, Oo = {
       try {
         d = new Po(u.value, k), d.on("columnResized", (g) => {
           const b = g.getField(), C = g.getWidth();
-          if (j.value[b] = C, Kt(j.value), b === "be_price") {
-            const M = C >= 140 ? "Break even price" : "BE Price";
-            g.updateDefinition({
-              titleFormatter: (F) => `<div class="header-with-close">
-              <span>${M}</span>
-              <button class="header-close-btn" data-field="be_price" title="Hide column">✕</button>
-            </div>`
-            }), d.redraw(!0);
-          }
+          j.value[b] = C, Kt(j.value);
         }), d.on("tableBuilt", () => {
           var M, F;
           const g = (M = u.value) == null ? void 0 : M.querySelectorAll(".header-close-btn");
@@ -12456,7 +12448,7 @@ const Ao = { class: "positions-card" }, Oo = {
   for (const [i, s] of e)
     t[i] = s;
   return t;
-}, kr = /* @__PURE__ */ Cr(wr, [["__scopeId", "data-v-3ab5c2f4"]]);
+}, kr = /* @__PURE__ */ Cr(wr, [["__scopeId", "data-v-db4b2c83"]]);
 export {
   kr as Positions,
   kr as default
