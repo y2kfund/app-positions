@@ -943,7 +943,47 @@ function initializeTabulator() {
         return `<span class="${className}">${formatCurrency(value)}</span>`
       } : undefined,
       // --- END ---
-      contextMenu: createFetchedAtContextMenu()
+      // --- ADD CONTEXT MENU FOR CALCULATION DETAILS ---
+      contextMenu: [
+        {
+          label: (component: any) => {
+            const row = component.getData()
+            if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
+              const ulCmPrice = row.market_price
+              const bePrice = row.be_price
+              let qty = row.qty
+              const multiplier = row.multiplier
+              const tags = extractTagsFromSymbol(row.symbol)
+              const strikeTag = tags[2]
+              const strikePrice = strikeTag ? parseFloat(strikeTag) : null
+              qty = Math.abs(qty)
+              if (
+                ulCmPrice !== null && ulCmPrice !== undefined &&
+                bePrice !== null && bePrice !== undefined &&
+                qty !== null && qty !== undefined &&
+                multiplier !== null && multiplier !== undefined &&
+                strikePrice !== null && !isNaN(strikePrice)
+              ) {
+                const minPrice = Math.min(ulCmPrice, strikePrice)
+                const pnl = (minPrice - bePrice) * qty * multiplier
+                return [
+                  `Calculation: (min(Market Price, Strike Price) - BE Price) × |Qty| × Multiplier`,
+                  `= (min(${formatCurrency(ulCmPrice)}, ${formatCurrency(strikePrice)}) - ${formatCurrency(bePrice)}) × ${qty} × ${multiplier}`,
+                  `= (${formatCurrency(minPrice)} - ${formatCurrency(bePrice)}) × ${qty} × ${multiplier}`,
+                  `= ${formatCurrency(minPrice - bePrice)} × ${qty} × ${multiplier}`,
+                  `= ${formatCurrency((minPrice - bePrice) * qty)} × ${multiplier}`,
+                  `= ${formatCurrency(pnl)}`
+                ].join('<br>')
+              }
+            }
+            return 'Not applicable for this row'
+          },
+          action: () => {},
+          disabled: true
+        },
+        { separator: true }
+      ]
+      // --- END CONTEXT MENU ---
     },
     {
       title: 'Entry cash flow',
