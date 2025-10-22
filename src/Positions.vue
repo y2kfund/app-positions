@@ -905,7 +905,44 @@ function initializeTabulator() {
         }
         return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
       },
-      bottomCalc: false,
+      // --- ADD THESE LINES ---
+      bottomCalc: shouldShowBottomCalcs ? (values: any[]) => {
+        // Sum only valid P&L values (skip "Not applicable")
+        let total = 0
+        for (const row of tabulator.getData()) {
+          if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
+            const ulCmPrice = row.market_price
+            const bePrice = row.be_price
+            let qty = row.qty
+            const multiplier = row.multiplier
+            const tags = extractTagsFromSymbol(row.symbol)
+            const strikeTag = tags[2]
+            const strikePrice = strikeTag ? parseFloat(strikeTag) : null
+            qty = Math.abs(qty)
+            if (
+              ulCmPrice !== null && ulCmPrice !== undefined &&
+              bePrice !== null && bePrice !== undefined &&
+              qty !== null && qty !== undefined &&
+              multiplier !== null && multiplier !== undefined &&
+              strikePrice !== null && !isNaN(strikePrice)
+            ) {
+              const minPrice = Math.min(ulCmPrice, strikePrice)
+              const pnl = (minPrice - bePrice) * qty * multiplier
+              total += pnl
+            }
+          }
+        }
+        return total
+      } : false,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
+        const value = cell.getValue()
+        let className = ''
+        if (value > 0) className = 'pnl-positive'
+        else if (value < 0) className = 'pnl-negative'
+        else className = 'pnl-zero'
+        return `<span class="${className}">${formatCurrency(value)}</span>`
+      } : undefined,
+      // --- END ---
       contextMenu: createFetchedAtContextMenu()
     },
     {
@@ -2734,9 +2771,9 @@ h1 {
   flex: 1;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  border: 1px solid #dee2e6;
+  border: 1.5px solid #007bff;
   background: #007bff;
-  color: white;
+  color: #fff;
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 500;
@@ -2749,11 +2786,14 @@ h1 {
 
 .columns-popup .popup-actions .btn-clear {
   background: white;
-  color: #495057;
+  color: #007bff;
+  border: 1.5px solid #007bff;
 }
 
 .columns-popup .popup-actions .btn-clear:hover {
-  background: #f8f9fa;
+  background: #f1f3f5;
+  color: #0056b3;
+  border-color: #0056b3;
 }
 .rename-dialog-backdrop {
   position: fixed !important;
