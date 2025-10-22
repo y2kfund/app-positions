@@ -12500,7 +12500,7 @@ const Pr = { class: "positions-card" }, Ar = {
   for (const [i, s] of e)
     t[i] = s;
   return t;
-}, Mo = /* @__PURE__ */ yo(Co, [["__scopeId", "data-v-43134365"]]);
+}, Mo = /* @__PURE__ */ yo(Co, [["__scopeId", "data-v-5de27e7b"]]);
 export {
   Mo as Positions,
   Mo as default
