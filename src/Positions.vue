@@ -10,8 +10,8 @@ const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
   highlightPnL: false,
   showHeaderLink: false,
-  userId: null
-  //userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
+  //userId: null
+  userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
 })
 
 const emit = defineEmits<{ 
@@ -2091,16 +2091,27 @@ const screenshots = ref<any[]>([])
 const previewScreenshot = ref<any | null>(null)
 const screenshotsLoading = ref(false)
 const takingScreenshot = ref(false)
+const showScreenshotNameModal = ref(false)
+const screenshotName = ref('')
 
-async function takeScreenshot() {
-  if (!tableDiv.value) return
+// Open name modal
+function promptScreenshotName() {
+  screenshotName.value = ''
+  showScreenshotNameModal.value = true
+}
+
+// Actual screenshot save (called after user confirms name)
+async function takeScreenshotConfirmed() {
+  if (!tableDiv.value) {
+    showScreenshotNameModal.value = false
+    return
+  }
+  showScreenshotNameModal.value = false
   takingScreenshot.value = true
   try {
-    // Capture screenshot as base64 PNG
     const canvas = await html2canvas(tableDiv.value)
-    const base64 = canvas.toDataURL('image/png') // e.g. "data:image/png;base64,...."
+    const base64 = canvas.toDataURL('image/png')
 
-    // Save record in DB (strip the prefix for storage efficiency)
     const { error } = await supabase
       .schema('hf')
       .from('position_screenshots')
@@ -2108,6 +2119,8 @@ async function takeScreenshot() {
         user_id: props.userId,
         created_at: new Date().toISOString(),
         image_data: base64.replace(/^data:image\/png;base64,/, ''),
+        name: screenshotName.value ? screenshotName.value.trim() : null,
+        archived: false,
         meta: {
           filters: {
             account: accountFilter.value,
@@ -2129,6 +2142,23 @@ async function takeScreenshot() {
   }
 }
 
+// Mark screenshot archived (soft-delete)
+async function archiveScreenshot(id: number) {
+  try {
+    const { error } = await supabase
+      .schema('hf')
+      .from('position_screenshots')
+      .update({ archived: true })
+      .eq('id', id)
+    if (error) throw error
+    showToast('success', 'Screenshot archived')
+    fetchScreenshots()
+  } catch (err: any) {
+    showToast('error', 'Archive failed', err.message)
+  }
+}
+
+// Update fetchScreenshots to ignore archived items
 async function fetchScreenshots() {
   if (!props.userId) {
     screenshots.value = []
@@ -2140,6 +2170,7 @@ async function fetchScreenshots() {
     .from('position_screenshots')
     .select('*')
     .eq('user_id', props.userId)
+    .eq('archived', false)             // <-- only non-archived
     .order('created_at', { ascending: false })
     .limit(20)
   if (!error) screenshots.value = data || []
@@ -2172,12 +2203,12 @@ watch(showScreenshotsModal, (open) => {
         <div class="positions-tools">
           <div class="positions-count">{{ filteredPositionsCount }} positions</div>
           
-          <button @click="takeScreenshot" class="screenshot-btn" title="Take Screenshot" :disabled="takingScreenshot">
+          <button @click="promptScreenshotName" class="screenshot-btn" title="Take Screenshot" :disabled="takingScreenshot">
             <span v-if="takingScreenshot" class="screenshot-spinner"></span>
             <span v-else>📸</span>
           </button>
           <button @click="showScreenshotsModal = true" class="screenshot-btn" title="See Old Screenshots">🖼️</button>
-
+          
           <button 
             class="thesis-group-btn" 
             :class="{ active: groupByThesis }"
@@ -2347,13 +2378,20 @@ watch(showScreenshotsModal, (open) => {
               :alt="`Screenshot taken at ${new Date(shot.created_at).toLocaleString()}`"
             />
             <div class="screenshot-list-meta">
+              <strong v-if="shot.name">{{ shot.name }}</strong>
+              <span v-else style="color:#666; font-style:italic; display:block;">(Unnamed)</span>
               <span>{{ new Date(shot.created_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) }}</span>
-              <a
-                :href="`data:image/png;base64,${shot.image_data}`"
-                :download="`positions-screenshot-${shot.id}.png`"
-                class="screenshot-download-link"
-                @click.stop
-              >⬇️ Download</a>
+              <div style="display:flex; gap:8px; margin-top:6px;">
+                <a
+                  :href="`data:image/png;base64,${shot.image_data}`"
+                  :download="`positions-screenshot-${shot.id}.png`"
+                  class="screenshot-download-link"
+                  @click.stop
+                >⬇️ Download</a>
+                <button class="screenshot-archive-btn" @click.stop="archiveScreenshot(shot.id)" title="Archive screenshot" style="background:none;border:1px solid #e9ecef;padding:4px 8px;border-radius:6px;cursor:pointer;">
+                  🗄️ Archive
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -2374,6 +2412,17 @@ watch(showScreenshotsModal, (open) => {
             >⬇️ Download</a>
             <button @click="previewScreenshot = null" class="screenshot-preview-close">Close</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showScreenshotNameModal" class="rename-dialog-backdrop">
+      <div class="rename-dialog">
+        <h3>Name screenshot</h3>
+        <input v-model="screenshotName" placeholder="Enter a name (optional)" />
+        <div class="dialog-actions" style="justify-content:flex-start;">
+          <button @click="takeScreenshotConfirmed">Save & Capture</button>
+          <button @click="showScreenshotNameModal = false">Cancel</button>
         </div>
       </div>
     </div>
