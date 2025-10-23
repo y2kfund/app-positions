@@ -4,6 +4,7 @@ import { TabulatorFull as Tabulator } from 'tabulator-tables'
 import { usePositionsQuery, useThesisQuery, useThesisConnectionsQuery, extractSymbolRoot, type Position, type Thesis, type ThesisConnection, useSupabase } from '@y2kfund/core'
 import { useQueryClient } from '@tanstack/vue-query'
 import type { PositionsProps } from './index'
+import html2canvas from 'html2canvas'
 
 const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
@@ -2083,6 +2084,71 @@ function updateFilteredPositionsCount() {
   const filteredRows = tabulator.rowManager.getDisplayRows().filter(row => row.type === "row")
   filteredPositionsCount.value = filteredRows.length
 }
+
+// Screenshot functionality
+const showScreenshotsModal = ref(false)
+const screenshots = ref<any[]>([])
+const previewScreenshot = ref<any | null>(null)
+const screenshotsLoading = ref(false)
+const takingScreenshot = ref(false)
+
+async function takeScreenshot() {
+  if (!tableDiv.value) return
+  takingScreenshot.value = true
+  try {
+    // Capture screenshot as base64 PNG
+    const canvas = await html2canvas(tableDiv.value)
+    const base64 = canvas.toDataURL('image/png') // e.g. "data:image/png;base64,...."
+
+    // Save record in DB (strip the prefix for storage efficiency)
+    const { error } = await supabase
+      .schema('hf')
+      .from('position_screenshots')
+      .insert([{
+        user_id: props.userId,
+        created_at: new Date().toISOString(),
+        image_data: base64.replace(/^data:image\/png;base64,/, ''),
+        meta: {
+          filters: {
+            account: accountFilter.value,
+            assetClass: assetClassFilter.value,
+            symbolTags: symbolTagFilters.value,
+            thesisTags: thesisTagFilters.value,
+            columns: visibleCols.value
+          }
+        }
+      }])
+    if (error) throw error
+
+    showToast('success', 'Screenshot saved!')
+    fetchScreenshots()
+  } catch (err: any) {
+    showToast('error', 'Screenshot failed', err.message)
+  } finally {
+    takingScreenshot.value = false
+  }
+}
+
+async function fetchScreenshots() {
+  if (!props.userId) {
+    screenshots.value = []
+    return
+  }
+  screenshotsLoading.value = true
+  const { data, error } = await supabase
+    .schema('hf')
+    .from('position_screenshots')
+    .select('*')
+    .eq('user_id', props.userId)
+    .order('created_at', { ascending: false })
+    .limit(20)
+  if (!error) screenshots.value = data || []
+  screenshotsLoading.value = false
+}
+
+watch(showScreenshotsModal, (open) => {
+  if (open) fetchScreenshots()
+})
 </script>
 
 <template>
@@ -2106,6 +2172,12 @@ function updateFilteredPositionsCount() {
         <div class="positions-tools">
           <div class="positions-count">{{ filteredPositionsCount }} positions</div>
           
+          <button @click="takeScreenshot" class="screenshot-btn" title="Take Screenshot" :disabled="takingScreenshot">
+            <span v-if="takingScreenshot" class="screenshot-spinner"></span>
+            <span v-else>📸</span>
+          </button>
+          <button @click="showScreenshotsModal = true" class="screenshot-btn" title="See Old Screenshots">🖼️</button>
+
           <button 
             class="thesis-group-btn" 
             :class="{ active: groupByThesis }"
@@ -2255,6 +2327,56 @@ function updateFilteredPositionsCount() {
         </div>
       </div>
     </div>
+
+    <!-- Modal for old screenshots -->
+    <div v-if="showScreenshotsModal" class="screenshots-modal">
+      <div class="modal-content">
+        <h3 class="screenshots-title">Past Screenshots</h3>
+        <div v-if="screenshotsLoading" class="screenshots-loading">Loading screenshots...</div>
+        <div v-else-if="screenshots.length === 0" class="screenshots-empty">No screenshots yet.</div>
+        <div v-else class="screenshots-list-vertical">
+          <div
+            v-for="shot in screenshots"
+            :key="shot.id"
+            class="screenshot-list-item"
+            @click="previewScreenshot = shot"
+          >
+            <img
+              :src="`data:image/png;base64,${shot.image_data}`"
+              class="screenshot-thumb"
+              :alt="`Screenshot taken at ${new Date(shot.created_at).toLocaleString()}`"
+            />
+            <div class="screenshot-list-meta">
+              <span>{{ new Date(shot.created_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) }}</span>
+              <a
+                :href="`data:image/png;base64,${shot.image_data}`"
+                :download="`positions-screenshot-${shot.id}.png`"
+                class="screenshot-download-link"
+                @click.stop
+              >⬇️ Download</a>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button @click="showScreenshotsModal = false" class="screenshots-close">Close</button>
+        </div>
+      </div>
+      <!-- Image preview modal -->
+      <div v-if="previewScreenshot" class="screenshot-preview-modal" @click.self="previewScreenshot = null">
+        <div class="screenshot-preview-content">
+          <img :src="`data:image/png;base64,${previewScreenshot.image_data}`" class="screenshot-full-img" />
+          <div class="screenshot-preview-meta">
+            <span>{{ new Date(previewScreenshot.created_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) }}</span>
+            <a
+              :href="`data:image/png;base64,${previewScreenshot.image_data}`"
+              :download="`positions-screenshot-${previewScreenshot.id}.png`"
+              class="screenshot-download-link"
+            >⬇️ Download</a>
+            <button @click="previewScreenshot = null" class="screenshot-preview-close">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -2343,6 +2465,129 @@ function updateFilteredPositionsCount() {
 .tabulator .tabulator-cell:last-child {
   border-right: 1px solid #dee2e6 !important;
 }
+.screenshots-list-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.screenshot-list-item {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.7rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.screenshot-list-item:hover {
+  background: #e3f2fd;
+}
+.screenshot-thumb {
+  width: 110px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 0.4rem;
+  border: 1px solid #ccc;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.screenshot-list-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 15px;
+  color: #555;
+}
+.screenshot-download-link {
+  color: #1976d2;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 1.05em;
+  margin-top: 2px;
+  transition: color 0.18s;
+}
+.screenshot-download-link:hover {
+  color: #0d47a1;
+  text-decoration: underline;
+}
+
+/* Preview modal */
+.screenshot-preview-modal {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45); z-index: 100000;
+  display: flex; align-items: center; justify-content: center;
+}
+.screenshot-preview-content {
+  background: #fff;
+  border-radius: 1.2rem;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+.screenshot-full-img {
+  max-width: 80vw;
+  max-height: 60vh;
+  border-radius: 0.7rem;
+  border: 1.5px solid #e9ecef;
+  margin-bottom: 1.2rem;
+  background: #f8f9fa;
+}
+.screenshot-preview-meta {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+  font-size: 1.1em;
+  color: #444;
+}
+.screenshot-preview-close {
+  margin-left: 1.5rem;
+  padding: 0.4rem 1.2rem;
+  border-radius: 7px;
+  border: 1.5px solid #007bff;
+  background: #007bff;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+}
+.screenshot-preview-close:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+button.screenshot-btn {
+    background: transparent;
+    padding: 2px 2px;
+    border: 1px solid #dee2e6;
+}
+.screenshot-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.screenshot-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #e3e3e3;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  animation: screenshot-spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+@keyframes screenshot-spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
 </style>
 
 <style scoped>
@@ -2394,6 +2639,7 @@ h1 {
   padding: 0.25rem 0.75rem;
   border-radius: 1rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .positions-tools {
@@ -3107,4 +3353,15 @@ h1 {
   color: #0056b3;
   border-color: #0056b3;
 }
+.screenshots-modal {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25); z-index: 99999;
+  display: flex; align-items: center; justify-content: center;
+}
+.screenshots-modal .modal-content {
+  background: #fff; padding: 1rem; border-radius: 1rem; min-width: 350px; max-width: 90vw;
+}
+.screenshots-list { display: flex; flex-wrap: wrap; gap: 1rem; }
+.screenshot-item { max-width: 220px; }
+.screenshot-meta { font-size: 12px; color: #888; margin-top: 4px; }
 </style>
