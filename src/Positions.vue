@@ -951,10 +951,10 @@ function initializeTabulator() {
         }
         return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
       },
-      bottomCalc: shouldShowBottomCalcs ? (values: any[]) => {
-        // Sum only valid P&L values (skip "Not applicable")
+      bottomCalc: shouldShowBottomCalcs ? (values: any[], data: any[]) => {
+        // Use only filtered data (data argument)
         let total = 0
-        for (const row of tabulator.getData()) {
+        for (const row of data) {
           if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
             const ulCmPrice = row.market_price
             const bePrice = row.computed_be_price
