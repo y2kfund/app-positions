@@ -10,8 +10,8 @@ const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
   highlightPnL: false,
   showHeaderLink: false,
-  //userId: null
-  userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
+  userId: null
+  //userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
 })
 
 const emit = defineEmits<{ 

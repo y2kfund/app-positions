@@ -15975,7 +15975,7 @@ const Op = { class: "positions-card" }, _p = {
     highlightPnL: { type: Boolean, default: !1 },
     onRowClick: {},
     showHeaderLink: { type: Boolean, default: !1 },
-    userId: { default: "67e578fd-2cf7-48a4-b028-a11a3f89bb9b" }
+    userId: { default: null }
   },
   emits: ["row-click", "minimize"],
   setup(r, { emit: e }) {
@@ -17573,7 +17573,7 @@ const Op = { class: "positions-card" }, _p = {
   for (const [A, i] of e)
     t[A] = i;
   return t;
-}, ew = /* @__PURE__ */ Xm(Wm, [["__scopeId", "data-v-df3273b5"]]);
+}, ew = /* @__PURE__ */ Xm(Wm, [["__scopeId", "data-v-6ce7febc"]]);
 export {
   ew as Positions,
   ew as default
