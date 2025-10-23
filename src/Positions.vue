@@ -1866,6 +1866,7 @@ onMounted(async () => {
 
   if (eventBus) {
     eventBus.on('account-filter-changed', handleExternalAccountFilter)
+    eventBus.on('symbol-filter-changed', handleExternalSymbolFilter)
   }
 
   nextTick(() => {
@@ -1880,6 +1881,7 @@ onBeforeUnmount(() => {
   }
   if (eventBus) {
     eventBus.off('account-filter-changed', handleExternalAccountFilter)
+    eventBus.off('symbol-filter-changed', handleExternalSymbolFilter)
   }
 })
 
@@ -1894,6 +1896,22 @@ function handleExternalAccountFilter(payload: { accountId: string | null, source
     url.searchParams.set('all_cts_clientId', payload.accountId)
   } else {
     url.searchParams.delete('all_cts_clientId')
+  }
+  window.history.replaceState({}, '', url.toString())
+  updateFilters()
+}
+
+function handleExternalSymbolFilter(payload: { symbolTags: string[], source: string }) {
+  console.log('📍 [Positions] Received symbol filter:', payload)
+  if (payload.source === 'positions') return
+
+  // Apply the symbol filter
+  symbolTagFilters.value = payload.symbolTags
+  const url = new URL(window.location.href)
+  if (payload.symbolTags.length > 0) {
+    url.searchParams.set('all_cts_fi', payload.symbolTags.join('-and-'))
+  } else {
+    url.searchParams.delete('all_cts_fi')
   }
   window.history.replaceState({}, '', url.toString())
   updateFilters()
@@ -1934,6 +1952,14 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
       symbolTagFilters.value.push(tag)
     }
     updateFilters()
+    
+    // Emit event to other components
+    if (eventBus) {
+      eventBus.emit('symbol-filter-changed', {
+        symbolTags: symbolTagFilters.value,
+        source: 'positions'
+      })
+    }
     return
   } else if (field === 'thesis') {
     const thesisTitle = value?.title || String(value)
