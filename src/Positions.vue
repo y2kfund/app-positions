@@ -2432,7 +2432,16 @@ watch(showScreenshotsModal, (open) => {
             <div class="screenshot-list-meta">
               <strong v-if="shot.name">{{ shot.name }}</strong>
               <span v-else style="color:#666; font-style:italic; display:block;">(Unnamed)</span>
-              <span>{{ new Date(shot.created_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) }}</span>
+              <span>
+                {{
+                  new Date(shot.created_at).toLocaleString('en-US', {
+                    timeZone: 'America/Los_Angeles',
+                    dateStyle: 'medium',
+                    timeStyle: 'short'
+                  })
+                }}
+                <span style="color:#888; font-size:12px;">PST</span>
+              </span>
               <div style="display:flex; gap:8px; margin-top:6px;">
                 <a
                   :href="`data:image/png;base64,${shot.image_data}`"
@@ -2459,7 +2468,16 @@ watch(showScreenshotsModal, (open) => {
         <div class="screenshot-preview-content">
           <img :src="`data:image/png;base64,${previewScreenshot.image_data}`" class="screenshot-full-img" />
           <div class="screenshot-preview-meta">
-            <span>{{ new Date(previewScreenshot.created_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) }}</span>
+            <span>
+              {{
+                new Date(previewScreenshot.created_at).toLocaleString('en-US', {
+                  timeZone: 'America/Los_Angeles',
+                  dateStyle: 'medium',
+                  timeStyle: 'short'
+                })
+              }}
+              <span style="color:#888; font-size:12px;">PST</span>
+            </span>
             <a
               :href="`data:image/png;base64,${previewScreenshot.image_data}`"
               :download="`positions-screenshot-${previewScreenshot.id}.png`"
