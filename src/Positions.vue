@@ -2119,6 +2119,9 @@ const screenshotsLoading = ref(false)
 const takingScreenshot = ref(false)
 const showScreenshotNameModal = ref(false)
 const screenshotName = ref('')
+const showScreenshotRenameModal = ref(false)
+const screenshotRenameValue = ref('')
+const screenshotRenameId = ref<number | null>(null)
 
 // Open name modal
 function promptScreenshotName() {
@@ -2201,6 +2204,29 @@ async function fetchScreenshots() {
     .limit(20)
   if (!error) screenshots.value = data || []
   screenshotsLoading.value = false
+}
+
+function openScreenshotRenameModal(shot: any) {
+  screenshotRenameId.value = shot.id
+  screenshotRenameValue.value = shot.name || ''
+  showScreenshotRenameModal.value = true
+}
+
+async function saveScreenshotRename() {
+  if (!screenshotRenameId.value) return
+  try {
+    const { error } = await supabase
+      .schema('hf')
+      .from('position_screenshots')
+      .update({ name: screenshotRenameValue.value })
+      .eq('id', screenshotRenameId.value)
+    if (error) throw error
+    showScreenshotRenameModal.value = false
+    showToast('success', 'Screenshot renamed')
+    fetchScreenshots()
+  } catch (err: any) {
+    showToast('error', 'Rename failed', err.message)
+  }
 }
 
 watch(showScreenshotsModal, (open) => {
@@ -2413,9 +2439,12 @@ watch(showScreenshotsModal, (open) => {
                   :download="`positions-screenshot-${shot.id}.png`"
                   class="screenshot-download-link"
                   @click.stop
-                >⬇️ Download</a>
+                >⬇️</a>
                 <button class="screenshot-archive-btn" @click.stop="archiveScreenshot(shot.id)" title="Archive screenshot" style="background:none;border:1px solid #e9ecef;padding:4px 8px;border-radius:6px;cursor:pointer;">
-                  🗄️ Archive
+                  🗄️
+                </button>
+                <button class="screenshot-rename-btn" @click.stop="openScreenshotRenameModal(shot)" title="Rename screenshot" style="background:none;border:1px solid #e9ecef;padding:4px 8px;border-radius:6px;cursor:pointer;">
+                  ✏️
                 </button>
               </div>
             </div>
@@ -2449,6 +2478,17 @@ watch(showScreenshotsModal, (open) => {
         <div class="dialog-actions" style="justify-content:flex-start;">
           <button @click="takeScreenshotConfirmed">Save & Capture</button>
           <button @click="showScreenshotNameModal = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showScreenshotRenameModal" class="rename-dialog-backdrop">
+      <div class="rename-dialog">
+        <h3>Rename Screenshot</h3>
+        <input v-model="screenshotRenameValue" placeholder="Enter new name" />
+        <div class="dialog-actions">
+          <button @click="saveScreenshotRename">Save</button>
+          <button @click="showScreenshotRenameModal = false">Cancel</button>
         </div>
       </div>
     </div>
