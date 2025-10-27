@@ -16506,10 +16506,12 @@ const zp = { class: "positions-card" }, Gp = {
           <span>${ge("market_price")}</span>
         </div>`,
           formatter: (B) => {
-            var C;
-            if ((C = B.getRow().getData()) != null && C._isThesisGroup) return "";
-            const m = B.getValue();
-            return m == null ? "-" : Y(m);
+            var F;
+            if ((F = B.getRow().getData()) != null && F._isThesisGroup) return "";
+            if (B.getRow().getData().asset_class === "STK")
+              return '<span style="color:#aaa;font-style:italic;">Not applicable</span>';
+            const C = B.getValue();
+            return C == null ? "-" : Y(C);
           },
           contextMenu: [
             {
@@ -16568,8 +16570,9 @@ const zp = { class: "positions-card" }, Gp = {
           formatter: (B) => {
             var F;
             if ((F = B.getRow().getData()) != null && F._isThesisGroup) return "";
-            const m = B.getRow().getData(), C = m.asset_class === "OPT" ? m.option_market_price : null;
-            return C == null ? "-" : Y(C);
+            const m = B.getRow().getData();
+            let C = null;
+            return m.asset_class === "OPT" ? C = m.option_market_price : (m.asset_class === "STK" || m.asset_class === "FUND") && (C = m.market_price), C == null ? "-" : Y(C);
           },
           contextMenu: [
             {
@@ -17696,7 +17699,7 @@ const zp = { class: "positions-card" }, Gp = {
   for (const [A, i] of e)
     t[A] = i;
   return t;
-}, hw = /* @__PURE__ */ iw(Aw, [["__scopeId", "data-v-a19e5900"]]);
+}, hw = /* @__PURE__ */ iw(Aw, [["__scopeId", "data-v-182f999f"]]);
 export {
   hw as Positions,
   hw as default

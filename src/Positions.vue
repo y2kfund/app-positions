@@ -773,6 +773,10 @@ function initializeTabulator() {
       },
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return ''
+        const row = cell.getRow().getData()
+        if (row.asset_class === 'STK') {
+          return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
+        }
         const value = cell.getValue()
         return value === null || value === undefined ? '-' : formatCurrency(value)
       },
@@ -842,8 +846,13 @@ function initializeTabulator() {
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return ''
         const row = cell.getRow().getData()
-        // Only show values for OPT asset class
-        const value = row.asset_class === 'OPT' ? row.option_market_price : null
+        // Show market prices based on asset class
+        let value = null
+        if (row.asset_class === 'OPT') {
+          value = row.option_market_price
+        } else if (row.asset_class === 'STK' || row.asset_class === 'FUND') {
+          value = row.market_price
+        }
         return value === null || value === undefined ? '-' : formatCurrency(value)
       },
       contextMenu: [
