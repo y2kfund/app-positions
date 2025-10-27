@@ -26,6 +26,7 @@ const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_p
 
 // Query positions data
 const q = usePositionsQuery(props.accountId, props.userId)
+//console.log('Positions query data:', q.data)
 const sourcePositions = computed(() => {
   const positions = q.data.value || []
   if (!positions.length) return []
@@ -63,7 +64,7 @@ type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis
 const activeFilters = ref<ActiveFilter[]>([])
 
 // Column visibility
-type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'market_value' | 'unrealized_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'computed_be_price' | 'thesis'
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'instrument_market_price' | 'market_value' | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct' | 'computed_be_price' | 'thesis'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'thesis', label: 'Thesis' },
@@ -76,6 +77,7 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'avgPrice', label: 'Avg Price' },
   { field: 'price', label: 'Market Price' },
   { field: 'market_price', label: 'Ul CM Price' },
+  { field: 'instrument_market_price', label: 'Instrument current market price' },
   { field: 'market_value', label: 'Market Value' },
   { field: 'unrealized_pnl', label: 'P&L Unrealized' },
   { field: 'be_price_pnl', label: 'Break even price P&L (computed)' },
@@ -85,7 +87,7 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'computed_be_price', label: 'BE Price' }
 ]
 
-type ColumnRenames = Record<ColumnField, string>
+type ColumnRenames = Partial<Record<ColumnField, string>>
 const columnRenames = ref<ColumnRenames>({})
 
 // --- Helpers for URL sync of column renames ---
@@ -772,6 +774,76 @@ function initializeTabulator() {
       formatter: (cell: any) => {
         if (cell.getRow().getData()?._isThesisGroup) return ''
         const value = cell.getValue()
+        return value === null || value === undefined ? '-' : formatCurrency(value)
+      },
+      contextMenu: [
+        {
+          label: (component: any) => {
+            const rowData = component.getData()
+            const fetchedAt = rowData.market_price_fetched_at
+            
+            if (!fetchedAt) {
+              return '⏱️ Last Updated: Not available'
+            }
+            
+            try {
+              const date = new Date(fetchedAt)
+              const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+              const timezoneMap: { [key: string]: string } = {
+                'Asia/Kolkata': 'IST',
+                'Asia/Calcutta': 'IST',
+                'America/New_York': date.getMonth() >= 2 && date.getMonth() < 10 ? 'EDT' : 'EST',
+                'America/Los_Angeles': date.getMonth() >= 2 && date.getMonth() < 10 ? 'PDT' : 'PST',
+                'America/Chicago': date.getMonth() >= 2 && date.getMonth() < 10 ? 'CDT' : 'CST',
+                'America/Denver': date.getMonth() >= 2 && date.getMonth() < 10 ? 'MDT' : 'MST',
+                'Europe/London': date.getMonth() >= 2 && date.getMonth() < 9 ? 'BST' : 'GMT',
+                'Europe/Paris': date.getMonth() >= 2 && date.getMonth() < 9 ? 'CEST' : 'CET',
+                'Australia/Sydney': date.getMonth() >= 9 || date.getMonth() < 3 ? 'AEDT' : 'AEST',
+              }
+              const timezoneName = timezoneMap[userTimeZone] || userTimeZone
+              const formattedDate = date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                timeZone: userTimeZone
+              })
+              const formattedTime = date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true,
+                timeZone: userTimeZone
+              })
+              return `⏱️ Last Updated: ${formattedDate} at ${formattedTime} ${timezoneName}`
+            } catch (error) {
+              return `⏱️ Last Updated: ${fetchedAt}`
+            }
+          },
+          action: () => {},
+          disabled: true
+        },
+        {
+          separator: true
+        }
+      ]
+    },
+    {
+      title: 'Instrument current market price',
+      field: 'instrument_market_price',
+      minWidth: 80,
+      width: columnWidths.value['instrument_market_price'] || undefined, // ADD THIS LINE
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('instrument_market_price'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>${getColLabel('instrument_market_price')}</span>
+        </div>`
+      },
+      formatter: (cell: any) => {
+        if (cell.getRow().getData()?._isThesisGroup) return ''
+        const row = cell.getRow().getData()
+        // Only show values for OPT asset class
+        const value = row.asset_class === 'OPT' ? row.option_market_price : null
         return value === null || value === undefined ? '-' : formatCurrency(value)
       },
       contextMenu: [

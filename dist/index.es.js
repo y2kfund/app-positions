@@ -1,7 +1,7 @@
 var Sa = Object.defineProperty;
 var ka = (r, e, t) => e in r ? Sa(r, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : r[e] = t;
-var Q = (r, e, t) => ka(r, typeof e != "symbol" ? e + "" : e, t);
-import { defineComponent as Oa, ref as $, computed as As, watch as Je, nextTick as ht, inject as _a, onMounted as Ka, onBeforeUnmount as Pa, createElementBlock as J, openBlock as j, createCommentVNode as ze, createElementVNode as U, unref as XA, createTextVNode as _t, toDisplayString as Ie, normalizeClass as Sr, withModifiers as je, Fragment as hA, renderList as uA, withDirectives as Kt, vModelCheckbox as kr, createVNode as Va, TransitionGroup as Na, withCtx as za, vModelText as JA } from "vue";
+var U = (r, e, t) => ka(r, typeof e != "symbol" ? e + "" : e, t);
+import { defineComponent as Oa, ref as $, computed as As, watch as Je, nextTick as ht, inject as _a, onMounted as Ka, onBeforeUnmount as Pa, createElementBlock as J, openBlock as j, createCommentVNode as ze, createElementVNode as H, unref as XA, createTextVNode as _t, toDisplayString as Ie, normalizeClass as Sr, withModifiers as je, Fragment as hA, renderList as uA, withDirectives as Kt, vModelCheckbox as kr, createVNode as Va, TransitionGroup as Na, withCtx as za, vModelText as JA } from "vue";
 import { usePositionsQuery as Ga, useThesisQuery as Wa, useThesisConnectionsQuery as Xa, useSupabase as Ja, extractSymbolRoot as ja } from "@y2kfund/core";
 import { useQueryClient as Ya } from "@tanstack/vue-query";
 class Ee {
@@ -340,8 +340,8 @@ const Zt = class Zt extends X {
     }), s;
   }
 };
-Q(Zt, "moduleName", "accessor"), //load defaults
-Q(Zt, "accessors", $a);
+U(Zt, "moduleName", "accessor"), //load defaults
+U(Zt, "accessors", $a);
 let Qs = Zt;
 var qa = {
   method: "GET"
@@ -462,8 +462,8 @@ const We = class We extends X {
     return this.table.options.ajaxRequesting.call(this.table, e, t) !== !1 ? this.loaderPromise(e, A, t).then((i) => (this.table.options.ajaxResponse && (i = this.table.options.ajaxResponse.call(this.table, e, t, i)), i)) : Promise.reject();
   }
 };
-Q(We, "moduleName", "ajax"), //load defaults
-Q(We, "defaultConfig", qa), Q(We, "defaultURLGenerator", Vn), Q(We, "defaultLoaderPromise", tl), Q(We, "contentTypeFormatters", Al);
+U(We, "moduleName", "ajax"), //load defaults
+U(We, "defaultConfig", qa), U(We, "defaultURLGenerator", Vn), U(We, "defaultLoaderPromise", tl), U(We, "contentTypeFormatters", Al);
 let Rs = We;
 var il = {
   replace: function(r) {
@@ -596,8 +596,8 @@ const ft = class ft extends X {
     return window.clipboardData && window.clipboardData.getData ? t = window.clipboardData.getData("Text") : e.clipboardData && e.clipboardData.getData ? t = e.clipboardData.getData("text/plain") : e.originalEvent && e.originalEvent.clipboardData.getData && (t = e.originalEvent.clipboardData.getData("text/plain")), t;
   }
 };
-Q(ft, "moduleName", "clipboard"), Q(ft, "moduleExtensions", ol), //load defaults
-Q(ft, "pasteActions", il), Q(ft, "pasteParsers", sl);
+U(ft, "moduleName", "clipboard"), U(ft, "moduleExtensions", ol), //load defaults
+U(ft, "pasteActions", il), U(ft, "pasteParsers", sl);
 let xs = ft;
 class al {
   constructor(e) {
@@ -1260,7 +1260,7 @@ const xt = class xt extends Ee {
     return this.parent instanceof xt ? this.parent.getComponent() : !1;
   }
 };
-Q(xt, "defaultOptionList", Gn);
+U(xt, "defaultOptionList", Gn);
 let Mt = xt;
 class Ii {
   constructor(e) {
@@ -1775,8 +1775,8 @@ const gt = class gt extends X {
     this.botRow && (this.table.rtl ? this.botElement.style.paddingLeft = e + "px" : this.botElement.style.paddingRight = e + "px");
   }
 };
-Q(gt, "moduleName", "columnCalcs"), //load defaults
-Q(gt, "calculations", ll);
+U(gt, "moduleName", "columnCalcs"), //load defaults
+U(gt, "calculations", ll);
 let Ts = gt;
 class Wn extends X {
   constructor(e) {
@@ -1947,7 +1947,7 @@ class Wn extends X {
     return (this.field ? typeof e[this.field] < "u" : !1) || (this.elementField ? typeof e[this.elementField] < "u" : !1);
   }
 }
-Q(Wn, "moduleName", "dataTree");
+U(Wn, "moduleName", "dataTree");
 function hl(r, e = {}, t) {
   var A = e.delimiter ? e.delimiter : ",", i = [], s = [];
   r.forEach((n) => {
@@ -2061,11 +2061,11 @@ function dl(r, e, t) {
   var A = this, i = e.sheetName || "Sheet1", s = this.dependencyRegistry.lookup("XLSX"), n = s.utils.book_new(), o = new Ee(this), a = "compress" in e ? e.compress : !0, l = e.writeOptions || { bookType: "xlsx", bookSST: !0, compression: a }, h;
   l.type = "binary", n.SheetNames = [], n.Sheets = {};
   function u() {
-    var p = [], w = [], E = {}, b = { s: { c: 0, r: 0 }, e: { c: r[0] ? r[0].columns.reduce((y, D) => y + (D && D.width ? D.width : 1), 0) : 0, r: r.length } };
-    return r.forEach((y, D) => {
+    var p = [], w = [], E = {}, b = { s: { c: 0, r: 0 }, e: { c: r[0] ? r[0].columns.reduce((y, S) => y + (S && S.width ? S.width : 1), 0) : 0, r: r.length } };
+    return r.forEach((y, S) => {
       var I = [];
-      y.columns.forEach(function(H, F) {
-        H ? (I.push(!(H.value instanceof Date) && typeof H.value == "object" ? JSON.stringify(H.value) : H.value), (H.width > 1 || H.height > -1) && (H.height > 1 || H.width > 1) && w.push({ s: { r: D, c: F }, e: { r: D + H.height - 1, c: F + H.width - 1 } })) : I.push("");
+      y.columns.forEach(function(R, Q) {
+        R ? (I.push(!(R.value instanceof Date) && typeof R.value == "object" ? JSON.stringify(R.value) : R.value), (R.width > 1 || R.height > -1) && (R.height > 1 || R.width > 1) && w.push({ s: { r: S, c: Q }, e: { r: S + R.height - 1, c: Q + R.width - 1 } })) : I.push("");
       }), p.push(I);
     }), s.utils.sheet_add_aoa(E, p), E["!ref"] = s.utils.encode_range(b), w.length && (E["!merges"] = w), E;
   }
@@ -2175,8 +2175,8 @@ const $t = class $t extends X {
     }
   }
 };
-Q($t, "moduleName", "download"), //load defaults
-Q($t, "downloaders", pl);
+U($t, "moduleName", "download"), //load defaults
+U($t, "downloaders", pl);
 let Ls = $t;
 function Mi(r, e) {
   var t = e.mask, A = typeof e.maskLetterChar < "u" ? e.maskLetterChar : "A", i = typeof e.maskNumberChar < "u" ? e.maskNumberChar : "9", s = typeof e.maskWildcardChar < "u" ? e.maskWildcardChar : "*";
@@ -2847,19 +2847,19 @@ function Fl(r, e, t, A, i) {
 function Ql(r, e, t, A, i) {
   var s = this, n = r.getElement(), o = r.getValue(), a = n.getElementsByTagName("svg").length || 5, l = n.getElementsByTagName("svg")[0] ? n.getElementsByTagName("svg")[0].getAttribute("width") : 14, h = [], u = document.createElement("div"), c = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   function d(b) {
-    h.forEach(function(y, D) {
-      D < b ? (s.table.browser == "ie" ? y.setAttribute("class", "tabulator-star-active") : y.classList.replace("tabulator-star-inactive", "tabulator-star-active"), y.innerHTML = '<polygon fill="#488CE9" stroke="#014AAE" stroke-width="37.6152" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="259.216,29.942 330.27,173.919 489.16,197.007 374.185,309.08 401.33,467.31 259.216,392.612 117.104,467.31 144.25,309.08 29.274,197.007 188.165,173.919 "/>') : (s.table.browser == "ie" ? y.setAttribute("class", "tabulator-star-inactive") : y.classList.replace("tabulator-star-active", "tabulator-star-inactive"), y.innerHTML = '<polygon fill="#010155" stroke="#686868" stroke-width="37.6152" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="259.216,29.942 330.27,173.919 489.16,197.007 374.185,309.08 401.33,467.31 259.216,392.612 117.104,467.31 144.25,309.08 29.274,197.007 188.165,173.919 "/>');
+    h.forEach(function(y, S) {
+      S < b ? (s.table.browser == "ie" ? y.setAttribute("class", "tabulator-star-active") : y.classList.replace("tabulator-star-inactive", "tabulator-star-active"), y.innerHTML = '<polygon fill="#488CE9" stroke="#014AAE" stroke-width="37.6152" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="259.216,29.942 330.27,173.919 489.16,197.007 374.185,309.08 401.33,467.31 259.216,392.612 117.104,467.31 144.25,309.08 29.274,197.007 188.165,173.919 "/>') : (s.table.browser == "ie" ? y.setAttribute("class", "tabulator-star-inactive") : y.classList.replace("tabulator-star-active", "tabulator-star-inactive"), y.innerHTML = '<polygon fill="#010155" stroke="#686868" stroke-width="37.6152" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="259.216,29.942 330.27,173.919 489.16,197.007 374.185,309.08 401.33,467.31 259.216,392.612 117.104,467.31 144.25,309.08 29.274,197.007 188.165,173.919 "/>');
     });
   }
   function p(b) {
-    var y = document.createElement("span"), D = c.cloneNode(!0);
-    h.push(D), y.addEventListener("mouseenter", function(I) {
+    var y = document.createElement("span"), S = c.cloneNode(!0);
+    h.push(S), y.addEventListener("mouseenter", function(I) {
       I.stopPropagation(), I.stopImmediatePropagation(), d(b);
     }), y.addEventListener("mousemove", function(I) {
       I.stopPropagation(), I.stopImmediatePropagation();
     }), y.addEventListener("click", function(I) {
       I.stopPropagation(), I.stopImmediatePropagation(), t(b), n.blur();
-    }), y.appendChild(D), u.appendChild(y);
+    }), y.appendChild(S), u.appendChild(y);
   }
   function w(b) {
     o = b, d(b);
@@ -3255,8 +3255,8 @@ const RA = class RA extends X {
     e.modules.edit && e.modules.edit.edited && (e.modules.edit.edited = !1, this.dispatch("edit-edited-clear", e)), t = this.editedCells.indexOf(e), t > -1 && this.editedCells.splice(t, 1);
   }
 };
-Q(RA, "moduleName", "edit"), //load defaults
-Q(RA, "editors", xl);
+U(RA, "moduleName", "edit"), //load defaults
+U(RA, "editors", xl);
 let Is = RA;
 class Or {
   constructor(e, t, A, i) {
@@ -3531,7 +3531,7 @@ const pt = class pt extends X {
     }
   }
 };
-Q(pt, "moduleName", "export"), Q(pt, "columnLookups", Tl), Q(pt, "rowLookups", Ll);
+U(pt, "moduleName", "export"), U(pt, "columnLookups", Tl), U(pt, "rowLookups", Ll);
 let Ms = pt;
 var Il = {
   //equal to
@@ -3780,8 +3780,8 @@ const it = class it extends X {
         }), l.addEventListener("click", function(b) {
           b.stopPropagation(), l.focus();
         }), l.addEventListener("focus", (b) => {
-          var y = this.table.columnManager.contentsElement.scrollLeft, D = this.table.rowManager.element.scrollLeft;
-          y !== D && (this.table.rowManager.scrollHorizontal(y), this.table.columnManager.scrollHorizontal(y));
+          var y = this.table.columnManager.contentsElement.scrollLeft, S = this.table.rowManager.element.scrollLeft;
+          y !== S && (this.table.rowManager.scrollHorizontal(y), this.table.columnManager.scrollHorizontal(y));
         }), u = !1, c = function(b) {
           u && clearTimeout(u), u = setTimeout(function() {
             s(l.value);
@@ -3943,8 +3943,8 @@ const it = class it extends X {
     }) : A = e.func(t), A;
   }
 };
-Q(it, "moduleName", "filter"), //load defaults
-Q(it, "filters", Il);
+U(it, "moduleName", "filter"), //load defaults
+U(it, "filters", Il);
 let Ds = it;
 function Ml(r, e, t) {
   return this.emptyToSpace(this.sanitizeHTML(r.getValue()));
@@ -4300,8 +4300,8 @@ const mt = class mt extends X {
     return e === null || typeof e > "u" || e === "" ? "&nbsp;" : e;
   }
 };
-Q(mt, "moduleName", "format"), //load defaults
-Q(mt, "formatters", Ah);
+U(mt, "moduleName", "format"), //load defaults
+U(mt, "formatters", Ah);
 let Ss = mt;
 class Xn extends X {
   constructor(e) {
@@ -4404,7 +4404,7 @@ class Xn extends X {
     return A;
   }
 }
-Q(Xn, "moduleName", "frozenColumns");
+U(Xn, "moduleName", "frozenColumns");
 class Jn extends X {
   constructor(e) {
     super(e), this.topElement = document.createElement("div"), this.rows = [], this.registerComponentFunction("row", "freeze", this.freezeRow.bind(this)), this.registerComponentFunction("row", "unfreeze", this.unfreezeRow.bind(this)), this.registerComponentFunction("row", "isFrozen", this.isRowFrozen.bind(this)), this.registerTableOption("frozenRowsField", "id"), this.registerTableOption("frozenRows", !1);
@@ -4464,7 +4464,7 @@ class Jn extends X {
     });
   }
 }
-Q(Jn, "moduleName", "frozenRows");
+U(Jn, "moduleName", "frozenRows");
 class ih {
   constructor(e) {
     return this._group = e, this.type = "GroupComponent", new Proxy(this, {
@@ -4945,7 +4945,7 @@ class jn extends X {
     }), t ? e.style.minWidth = this.table.columnManager.getWidth() + "px" : e.style.minWidth = "";
   }
 }
-Q(jn, "moduleName", "groupRows");
+U(jn, "moduleName", "groupRows");
 var sh = {
   cellEdit: function(r) {
     r.component.setValueProcessData(r.data.oldValue), r.component.cellRendered();
@@ -5062,8 +5062,8 @@ const wt = class wt extends X {
     });
   }
 };
-Q(wt, "moduleName", "history"), Q(wt, "moduleExtensions", ah), //load defaults
-Q(wt, "undoers", sh), Q(wt, "redoers", rh);
+U(wt, "moduleName", "history"), U(wt, "moduleExtensions", ah), //load defaults
+U(wt, "undoers", sh), U(wt, "redoers", rh);
 let ks = wt;
 class Yn extends X {
   constructor(e) {
@@ -5126,7 +5126,7 @@ class Yn extends X {
     }
   }
 }
-Q(Yn, "moduleName", "htmlTableImport");
+U(Yn, "moduleName", "htmlTableImport");
 function lh(r) {
   var e = [], t = 0, A = 0, i = !1;
   for (let s = 0; s < r.length; s++) {
@@ -5299,8 +5299,8 @@ const xA = class xA extends X {
     return this.dispatch("import-imported", e), this.dispatchExternal("importImported", e), this.table.dataLoader.clearAlert(), this.table.setData(e);
   }
 };
-Q(xA, "moduleName", "import"), //load defaults
-Q(xA, "importers", dh);
+U(xA, "moduleName", "import"), //load defaults
+U(xA, "importers", dh);
 let Os = xA;
 class Zn extends X {
   constructor(e) {
@@ -5452,7 +5452,7 @@ class Zn extends X {
     this.columnSubscribers[e] && (A instanceof kA ? s = A.column.definition[e] : A instanceof Mt && (s = A.definition[e]), s && s(t, i)), this.dispatchExternal(e, t, i);
   }
 }
-Q(Zn, "moduleName", "interaction");
+U(Zn, "moduleName", "interaction");
 var fh = {
   navPrev: "shift + 9",
   navNext: 9,
@@ -5570,8 +5570,8 @@ const bt = class bt extends X {
     }), A && t.action.call(this, e), !0) : !1;
   }
 };
-Q(bt, "moduleName", "keybindings"), //load defaults
-Q(bt, "bindings", fh), Q(bt, "actions", gh);
+U(bt, "moduleName", "keybindings"), //load defaults
+U(bt, "bindings", fh), U(bt, "actions", gh);
 let _s = bt;
 class $n extends X {
   constructor(e) {
@@ -5639,7 +5639,7 @@ class $n extends X {
     }
   }
 }
-Q($n, "moduleName", "menu");
+U($n, "moduleName", "menu");
 class qn extends X {
   constructor(e) {
     super(e), this.placeholderElement = this.createPlaceholderElement(), this.hoverElement = !1, this.checkTimeout = !1, this.checkPeriod = 250, this.moving = !1, this.toCol = !1, this.toColAfter = !1, this.startX = 0, this.autoScrollMargin = 40, this.autoScrollStep = 5, this.autoScrollTimeout = !1, this.touchMove = !1, this.moveHover = this.moveHover.bind(this), this.endMove = this.endMove.bind(this), this.registerTableOption("movableColumns", !1);
@@ -5715,7 +5715,7 @@ class qn extends X {
     }, 1)));
   }
 }
-Q(qn, "moduleName", "moveColumn");
+U(qn, "moduleName", "moveColumn");
 var ph = {
   delete: function(r, e, t) {
     r.delete();
@@ -5909,8 +5909,8 @@ const Tt = class Tt extends X {
     }
   }
 };
-Q(Tt, "moduleName", "moveRow"), //load defaults
-Q(Tt, "senders", ph), Q(Tt, "receivers", mh);
+U(Tt, "moduleName", "moveRow"), //load defaults
+U(Tt, "senders", ph), U(Tt, "receivers", mh);
 let Ks = Tt;
 var wh = {};
 const qt = class qt extends X {
@@ -5977,8 +5977,8 @@ const qt = class qt extends X {
     this.enabled = !1;
   }
 };
-Q(qt, "moduleName", "mutator"), //load defaults
-Q(qt, "mutators", wh);
+U(qt, "moduleName", "mutator"), //load defaults
+U(qt, "mutators", wh);
 let Ps = qt;
 function bh(r, e, t, A, i) {
   var s = document.createElement("span"), n = document.createElement("span"), o = document.createElement("span"), a = document.createElement("span"), l = document.createElement("span"), h = document.createElement("span");
@@ -6271,8 +6271,8 @@ const TA = class TA extends X {
     Math.ceil(e.clientWidth) - e.scrollWidth < 0 ? this.pagesElement.style.display = "none" : (this.pagesElement.style.display = "", Math.ceil(e.clientWidth) - e.scrollWidth < 0 && (this.pagesElement.style.display = "none"));
   }
 };
-Q(TA, "moduleName", "page"), //load defaults
-Q(TA, "pageCounters", Ch);
+U(TA, "moduleName", "page"), //load defaults
+U(TA, "pageCounters", Ch);
 let Vs = TA;
 var vh = {
   local: function(r, e) {
@@ -6449,8 +6449,8 @@ const xe = class xe extends X {
     }), t;
   }
 };
-Q(xe, "moduleName", "persistence"), Q(xe, "moduleInitOrder", -10), //load defaults
-Q(xe, "readers", vh), Q(xe, "writers", Eh);
+U(xe, "moduleName", "persistence"), U(xe, "moduleInitOrder", -10), //load defaults
+U(xe, "readers", vh), U(xe, "writers", Eh);
 let Ns = xe;
 class eo extends X {
   constructor(e) {
@@ -6500,7 +6500,7 @@ class eo extends X {
     }), this.dispatchExternal("popupOpened", t.getComponent());
   }
 }
-Q(eo, "moduleName", "popup");
+U(eo, "moduleName", "popup");
 class to extends X {
   constructor(e) {
     super(e), this.element = !1, this.manualBlock = !1, this.beforeprintEventHandler = null, this.afterprintEventHandler = null, this.registerTableOption("printAsHtml", !1), this.registerTableOption("printFormatter", !1), this.registerTableOption("printHeader", !1), this.registerTableOption("printFooter", !1), this.registerTableOption("printStyled", !0), this.registerTableOption("printRowRange", "visible"), this.registerTableOption("printConfig", {}), this.registerColumnOption("print"), this.registerColumnOption("titlePrint");
@@ -6528,7 +6528,7 @@ class to extends X {
     this.manualBlock = !0, this.element = document.createElement("div"), this.element.classList.add("tabulator-print-fullscreen"), this.table.options.printHeader && (n.classList.add("tabulator-print-header"), l = typeof this.table.options.printHeader == "function" ? this.table.options.printHeader.call(this.table) : this.table.options.printHeader, typeof l == "string" ? n.innerHTML = l : n.appendChild(l), this.element.appendChild(n)), this.element.appendChild(a), this.table.options.printFooter && (o.classList.add("tabulator-print-footer"), h = typeof this.table.options.printFooter == "function" ? this.table.options.printFooter.call(this.table) : this.table.options.printFooter, typeof h == "string" ? o.innerHTML = h : o.appendChild(h), this.element.appendChild(o)), document.body.classList.add("tabulator-print-fullscreen-hide"), document.body.appendChild(this.element), this.table.options.printFormatter && this.table.options.printFormatter(this.element, a), window.print(), this.cleanup(), window.scrollTo(i, s), this.manualBlock = !1;
   }
 }
-Q(to, "moduleName", "print");
+U(to, "moduleName", "print");
 class Ao extends X {
   constructor(e) {
     super(e), this.data = !1, this.blocked = !1, this.origFuncs = {}, this.currentVersion = 0, this.registerTableOption("reactiveData", !1);
@@ -6699,7 +6699,7 @@ class Ao extends X {
     this.blocked === e && (this.blocked = !1);
   }
 }
-Q(Ao, "moduleName", "reactiveData");
+U(Ao, "moduleName", "reactiveData");
 class io extends X {
   constructor(e) {
     super(e), this.startColumn = !1, this.startX = !1, this.startWidth = !1, this.latestX = !1, this.handle = null, this.initialNextColumn = null, this.nextColumn = null, this.initialized = !1, this.registerColumnOption("resizable", !0), this.registerTableOption("resizableColumnFit", !1), this.registerTableOption("resizableColumnGuide", !1);
@@ -6795,7 +6795,7 @@ class io extends X {
     e.stopPropagation(), i.startColumn.modules.edit && (i.startColumn.modules.edit.blocked = !0), i.startX = typeof e.clientX > "u" ? e.touches[0].clientX : e.clientX, i.latestX = i.startX, i.startWidth = t.getWidth(), document.body.addEventListener("mousemove", n), document.body.addEventListener("mouseup", o), A.addEventListener("touchmove", n, { passive: !0 }), A.addEventListener("touchend", o);
   }
 }
-Q(io, "moduleName", "resizeColumns");
+U(io, "moduleName", "resizeColumns");
 class so extends X {
   constructor(e) {
     super(e), this.startColumn = !1, this.startY = !1, this.startHeight = !1, this.handle = null, this.prevHandle = null, this.registerTableOption("resizableRows", !1), this.registerTableOption("resizableRowGuide", !1);
@@ -6843,7 +6843,7 @@ class so extends X {
     e.stopPropagation(), i.startY = typeof e.screenY > "u" ? e.touches[0].screenY : e.screenY, i.startHeight = t.getHeight(), document.body.addEventListener("mousemove", n), document.body.addEventListener("mouseup", o), A.addEventListener("touchmove", n, { passive: !0 }), A.addEventListener("touchend", o);
   }
 }
-Q(so, "moduleName", "resizeRows");
+U(so, "moduleName", "resizeRows");
 class ro extends X {
   constructor(e) {
     super(e), this.binding = !1, this.visibilityObserver = !1, this.resizeObserver = !1, this.containerObserver = !1, this.tableHeight = 0, this.tableWidth = 0, this.containerHeight = 0, this.containerWidth = 0, this.autoResize = !1, this.visible = !1, this.initialized = !1, this.initialRedraw = !1, this.registerTableOption("autoResize", !0);
@@ -6881,7 +6881,7 @@ class ro extends X {
     this.binding && window.removeEventListener("resize", this.binding), this.resizeObserver && this.resizeObserver.unobserve(this.table.element), this.visibilityObserver && this.visibilityObserver.unobserve(this.table.element), this.containerObserver && this.containerObserver.unobserve(this.table.element.parentNode);
   }
 }
-Q(ro, "moduleName", "resizeTable");
+U(ro, "moduleName", "resizeTable");
 function yh(r, e, t) {
   var A = document.createElement("div"), i = r.getRow()._row.modules.responsiveLayout;
   A.classList.add("tabulator-responsive-collapse-toggle"), A.innerHTML = `<svg class='tabulator-responsive-collapse-toggle-open' viewbox="0 0 24 24">
@@ -7042,7 +7042,7 @@ class zs extends X {
     }), Object.keys(e).length ? t : "";
   }
 }
-Q(zs, "moduleName", "responsiveLayout"), Q(zs, "moduleExtensions", Fh);
+U(zs, "moduleName", "responsiveLayout"), U(zs, "moduleExtensions", Fh);
 function Qh(r, e, t) {
   var A = document.createElement("input"), i = !1;
   if (A.type = "checkbox", A.setAttribute("aria-label", "Select Row"), this.table.modExists("selectRow", !0))
@@ -7223,7 +7223,7 @@ class Gs extends X {
         this._deselectRow(i, !0);
   }
 }
-Q(Gs, "moduleName", "selectRow"), Q(Gs, "moduleExtensions", Uh);
+U(Gs, "moduleName", "selectRow"), U(Gs, "moduleExtensions", Uh);
 class Hh {
   constructor(e) {
     return this._range = e, new Proxy(this, {
@@ -7829,7 +7829,7 @@ class wi extends X {
     return e == null || e === "";
   }
 }
-Q(wi, "moduleName", "selectRange"), Q(wi, "moduleInitOrder", 1), Q(wi, "moduleExtensions", Sh);
+U(wi, "moduleName", "selectRange"), U(wi, "moduleInitOrder", 1), U(wi, "moduleExtensions", Sh);
 function kh(r, e, t, A, i, s, n) {
   var o = n.alignEmptyValues, a = n.decimalSeparator, l = n.thousandSeparator, h = 0;
   if (r = String(r), e = String(e), l && (r = r.split(l).join(""), e = e.split(l).join("")), a && (r = r.split(a).join("."), e = e.split(a).join(".")), r = parseFloat(r), e = parseFloat(e), isNaN(r))
@@ -8135,8 +8135,8 @@ const Lt = class Lt extends X {
     return e = A.getFieldValue(a.getData()), t = A.getFieldValue(l.getData()), e = typeof e < "u" ? e : "", t = typeof t < "u" ? t : "", n = a.getComponent(), o = l.getComponent(), A.modules.sort.sorter.call(this, e, t, n, o, A.getComponent(), i, s);
   }
 };
-Q(Lt, "moduleName", "sort"), //load defaults
-Q(Lt, "sorters", Gh);
+U(Lt, "moduleName", "sort"), //load defaults
+U(Lt, "sorters", Gh);
 let Ws = Lt;
 class Wh {
   constructor(e, t) {
@@ -8403,7 +8403,7 @@ Data:     `, e), !1;
     return t ? this.loadSheet(t) : !1;
   }
 }
-Q(oo, "moduleName", "spreadsheet");
+U(oo, "moduleName", "spreadsheet");
 class ao extends X {
   constructor(e) {
     super(e), this.tooltipSubscriber = null, this.headerSubscriber = null, this.timeout = null, this.popupInstance = null, this.registerTableOption("tooltipDelay", 300), this.registerColumnOption("tooltip"), this.registerColumnOption("headerTooltip");
@@ -8438,7 +8438,7 @@ class ao extends X {
     }), this.dispatchExternal("TooltipOpened", t.getComponent()));
   }
 }
-Q(ao, "moduleName", "tooltip");
+U(ao, "moduleName", "tooltip");
 var Xh = {
   //is integer
   integer: function(r, e, t) {
@@ -8630,8 +8630,8 @@ const LA = class LA extends X {
     e.modules.validate && e.modules.validate.invalid && (e.getElement().classList.remove("tabulator-validation-fail"), e.modules.validate.invalid = !1, t = this.invalidCells.indexOf(e), t > -1 && this.invalidCells.splice(t, 1));
   }
 };
-Q(LA, "moduleName", "validate"), //load defaults
-Q(LA, "validators", Xh);
+U(LA, "moduleName", "validate"), //load defaults
+U(LA, "validators", Xh);
 let Xs = LA;
 var ss = /* @__PURE__ */ Object.freeze({
   __proto__: null,
@@ -9487,16 +9487,16 @@ class qh extends Di {
   //////////////////////////////////////
   //full virtual render
   _virtualRenderFill(e, t, A) {
-    var i = this.tableElement, s = this.elementVertical, n = 0, o = 0, a = 0, l = 0, h = 0, u = 0, c = this.rows(), d = c.length, p = 0, w, E, b = [], y = 0, D = 0, I = this.table.rowManager.fixedHeight, H = this.elementVertical.clientHeight, F = this.table.options.rowHeight, z = !0;
+    var i = this.tableElement, s = this.elementVertical, n = 0, o = 0, a = 0, l = 0, h = 0, u = 0, c = this.rows(), d = c.length, p = 0, w, E, b = [], y = 0, S = 0, I = this.table.rowManager.fixedHeight, R = this.elementVertical.clientHeight, Q = this.table.options.rowHeight, z = !0;
     if (e = e || 0, A = A || 0, !e)
       this.clear();
     else {
       for (; i.firstChild; ) i.removeChild(i.firstChild);
-      l = (d - e + 1) * this.vDomRowHeight, l < H && (e -= Math.ceil((H - l) / this.vDomRowHeight), e < 0 && (e = 0)), n = Math.min(Math.max(Math.floor(this.vDomWindowBuffer / this.vDomRowHeight), this.vDomWindowMinMarginRows), e), e -= n;
+      l = (d - e + 1) * this.vDomRowHeight, l < R && (e -= Math.ceil((R - l) / this.vDomRowHeight), e < 0 && (e = 0)), n = Math.min(Math.max(Math.floor(this.vDomWindowBuffer / this.vDomRowHeight), this.vDomWindowMinMarginRows), e), e -= n;
     }
     if (d && ie.elVisible(this.elementVertical)) {
-      for (this.vDomTop = e, this.vDomBottom = e - 1, I || this.table.options.maxHeight ? (F && (D = H / F + this.vDomWindowBuffer / F), D = Math.max(this.vDomWindowMinTotalRows, Math.ceil(D))) : D = d; (D == d || o <= H + this.vDomWindowBuffer || y < this.vDomWindowMinTotalRows) && this.vDomBottom < d - 1; ) {
-        for (b = [], E = document.createDocumentFragment(), u = 0; u < D && this.vDomBottom < d - 1; )
+      for (this.vDomTop = e, this.vDomBottom = e - 1, I || this.table.options.maxHeight ? (Q && (S = R / Q + this.vDomWindowBuffer / Q), S = Math.max(this.vDomWindowMinTotalRows, Math.ceil(S))) : S = d; (S == d || o <= R + this.vDomWindowBuffer || y < this.vDomWindowMinTotalRows) && this.vDomBottom < d - 1; ) {
+        for (b = [], E = document.createDocumentFragment(), u = 0; u < S && this.vDomBottom < d - 1; )
           p = this.vDomBottom + 1, w = c[p], this.styleRow(w, p), w.initialize(!1, !0), !w.heightInitialized && !this.table.options.rowHeight && w.clearCellHeight(), E.appendChild(w.getElement()), b.push(w), this.vDomBottom++, u++;
         if (!b.length)
           break;
@@ -9506,9 +9506,9 @@ class qh extends Di {
           K.heightInitialized || K.setCellHeight();
         }), b.forEach((K) => {
           a = K.getHeight(), y < n ? h += a : o += a, a > this.vDomWindowBuffer && (this.vDomWindowBuffer = a * 2), y++;
-        }), z = this.table.rowManager.adjustTableSize(), H = this.elementVertical.clientHeight, z && (I || this.table.options.maxHeight) && (F = o / y, D = Math.max(this.vDomWindowMinTotalRows, Math.ceil(H / F + this.vDomWindowBuffer / F)));
+        }), z = this.table.rowManager.adjustTableSize(), R = this.elementVertical.clientHeight, z && (I || this.table.options.maxHeight) && (Q = o / y, S = Math.max(this.vDomWindowMinTotalRows, Math.ceil(R / Q + this.vDomWindowBuffer / Q)));
       }
-      e ? (this.vDomTopPad = t ? this.vDomRowHeight * this.vDomTop + A : this.scrollTop - h, this.vDomBottomPad = this.vDomBottom == d - 1 ? 0 : Math.max(this.vDomScrollHeight - this.vDomTopPad - o - h, 0)) : (this.vDomTopPad = 0, this.vDomRowHeight = Math.floor((o + h) / y), this.vDomBottomPad = this.vDomRowHeight * (d - this.vDomBottom - 1), this.vDomScrollHeight = h + o + this.vDomBottomPad - H), i.style.paddingTop = this.vDomTopPad + "px", i.style.paddingBottom = this.vDomBottomPad + "px", t && (this.scrollTop = this.vDomTopPad + h + A - (this.elementVertical.scrollWidth > this.elementVertical.clientWidth ? this.elementVertical.offsetHeight - H : 0)), this.scrollTop = Math.min(this.scrollTop, this.elementVertical.scrollHeight - H), this.elementVertical.scrollWidth > this.elementVertical.clientWidth && t && (this.scrollTop += this.elementVertical.offsetHeight - H), this.vDomScrollPosTop = this.scrollTop, this.vDomScrollPosBottom = this.scrollTop, s.scrollTop = this.scrollTop, this.dispatch("render-virtual-fill");
+      e ? (this.vDomTopPad = t ? this.vDomRowHeight * this.vDomTop + A : this.scrollTop - h, this.vDomBottomPad = this.vDomBottom == d - 1 ? 0 : Math.max(this.vDomScrollHeight - this.vDomTopPad - o - h, 0)) : (this.vDomTopPad = 0, this.vDomRowHeight = Math.floor((o + h) / y), this.vDomBottomPad = this.vDomRowHeight * (d - this.vDomBottom - 1), this.vDomScrollHeight = h + o + this.vDomBottomPad - R), i.style.paddingTop = this.vDomTopPad + "px", i.style.paddingBottom = this.vDomBottomPad + "px", t && (this.scrollTop = this.vDomTopPad + h + A - (this.elementVertical.scrollWidth > this.elementVertical.clientWidth ? this.elementVertical.offsetHeight - R : 0)), this.scrollTop = Math.min(this.scrollTop, this.elementVertical.scrollHeight - R), this.elementVertical.scrollWidth > this.elementVertical.clientWidth && t && (this.scrollTop += this.elementVertical.offsetHeight - R), this.vDomScrollPosTop = this.scrollTop, this.vDomScrollPosBottom = this.scrollTop, s.scrollTop = this.scrollTop, this.dispatch("render-virtual-fill");
     }
   }
   _addTopRow(e, t) {
@@ -10395,20 +10395,20 @@ function uu(r, e) {
     return typeof p == "string" ? p.indexOf("%") > -1 ? w = t / 100 * parseInt(p) : w = parseInt(p) : w = p, w;
   }
   function d(p, w, E, b) {
-    var y = [], D = 0, I = 0, H = 0, F = s, z = 0, K = 0, P = [];
+    var y = [], S = 0, I = 0, R = 0, Q = s, z = 0, K = 0, P = [];
     function ne(N) {
       return E * (N.column.definition.widthGrow || 1);
     }
-    function S(N) {
+    function k(N) {
       return c(N.width) - E * (N.column.definition.widthShrink || 0);
     }
     return p.forEach(function(N, q) {
-      var W = b ? S(N) : ne(N);
-      N.column.minWidth >= W ? y.push(N) : N.column.maxWidth && N.column.maxWidth < W ? (N.width = N.column.maxWidth, w -= N.column.maxWidth, F -= b ? N.column.definition.widthShrink || 1 : N.column.definition.widthGrow || 1, F && (E = Math.floor(w / F))) : (P.push(N), K += b ? N.column.definition.widthShrink || 1 : N.column.definition.widthGrow || 1);
+      var W = b ? k(N) : ne(N);
+      N.column.minWidth >= W ? y.push(N) : N.column.maxWidth && N.column.maxWidth < W ? (N.width = N.column.maxWidth, w -= N.column.maxWidth, Q -= b ? N.column.definition.widthShrink || 1 : N.column.definition.widthGrow || 1, Q && (E = Math.floor(w / Q))) : (P.push(N), K += b ? N.column.definition.widthShrink || 1 : N.column.definition.widthGrow || 1);
     }), y.length ? (y.forEach(function(N) {
-      D += b ? N.width - N.column.minWidth : N.column.minWidth, N.width = N.column.minWidth;
-    }), I = w - D, H = K ? Math.floor(I / K) : I, z = d(P, I, H, b)) : (z = K ? w - Math.floor(w / K) * K : w, P.forEach(function(N) {
-      N.width = b ? S(N) : ne(N);
+      S += b ? N.width - N.column.minWidth : N.column.minWidth, N.width = N.column.minWidth;
+    }), I = w - S, R = K ? Math.floor(I / K) : I, z = d(P, I, R, b)) : (z = K ? w - Math.floor(w / K) * K : w, P.forEach(function(N) {
+      N.width = b ? k(N) : ne(N);
     })), z;
   }
   this.table.options.responsiveLayout && this.table.modExists("responsiveLayout", !0) && this.table.modules.responsiveLayout.update(), this.table.rowManager.element.scrollHeight > this.table.rowManager.element.clientHeight && (t -= this.table.rowManager.element.offsetWidth - this.table.rowManager.element.clientWidth), r.forEach(function(p) {
@@ -10456,8 +10456,8 @@ const eA = class eA extends X {
     this.dispatch("layout-refreshing"), eA.modes[this.mode].call(this, this.table.columnManager.columnsByIndex, e), t && this.table.rowManager.normalizeHeight(!0), this.dispatch("layout-refreshed");
   }
 };
-Q(eA, "moduleName", "layout"), //load defaults
-Q(eA, "modes", cu);
+U(eA, "moduleName", "layout"), //load defaults
+U(eA, "modes", cu);
 let Js = eA;
 var du = {
   default: {
@@ -10564,8 +10564,8 @@ const IA = class IA extends X {
       });
   }
 };
-Q(IA, "moduleName", "localize"), //load defaults
-Q(IA, "langs", du);
+U(IA, "moduleName", "localize"), //load defaults
+U(IA, "langs", du);
 let js = IA;
 class ho extends X {
   constructor(e) {
@@ -10592,7 +10592,7 @@ class ho extends X {
     console.warn("Inter-table Comms Error - no such module:", t);
   }
 }
-Q(ho, "moduleName", "comms");
+U(ho, "moduleName", "comms");
 var fu = /* @__PURE__ */ Object.freeze({
   __proto__: null,
   CommsModule: ho,
@@ -10605,7 +10605,7 @@ const De = class De {
     return Array.isArray(t) && !t.length ? !1 : t;
   }
 };
-Q(De, "registry", {
+U(De, "registry", {
   tables: [],
   register(e) {
     De.registry.tables.push(e);
@@ -10700,7 +10700,7 @@ const te = class te extends Ys {
     e.sort((s, n) => s.moduleInitOrder > n.moduleInitOrder ? 1 : -1), t.sort((s, n) => s.moduleInitOrder > n.moduleInitOrder ? 1 : -1), this.modulesRegular = e.concat(A.concat(t));
   }
 };
-Q(te, "moduleBindings", {}), Q(te, "moduleExtensions", {}), Q(te, "modulesRegistered", !1), Q(te, "defaultModules", !1);
+U(te, "moduleBindings", {}), U(te, "moduleExtensions", {}), U(te, "modulesRegistered", !1), U(te, "defaultModules", !1);
 let Zs = te;
 class gu extends Ee {
   constructor(e) {
@@ -11035,7 +11035,7 @@ const st = class st extends Zs {
   }
 };
 //default setup options
-Q(st, "defaultOptions", Jh);
+U(st, "defaultOptions", Jh);
 let $s = st;
 var cA = $s;
 class pu extends cA {
@@ -11286,7 +11286,7 @@ var Bu = function(r) {
 ), zr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", Su = typeof Uint8Array > "u" ? [] : new Uint8Array(256);
 for (var $A = 0; $A < zr.length; $A++)
   Su[zr.charCodeAt($A)] = $A;
-var ku = "KwAAAAAAAAAACA4AUD0AADAgAAACAAAAAAAIABAAGABAAEgAUABYAGAAaABgAGgAYgBqAF8AZwBgAGgAcQB5AHUAfQCFAI0AlQCdAKIAqgCyALoAYABoAGAAaABgAGgAwgDKAGAAaADGAM4A0wDbAOEA6QDxAPkAAQEJAQ8BFwF1AH0AHAEkASwBNAE6AUIBQQFJAVEBWQFhAWgBcAF4ATAAgAGGAY4BlQGXAZ8BpwGvAbUBvQHFAc0B0wHbAeMB6wHxAfkBAQIJAvEBEQIZAiECKQIxAjgCQAJGAk4CVgJeAmQCbAJ0AnwCgQKJApECmQKgAqgCsAK4ArwCxAIwAMwC0wLbAjAA4wLrAvMC+AIAAwcDDwMwABcDHQMlAy0DNQN1AD0DQQNJA0kDSQNRA1EDVwNZA1kDdQB1AGEDdQBpA20DdQN1AHsDdQCBA4kDkQN1AHUAmQOhA3UAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AKYDrgN1AHUAtgO+A8YDzgPWAxcD3gPjA+sD8wN1AHUA+wMDBAkEdQANBBUEHQQlBCoEFwMyBDgEYABABBcDSARQBFgEYARoBDAAcAQzAXgEgASIBJAEdQCXBHUAnwSnBK4EtgS6BMIEyAR1AHUAdQB1AHUAdQCVANAEYABgAGAAYABgAGAAYABgANgEYADcBOQEYADsBPQE/AQEBQwFFAUcBSQFLAU0BWQEPAVEBUsFUwVbBWAAYgVgAGoFcgV6BYIFigWRBWAAmQWfBaYFYABgAGAAYABgAKoFYACxBbAFuQW6BcEFwQXHBcEFwQXPBdMF2wXjBeoF8gX6BQIGCgYSBhoGIgYqBjIGOgZgAD4GRgZMBmAAUwZaBmAAYABgAGAAYABgAGAAYABgAGAAYABgAGIGYABpBnAGYABgAGAAYABgAGAAYABgAGAAYAB4Bn8GhQZgAGAAYAB1AHcDFQSLBmAAYABgAJMGdQA9A3UAmwajBqsGqwaVALMGuwbDBjAAywbSBtIG1QbSBtIG0gbSBtIG0gbdBuMG6wbzBvsGAwcLBxMHAwcbByMHJwcsBywHMQcsB9IGOAdAB0gHTgfSBkgHVgfSBtIG0gbSBtIG0gbSBtIG0gbSBiwHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAdgAGAALAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAdbB2MHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsB2kH0gZwB64EdQB1AHUAdQB1AHUAdQB1AHUHfQdgAIUHjQd1AHUAlQedB2AAYAClB6sHYACzB7YHvgfGB3UAzgfWBzMB3gfmB1EB7gf1B/0HlQENAQUIDQh1ABUIHQglCBcDLQg1CD0IRQhNCEEDUwh1AHUAdQBbCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIcAh3CHoIMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwAIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIgggwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAALAcsBywHLAcsBywHLAcsBywHLAcsB4oILAcsB44I0gaWCJ4Ipgh1AHUAqgiyCHUAdQB1AHUAdQB1AHUAdQB1AHUAtwh8AXUAvwh1AMUIyQjRCNkI4AjoCHUAdQB1AO4I9gj+CAYJDgkTCS0HGwkjCYIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiAAIAAAAFAAYABgAGIAXwBgAHEAdQBFAJUAogCyAKAAYABgAEIA4ABGANMA4QDxAMEBDwE1AFwBLAE6AQEBUQF4QkhCmEKoQrhCgAHIQsAB0MLAAcABwAHAAeDC6ABoAHDCwMMAAcABwAHAAdDDGMMAAcAB6MM4wwjDWMNow3jDaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAEjDqABWw6bDqABpg6gAaABoAHcDvwOPA+gAaABfA/8DvwO/A78DvwO/A78DvwO/A78DvwO/A78DvwO/A78DvwO/A78DvwO/A78DvwO/A78DvwO/A78DpcPAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcAB9cPKwkyCToJMAB1AHUAdQBCCUoJTQl1AFUJXAljCWcJawkwADAAMAAwAHMJdQB2CX4JdQCECYoJjgmWCXUAngkwAGAAYABxAHUApgn3A64JtAl1ALkJdQDACTAAMAAwADAAdQB1AHUAdQB1AHUAdQB1AHUAowYNBMUIMAAwADAAMADICcsJ0wnZCRUE4QkwAOkJ8An4CTAAMAB1AAAKvwh1AAgKDwoXCh8KdQAwACcKLgp1ADYKqAmICT4KRgowADAAdQB1AE4KMAB1AFYKdQBeCnUAZQowADAAMAAwADAAMAAwADAAMAAVBHUAbQowADAAdQC5CXUKMAAwAHwBxAijBogEMgF9CoQKiASMCpQKmgqIBKIKqgquCogEDQG2Cr4KxgrLCjAAMADTCtsKCgHjCusK8Qr5CgELMAAwADAAMAB1AIsECQsRC3UANAEZCzAAMAAwADAAMAB1ACELKQswAHUANAExCzkLdQBBC0kLMABRC1kLMAAwADAAMAAwADAAdQBhCzAAMAAwAGAAYABpC3ELdwt/CzAAMACHC4sLkwubC58Lpwt1AK4Ltgt1APsDMAAwADAAMAAwADAAMAAwAL4LwwvLC9IL1wvdCzAAMADlC+kL8Qv5C/8LSQswADAAMAAwADAAMAAwADAAMAAHDDAAMAAwADAAMAAODBYMHgx1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1ACYMMAAwADAAdQB1AHUALgx1AHUAdQB1AHUAdQA2DDAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwAHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AD4MdQBGDHUAdQB1AHUAdQB1AEkMdQB1AHUAdQB1AFAMMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwAHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQBYDHUAdQB1AF8MMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUA+wMVBGcMMAAwAHwBbwx1AHcMfwyHDI8MMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAYABgAJcMMAAwADAAdQB1AJ8MlQClDDAAMACtDCwHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsB7UMLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AA0EMAC9DDAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAsBywHLAcsBywHLAcsBywHLQcwAMEMyAwsBywHLAcsBywHLAcsBywHLAcsBywHzAwwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwAHUAdQB1ANQM2QzhDDAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMABgAGAAYABgAGAAYABgAOkMYADxDGAA+AwADQYNYABhCWAAYAAODTAAMAAwADAAFg1gAGAAHg37AzAAMAAwADAAYABgACYNYAAsDTQNPA1gAEMNPg1LDWAAYABgAGAAYABgAGAAYABgAGAAUg1aDYsGVglhDV0NcQBnDW0NdQ15DWAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAlQCBDZUAiA2PDZcNMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAnw2nDTAAMAAwADAAMAAwAHUArw23DTAAMAAwADAAMAAwADAAMAAwADAAMAB1AL8NMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAB1AHUAdQB1AHUAdQDHDTAAYABgAM8NMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAA1w11ANwNMAAwAD0B5A0wADAAMAAwADAAMADsDfQN/A0EDgwOFA4wABsOMAAwADAAMAAwADAAMAAwANIG0gbSBtIG0gbSBtIG0gYjDigOwQUuDsEFMw7SBjoO0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIGQg5KDlIOVg7SBtIGXg5lDm0OdQ7SBtIGfQ6EDooOjQ6UDtIGmg6hDtIG0gaoDqwO0ga0DrwO0gZgAGAAYADEDmAAYAAkBtIGzA5gANIOYADaDokO0gbSBt8O5w7SBu8O0gb1DvwO0gZgAGAAxA7SBtIG0gbSBtIGYABgAGAAYAAED2AAsAUMD9IG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIGFA8sBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAccD9IGLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHJA8sBywHLAcsBywHLAccDywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywPLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAc0D9IG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIGLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAccD9IG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIGFA8sBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHPA/SBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gYUD0QPlQCVAJUAMAAwADAAMACVAJUAlQCVAJUAlQCVAEwPMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAA//8EAAQABAAEAAQABAAEAAQABAANAAMAAQABAAIABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQACgATABcAHgAbABoAHgAXABYAEgAeABsAGAAPABgAHABLAEsASwBLAEsASwBLAEsASwBLABgAGAAeAB4AHgATAB4AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQABYAGwASAB4AHgAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAWAA0AEQAeAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAAQABAAEAAQABAAFAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAJABYAGgAbABsAGwAeAB0AHQAeAE8AFwAeAA0AHgAeABoAGwBPAE8ADgBQAB0AHQAdAE8ATwAXAE8ATwBPABYAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAFAAUABQAFAAUABQAFAAUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAFAAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAeAB4AHgAeAFAATwBAAE8ATwBPAEAATwBQAFAATwBQAB4AHgAeAB4AHgAeAB0AHQAdAB0AHgAdAB4ADgBQAFAAUABQAFAAHgAeAB4AHgAeAB4AHgBQAB4AUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4ABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAJAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAkACQAJAAkACQAJAAkABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAeAB4AHgAeAFAAHgAeAB4AKwArAFAAUABQAFAAGABQACsAKwArACsAHgAeAFAAHgBQAFAAUAArAFAAKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4ABAAEAAQABAAEAAQABAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAUAAeAB4AHgAeAB4AHgBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAYAA0AKwArAB4AHgAbACsABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQADQAEAB4ABAAEAB4ABAAEABMABAArACsAKwArACsAKwArACsAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAKwArACsAKwBWAFYAVgBWAB4AHgArACsAKwArACsAKwArACsAKwArACsAHgAeAB4AHgAeAB4AHgAeAB4AGgAaABoAGAAYAB4AHgAEAAQABAAEAAQABAAEAAQABAAEAAQAEwAEACsAEwATAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABABLAEsASwBLAEsASwBLAEsASwBLABoAGQAZAB4AUABQAAQAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQABMAUAAEAAQABAAEAAQABAAEAB4AHgAEAAQABAAEAAQABABQAFAABAAEAB4ABAAEAAQABABQAFAASwBLAEsASwBLAEsASwBLAEsASwBQAFAAUAAeAB4AUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwAeAFAABABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAFAAKwArACsAKwArACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQAUABQAB4AHgAYABMAUAArACsABAAbABsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAFAABAAEAAQABAAEAFAABAAEAAQAUAAEAAQABAAEAAQAKwArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAArACsAHgArAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwArACsAKwArACsAKwArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAB4ABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAUAAEAAQABAAEAAQABAAEAFAAUABQAFAAUABQAFAAUABQAFAABAAEAA0ADQBLAEsASwBLAEsASwBLAEsASwBLAB4AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAArAFAAUABQAFAAUABQAFAAUAArACsAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUAArACsAKwBQAFAAUABQACsAKwAEAFAABAAEAAQABAAEAAQABAArACsABAAEACsAKwAEAAQABABQACsAKwArACsAKwArACsAKwAEACsAKwArACsAUABQACsAUABQAFAABAAEACsAKwBLAEsASwBLAEsASwBLAEsASwBLAFAAUAAaABoAUABQAFAAUABQAEwAHgAbAFAAHgAEACsAKwAEAAQABAArAFAAUABQAFAAUABQACsAKwArACsAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUABQACsAUABQACsAUABQACsAKwAEACsABAAEAAQABAAEACsAKwArACsABAAEACsAKwAEAAQABAArACsAKwAEACsAKwArACsAKwArACsAUABQAFAAUAArAFAAKwArACsAKwArACsAKwBLAEsASwBLAEsASwBLAEsASwBLAAQABABQAFAAUAAEAB4AKwArACsAKwArACsAKwArACsAKwAEAAQABAArAFAAUABQAFAAUABQAFAAUABQACsAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUABQACsAUABQAFAAUABQACsAKwAEAFAABAAEAAQABAAEAAQABAAEACsABAAEAAQAKwAEAAQABAArACsAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAABAAEACsAKwBLAEsASwBLAEsASwBLAEsASwBLAB4AGwArACsAKwArACsAKwArAFAABAAEAAQABAAEAAQAKwAEAAQABAArAFAAUABQAFAAUABQAFAAUAArACsAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAArACsABAAEACsAKwAEAAQABAArACsAKwArACsAKwArAAQABAAEACsAKwArACsAUABQACsAUABQAFAABAAEACsAKwBLAEsASwBLAEsASwBLAEsASwBLAB4AUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArAAQAUAArAFAAUABQAFAAUABQACsAKwArAFAAUABQACsAUABQAFAAUAArACsAKwBQAFAAKwBQACsAUABQACsAKwArAFAAUAArACsAKwBQAFAAUAArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArAAQABAAEAAQABAArACsAKwAEAAQABAArAAQABAAEAAQAKwArAFAAKwArACsAKwArACsABAArACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAUABQAFAAHgAeAB4AHgAeAB4AGwAeACsAKwArACsAKwAEAAQABAAEAAQAUABQAFAAUABQAFAAUABQACsAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAUAAEAAQABAAEAAQABAAEACsABAAEAAQAKwAEAAQABAAEACsAKwArACsAKwArACsABAAEACsAUABQAFAAKwArACsAKwArAFAAUAAEAAQAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAKwAOAFAAUABQAFAAUABQAFAAHgBQAAQABAAEAA4AUABQAFAAUABQAFAAUABQACsAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAKwArAAQAUAAEAAQABAAEAAQABAAEACsABAAEAAQAKwAEAAQABAAEACsAKwArACsAKwArACsABAAEACsAKwArACsAKwArACsAUAArAFAAUAAEAAQAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwBQAFAAKwArACsAKwArACsAKwArACsAKwArACsAKwAEAAQABAAEAFAAUABQAFAAUABQAFAAUABQACsAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAFAABAAEAAQABAAEAAQABAArAAQABAAEACsABAAEAAQABABQAB4AKwArACsAKwBQAFAAUAAEAFAAUABQAFAAUABQAFAAUABQAFAABAAEACsAKwBLAEsASwBLAEsASwBLAEsASwBLAFAAUABQAFAAUABQAFAAUABQABoAUABQAFAAUABQAFAAKwAEAAQABAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQACsAUAArACsAUABQAFAAUABQAFAAUAArACsAKwAEACsAKwArACsABAAEAAQABAAEAAQAKwAEACsABAAEAAQABAAEAAQABAAEACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArAAQABAAeACsAKwArACsAKwArACsAKwArACsAKwArAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXAAqAFwAXAAqACoAKgAqACoAKgAqACsAKwArACsAGwBcAFwAXABcAFwAXABcACoAKgAqACoAKgAqACoAKgAeAEsASwBLAEsASwBLAEsASwBLAEsADQANACsAKwArACsAKwBcAFwAKwBcACsAXABcAFwAXABcACsAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcACsAXAArAFwAXABcAFwAXABcAFwAXABcAFwAKgBcAFwAKgAqACoAKgAqACoAKgAqACoAXAArACsAXABcAFwAXABcACsAXAArACoAKgAqACoAKgAqACsAKwBLAEsASwBLAEsASwBLAEsASwBLACsAKwBcAFwAXABcAFAADgAOAA4ADgAeAA4ADgAJAA4ADgANAAkAEwATABMAEwATAAkAHgATAB4AHgAeAAQABAAeAB4AHgAeAB4AHgBLAEsASwBLAEsASwBLAEsASwBLAFAAUABQAFAAUABQAFAAUABQAFAADQAEAB4ABAAeAAQAFgARABYAEQAEAAQAUABQAFAAUABQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQADQAEAAQABAAEAAQADQAEAAQAUABQAFAAUABQAAQABAAEAAQABAAEAAQABAAEAAQABAArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAArAA0ADQAeAB4AHgAeAB4AHgAEAB4AHgAeAB4AHgAeACsAHgAeAA4ADgANAA4AHgAeAB4AHgAeAAkACQArACsAKwArACsAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgBcAEsASwBLAEsASwBLAEsASwBLAEsADQANAB4AHgAeAB4AXABcAFwAXABcAFwAKgAqACoAKgBcAFwAXABcACoAKgAqAFwAKgAqACoAXABcACoAKgAqACoAKgAqACoAXABcAFwAKgAqACoAKgBcAFwAXABcAFwAXABcAFwAXABcAFwAXABcACoAKgAqACoAKgAqACoAKgAqACoAKgAqAFwAKgBLAEsASwBLAEsASwBLAEsASwBLACoAKgAqACoAKgAqAFAAUABQAFAAUABQACsAUAArACsAKwArACsAUAArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgBQAFAAUABQAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFAAUABQAFAAUABQAFAAUABQACsAUABQAFAAUAArACsAUABQAFAAUABQAFAAUAArAFAAKwBQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAKwArAFAAUABQAFAAUABQAFAAKwBQACsAUABQAFAAUAArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsABAAEAAQAHgANAB4AHgAeAB4AHgAeAB4AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUAArACsADQBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAANAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAWABEAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAA0ADQANAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAAQABAAEACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAANAA0AKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUAArAAQABAArACsAKwArACsAKwArACsAKwArACsAKwBcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqAA0ADQAVAFwADQAeAA0AGwBcACoAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwAeAB4AEwATAA0ADQAOAB4AEwATAB4ABAAEAAQACQArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAFAAUABQAFAAUAAEAAQAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQAUAArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAArACsAKwArAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwArACsAHgArACsAKwATABMASwBLAEsASwBLAEsASwBLAEsASwBcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXAArACsAXABcAFwAXABcACsAKwArACsAKwArACsAKwArACsAKwBcAFwAXABcAFwAXABcAFwAXABcAFwAXAArACsAKwArAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAXAArACsAKwAqACoAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAArACsAHgAeAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcACoAKgAqACoAKgAqACoAKgAqACoAKwAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKwArAAQASwBLAEsASwBLAEsASwBLAEsASwArACsAKwArACsAKwBLAEsASwBLAEsASwBLAEsASwBLACsAKwArACsAKwArACoAKgAqACoAKgAqACoAXAAqACoAKgAqACoAKgArACsABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsABAAEAAQABAAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABABQAFAAUABQAFAAUABQACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwANAA0AHgANAA0ADQANAB4AHgAeAB4AHgAeAB4AHgAeAB4ABAAEAAQABAAEAAQABAAEAAQAHgAeAB4AHgAeAB4AHgAeAB4AKwArACsABAAEAAQAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABABQAFAASwBLAEsASwBLAEsASwBLAEsASwBQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwArACsAKwArACsAKwAeAB4AHgAeAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwArAA0ADQANAA0ADQBLAEsASwBLAEsASwBLAEsASwBLACsAKwArAFAAUABQAEsASwBLAEsASwBLAEsASwBLAEsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAA0ADQBQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUAAeAB4AHgAeAB4AHgAeAB4AKwArACsAKwArACsAKwArAAQABAAEAB4ABAAEAAQABAAEAAQABAAEAAQABAAEAAQABABQAFAAUABQAAQAUABQAFAAUABQAFAABABQAFAABAAEAAQAUAArACsAKwArACsABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsABAAEAAQABAAEAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwArAFAAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAKwBQACsAUAArAFAAKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACsAKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArAB4AHgAeAB4AHgAeAB4AHgBQAB4AHgAeAFAAUABQACsAHgAeAB4AHgAeAB4AHgAeAB4AHgBQAFAAUABQACsAKwAeAB4AHgAeAB4AHgArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwArAFAAUABQACsAHgAeAB4AHgAeAB4AHgAOAB4AKwANAA0ADQANAA0ADQANAAkADQANAA0ACAAEAAsABAAEAA0ACQANAA0ADAAdAB0AHgAXABcAFgAXABcAFwAWABcAHQAdAB4AHgAUABQAFAANAAEAAQAEAAQABAAEAAQACQAaABoAGgAaABoAGgAaABoAHgAXABcAHQAVABUAHgAeAB4AHgAeAB4AGAAWABEAFQAVABUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4ADQAeAA0ADQANAA0AHgANAA0ADQAHAB4AHgAeAB4AKwAEAAQABAAEAAQABAAEAAQABAAEAFAAUAArACsATwBQAFAAUABQAFAAHgAeAB4AFgARAE8AUABPAE8ATwBPAFAAUABQAFAAUAAeAB4AHgAWABEAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArABsAGwAbABsAGwAbABsAGgAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGgAbABsAGwAbABoAGwAbABoAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAHgAeAFAAGgAeAB0AHgBQAB4AGgAeAB4AHgAeAB4AHgAeAB4AHgBPAB4AUAAbAB4AHgBQAFAAUABQAFAAHgAeAB4AHQAdAB4AUAAeAFAAHgBQAB4AUABPAFAAUAAeAB4AHgAeAB4AHgAeAFAAUABQAFAAUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAFAAHgBQAFAAUABQAE8ATwBQAFAAUABQAFAATwBQAFAATwBQAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAFAAUABQAFAATwBPAE8ATwBPAE8ATwBPAE8ATwBQAFAAUABQAFAAUABQAFAAUAAeAB4AUABQAFAAUABPAB4AHgArACsAKwArAB0AHQAdAB0AHQAdAB0AHQAdAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB0AHgAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB4AHQAdAB4AHgAeAB0AHQAeAB4AHQAeAB4AHgAdAB4AHQAbABsAHgAdAB4AHgAeAB4AHQAeAB4AHQAdAB0AHQAeAB4AHQAeAB0AHgAdAB0AHQAdAB0AHQAeAB0AHgAeAB4AHgAeAB0AHQAdAB0AHgAeAB4AHgAdAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB4AHgAeAB0AHgAeAB4AHgAeAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB0AHgAeAB0AHQAdAB0AHgAeAB0AHQAeAB4AHQAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB0AHQAeAB4AHQAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHQAeAB4AHgAdAB4AHgAeAB4AHgAeAB4AHQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AFAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeABYAEQAWABEAHgAeAB4AHgAeAB4AHQAeAB4AHgAeAB4AHgAeACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAWABEAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AJQAlACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAFAAHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHgAeAB4AHgAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAeAB4AHQAdAB0AHQAeAB4AHgAeAB4AHgAeAB4AHgAeAB0AHQAeAB0AHQAdAB0AHQAdAB0AHgAeAB4AHgAeAB4AHgAeAB0AHQAeAB4AHQAdAB4AHgAeAB4AHQAdAB4AHgAeAB4AHQAdAB0AHgAeAB0AHgAeAB0AHQAdAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB0AHQAdAB4AHgAeAB4AHgAeAB4AHgAeAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAlACUAJQAlAB4AHQAdAB4AHgAdAB4AHgAeAB4AHQAdAB4AHgAeAB4AJQAlAB0AHQAlAB4AJQAlACUAIAAlACUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAlACUAJQAeAB4AHgAeAB0AHgAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB0AHgAdAB0AHQAeAB0AJQAdAB0AHgAdAB0AHgAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHQAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAlACUAJQAlACUAJQAlACUAJQAlACUAJQAdAB0AHQAdACUAHgAlACUAJQAdACUAJQAdAB0AHQAlACUAHQAdACUAHQAdACUAJQAlAB4AHQAeAB4AHgAeAB0AHQAlAB0AHQAdAB0AHQAdACUAJQAlACUAJQAdACUAJQAgACUAHQAdACUAJQAlACUAJQAlACUAJQAeAB4AHgAlACUAIAAgACAAIAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB0AHgAeAB4AFwAXABcAFwAXABcAHgATABMAJQAeAB4AHgAWABEAFgARABYAEQAWABEAFgARABYAEQAWABEATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeABYAEQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAWABEAFgARABYAEQAWABEAFgARAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AFgARABYAEQAWABEAFgARABYAEQAWABEAFgARABYAEQAWABEAFgARABYAEQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAWABEAFgARAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AFgARAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB0AHQAdAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AUABQAFAAUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAEAAQABAAeAB4AKwArACsAKwArABMADQANAA0AUAATAA0AUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAUAANACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQACsAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXAA0ADQANAA0ADQANAA0ADQAeAA0AFgANAB4AHgAXABcAHgAeABcAFwAWABEAFgARABYAEQAWABEADQANAA0ADQATAFAADQANAB4ADQANAB4AHgAeAB4AHgAMAAwADQANAA0AHgANAA0AFgANAA0ADQANAA0ADQANAA0AHgANAB4ADQANAB4AHgAeACsAKwArACsAKwArACsAKwArACsAKwArACsAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACsAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAKwArACsAKwArACsAKwArACsAKwArACsAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAlACUAJQAlACUAJQAlACUAJQAlACUAJQArACsAKwArAA0AEQARACUAJQBHAFcAVwAWABEAFgARABYAEQAWABEAFgARACUAJQAWABEAFgARABYAEQAWABEAFQAWABEAEQAlAFcAVwBXAFcAVwBXAFcAVwBXAAQABAAEAAQABAAEACUAVwBXAFcAVwA2ACUAJQBXAFcAVwBHAEcAJQAlACUAKwBRAFcAUQBXAFEAVwBRAFcAUQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFEAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBRAFcAUQBXAFEAVwBXAFcAVwBXAFcAUQBXAFcAVwBXAFcAVwBRAFEAKwArAAQABAAVABUARwBHAFcAFQBRAFcAUQBXAFEAVwBRAFcAUQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFEAVwBRAFcAUQBXAFcAVwBXAFcAVwBRAFcAVwBXAFcAVwBXAFEAUQBXAFcAVwBXABUAUQBHAEcAVwArACsAKwArACsAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAKwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAKwAlACUAVwBXAFcAVwAlACUAJQAlACUAJQAlACUAJQAlACsAKwArACsAKwArACsAKwArACsAKwArAFEAUQBRAFEAUQBRAFEAUQBRAFEAUQBRAFEAUQBRAFEAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQArAFcAVwBXAFcAVwBXAFcAVwBXAFcAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQBPAE8ATwBPAE8ATwBPAE8AJQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXACUAJQAlAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAEcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAKwArACsAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAADQATAA0AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABLAEsASwBLAEsASwBLAEsASwBLAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAFAABAAEAAQABAAeAAQABAAEAAQABAAEAAQABAAEAAQAHgBQAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AUABQAAQABABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAeAA0ADQANAA0ADQArACsAKwArACsAKwArACsAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAFAAUABQAFAAUABQAFAAUABQAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgBQAB4AHgAeAB4AHgAeAFAAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAHgAeAB4AHgAeAB4AHgAeAB4AKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAeAB4AUABQAFAAUABQAFAAUABQAFAAUABQAAQAUABQAFAABABQAFAAUABQAAQAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAAeAB4AHgAeAAQAKwArACsAUABQAFAAUABQAFAAHgAeABoAHgArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAADgAOABMAEwArACsAKwArACsAKwArACsABAAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAAEACsAKwArACsAKwArACsAKwANAA0ASwBLAEsASwBLAEsASwBLAEsASwArACsAKwArACsAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABABQAFAAUABQAFAAUAAeAB4AHgBQAA4AUABQAAQAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAA0ADQBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAKwArACsAKwArACsAKwArACsAKwArAB4AWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYACsAKwArAAQAHgAeAB4AHgAeAB4ADQANAA0AHgAeAB4AHgArAFAASwBLAEsASwBLAEsASwBLAEsASwArACsAKwArAB4AHgBcAFwAXABcAFwAKgBcAFwAXABcAFwAXABcAFwAXABcAEsASwBLAEsASwBLAEsASwBLAEsAXABcAFwAXABcACsAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwArACsAKwArACsAKwArAFAAUABQAAQAUABQAFAAUABQAFAAUABQAAQABAArACsASwBLAEsASwBLAEsASwBLAEsASwArACsAHgANAA0ADQBcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAKgAqACoAXAAqACoAKgBcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXAAqAFwAKgAqACoAXABcACoAKgBcAFwAXABcAFwAKgAqAFwAKgBcACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFwAXABcACoAKgBQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAA0ADQBQAFAAUAAEAAQAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUAArACsAUABQAFAAUABQAFAAKwArAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgAeACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQADQAEAAQAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAVABVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBUAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVACsAKwArACsAKwArACsAKwArACsAKwArAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAKwArACsAKwBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAKwArACsAKwAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXACUAJQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAJQAlACUAJQAlACUAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAKwArACsAKwArAFYABABWAFYAVgBWAFYAVgBWAFYAVgBWAB4AVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgArAFYAVgBWAFYAVgArAFYAKwBWAFYAKwBWAFYAKwBWAFYAVgBWAFYAVgBWAFYAVgBWAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAEQAWAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUAAaAB4AKwArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAGAARABEAGAAYABMAEwAWABEAFAArACsAKwArACsAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACUAJQAlACUAJQAWABEAFgARABYAEQAWABEAFgARABYAEQAlACUAFgARACUAJQAlACUAJQAlACUAEQAlABEAKwAVABUAEwATACUAFgARABYAEQAWABEAJQAlACUAJQAlACUAJQAlACsAJQAbABoAJQArACsAKwArAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArAAcAKwATACUAJQAbABoAJQAlABYAEQAlACUAEQAlABEAJQBXAFcAVwBXAFcAVwBXAFcAVwBXABUAFQAlACUAJQATACUAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXABYAJQARACUAJQAlAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwAWACUAEQAlABYAEQARABYAEQARABUAVwBRAFEAUQBRAFEAUQBRAFEAUQBRAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAEcARwArACsAVwBXAFcAVwBXAFcAKwArAFcAVwBXAFcAVwBXACsAKwBXAFcAVwBXAFcAVwArACsAVwBXAFcAKwArACsAGgAbACUAJQAlABsAGwArAB4AHgAeAB4AHgAeAB4AKwArACsAKwArACsAKwArACsAKwAEAAQABAAQAB0AKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsADQANAA0AKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArAB4AHgAeAB4AHgAeAB4AHgAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgBQAFAAHgAeAB4AKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAAQAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAA0AUABQAFAAUAArACsAKwArAFAAUABQAFAAUABQAFAAUAANAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwAeACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAKwArAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUAArACsAKwBQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwANAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAeAB4AUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUAArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArAA0AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAUABQAFAAUABQAAQABAAEACsABAAEACsAKwArACsAKwAEAAQABAAEAFAAUABQAFAAKwBQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArAAQABAAEACsAKwArACsABABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAA0ADQANAA0ADQANAA0ADQAeACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAeAFAAUABQAFAAUABQAFAAUAAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAArACsAKwArAFAAUABQAFAAUAANAA0ADQANAA0ADQAUACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsADQANAA0ADQANAA0ADQBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAB4AHgAeAB4AKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAFAAUABQAFAAUABQAAQABAAEAAQAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUAArAAQABAANACsAKwBQAFAAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAAQABAAEAAQABAAEAAQABAAEAAQABABQAFAAUABQAB4AHgAeAB4AHgArACsAKwArACsAKwAEAAQABAAEAAQABAAEAA0ADQAeAB4AHgAeAB4AKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsABABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAAEAAQABAAEAAQABAAeAB4AHgANAA0ADQANACsAKwArACsAKwArACsAKwArACsAKwAeACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwArACsAKwBLAEsASwBLAEsASwBLAEsASwBLACsAKwArACsAKwArAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsASwBLAEsASwBLAEsASwBLAEsASwANAA0ADQANAFAABAAEAFAAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAeAA4AUAArACsAKwArACsAKwArACsAKwAEAFAAUABQAFAADQANAB4ADQAEAAQABAAEAB4ABAAEAEsASwBLAEsASwBLAEsASwBLAEsAUAAOAFAADQANAA0AKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAANAA0AHgANAA0AHgAEACsAUABQAFAAUABQAFAAUAArAFAAKwBQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAA0AKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsABAAEAAQABAArAFAAUABQAFAAUABQAFAAUAArACsAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUABQACsAUABQAFAAUABQACsABAAEAFAABAAEAAQABAAEAAQABAArACsABAAEACsAKwAEAAQABAArACsAUAArACsAKwArACsAKwAEACsAKwArACsAKwBQAFAAUABQAFAABAAEACsAKwAEAAQABAAEAAQABAAEACsAKwArAAQABAAEAAQABAArACsAKwArACsAKwArACsAKwArACsABAAEAAQABAAEAAQABABQAFAAUABQAA0ADQANAA0AHgBLAEsASwBLAEsASwBLAEsASwBLAA0ADQArAB4ABABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAEAAQABAAEAFAAUAAeAFAAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAArACsABAAEAAQABAAEAAQABAAEAAQADgANAA0AEwATAB4AHgAeAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAFAAUABQAFAABAAEACsAKwAEAA0ADQAeAFAAKwArACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsADgAOAA4ADgAOAA4ADgAOAA4ADgAOAA4ADgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAFAAKwArACsAKwArACsAKwBLAEsASwBLAEsASwBLAEsASwBLACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAKwArACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwBcAFwADQANAA0AKgBQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAeACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwBQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAKwArAFAAKwArAFAAUABQAFAAUABQAFAAUAArAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQAKwAEAAQAKwArAAQABAAEAAQAUAAEAFAABAAEAA0ADQANACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAArACsABAAEAAQABAAEAAQABABQAA4AUAAEACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAABAAEAAQABAAEAAQABAAEAAQABABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAFAABAAEAAQABAAOAB4ADQANAA0ADQAOAB4ABAArACsAKwArACsAKwArACsAUAAEAAQABAAEAAQABAAEAAQABAAEAAQAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAA0ADQANAFAADgAOAA4ADQANACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEACsABAAEAAQABAAEAAQABAAEAFAADQANAA0ADQANACsAKwArACsAKwArACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwAOABMAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQACsAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAArACsAKwAEACsABAAEACsABAAEAAQABAAEAAQABABQAAQAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAKwBQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQAKwAEAAQAKwAEAAQABAAEAAQAUAArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAeAB4AKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAB4AHgAeAB4AHgAeAB4AHgAaABoAGgAaAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwArACsAKwArACsAKwArAA0AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsADQANAA0ADQANACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAASABIAEgAQwBDAEMAUABQAFAAUABDAFAAUABQAEgAQwBIAEMAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAASABDAEMAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwAJAAkACQAJAAkACQAJABYAEQArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABIAEMAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwANAA0AKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArAAQABAAEAAQABAANACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAA0ADQANAB4AHgAeAB4AHgAeAFAAUABQAFAADQAeACsAKwArACsAKwArACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwArAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAANAA0AHgAeACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwAEAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAKwArACsAKwArACsAKwAEAAQABAAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAARwBHABUARwAJACsAKwArACsAKwArACsAKwArACsAKwAEAAQAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXACsAKwArACsAKwArACsAKwBXAFcAVwBXAFcAVwBXAFcAVwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUQBRAFEAKwArACsAKwArACsAKwArACsAKwArACsAKwBRAFEAUQBRACsAKwArACsAKwArACsAKwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUAArACsAHgAEAAQADQAEAAQABAAEACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwArACsAKwArAB4AHgAeAB4AHgAeAB4AKwArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAAQABAAEAAQABAAeAB4AHgAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAB4AHgAEAAQABAAEAAQABAAEAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4ABAAEAAQABAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4ABAAEAAQAHgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwArACsAKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwBQAFAAKwArAFAAKwArAFAAUAArACsAUABQAFAAUAArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACsAUAArAFAAUABQAFAAUABQAFAAKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwBQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAHgAeAFAAUABQAFAAUAArAFAAKwArACsAUABQAFAAUABQAFAAUAArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgBQAFAAUABQAFAAUABQAFAAUABQAFAAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAB4AHgAeAB4AHgAeAB4AHgAeACsAKwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAeAB4AHgAeAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAeAB4AHgAeAB4AHgAeAB4ABAAeAB4AHgAeAB4AHgAeAB4AHgAeAAQAHgAeAA0ADQANAA0AHgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAEAAQABAAEAAQAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAAQABAAEAAQABAAEAAQAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAKwArAAQABAAEAAQABAAEAAQAKwAEAAQAKwAEAAQABAAEAAQAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwAEAAQABAAEAAQABAAEAFAAUABQAFAAUABQAFAAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwBQAB4AKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArABsAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEACsAKwArACsAKwArACsAKwArAB4AHgAeAB4ABAAEAAQABAAEAAQABABQACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwArACsAKwArABYAFgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAGgBQAFAAUAAaAFAAUABQAFAAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAKwBQACsAKwBQACsAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAKwBQACsAUAArACsAKwArACsAKwBQACsAKwArACsAUAArAFAAKwBQACsAUABQAFAAKwBQAFAAKwBQACsAKwBQACsAUAArAFAAKwBQACsAUAArAFAAUAArAFAAKwArAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUABQAFAAUAArAFAAUABQAFAAKwBQACsAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAUABQAFAAKwBQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAeAB4AKwArACsAKwArACsAKwArACsAKwArACsAKwArAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8AJQAlACUAHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHgAeAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB4AHgAeACUAJQAlAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAJQAlACUAJQAlACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAeAB4AJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlAB4AHgAlACUAJQAlACUAHgAlACUAJQAlACUAIAAgACAAJQAlACAAJQAlACAAIAAgACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACEAIQAhACEAIQAlACUAIAAgACUAJQAgACAAIAAgACAAIAAgACAAIAAgACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAJQAlACUAIAAlACUAJQAlACAAIAAgACUAIAAgACAAJQAlACUAJQAlACUAJQAgACUAIAAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAHgAlAB4AJQAeACUAJQAlACUAJQAgACUAJQAlACUAHgAlAB4AHgAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlAB4AHgAeAB4AHgAeAB4AJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAeACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACAAIAAlACUAJQAlACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACAAJQAlACUAJQAgACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAHgAeAB4AHgAeAB4AHgAeACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAeAB4AHgAeAB4AHgAlACUAJQAlACUAJQAlACAAIAAgACUAJQAlACAAIAAgACAAIAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeABcAFwAXABUAFQAVAB4AHgAeAB4AJQAlACUAIAAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACAAIAAgACUAJQAlACUAJQAlACUAJQAlACAAJQAlACUAJQAlACUAJQAlACUAJQAlACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AJQAlACUAJQAlACUAJQAlACUAJQAlACUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AJQAlACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACUAJQAlACUAJQAlACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAeACUAJQAlACUAJQAlAB4AHgAeAB4AHgAeAB4AHgAlACUAJQAlACUAJQAlACUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAgACUAJQAgACUAJQAlACUAJQAlACUAJQAgACAAIAAgACAAIAAgACAAJQAlACUAJQAlACUAIAAlACUAJQAlACUAJQAlACUAJQAgACAAIAAgACAAIAAgACAAIAAgACUAJQAgACAAIAAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAgACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACAAIAAlACAAIAAlACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAgACAAIAAlACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAJQAlAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAKwArAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXACUAJQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwAlACUAJQAlACUAJQAlACUAJQAlACUAVwBXACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAKwAEACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAA==", Gr = 50, Ou = 1, co = 2, fo = 3, _u = 4, Ku = 5, Wr = 7, go = 8, Xr = 9, Bt = 10, tr = 11, Jr = 12, Ar = 13, Pu = 14, wA = 15, ir = 16, qA = 17, dA = 18, Vu = 19, jr = 20, sr = 21, fA = 22, os = 23, Pt = 24, Me = 25, bA = 26, BA = 27, Vt = 28, Nu = 29, Rt = 30, zu = 31, ei = 32, ti = 33, rr = 34, nr = 35, or = 36, MA = 37, ar = 38, bi = 39, Bi = 40, as = 41, po = 42, Gu = 43, Wu = [9001, 65288], mo = "!", Y = "×", Ai = "÷", lr = Mu(ku), tt = [Rt, or], hr = [Ou, co, fo, Ku], wo = [Bt, go], Yr = [BA, bA], Xu = hr.concat(wo), Zr = [ar, bi, Bi, rr, nr], Ju = [wA, Ar], ju = function(r, e) {
+var ku = "KwAAAAAAAAAACA4AUD0AADAgAAACAAAAAAAIABAAGABAAEgAUABYAGAAaABgAGgAYgBqAF8AZwBgAGgAcQB5AHUAfQCFAI0AlQCdAKIAqgCyALoAYABoAGAAaABgAGgAwgDKAGAAaADGAM4A0wDbAOEA6QDxAPkAAQEJAQ8BFwF1AH0AHAEkASwBNAE6AUIBQQFJAVEBWQFhAWgBcAF4ATAAgAGGAY4BlQGXAZ8BpwGvAbUBvQHFAc0B0wHbAeMB6wHxAfkBAQIJAvEBEQIZAiECKQIxAjgCQAJGAk4CVgJeAmQCbAJ0AnwCgQKJApECmQKgAqgCsAK4ArwCxAIwAMwC0wLbAjAA4wLrAvMC+AIAAwcDDwMwABcDHQMlAy0DNQN1AD0DQQNJA0kDSQNRA1EDVwNZA1kDdQB1AGEDdQBpA20DdQN1AHsDdQCBA4kDkQN1AHUAmQOhA3UAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AKYDrgN1AHUAtgO+A8YDzgPWAxcD3gPjA+sD8wN1AHUA+wMDBAkEdQANBBUEHQQlBCoEFwMyBDgEYABABBcDSARQBFgEYARoBDAAcAQzAXgEgASIBJAEdQCXBHUAnwSnBK4EtgS6BMIEyAR1AHUAdQB1AHUAdQCVANAEYABgAGAAYABgAGAAYABgANgEYADcBOQEYADsBPQE/AQEBQwFFAUcBSQFLAU0BWQEPAVEBUsFUwVbBWAAYgVgAGoFcgV6BYIFigWRBWAAmQWfBaYFYABgAGAAYABgAKoFYACxBbAFuQW6BcEFwQXHBcEFwQXPBdMF2wXjBeoF8gX6BQIGCgYSBhoGIgYqBjIGOgZgAD4GRgZMBmAAUwZaBmAAYABgAGAAYABgAGAAYABgAGAAYABgAGIGYABpBnAGYABgAGAAYABgAGAAYABgAGAAYAB4Bn8GhQZgAGAAYAB1AHcDFQSLBmAAYABgAJMGdQA9A3UAmwajBqsGqwaVALMGuwbDBjAAywbSBtIG1QbSBtIG0gbSBtIG0gbdBuMG6wbzBvsGAwcLBxMHAwcbByMHJwcsBywHMQcsB9IGOAdAB0gHTgfSBkgHVgfSBtIG0gbSBtIG0gbSBtIG0gbSBiwHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAdgAGAALAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAdbB2MHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsB2kH0gZwB64EdQB1AHUAdQB1AHUAdQB1AHUHfQdgAIUHjQd1AHUAlQedB2AAYAClB6sHYACzB7YHvgfGB3UAzgfWBzMB3gfmB1EB7gf1B/0HlQENAQUIDQh1ABUIHQglCBcDLQg1CD0IRQhNCEEDUwh1AHUAdQBbCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIaQhjCGQIZQhmCGcIaAhpCGMIZAhlCGYIZwhoCGkIYwhkCGUIZghnCGgIcAh3CHoIMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwAIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIgggwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAALAcsBywHLAcsBywHLAcsBywHLAcsB4oILAcsB44I0gaWCJ4Ipgh1AHUAqgiyCHUAdQB1AHUAdQB1AHUAdQB1AHUAtwh8AXUAvwh1AMUIyQjRCNkI4AjoCHUAdQB1AO4I9gj+CAYJDgkTCS0HGwkjCYIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiCCIIIggiAAIAAAAFAAYABgAGIAXwBgAHEAdQBFAJUAogCyAKAAYABgAEIA4ABGANMA4QDxAMEBDwE1AFwBLAE6AQEBUQF4QkhCmEKoQrhCgAHIQsAB0MLAAcABwAHAAeDC6ABoAHDCwMMAAcABwAHAAdDDGMMAAcAB6MM4wwjDWMNow3jDaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAGgAaABoAEjDqABWw6bDqABpg6gAaABoAHcDvwOPA+gAaABfA/8DvwO/A78DvwO/A78DvwO/A78DvwO/A78DvwO/A78DvwO/A78DvwO/A78DvwO/A78DvwO/A78DpcPAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcABwAHAAcAB9cPKwkyCToJMAB1AHUAdQBCCUoJTQl1AFUJXAljCWcJawkwADAAMAAwAHMJdQB2CX4JdQCECYoJjgmWCXUAngkwAGAAYABxAHUApgn3A64JtAl1ALkJdQDACTAAMAAwADAAdQB1AHUAdQB1AHUAdQB1AHUAowYNBMUIMAAwADAAMADICcsJ0wnZCRUE4QkwAOkJ8An4CTAAMAB1AAAKvwh1AAgKDwoXCh8KdQAwACcKLgp1ADYKqAmICT4KRgowADAAdQB1AE4KMAB1AFYKdQBeCnUAZQowADAAMAAwADAAMAAwADAAMAAVBHUAbQowADAAdQC5CXUKMAAwAHwBxAijBogEMgF9CoQKiASMCpQKmgqIBKIKqgquCogEDQG2Cr4KxgrLCjAAMADTCtsKCgHjCusK8Qr5CgELMAAwADAAMAB1AIsECQsRC3UANAEZCzAAMAAwADAAMAB1ACELKQswAHUANAExCzkLdQBBC0kLMABRC1kLMAAwADAAMAAwADAAdQBhCzAAMAAwAGAAYABpC3ELdwt/CzAAMACHC4sLkwubC58Lpwt1AK4Ltgt1APsDMAAwADAAMAAwADAAMAAwAL4LwwvLC9IL1wvdCzAAMADlC+kL8Qv5C/8LSQswADAAMAAwADAAMAAwADAAMAAHDDAAMAAwADAAMAAODBYMHgx1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1ACYMMAAwADAAdQB1AHUALgx1AHUAdQB1AHUAdQA2DDAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwAHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AD4MdQBGDHUAdQB1AHUAdQB1AEkMdQB1AHUAdQB1AFAMMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwAHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQBYDHUAdQB1AF8MMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUA+wMVBGcMMAAwAHwBbwx1AHcMfwyHDI8MMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAYABgAJcMMAAwADAAdQB1AJ8MlQClDDAAMACtDCwHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsB7UMLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHdQB1AHUAdQB1AHUAdQB1AHUAdQB1AHUAdQB1AA0EMAC9DDAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAsBywHLAcsBywHLAcsBywHLQcwAMEMyAwsBywHLAcsBywHLAcsBywHLAcsBywHzAwwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwAHUAdQB1ANQM2QzhDDAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMABgAGAAYABgAGAAYABgAOkMYADxDGAA+AwADQYNYABhCWAAYAAODTAAMAAwADAAFg1gAGAAHg37AzAAMAAwADAAYABgACYNYAAsDTQNPA1gAEMNPg1LDWAAYABgAGAAYABgAGAAYABgAGAAUg1aDYsGVglhDV0NcQBnDW0NdQ15DWAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAlQCBDZUAiA2PDZcNMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAnw2nDTAAMAAwADAAMAAwAHUArw23DTAAMAAwADAAMAAwADAAMAAwADAAMAB1AL8NMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAB1AHUAdQB1AHUAdQDHDTAAYABgAM8NMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAA1w11ANwNMAAwAD0B5A0wADAAMAAwADAAMADsDfQN/A0EDgwOFA4wABsOMAAwADAAMAAwADAAMAAwANIG0gbSBtIG0gbSBtIG0gYjDigOwQUuDsEFMw7SBjoO0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIGQg5KDlIOVg7SBtIGXg5lDm0OdQ7SBtIGfQ6EDooOjQ6UDtIGmg6hDtIG0gaoDqwO0ga0DrwO0gZgAGAAYADEDmAAYAAkBtIGzA5gANIOYADaDokO0gbSBt8O5w7SBu8O0gb1DvwO0gZgAGAAxA7SBtIG0gbSBtIGYABgAGAAYAAED2AAsAUMD9IG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIGFA8sBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAccD9IGLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHJA8sBywHLAcsBywHLAccDywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywPLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAc0D9IG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIGLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAccD9IG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIGFA8sBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHLAcsBywHPA/SBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gbSBtIG0gYUD0QPlQCVAJUAMAAwADAAMACVAJUAlQCVAJUAlQCVAEwPMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAAMAAwADAA//8EAAQABAAEAAQABAAEAAQABAANAAMAAQABAAIABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQACgATABcAHgAbABoAHgAXABYAEgAeABsAGAAPABgAHABLAEsASwBLAEsASwBLAEsASwBLABgAGAAeAB4AHgATAB4AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQABYAGwASAB4AHgAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAWAA0AEQAeAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAAQABAAEAAQABAAFAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAJABYAGgAbABsAGwAeAB0AHQAeAE8AFwAeAA0AHgAeABoAGwBPAE8ADgBQAB0AHQAdAE8ATwAXAE8ATwBPABYAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAFAAUABQAFAAUABQAFAAUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAFAAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAeAB4AHgAeAFAATwBAAE8ATwBPAEAATwBQAFAATwBQAB4AHgAeAB4AHgAeAB0AHQAdAB0AHgAdAB4ADgBQAFAAUABQAFAAHgAeAB4AHgAeAB4AHgBQAB4AUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4ABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAJAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAkACQAJAAkACQAJAAkABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAeAB4AHgAeAFAAHgAeAB4AKwArAFAAUABQAFAAGABQACsAKwArACsAHgAeAFAAHgBQAFAAUAArAFAAKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4ABAAEAAQABAAEAAQABAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAUAAeAB4AHgAeAB4AHgBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAYAA0AKwArAB4AHgAbACsABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQADQAEAB4ABAAEAB4ABAAEABMABAArACsAKwArACsAKwArACsAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAKwArACsAKwBWAFYAVgBWAB4AHgArACsAKwArACsAKwArACsAKwArACsAHgAeAB4AHgAeAB4AHgAeAB4AGgAaABoAGAAYAB4AHgAEAAQABAAEAAQABAAEAAQABAAEAAQAEwAEACsAEwATAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABABLAEsASwBLAEsASwBLAEsASwBLABoAGQAZAB4AUABQAAQAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQABMAUAAEAAQABAAEAAQABAAEAB4AHgAEAAQABAAEAAQABABQAFAABAAEAB4ABAAEAAQABABQAFAASwBLAEsASwBLAEsASwBLAEsASwBQAFAAUAAeAB4AUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwAeAFAABABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAFAAKwArACsAKwArACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQAUABQAB4AHgAYABMAUAArACsABAAbABsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAFAABAAEAAQABAAEAFAABAAEAAQAUAAEAAQABAAEAAQAKwArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAArACsAHgArAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwArACsAKwArACsAKwArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAB4ABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAUAAEAAQABAAEAAQABAAEAFAAUABQAFAAUABQAFAAUABQAFAABAAEAA0ADQBLAEsASwBLAEsASwBLAEsASwBLAB4AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAArAFAAUABQAFAAUABQAFAAUAArACsAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUAArACsAKwBQAFAAUABQACsAKwAEAFAABAAEAAQABAAEAAQABAArACsABAAEACsAKwAEAAQABABQACsAKwArACsAKwArACsAKwAEACsAKwArACsAUABQACsAUABQAFAABAAEACsAKwBLAEsASwBLAEsASwBLAEsASwBLAFAAUAAaABoAUABQAFAAUABQAEwAHgAbAFAAHgAEACsAKwAEAAQABAArAFAAUABQAFAAUABQACsAKwArACsAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUABQACsAUABQACsAUABQACsAKwAEACsABAAEAAQABAAEACsAKwArACsABAAEACsAKwAEAAQABAArACsAKwAEACsAKwArACsAKwArACsAUABQAFAAUAArAFAAKwArACsAKwArACsAKwBLAEsASwBLAEsASwBLAEsASwBLAAQABABQAFAAUAAEAB4AKwArACsAKwArACsAKwArACsAKwAEAAQABAArAFAAUABQAFAAUABQAFAAUABQACsAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUABQACsAUABQAFAAUABQACsAKwAEAFAABAAEAAQABAAEAAQABAAEACsABAAEAAQAKwAEAAQABAArACsAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAABAAEACsAKwBLAEsASwBLAEsASwBLAEsASwBLAB4AGwArACsAKwArACsAKwArAFAABAAEAAQABAAEAAQAKwAEAAQABAArAFAAUABQAFAAUABQAFAAUAArACsAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAArACsABAAEACsAKwAEAAQABAArACsAKwArACsAKwArAAQABAAEACsAKwArACsAUABQACsAUABQAFAABAAEACsAKwBLAEsASwBLAEsASwBLAEsASwBLAB4AUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArAAQAUAArAFAAUABQAFAAUABQACsAKwArAFAAUABQACsAUABQAFAAUAArACsAKwBQAFAAKwBQACsAUABQACsAKwArAFAAUAArACsAKwBQAFAAUAArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArAAQABAAEAAQABAArACsAKwAEAAQABAArAAQABAAEAAQAKwArAFAAKwArACsAKwArACsABAArACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAUABQAFAAHgAeAB4AHgAeAB4AGwAeACsAKwArACsAKwAEAAQABAAEAAQAUABQAFAAUABQAFAAUABQACsAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAUAAEAAQABAAEAAQABAAEACsABAAEAAQAKwAEAAQABAAEACsAKwArACsAKwArACsABAAEACsAUABQAFAAKwArACsAKwArAFAAUAAEAAQAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAKwAOAFAAUABQAFAAUABQAFAAHgBQAAQABAAEAA4AUABQAFAAUABQAFAAUABQACsAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAKwArAAQAUAAEAAQABAAEAAQABAAEACsABAAEAAQAKwAEAAQABAAEACsAKwArACsAKwArACsABAAEACsAKwArACsAKwArACsAUAArAFAAUAAEAAQAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwBQAFAAKwArACsAKwArACsAKwArACsAKwArACsAKwAEAAQABAAEAFAAUABQAFAAUABQAFAAUABQACsAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAFAABAAEAAQABAAEAAQABAArAAQABAAEACsABAAEAAQABABQAB4AKwArACsAKwBQAFAAUAAEAFAAUABQAFAAUABQAFAAUABQAFAABAAEACsAKwBLAEsASwBLAEsASwBLAEsASwBLAFAAUABQAFAAUABQAFAAUABQABoAUABQAFAAUABQAFAAKwAEAAQABAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQACsAUAArACsAUABQAFAAUABQAFAAUAArACsAKwAEACsAKwArACsABAAEAAQABAAEAAQAKwAEACsABAAEAAQABAAEAAQABAAEACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArAAQABAAeACsAKwArACsAKwArACsAKwArACsAKwArAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXAAqAFwAXAAqACoAKgAqACoAKgAqACsAKwArACsAGwBcAFwAXABcAFwAXABcACoAKgAqACoAKgAqACoAKgAeAEsASwBLAEsASwBLAEsASwBLAEsADQANACsAKwArACsAKwBcAFwAKwBcACsAXABcAFwAXABcACsAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcACsAXAArAFwAXABcAFwAXABcAFwAXABcAFwAKgBcAFwAKgAqACoAKgAqACoAKgAqACoAXAArACsAXABcAFwAXABcACsAXAArACoAKgAqACoAKgAqACsAKwBLAEsASwBLAEsASwBLAEsASwBLACsAKwBcAFwAXABcAFAADgAOAA4ADgAeAA4ADgAJAA4ADgANAAkAEwATABMAEwATAAkAHgATAB4AHgAeAAQABAAeAB4AHgAeAB4AHgBLAEsASwBLAEsASwBLAEsASwBLAFAAUABQAFAAUABQAFAAUABQAFAADQAEAB4ABAAeAAQAFgARABYAEQAEAAQAUABQAFAAUABQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQADQAEAAQABAAEAAQADQAEAAQAUABQAFAAUABQAAQABAAEAAQABAAEAAQABAAEAAQABAArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAArAA0ADQAeAB4AHgAeAB4AHgAEAB4AHgAeAB4AHgAeACsAHgAeAA4ADgANAA4AHgAeAB4AHgAeAAkACQArACsAKwArACsAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgBcAEsASwBLAEsASwBLAEsASwBLAEsADQANAB4AHgAeAB4AXABcAFwAXABcAFwAKgAqACoAKgBcAFwAXABcACoAKgAqAFwAKgAqACoAXABcACoAKgAqACoAKgAqACoAXABcAFwAKgAqACoAKgBcAFwAXABcAFwAXABcAFwAXABcAFwAXABcACoAKgAqACoAKgAqACoAKgAqACoAKgAqAFwAKgBLAEsASwBLAEsASwBLAEsASwBLACoAKgAqACoAKgAqAFAAUABQAFAAUABQACsAUAArACsAKwArACsAUAArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgBQAFAAUABQAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFAAUABQAFAAUABQAFAAUABQACsAUABQAFAAUAArACsAUABQAFAAUABQAFAAUAArAFAAKwBQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAKwArAFAAUABQAFAAUABQAFAAKwBQACsAUABQAFAAUAArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsABAAEAAQAHgANAB4AHgAeAB4AHgAeAB4AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUAArACsADQBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAANAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAWABEAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAA0ADQANAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAAQABAAEACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAANAA0AKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUAArAAQABAArACsAKwArACsAKwArACsAKwArACsAKwBcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqAA0ADQAVAFwADQAeAA0AGwBcACoAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwAeAB4AEwATAA0ADQAOAB4AEwATAB4ABAAEAAQACQArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAFAAUABQAFAAUAAEAAQAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQAUAArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAArACsAKwArAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwArACsAHgArACsAKwATABMASwBLAEsASwBLAEsASwBLAEsASwBcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXAArACsAXABcAFwAXABcACsAKwArACsAKwArACsAKwArACsAKwBcAFwAXABcAFwAXABcAFwAXABcAFwAXAArACsAKwArAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAXAArACsAKwAqACoAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAArACsAHgAeAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcACoAKgAqACoAKgAqACoAKgAqACoAKwAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKwArAAQASwBLAEsASwBLAEsASwBLAEsASwArACsAKwArACsAKwBLAEsASwBLAEsASwBLAEsASwBLACsAKwArACsAKwArACoAKgAqACoAKgAqACoAXAAqACoAKgAqACoAKgArACsABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsABAAEAAQABAAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABABQAFAAUABQAFAAUABQACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwANAA0AHgANAA0ADQANAB4AHgAeAB4AHgAeAB4AHgAeAB4ABAAEAAQABAAEAAQABAAEAAQAHgAeAB4AHgAeAB4AHgAeAB4AKwArACsABAAEAAQAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABABQAFAASwBLAEsASwBLAEsASwBLAEsASwBQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwArACsAKwArACsAKwAeAB4AHgAeAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwArAA0ADQANAA0ADQBLAEsASwBLAEsASwBLAEsASwBLACsAKwArAFAAUABQAEsASwBLAEsASwBLAEsASwBLAEsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAA0ADQBQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUAAeAB4AHgAeAB4AHgAeAB4AKwArACsAKwArACsAKwArAAQABAAEAB4ABAAEAAQABAAEAAQABAAEAAQABAAEAAQABABQAFAAUABQAAQAUABQAFAAUABQAFAABABQAFAABAAEAAQAUAArACsAKwArACsABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsABAAEAAQABAAEAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwArAFAAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAKwBQACsAUAArAFAAKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACsAKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArAB4AHgAeAB4AHgAeAB4AHgBQAB4AHgAeAFAAUABQACsAHgAeAB4AHgAeAB4AHgAeAB4AHgBQAFAAUABQACsAKwAeAB4AHgAeAB4AHgArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwArAFAAUABQACsAHgAeAB4AHgAeAB4AHgAOAB4AKwANAA0ADQANAA0ADQANAAkADQANAA0ACAAEAAsABAAEAA0ACQANAA0ADAAdAB0AHgAXABcAFgAXABcAFwAWABcAHQAdAB4AHgAUABQAFAANAAEAAQAEAAQABAAEAAQACQAaABoAGgAaABoAGgAaABoAHgAXABcAHQAVABUAHgAeAB4AHgAeAB4AGAAWABEAFQAVABUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4ADQAeAA0ADQANAA0AHgANAA0ADQAHAB4AHgAeAB4AKwAEAAQABAAEAAQABAAEAAQABAAEAFAAUAArACsATwBQAFAAUABQAFAAHgAeAB4AFgARAE8AUABPAE8ATwBPAFAAUABQAFAAUAAeAB4AHgAWABEAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArABsAGwAbABsAGwAbABsAGgAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGgAbABsAGwAbABoAGwAbABoAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbABsAGwAbAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAHgAeAFAAGgAeAB0AHgBQAB4AGgAeAB4AHgAeAB4AHgAeAB4AHgBPAB4AUAAbAB4AHgBQAFAAUABQAFAAHgAeAB4AHQAdAB4AUAAeAFAAHgBQAB4AUABPAFAAUAAeAB4AHgAeAB4AHgAeAFAAUABQAFAAUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAFAAHgBQAFAAUABQAE8ATwBQAFAAUABQAFAATwBQAFAATwBQAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAFAAUABQAFAATwBPAE8ATwBPAE8ATwBPAE8ATwBQAFAAUABQAFAAUABQAFAAUAAeAB4AUABQAFAAUABPAB4AHgArACsAKwArAB0AHQAdAB0AHQAdAB0AHQAdAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB0AHgAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB4AHQAdAB4AHgAeAB0AHQAeAB4AHQAeAB4AHgAdAB4AHQAbABsAHgAdAB4AHgAeAB4AHQAeAB4AHQAdAB0AHQAeAB4AHQAeAB0AHgAdAB0AHQAdAB0AHQAeAB0AHgAeAB4AHgAeAB0AHQAdAB0AHgAeAB4AHgAdAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB4AHgAeAB0AHgAeAB4AHgAeAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB0AHgAeAB0AHQAdAB0AHgAeAB0AHQAeAB4AHQAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB0AHQAeAB4AHQAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHQAeAB4AHgAdAB4AHgAeAB4AHgAeAB4AHQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AFAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeABYAEQAWABEAHgAeAB4AHgAeAB4AHQAeAB4AHgAeAB4AHgAeACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAWABEAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AJQAlACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAFAAHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHgAeAB4AHgAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAeAB4AHQAdAB0AHQAeAB4AHgAeAB4AHgAeAB4AHgAeAB0AHQAeAB0AHQAdAB0AHQAdAB0AHgAeAB4AHgAeAB4AHgAeAB0AHQAeAB4AHQAdAB4AHgAeAB4AHQAdAB4AHgAeAB4AHQAdAB0AHgAeAB0AHgAeAB0AHQAdAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB0AHQAdAB4AHgAeAB4AHgAeAB4AHgAeAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAlACUAJQAlAB4AHQAdAB4AHgAdAB4AHgAeAB4AHQAdAB4AHgAeAB4AJQAlAB0AHQAlAB4AJQAlACUAIAAlACUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAlACUAJQAeAB4AHgAeAB0AHgAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB0AHgAdAB0AHQAeAB0AJQAdAB0AHgAdAB0AHgAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHQAdAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAlACUAJQAlACUAJQAlACUAJQAlACUAJQAdAB0AHQAdACUAHgAlACUAJQAdACUAJQAdAB0AHQAlACUAHQAdACUAHQAdACUAJQAlAB4AHQAeAB4AHgAeAB0AHQAlAB0AHQAdAB0AHQAdACUAJQAlACUAJQAdACUAJQAgACUAHQAdACUAJQAlACUAJQAlACUAJQAeAB4AHgAlACUAIAAgACAAIAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB0AHgAeAB4AFwAXABcAFwAXABcAHgATABMAJQAeAB4AHgAWABEAFgARABYAEQAWABEAFgARABYAEQAWABEATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeABYAEQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAWABEAFgARABYAEQAWABEAFgARAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AFgARABYAEQAWABEAFgARABYAEQAWABEAFgARABYAEQAWABEAFgARABYAEQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAWABEAFgARAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AFgARAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAdAB0AHQAdAB0AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AUABQAFAAUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAEAAQABAAeAB4AKwArACsAKwArABMADQANAA0AUAATAA0AUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAUAANACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQACsAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXAA0ADQANAA0ADQANAA0ADQAeAA0AFgANAB4AHgAXABcAHgAeABcAFwAWABEAFgARABYAEQAWABEADQANAA0ADQATAFAADQANAB4ADQANAB4AHgAeAB4AHgAMAAwADQANAA0AHgANAA0AFgANAA0ADQANAA0ADQANAA0AHgANAB4ADQANAB4AHgAeACsAKwArACsAKwArACsAKwArACsAKwArACsAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACsAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAKwArACsAKwArACsAKwArACsAKwArACsAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAlACUAJQAlACUAJQAlACUAJQAlACUAJQArACsAKwArAA0AEQARACUAJQBHAFcAVwAWABEAFgARABYAEQAWABEAFgARACUAJQAWABEAFgARABYAEQAWABEAFQAWABEAEQAlAFcAVwBXAFcAVwBXAFcAVwBXAAQABAAEAAQABAAEACUAVwBXAFcAVwA2ACUAJQBXAFcAVwBHAEcAJQAlACUAKwBRAFcAUQBXAFEAVwBRAFcAUQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFEAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBRAFcAUQBXAFEAVwBXAFcAVwBXAFcAUQBXAFcAVwBXAFcAVwBRAFEAKwArAAQABAAVABUARwBHAFcAFQBRAFcAUQBXAFEAVwBRAFcAUQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFEAVwBRAFcAUQBXAFcAVwBXAFcAVwBRAFcAVwBXAFcAVwBXAFEAUQBXAFcAVwBXABUAUQBHAEcAVwArACsAKwArACsAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAKwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAKwAlACUAVwBXAFcAVwAlACUAJQAlACUAJQAlACUAJQAlACsAKwArACsAKwArACsAKwArACsAKwArAFEAUQBRAFEAUQBRAFEAUQBRAFEAUQBRAFEAUQBRAFEAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQArAFcAVwBXAFcAVwBXAFcAVwBXAFcAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQBPAE8ATwBPAE8ATwBPAE8AJQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXACUAJQAlAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAEcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAKwArACsAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAADQATAA0AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABLAEsASwBLAEsASwBLAEsASwBLAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAFAABAAEAAQABAAeAAQABAAEAAQABAAEAAQABAAEAAQAHgBQAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AUABQAAQABABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAeAA0ADQANAA0ADQArACsAKwArACsAKwArACsAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAFAAUABQAFAAUABQAFAAUABQAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AUAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgBQAB4AHgAeAB4AHgAeAFAAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAHgAeAB4AHgAeAB4AHgAeAB4AKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAeAB4AUABQAFAAUABQAFAAUABQAFAAUABQAAQAUABQAFAABABQAFAAUABQAAQAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAAeAB4AHgAeAAQAKwArACsAUABQAFAAUABQAFAAHgAeABoAHgArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAADgAOABMAEwArACsAKwArACsAKwArACsABAAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAAEACsAKwArACsAKwArACsAKwANAA0ASwBLAEsASwBLAEsASwBLAEsASwArACsAKwArACsAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABABQAFAAUABQAFAAUAAeAB4AHgBQAA4AUABQAAQAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAA0ADQBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAKwArACsAKwArACsAKwArACsAKwArAB4AWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYAFgAWABYACsAKwArAAQAHgAeAB4AHgAeAB4ADQANAA0AHgAeAB4AHgArAFAASwBLAEsASwBLAEsASwBLAEsASwArACsAKwArAB4AHgBcAFwAXABcAFwAKgBcAFwAXABcAFwAXABcAFwAXABcAEsASwBLAEsASwBLAEsASwBLAEsAXABcAFwAXABcACsAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsAKwArACsAKwArACsAKwArAFAAUABQAAQAUABQAFAAUABQAFAAUABQAAQABAArACsASwBLAEsASwBLAEsASwBLAEsASwArACsAHgANAA0ADQBcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAKgAqACoAXAAqACoAKgBcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXAAqAFwAKgAqACoAXABcACoAKgBcAFwAXABcAFwAKgAqAFwAKgBcACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFwAXABcACoAKgBQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAA0ADQBQAFAAUAAEAAQAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUAArACsAUABQAFAAUABQAFAAKwArAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgAeACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQADQAEAAQAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAVABVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBUAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVAFUAVQBVACsAKwArACsAKwArACsAKwArACsAKwArAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAWQBZAFkAKwArACsAKwBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAWgBaAFoAKwArACsAKwAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYABgAGAAYAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXACUAJQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAJQAlACUAJQAlACUAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAKwArACsAKwArAFYABABWAFYAVgBWAFYAVgBWAFYAVgBWAB4AVgBWAFYAVgBWAFYAVgBWAFYAVgBWAFYAVgArAFYAVgBWAFYAVgArAFYAKwBWAFYAKwBWAFYAKwBWAFYAVgBWAFYAVgBWAFYAVgBWAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAEQAWAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUAAaAB4AKwArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAGAARABEAGAAYABMAEwAWABEAFAArACsAKwArACsAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACUAJQAlACUAJQAWABEAFgARABYAEQAWABEAFgARABYAEQAlACUAFgARACUAJQAlACUAJQAlACUAEQAlABEAKwAVABUAEwATACUAFgARABYAEQAWABEAJQAlACUAJQAlACUAJQAlACsAJQAbABoAJQArACsAKwArAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArAAcAKwATACUAJQAbABoAJQAlABYAEQAlACUAEQAlABEAJQBXAFcAVwBXAFcAVwBXAFcAVwBXABUAFQAlACUAJQATACUAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXABYAJQARACUAJQAlAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwAWACUAEQAlABYAEQARABYAEQARABUAVwBRAFEAUQBRAFEAUQBRAFEAUQBRAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAEcARwArACsAVwBXAFcAVwBXAFcAKwArAFcAVwBXAFcAVwBXACsAKwBXAFcAVwBXAFcAVwArACsAVwBXAFcAKwArACsAGgAbACUAJQAlABsAGwArAB4AHgAeAB4AHgAeAB4AKwArACsAKwArACsAKwArACsAKwAEAAQABAAQAB0AKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsADQANAA0AKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArAB4AHgAeAB4AHgAeAB4AHgAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgBQAFAAHgAeAB4AKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAAQAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAA0AUABQAFAAUAArACsAKwArAFAAUABQAFAAUABQAFAAUAANAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwAeACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAKwArAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUAArACsAKwBQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwANAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAeAB4AUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUAArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArAA0AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAUABQAFAAUABQAAQABAAEACsABAAEACsAKwArACsAKwAEAAQABAAEAFAAUABQAFAAKwBQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArAAQABAAEACsAKwArACsABABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAA0ADQANAA0ADQANAA0ADQAeACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAeAFAAUABQAFAAUABQAFAAUAAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAArACsAKwArAFAAUABQAFAAUAANAA0ADQANAA0ADQAUACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsADQANAA0ADQANAA0ADQBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAB4AHgAeAB4AKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArAFAAUABQAFAAUABQAAQABAAEAAQAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUAArAAQABAANACsAKwBQAFAAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAAQABAAEAAQABAAEAAQABAAEAAQABABQAFAAUABQAB4AHgAeAB4AHgArACsAKwArACsAKwAEAAQABAAEAAQABAAEAA0ADQAeAB4AHgAeAB4AKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsABABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAAQABAAEAAQABAAEAAQABAAEAAQABAAeAB4AHgANAA0ADQANACsAKwArACsAKwArACsAKwArACsAKwAeACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwArACsAKwBLAEsASwBLAEsASwBLAEsASwBLACsAKwArACsAKwArAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEACsASwBLAEsASwBLAEsASwBLAEsASwANAA0ADQANAFAABAAEAFAAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAeAA4AUAArACsAKwArACsAKwArACsAKwAEAFAAUABQAFAADQANAB4ADQAEAAQABAAEAB4ABAAEAEsASwBLAEsASwBLAEsASwBLAEsAUAAOAFAADQANAA0AKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAANAA0AHgANAA0AHgAEACsAUABQAFAAUABQAFAAUAArAFAAKwBQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAA0AKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsABAAEAAQABAArAFAAUABQAFAAUABQAFAAUAArACsAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUABQACsAUABQAFAAUABQACsABAAEAFAABAAEAAQABAAEAAQABAArACsABAAEACsAKwAEAAQABAArACsAUAArACsAKwArACsAKwAEACsAKwArACsAKwBQAFAAUABQAFAABAAEACsAKwAEAAQABAAEAAQABAAEACsAKwArAAQABAAEAAQABAArACsAKwArACsAKwArACsAKwArACsABAAEAAQABAAEAAQABABQAFAAUABQAA0ADQANAA0AHgBLAEsASwBLAEsASwBLAEsASwBLAA0ADQArAB4ABABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAEAAQABAAEAFAAUAAeAFAAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAArACsABAAEAAQABAAEAAQABAAEAAQADgANAA0AEwATAB4AHgAeAA0ADQANAA0ADQANAA0ADQANAA0ADQANAA0ADQANAFAAUABQAFAABAAEACsAKwAEAA0ADQAeAFAAKwArACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsADgAOAA4ADgAOAA4ADgAOAA4ADgAOAA4ADgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAFAAKwArACsAKwArACsAKwBLAEsASwBLAEsASwBLAEsASwBLACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAXABcAFwAKwArACoAKgAqACoAKgAqACoAKgAqACoAKgAqACoAKgAqACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwBcAFwADQANAA0AKgBQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAeACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwBQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAKwArAFAAKwArAFAAUABQAFAAUABQAFAAUAArAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQAKwAEAAQAKwArAAQABAAEAAQAUAAEAFAABAAEAA0ADQANACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAArACsABAAEAAQABAAEAAQABABQAA4AUAAEACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAABAAEAAQABAAEAAQABAAEAAQABABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAFAABAAEAAQABAAOAB4ADQANAA0ADQAOAB4ABAArACsAKwArACsAKwArACsAUAAEAAQABAAEAAQABAAEAAQABAAEAAQAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAA0ADQANAFAADgAOAA4ADQANACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAEAAQABAAEACsABAAEAAQABAAEAAQABAAEAFAADQANAA0ADQANACsAKwArACsAKwArACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwAOABMAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQACsAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAArACsAKwAEACsABAAEACsABAAEAAQABAAEAAQABABQAAQAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAUABQAFAAUABQAFAAKwBQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQAKwAEAAQAKwAEAAQABAAEAAQAUAArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAABAAEAAQABAAeAB4AKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAB4AHgAeAB4AHgAeAB4AHgAaABoAGgAaAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwArACsAKwArACsAKwArAA0AUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsADQANAA0ADQANACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAASABIAEgAQwBDAEMAUABQAFAAUABDAFAAUABQAEgAQwBIAEMAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAASABDAEMAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwAJAAkACQAJAAkACQAJABYAEQArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABIAEMAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwANAA0AKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArAAQABAAEAAQABAANACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEAA0ADQANAB4AHgAeAB4AHgAeAFAAUABQAFAADQAeACsAKwArACsAKwArACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwArAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAANAA0AHgAeACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwAEAFAABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAKwArACsAKwArACsAKwAEAAQABAAEAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAARwBHABUARwAJACsAKwArACsAKwArACsAKwArACsAKwAEAAQAKwArACsAKwArACsAKwArACsAKwArACsAKwArAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXACsAKwArACsAKwArACsAKwBXAFcAVwBXAFcAVwBXAFcAVwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUQBRAFEAKwArACsAKwArACsAKwArACsAKwArACsAKwBRAFEAUQBRACsAKwArACsAKwArACsAKwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUAArACsAHgAEAAQADQAEAAQABAAEACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwArACsAKwArAB4AHgAeAB4AHgAeAB4AKwArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAAQABAAEAAQABAAeAB4AHgAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAB4AHgAEAAQABAAEAAQABAAEAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4ABAAEAAQABAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4ABAAEAAQAHgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwArACsAKwArACsAKwArACsAKwArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwArACsAKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwBQAFAAKwArAFAAKwArAFAAUAArACsAUABQAFAAUAArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACsAUAArAFAAUABQAFAAUABQAFAAKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwBQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAHgAeAFAAUABQAFAAUAArAFAAKwArACsAUABQAFAAUABQAFAAUAArAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAHgBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgBQAFAAUABQAFAAUABQAFAAUABQAFAAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAB4AHgAeAB4AHgAeAB4AHgAeACsAKwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAEsASwBLAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAeAB4AHgAeAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAeAB4AHgAeAB4AHgAeAB4ABAAeAB4AHgAeAB4AHgAeAB4AHgAeAAQAHgAeAA0ADQANAA0AHgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAEAAQABAAEAAQAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAAQABAAEAAQABAAEAAQAKwAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAKwArAAQABAAEAAQABAAEAAQAKwAEAAQAKwAEAAQABAAEAAQAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwAEAAQABAAEAAQABAAEAFAAUABQAFAAUABQAFAAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwBQAB4AKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArABsAUABQAFAAUABQACsAKwBQAFAAUABQAFAAUABQAFAAUAAEAAQABAAEAAQABAAEACsAKwArACsAKwArACsAKwArAB4AHgAeAB4ABAAEAAQABAAEAAQABABQACsAKwArACsASwBLAEsASwBLAEsASwBLAEsASwArACsAKwArABYAFgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAGgBQAFAAUAAaAFAAUABQAFAAKwArACsAKwArACsAKwArACsAKwArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAAeAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQACsAKwBQAFAAUABQACsAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwBQAFAAKwBQACsAKwBQACsAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAKwBQACsAUAArACsAKwArACsAKwBQACsAKwArACsAUAArAFAAKwBQACsAUABQAFAAKwBQAFAAKwBQACsAKwBQACsAUAArAFAAKwBQACsAUAArAFAAUAArAFAAKwArAFAAUABQAFAAKwBQAFAAUABQAFAAUABQACsAUABQAFAAUAArAFAAUABQAFAAKwBQACsAUABQAFAAUABQAFAAUABQAFAAUAArAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUAArACsAKwArACsAUABQAFAAKwBQAFAAUABQAFAAKwBQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAUABQAFAAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwAeAB4AKwArACsAKwArACsAKwArACsAKwArACsAKwArAE8ATwBPAE8ATwBPAE8ATwBPAE8ATwBPAE8AJQAlACUAHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHgAeAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB4AHgAeACUAJQAlAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAdAB0AHQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAKQApACkAJQAlACUAJQAlACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAeAB4AJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlAB4AHgAlACUAJQAlACUAHgAlACUAJQAlACUAIAAgACAAJQAlACAAJQAlACAAIAAgACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACEAIQAhACEAIQAlACUAIAAgACUAJQAgACAAIAAgACAAIAAgACAAIAAgACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAJQAlACUAIAAlACUAJQAlACAAIAAgACUAIAAgACAAJQAlACUAJQAlACUAJQAgACUAIAAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAHgAlAB4AJQAeACUAJQAlACUAJQAgACUAJQAlACUAHgAlAB4AHgAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlAB4AHgAeAB4AHgAeAB4AJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAeACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACAAIAAlACUAJQAlACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACAAJQAlACUAJQAgACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAHgAeAB4AHgAeAB4AHgAeACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAeAB4AHgAeAB4AHgAlACUAJQAlACUAJQAlACAAIAAgACUAJQAlACAAIAAgACAAIAAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeABcAFwAXABUAFQAVAB4AHgAeAB4AJQAlACUAIAAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACAAIAAgACUAJQAlACUAJQAlACUAJQAlACAAJQAlACUAJQAlACUAJQAlACUAJQAlACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AJQAlACUAJQAlACUAJQAlACUAJQAlACUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AJQAlACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeACUAJQAlACUAJQAlACUAJQAeAB4AHgAeAB4AHgAeAB4AHgAeACUAJQAlACUAJQAlAB4AHgAeAB4AHgAeAB4AHgAlACUAJQAlACUAJQAlACUAHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAgACUAJQAgACUAJQAlACUAJQAlACUAJQAgACAAIAAgACAAIAAgACAAJQAlACUAJQAlACUAIAAlACUAJQAlACUAJQAlACUAJQAgACAAIAAgACAAIAAgACAAIAAgACUAJQAgACAAIAAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAgACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACAAIAAlACAAIAAlACAAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAgACAAIAAlACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAJQAlAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AKwAeAB4AHgAeAB4AHgAeAB4AHgAeAB4AHgArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAEsASwBLAEsASwBLAEsASwBLAEsAKwArACsAKwArACsAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAKwArAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXACUAJQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwAlACUAJQAlACUAJQAlACUAJQAlACUAVwBXACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQBXAFcAVwBXAFcAVwBXAFcAVwBXAFcAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAJQAlACUAKwAEACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQABAAEAAQAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArACsAKwArAA==", Gr = 50, Ou = 1, co = 2, fo = 3, _u = 4, Ku = 5, Wr = 7, go = 8, Xr = 9, Bt = 10, tr = 11, Jr = 12, Ar = 13, Pu = 14, wA = 15, ir = 16, qA = 17, dA = 18, Vu = 19, jr = 20, sr = 21, fA = 22, os = 23, Pt = 24, Me = 25, bA = 26, BA = 27, Vt = 28, Nu = 29, Rt = 30, zu = 31, ei = 32, ti = 33, rr = 34, nr = 35, or = 36, MA = 37, ar = 38, bi = 39, Bi = 40, as = 41, po = 42, Gu = 43, Wu = [9001, 65288], mo = "!", Z = "×", Ai = "÷", lr = Mu(ku), tt = [Rt, or], hr = [Ou, co, fo, Ku], wo = [Bt, go], Yr = [BA, bA], Xu = hr.concat(wo), Zr = [ar, bi, Bi, rr, nr], Ju = [wA, Ar], ju = function(r, e) {
   e === void 0 && (e = "strict");
   var t = [], A = [], i = [];
   return r.forEach(function(s, n) {
@@ -11346,37 +11346,37 @@ var ku = "KwAAAAAAAAAACA4AUD0AADAgAAACAAAAAAAIABAAGABAAEgAUABYAGAAaABgAGgAYgBqAF
   return 0;
 }, Yu = function(r, e, t, A, i) {
   if (t[A] === 0)
-    return Y;
+    return Z;
   var s = A - 1;
   if (Array.isArray(i) && i[s] === !0)
-    return Y;
+    return Z;
   var n = s - 1, o = s + 1, a = e[s], l = n >= 0 ? e[n] : 0, h = e[o];
   if (a === co && h === fo)
-    return Y;
+    return Z;
   if (hr.indexOf(a) !== -1)
     return mo;
   if (hr.indexOf(h) !== -1 || wo.indexOf(h) !== -1)
-    return Y;
+    return Z;
   if ($r(s, e) === go)
     return Ai;
   if (lr.get(r[s]) === tr || (a === ei || a === ti) && lr.get(r[o]) === tr || a === Wr || h === Wr || a === Xr || [Bt, Ar, wA].indexOf(a) === -1 && h === Xr || [qA, dA, Vu, Pt, Vt].indexOf(h) !== -1 || $r(s, e) === fA || ls(os, fA, s, e) || ls([qA, dA], sr, s, e) || ls(Jr, Jr, s, e))
-    return Y;
+    return Z;
   if (a === Bt)
     return Ai;
   if (a === os || h === os)
-    return Y;
+    return Z;
   if (h === ir || a === ir)
     return Ai;
   if ([Ar, wA, sr].indexOf(h) !== -1 || a === Pu || l === or && Ju.indexOf(a) !== -1 || a === Vt && h === or || h === jr || tt.indexOf(h) !== -1 && a === Me || tt.indexOf(a) !== -1 && h === Me || a === BA && [MA, ei, ti].indexOf(h) !== -1 || [MA, ei, ti].indexOf(a) !== -1 && h === bA || tt.indexOf(a) !== -1 && Yr.indexOf(h) !== -1 || Yr.indexOf(a) !== -1 && tt.indexOf(h) !== -1 || // (PR | PO) × ( OP | HY )? NU
   [BA, bA].indexOf(a) !== -1 && (h === Me || [fA, wA].indexOf(h) !== -1 && e[o + 1] === Me) || // ( OP | HY ) × NU
   [fA, wA].indexOf(a) !== -1 && h === Me || // NU ×	(NU | SY | IS)
   a === Me && [Me, Vt, Pt].indexOf(h) !== -1)
-    return Y;
+    return Z;
   if ([Me, Vt, Pt, qA, dA].indexOf(h) !== -1)
     for (var u = s; u >= 0; ) {
       var c = e[u];
       if (c === Me)
-        return Y;
+        return Z;
       if ([Vt, Pt].indexOf(c) !== -1)
         u--;
       else
@@ -11386,21 +11386,21 @@ var ku = "KwAAAAAAAAAACA4AUD0AADAgAAACAAAAAAAIABAAGABAAEgAUABYAGAAaABgAGgAYgBqAF
     for (var u = [qA, dA].indexOf(a) !== -1 ? n : s; u >= 0; ) {
       var c = e[u];
       if (c === Me)
-        return Y;
+        return Z;
       if ([Vt, Pt].indexOf(c) !== -1)
         u--;
       else
         break;
     }
   if (ar === a && [ar, bi, rr, nr].indexOf(h) !== -1 || [bi, rr].indexOf(a) !== -1 && [bi, Bi].indexOf(h) !== -1 || [Bi, nr].indexOf(a) !== -1 && h === Bi || Zr.indexOf(a) !== -1 && [jr, bA].indexOf(h) !== -1 || Zr.indexOf(h) !== -1 && a === BA || tt.indexOf(a) !== -1 && tt.indexOf(h) !== -1 || a === Pt && tt.indexOf(h) !== -1 || tt.concat(Me).indexOf(a) !== -1 && h === fA && Wu.indexOf(r[o]) === -1 || tt.concat(Me).indexOf(h) !== -1 && a === dA)
-    return Y;
+    return Z;
   if (a === as && h === as) {
     for (var d = t[s], p = 1; d > 0 && (d--, e[d] === as); )
       p++;
     if (p % 2 !== 0)
-      return Y;
+      return Z;
   }
-  return a === ei && h === ti ? Y : Ai;
+  return a === ei && h === ti ? Z : Ai;
 }, Zu = function(r, e) {
   e || (e = { lineBreak: "normal", wordBreak: "normal" });
   var t = ju(r, e.lineBreak), A = t[0], i = t[1], s = t[2];
@@ -11427,9 +11427,9 @@ var ku = "KwAAAAAAAAAACA4AUD0AADAgAAACAAAAAAAIABAAGABAAEgAUABYAGAAaABgAGgAYgBqAF
     next: function() {
       if (l >= o)
         return { done: !0, value: null };
-      for (var h = Y; l < o && (h = Yu(t, s, i, ++l, n)) === Y; )
+      for (var h = Z; l < o && (h = Yu(t, s, i, ++l, n)) === Z; )
         ;
-      if (h !== Y || l === o) {
+      if (h !== Z || l === o) {
         var u = new $u(t, h, a, l);
         return a = l, { value: u, done: !1 };
       }
@@ -13300,7 +13300,7 @@ var Bf = {
         return "normal";
     }
   }
-}, ge = function(r, e) {
+}, pe = function(r, e) {
   return (r & e) !== 0;
 }, xf = {
   name: "content",
@@ -13479,27 +13479,27 @@ var Bf = {
     }, r.prototype.isFloating = function() {
       return this.float !== 0;
     }, r.prototype.isInlineLevel = function() {
-      return ge(
+      return pe(
         this.display,
         4
         /* INLINE */
-      ) || ge(
+      ) || pe(
         this.display,
         33554432
         /* INLINE_BLOCK */
-      ) || ge(
+      ) || pe(
         this.display,
         268435456
         /* INLINE_FLEX */
-      ) || ge(
+      ) || pe(
         this.display,
         536870912
         /* INLINE_GRID */
-      ) || ge(
+      ) || pe(
         this.display,
         67108864
         /* INLINE_LIST_ITEM */
-      ) || ge(
+      ) || pe(
         this.display,
         134217728
         /* INLINE_TABLE */
@@ -14409,7 +14409,7 @@ var og = 1, gs = 2, ps = 3, mn = 4, wn = 5, ag = 7, bn = 8, ms = 9, ws = 10, Bn 
     return e[0] + o;
   for (var a = 0; n > 0 && a <= 4; a++) {
     var l = n % 10;
-    l === 0 && ge(s, Xt) && o !== "" ? o = e[l] + o : l > 1 || l === 1 && a === 0 || l === 1 && a === 1 && ge(s, ut) || l === 1 && a === 1 && ge(s, ct) && r > 100 || l === 1 && a > 1 && ge(s, EA) ? o = e[l] + (a > 0 ? t[a - 1] : "") + o : l === 1 && a > 0 && (o = t[a - 1] + o), n = Math.floor(n / 10);
+    l === 0 && pe(s, Xt) && o !== "" ? o = e[l] + o : l > 1 || l === 1 && a === 0 || l === 1 && a === 1 && pe(s, ut) || l === 1 && a === 1 && pe(s, ct) && r > 100 || l === 1 && a > 1 && pe(s, EA) ? o = e[l] + (a > 0 ? t[a - 1] : "") + o : l === 1 && a > 0 && (o = t[a - 1] + o), n = Math.floor(n / 10);
   }
   return (r < 0 ? A : "") + o;
 }, In = "十百千萬", Mn = "拾佰仟萬", Dn = "マイナス", Cs = "마이너스", SA = function(r, e, t) {
@@ -14674,10 +14674,10 @@ var og = 1, gs = 2, ps = 3, mn = 4, wn = 5, ag = 7, bn = 8, ms = 9, ws = 10, Bn 
                   l.appendChild(o.createTextNode(SA(b, y, !1)));
                 }
               } else if (u.name === "counters") {
-                var D = u.values.filter(AA), w = D[0], I = D[1], E = D[2];
+                var S = u.values.filter(AA), w = S[0], I = S[1], E = S[2];
                 if (w && Ae(w)) {
-                  var H = s.counters.getCounterValues(w.value), F = E && Ae(E) ? dr.parse(s.context, E.value) : 3, z = I && I.type === 0 ? I.value : "", K = H.map(function(S) {
-                    return SA(S, F, !1);
+                  var R = s.counters.getCounterValues(w.value), Q = E && Ae(E) ? dr.parse(s.context, E.value) : 3, z = I && I.type === 0 ? I.value : "", K = R.map(function(k) {
+                    return SA(k, Q, !1);
                   }).join(z);
                   l.appendChild(o.createTextNode(K));
                 }
@@ -14905,8 +14905,8 @@ var Jg = function(r, e) {
       E.push((s + a) / A.width), E.push((p + u) / A.width), E.push((n + w) / A.height), E.push((l + c) / A.height);
       var b = Math.max.apply(Math, E);
       b > 1 && (s /= b, n /= b, a /= b, l /= b, u /= b, c /= b, p /= b, w /= b);
-      var y = A.width - a, D = A.height - c, I = A.width - u, H = A.height - w, F = t.borderTopWidth, z = t.borderRightWidth, K = t.borderBottomWidth, P = t.borderLeftWidth, ne = re(t.paddingTop, e.bounds.width), S = re(t.paddingRight, e.bounds.width), N = re(t.paddingBottom, e.bounds.width), q = re(t.paddingLeft, e.bounds.width);
-      this.topLeftBorderDoubleOuterBox = s > 0 || n > 0 ? oe(A.left + P / 3, A.top + F / 3, s - P / 3, n - F / 3, ee.TOP_LEFT) : new x(A.left + P / 3, A.top + F / 3), this.topRightBorderDoubleOuterBox = s > 0 || n > 0 ? oe(A.left + y, A.top + F / 3, a - z / 3, l - F / 3, ee.TOP_RIGHT) : new x(A.left + A.width - z / 3, A.top + F / 3), this.bottomRightBorderDoubleOuterBox = u > 0 || c > 0 ? oe(A.left + I, A.top + D, u - z / 3, c - K / 3, ee.BOTTOM_RIGHT) : new x(A.left + A.width - z / 3, A.top + A.height - K / 3), this.bottomLeftBorderDoubleOuterBox = p > 0 || w > 0 ? oe(A.left + P / 3, A.top + H, p - P / 3, w - K / 3, ee.BOTTOM_LEFT) : new x(A.left + P / 3, A.top + A.height - K / 3), this.topLeftBorderDoubleInnerBox = s > 0 || n > 0 ? oe(A.left + P * 2 / 3, A.top + F * 2 / 3, s - P * 2 / 3, n - F * 2 / 3, ee.TOP_LEFT) : new x(A.left + P * 2 / 3, A.top + F * 2 / 3), this.topRightBorderDoubleInnerBox = s > 0 || n > 0 ? oe(A.left + y, A.top + F * 2 / 3, a - z * 2 / 3, l - F * 2 / 3, ee.TOP_RIGHT) : new x(A.left + A.width - z * 2 / 3, A.top + F * 2 / 3), this.bottomRightBorderDoubleInnerBox = u > 0 || c > 0 ? oe(A.left + I, A.top + D, u - z * 2 / 3, c - K * 2 / 3, ee.BOTTOM_RIGHT) : new x(A.left + A.width - z * 2 / 3, A.top + A.height - K * 2 / 3), this.bottomLeftBorderDoubleInnerBox = p > 0 || w > 0 ? oe(A.left + P * 2 / 3, A.top + H, p - P * 2 / 3, w - K * 2 / 3, ee.BOTTOM_LEFT) : new x(A.left + P * 2 / 3, A.top + A.height - K * 2 / 3), this.topLeftBorderStroke = s > 0 || n > 0 ? oe(A.left + P / 2, A.top + F / 2, s - P / 2, n - F / 2, ee.TOP_LEFT) : new x(A.left + P / 2, A.top + F / 2), this.topRightBorderStroke = s > 0 || n > 0 ? oe(A.left + y, A.top + F / 2, a - z / 2, l - F / 2, ee.TOP_RIGHT) : new x(A.left + A.width - z / 2, A.top + F / 2), this.bottomRightBorderStroke = u > 0 || c > 0 ? oe(A.left + I, A.top + D, u - z / 2, c - K / 2, ee.BOTTOM_RIGHT) : new x(A.left + A.width - z / 2, A.top + A.height - K / 2), this.bottomLeftBorderStroke = p > 0 || w > 0 ? oe(A.left + P / 2, A.top + H, p - P / 2, w - K / 2, ee.BOTTOM_LEFT) : new x(A.left + P / 2, A.top + A.height - K / 2), this.topLeftBorderBox = s > 0 || n > 0 ? oe(A.left, A.top, s, n, ee.TOP_LEFT) : new x(A.left, A.top), this.topRightBorderBox = a > 0 || l > 0 ? oe(A.left + y, A.top, a, l, ee.TOP_RIGHT) : new x(A.left + A.width, A.top), this.bottomRightBorderBox = u > 0 || c > 0 ? oe(A.left + I, A.top + D, u, c, ee.BOTTOM_RIGHT) : new x(A.left + A.width, A.top + A.height), this.bottomLeftBorderBox = p > 0 || w > 0 ? oe(A.left, A.top + H, p, w, ee.BOTTOM_LEFT) : new x(A.left, A.top + A.height), this.topLeftPaddingBox = s > 0 || n > 0 ? oe(A.left + P, A.top + F, Math.max(0, s - P), Math.max(0, n - F), ee.TOP_LEFT) : new x(A.left + P, A.top + F), this.topRightPaddingBox = a > 0 || l > 0 ? oe(A.left + Math.min(y, A.width - z), A.top + F, y > A.width + z ? 0 : Math.max(0, a - z), Math.max(0, l - F), ee.TOP_RIGHT) : new x(A.left + A.width - z, A.top + F), this.bottomRightPaddingBox = u > 0 || c > 0 ? oe(A.left + Math.min(I, A.width - P), A.top + Math.min(D, A.height - K), Math.max(0, u - z), Math.max(0, c - K), ee.BOTTOM_RIGHT) : new x(A.left + A.width - z, A.top + A.height - K), this.bottomLeftPaddingBox = p > 0 || w > 0 ? oe(A.left + P, A.top + Math.min(H, A.height - K), Math.max(0, p - P), Math.max(0, w - K), ee.BOTTOM_LEFT) : new x(A.left + P, A.top + A.height - K), this.topLeftContentBox = s > 0 || n > 0 ? oe(A.left + P + q, A.top + F + ne, Math.max(0, s - (P + q)), Math.max(0, n - (F + ne)), ee.TOP_LEFT) : new x(A.left + P + q, A.top + F + ne), this.topRightContentBox = a > 0 || l > 0 ? oe(A.left + Math.min(y, A.width + P + q), A.top + F + ne, y > A.width + P + q ? 0 : a - P + q, l - (F + ne), ee.TOP_RIGHT) : new x(A.left + A.width - (z + S), A.top + F + ne), this.bottomRightContentBox = u > 0 || c > 0 ? oe(A.left + Math.min(I, A.width - (P + q)), A.top + Math.min(D, A.height + F + ne), Math.max(0, u - (z + S)), c - (K + N), ee.BOTTOM_RIGHT) : new x(A.left + A.width - (z + S), A.top + A.height - (K + N)), this.bottomLeftContentBox = p > 0 || w > 0 ? oe(A.left + P + q, A.top + H, Math.max(0, p - (P + q)), w - (K + N), ee.BOTTOM_LEFT) : new x(A.left + P + q, A.top + A.height - (K + N));
+      var y = A.width - a, S = A.height - c, I = A.width - u, R = A.height - w, Q = t.borderTopWidth, z = t.borderRightWidth, K = t.borderBottomWidth, P = t.borderLeftWidth, ne = re(t.paddingTop, e.bounds.width), k = re(t.paddingRight, e.bounds.width), N = re(t.paddingBottom, e.bounds.width), q = re(t.paddingLeft, e.bounds.width);
+      this.topLeftBorderDoubleOuterBox = s > 0 || n > 0 ? ae(A.left + P / 3, A.top + Q / 3, s - P / 3, n - Q / 3, ee.TOP_LEFT) : new x(A.left + P / 3, A.top + Q / 3), this.topRightBorderDoubleOuterBox = s > 0 || n > 0 ? ae(A.left + y, A.top + Q / 3, a - z / 3, l - Q / 3, ee.TOP_RIGHT) : new x(A.left + A.width - z / 3, A.top + Q / 3), this.bottomRightBorderDoubleOuterBox = u > 0 || c > 0 ? ae(A.left + I, A.top + S, u - z / 3, c - K / 3, ee.BOTTOM_RIGHT) : new x(A.left + A.width - z / 3, A.top + A.height - K / 3), this.bottomLeftBorderDoubleOuterBox = p > 0 || w > 0 ? ae(A.left + P / 3, A.top + R, p - P / 3, w - K / 3, ee.BOTTOM_LEFT) : new x(A.left + P / 3, A.top + A.height - K / 3), this.topLeftBorderDoubleInnerBox = s > 0 || n > 0 ? ae(A.left + P * 2 / 3, A.top + Q * 2 / 3, s - P * 2 / 3, n - Q * 2 / 3, ee.TOP_LEFT) : new x(A.left + P * 2 / 3, A.top + Q * 2 / 3), this.topRightBorderDoubleInnerBox = s > 0 || n > 0 ? ae(A.left + y, A.top + Q * 2 / 3, a - z * 2 / 3, l - Q * 2 / 3, ee.TOP_RIGHT) : new x(A.left + A.width - z * 2 / 3, A.top + Q * 2 / 3), this.bottomRightBorderDoubleInnerBox = u > 0 || c > 0 ? ae(A.left + I, A.top + S, u - z * 2 / 3, c - K * 2 / 3, ee.BOTTOM_RIGHT) : new x(A.left + A.width - z * 2 / 3, A.top + A.height - K * 2 / 3), this.bottomLeftBorderDoubleInnerBox = p > 0 || w > 0 ? ae(A.left + P * 2 / 3, A.top + R, p - P * 2 / 3, w - K * 2 / 3, ee.BOTTOM_LEFT) : new x(A.left + P * 2 / 3, A.top + A.height - K * 2 / 3), this.topLeftBorderStroke = s > 0 || n > 0 ? ae(A.left + P / 2, A.top + Q / 2, s - P / 2, n - Q / 2, ee.TOP_LEFT) : new x(A.left + P / 2, A.top + Q / 2), this.topRightBorderStroke = s > 0 || n > 0 ? ae(A.left + y, A.top + Q / 2, a - z / 2, l - Q / 2, ee.TOP_RIGHT) : new x(A.left + A.width - z / 2, A.top + Q / 2), this.bottomRightBorderStroke = u > 0 || c > 0 ? ae(A.left + I, A.top + S, u - z / 2, c - K / 2, ee.BOTTOM_RIGHT) : new x(A.left + A.width - z / 2, A.top + A.height - K / 2), this.bottomLeftBorderStroke = p > 0 || w > 0 ? ae(A.left + P / 2, A.top + R, p - P / 2, w - K / 2, ee.BOTTOM_LEFT) : new x(A.left + P / 2, A.top + A.height - K / 2), this.topLeftBorderBox = s > 0 || n > 0 ? ae(A.left, A.top, s, n, ee.TOP_LEFT) : new x(A.left, A.top), this.topRightBorderBox = a > 0 || l > 0 ? ae(A.left + y, A.top, a, l, ee.TOP_RIGHT) : new x(A.left + A.width, A.top), this.bottomRightBorderBox = u > 0 || c > 0 ? ae(A.left + I, A.top + S, u, c, ee.BOTTOM_RIGHT) : new x(A.left + A.width, A.top + A.height), this.bottomLeftBorderBox = p > 0 || w > 0 ? ae(A.left, A.top + R, p, w, ee.BOTTOM_LEFT) : new x(A.left, A.top + A.height), this.topLeftPaddingBox = s > 0 || n > 0 ? ae(A.left + P, A.top + Q, Math.max(0, s - P), Math.max(0, n - Q), ee.TOP_LEFT) : new x(A.left + P, A.top + Q), this.topRightPaddingBox = a > 0 || l > 0 ? ae(A.left + Math.min(y, A.width - z), A.top + Q, y > A.width + z ? 0 : Math.max(0, a - z), Math.max(0, l - Q), ee.TOP_RIGHT) : new x(A.left + A.width - z, A.top + Q), this.bottomRightPaddingBox = u > 0 || c > 0 ? ae(A.left + Math.min(I, A.width - P), A.top + Math.min(S, A.height - K), Math.max(0, u - z), Math.max(0, c - K), ee.BOTTOM_RIGHT) : new x(A.left + A.width - z, A.top + A.height - K), this.bottomLeftPaddingBox = p > 0 || w > 0 ? ae(A.left + P, A.top + Math.min(R, A.height - K), Math.max(0, p - P), Math.max(0, w - K), ee.BOTTOM_LEFT) : new x(A.left + P, A.top + A.height - K), this.topLeftContentBox = s > 0 || n > 0 ? ae(A.left + P + q, A.top + Q + ne, Math.max(0, s - (P + q)), Math.max(0, n - (Q + ne)), ee.TOP_LEFT) : new x(A.left + P + q, A.top + Q + ne), this.topRightContentBox = a > 0 || l > 0 ? ae(A.left + Math.min(y, A.width + P + q), A.top + Q + ne, y > A.width + P + q ? 0 : a - P + q, l - (Q + ne), ee.TOP_RIGHT) : new x(A.left + A.width - (z + k), A.top + Q + ne), this.bottomRightContentBox = u > 0 || c > 0 ? ae(A.left + Math.min(I, A.width - (P + q)), A.top + Math.min(S, A.height + Q + ne), Math.max(0, u - (z + k)), c - (K + N), ee.BOTTOM_RIGHT) : new x(A.left + A.width - (z + k), A.top + A.height - (K + N)), this.bottomLeftContentBox = p > 0 || w > 0 ? ae(A.left + P + q, A.top + R, Math.max(0, p - (P + q)), w - (K + N), ee.BOTTOM_LEFT) : new x(A.left + P + q, A.top + A.height - (K + N));
     }
     return r;
   }()
@@ -14914,7 +14914,7 @@ var Jg = function(r, e) {
 (function(r) {
   r[r.TOP_LEFT = 0] = "TOP_LEFT", r[r.TOP_RIGHT = 1] = "TOP_RIGHT", r[r.BOTTOM_RIGHT = 2] = "BOTTOM_RIGHT", r[r.BOTTOM_LEFT = 3] = "BOTTOM_LEFT";
 })(ee || (ee = {}));
-var oe = function(r, e, t, A, i) {
+var ae = function(r, e, t, A, i) {
   var s = 4 * ((Math.sqrt(2) - 1) / 3), n = t * s, o = A * s, a = r + t, l = e + A;
   switch (i) {
     case ee.TOP_LEFT:
@@ -15051,27 +15051,27 @@ var oe = function(r, e, t, A, i) {
         A = A.parent;
       }
       return i.filter(function(a) {
-        return ge(a.target, e);
+        return pe(a.target, e);
       });
     }, r;
   }()
 ), Cr = function(r, e, t, A) {
   r.container.elements.forEach(function(i) {
-    var s = ge(
+    var s = pe(
       i.flags,
       4
       /* CREATES_REAL_STACKING_CONTEXT */
-    ), n = ge(
+    ), n = pe(
       i.flags,
       2
       /* CREATES_STACKING_CONTEXT */
     ), o = new ua(i, r);
-    ge(
+    pe(
       i.styles.display,
       2048
       /* LIST_ITEM */
     ) && A.push(o);
-    var a = ge(
+    var a = pe(
       i.flags,
       8
       /* IS_LIST_OWNER */
@@ -15097,7 +15097,7 @@ var oe = function(r, e, t, A, i) {
       Cr(o, h, s ? h : t, a);
     } else
       i.styles.isInlineLevel() ? e.inlineLevel.push(o) : e.nonInlineLevel.push(o), Cr(o, e, t, a);
-    ge(
+    pe(
       i.flags,
       8
       /* IS_LIST_OWNER */
@@ -15213,9 +15213,9 @@ var oe = function(r, e, t, A, i) {
     var b = 0, y = 0;
     return fe(n) ? b = re(n, t.width) : fe(o) && (y = re(o, t.height)), Wt(n) ? b = y * s : (!o || Wt(o)) && (y = b / s), [b, y];
   }
-  var D = null, I = null;
-  if (fe(n) ? D = re(n, t.width) : o && fe(o) && (I = re(o, t.height)), D !== null && (!o || Wt(o)) && (I = h && u ? D / A * i : t.height), I !== null && Wt(n) && (D = h && u ? I / i * A : t.width), D !== null && I !== null)
-    return [D, I];
+  var S = null, I = null;
+  if (fe(n) ? S = re(n, t.width) : o && fe(o) && (I = re(o, t.height)), S !== null && (!o || Wt(o)) && (I = h && u ? S / A * i : t.height), I !== null && Wt(n) && (S = h && u ? I / i * A : t.width), S !== null && I !== null)
+    return [S, I];
   throw new Error("Unable to calculate background-size for element");
 }, Jt = function(r, e) {
   var t = r[e];
@@ -15318,7 +15318,7 @@ var oe = function(r, e, t, A, i) {
         return Fe(this, function(A) {
           switch (A.label) {
             case 0:
-              if (ge(
+              if (pe(
                 t.container.flags,
                 16
                 /* DEBUG_RENDER */
@@ -15400,38 +15400,38 @@ var oe = function(r, e, t, A, i) {
       }
     }, e.prototype.renderNodeContent = function(t) {
       return He(this, void 0, void 0, function() {
-        var A, i, s, n, o, a, y, y, l, h, u, c, I, d, p, H, w, E, b, y, D, I, H;
-        return Fe(this, function(F) {
-          switch (F.label) {
+        var A, i, s, n, o, a, y, y, l, h, u, c, I, d, p, R, w, E, b, y, S, I, R;
+        return Fe(this, function(Q) {
+          switch (Q.label) {
             case 0:
               this.applyEffects(t.getEffects(
                 4
                 /* CONTENT */
-              )), A = t.container, i = t.curves, s = A.styles, n = 0, o = A.textNodes, F.label = 1;
+              )), A = t.container, i = t.curves, s = A.styles, n = 0, o = A.textNodes, Q.label = 1;
             case 1:
               return n < o.length ? (a = o[n], [4, this.renderTextNode(a, s)]) : [3, 4];
             case 2:
-              F.sent(), F.label = 3;
+              Q.sent(), Q.label = 3;
             case 3:
               return n++, [3, 1];
             case 4:
               if (!(A instanceof Wo)) return [3, 8];
-              F.label = 5;
+              Q.label = 5;
             case 5:
-              return F.trys.push([5, 7, , 8]), [4, this.context.cache.match(A.src)];
+              return Q.trys.push([5, 7, , 8]), [4, this.context.cache.match(A.src)];
             case 6:
-              return y = F.sent(), this.renderReplacedElement(A, i, y), [3, 8];
+              return y = Q.sent(), this.renderReplacedElement(A, i, y), [3, 8];
             case 7:
-              return F.sent(), this.context.logger.error("Error loading image " + A.src), [3, 8];
+              return Q.sent(), this.context.logger.error("Error loading image " + A.src), [3, 8];
             case 8:
               if (A instanceof Xo && this.renderReplacedElement(A, i, A.canvas), !(A instanceof Jo)) return [3, 12];
-              F.label = 9;
+              Q.label = 9;
             case 9:
-              return F.trys.push([9, 11, , 12]), [4, this.context.cache.match(A.svg)];
+              return Q.trys.push([9, 11, , 12]), [4, this.context.cache.match(A.svg)];
             case 10:
-              return y = F.sent(), this.renderReplacedElement(A, i, y), [3, 12];
+              return y = Q.sent(), this.renderReplacedElement(A, i, y), [3, 12];
             case 11:
-              return F.sent(), this.context.logger.error("Error loading svg " + A.svg.substring(0, 255)), [3, 12];
+              return Q.sent(), this.context.logger.error("Error loading svg " + A.svg.substring(0, 255)), [3, 12];
             case 12:
               return A instanceof $o && A.tree ? (l = new e(this.context, {
                 scale: this.options.scale,
@@ -15442,7 +15442,7 @@ var oe = function(r, e, t, A, i) {
                 height: A.height
               }), [4, l.render(A.tree)]) : [3, 14];
             case 13:
-              h = F.sent(), A.width && A.height && this.ctx.drawImage(h, 0, 0, A.width, A.height, A.bounds.left, A.bounds.top, A.bounds.width, A.bounds.height), F.label = 14;
+              h = Q.sent(), A.width && A.height && this.ctx.drawImage(h, 0, 0, A.width, A.height, A.bounds.left, A.bounds.top, A.bounds.width, A.bounds.height), Q.label = 14;
             case 14:
               if (A instanceof Hr && (u = Math.min(A.bounds.width, A.bounds.height), A.type === Qi ? A.checked && (this.ctx.save(), this.path([
                 new x(A.bounds.left + u * 0.39363, A.bounds.top + u * 0.79),
@@ -15453,39 +15453,39 @@ var oe = function(r, e, t, A, i) {
                 new x(A.bounds.left + u * 0.84, A.bounds.top + u * 0.34085),
                 new x(A.bounds.left + u * 0.39363, A.bounds.top + u * 0.79)
               ]), this.ctx.fillStyle = Be(Un), this.ctx.fill(), this.ctx.restore()) : A.type === Ui && A.checked && (this.ctx.save(), this.ctx.beginPath(), this.ctx.arc(A.bounds.left + u / 2, A.bounds.top + u / 2, u / 4, 0, Math.PI * 2, !0), this.ctx.fillStyle = Be(Un), this.ctx.fill(), this.ctx.restore())), Lp(A) && A.value.length) {
-                switch (c = this.createFontStyle(s), I = c[0], d = c[1], p = this.fontMetrics.getMetrics(I, d).baseline, this.ctx.font = I, this.ctx.fillStyle = Be(s.color), this.ctx.textBaseline = "alphabetic", this.ctx.textAlign = Mp(A.styles.textAlign), H = Li(A), w = 0, A.styles.textAlign) {
+                switch (c = this.createFontStyle(s), I = c[0], d = c[1], p = this.fontMetrics.getMetrics(I, d).baseline, this.ctx.font = I, this.ctx.fillStyle = Be(s.color), this.ctx.textBaseline = "alphabetic", this.ctx.textAlign = Mp(A.styles.textAlign), R = Li(A), w = 0, A.styles.textAlign) {
                   case 1:
-                    w += H.width / 2;
+                    w += R.width / 2;
                     break;
                   case 2:
-                    w += H.width;
+                    w += R.width;
                     break;
                 }
-                E = H.add(w, 0, 0, -H.height / 2 + 1), this.ctx.save(), this.path([
-                  new x(H.left, H.top),
-                  new x(H.left + H.width, H.top),
-                  new x(H.left + H.width, H.top + H.height),
-                  new x(H.left, H.top + H.height)
+                E = R.add(w, 0, 0, -R.height / 2 + 1), this.ctx.save(), this.path([
+                  new x(R.left, R.top),
+                  new x(R.left + R.width, R.top),
+                  new x(R.left + R.width, R.top + R.height),
+                  new x(R.left, R.top + R.height)
                 ]), this.ctx.clip(), this.renderTextWithLetterSpacing(new UA(A.value, E), s.letterSpacing, p), this.ctx.restore(), this.ctx.textBaseline = "alphabetic", this.ctx.textAlign = "left";
               }
-              if (!ge(
+              if (!pe(
                 A.styles.display,
                 2048
                 /* LIST_ITEM */
               )) return [3, 20];
               if (A.styles.listStyleImage === null) return [3, 19];
               if (b = A.styles.listStyleImage, b.type !== 0) return [3, 18];
-              y = void 0, D = b.url, F.label = 15;
+              y = void 0, S = b.url, Q.label = 15;
             case 15:
-              return F.trys.push([15, 17, , 18]), [4, this.context.cache.match(D)];
+              return Q.trys.push([15, 17, , 18]), [4, this.context.cache.match(S)];
             case 16:
-              return y = F.sent(), this.ctx.drawImage(y, A.bounds.left - (y.width + 10), A.bounds.top), [3, 18];
+              return y = Q.sent(), this.ctx.drawImage(y, A.bounds.left - (y.width + 10), A.bounds.top), [3, 18];
             case 17:
-              return F.sent(), this.context.logger.error("Error loading list-style-image " + D), [3, 18];
+              return Q.sent(), this.context.logger.error("Error loading list-style-image " + S), [3, 18];
             case 18:
               return [3, 20];
             case 19:
-              t.listValue && A.styles.listStyleType !== -1 && (I = this.createFontStyle(s)[0], this.ctx.font = I, this.ctx.fillStyle = Be(s.color), this.ctx.textBaseline = "middle", this.ctx.textAlign = "right", H = new nt(A.bounds.left, A.bounds.top + re(A.styles.paddingTop, A.bounds.width), A.bounds.width, hn(s.lineHeight, s.fontSize.number) / 2 + 1), this.renderTextWithLetterSpacing(new UA(t.listValue, H), s.letterSpacing, hn(s.lineHeight, s.fontSize.number) / 2 + 2), this.ctx.textBaseline = "bottom", this.ctx.textAlign = "left"), F.label = 20;
+              t.listValue && A.styles.listStyleType !== -1 && (I = this.createFontStyle(s)[0], this.ctx.font = I, this.ctx.fillStyle = Be(s.color), this.ctx.textBaseline = "middle", this.ctx.textAlign = "right", R = new nt(A.bounds.left, A.bounds.top + re(A.styles.paddingTop, A.bounds.width), A.bounds.width, hn(s.lineHeight, s.fontSize.number) / 2 + 1), this.renderTextWithLetterSpacing(new UA(t.listValue, R), s.letterSpacing, hn(s.lineHeight, s.fontSize.number) / 2 + 2), this.ctx.textBaseline = "bottom", this.ctx.textAlign = "left"), Q.label = 20;
             case 20:
               return [
                 2
@@ -15500,7 +15500,7 @@ var oe = function(r, e, t, A, i) {
         return Fe(this, function(y) {
           switch (y.label) {
             case 0:
-              if (ge(
+              if (pe(
                 t.element.container.flags,
                 16
                 /* DEBUG_RENDER */
@@ -15600,7 +15600,7 @@ var oe = function(r, e, t, A, i) {
           switch (l.label) {
             case 0:
               A = t.styles.backgroundImage.length - 1, i = function(h) {
-                var u, c, d, ne, le, he, q, W, K, p, ne, le, he, q, W, w, E, b, y, D, I, H, F, z, K, P, ne, S, N, q, W, Z, le, he, qe, pe, Se, et, ke, Ve, me, Le;
+                var u, c, d, ne, le, he, q, W, K, p, ne, le, he, q, W, w, E, b, y, S, I, R, Q, z, K, P, ne, k, N, q, W, Y, le, he, qe, me, Se, et, ke, Ve, we, Le;
                 return Fe(this, function(ot) {
                   switch (ot.label) {
                     case 0:
@@ -15619,15 +15619,15 @@ var oe = function(r, e, t, A, i) {
                         u.width / u.height
                       ]), ne = d[0], le = d[1], he = d[2], q = d[3], W = d[4], K = s.ctx.createPattern(s.resizeImage(u, q, W), "repeat"), s.renderRepeat(ne, K, le, he)), [3, 6];
                     case 5:
-                      pd(h) ? (p = Fs(t, A, [null, null, null]), ne = p[0], le = p[1], he = p[2], q = p[3], W = p[4], w = ud(h.angle, q, W), E = w[0], b = w[1], y = w[2], D = w[3], I = w[4], H = document.createElement("canvas"), H.width = q, H.height = W, F = H.getContext("2d"), z = F.createLinearGradient(b, D, y, I), an(h.stops, E).forEach(function(ue) {
+                      pd(h) ? (p = Fs(t, A, [null, null, null]), ne = p[0], le = p[1], he = p[2], q = p[3], W = p[4], w = ud(h.angle, q, W), E = w[0], b = w[1], y = w[2], S = w[3], I = w[4], R = document.createElement("canvas"), R.width = q, R.height = W, Q = R.getContext("2d"), z = Q.createLinearGradient(b, S, y, I), an(h.stops, E).forEach(function(ue) {
                         return z.addColorStop(ue.stop, Be(ue.color));
-                      }), F.fillStyle = z, F.fillRect(0, 0, q, W), q > 0 && W > 0 && (K = s.ctx.createPattern(H, "repeat"), s.renderRepeat(ne, K, le, he))) : md(h) && (P = Fs(t, A, [
+                      }), Q.fillStyle = z, Q.fillRect(0, 0, q, W), q > 0 && W > 0 && (K = s.ctx.createPattern(R, "repeat"), s.renderRepeat(ne, K, le, he))) : md(h) && (P = Fs(t, A, [
                         null,
                         null,
                         null
-                      ]), ne = P[0], S = P[1], N = P[2], q = P[3], W = P[4], Z = h.position.length === 0 ? [yr] : h.position, le = re(Z[0], q), he = re(Z[Z.length - 1], W), qe = cd(h, le, he, q, W), pe = qe[0], Se = qe[1], pe > 0 && Se > 0 && (et = s.ctx.createRadialGradient(S + le, N + he, 0, S + le, N + he, pe), an(h.stops, pe * 2).forEach(function(ue) {
+                      ]), ne = P[0], k = P[1], N = P[2], q = P[3], W = P[4], Y = h.position.length === 0 ? [yr] : h.position, le = re(Y[0], q), he = re(Y[Y.length - 1], W), qe = cd(h, le, he, q, W), me = qe[0], Se = qe[1], me > 0 && Se > 0 && (et = s.ctx.createRadialGradient(k + le, N + he, 0, k + le, N + he, me), an(h.stops, me * 2).forEach(function(ue) {
                         return et.addColorStop(ue.stop, Be(ue.color));
-                      }), s.path(ne), s.ctx.fillStyle = et, pe !== Se ? (ke = t.bounds.left + 0.5 * t.bounds.width, Ve = t.bounds.top + 0.5 * t.bounds.height, me = Se / pe, Le = 1 / me, s.ctx.save(), s.ctx.translate(ke, Ve), s.ctx.transform(1, 0, 0, me, 0, 0), s.ctx.translate(-ke, -Ve), s.ctx.fillRect(S, Le * (N - Ve) + Ve, q, W * Le), s.ctx.restore()) : s.ctx.fill())), ot.label = 6;
+                      }), s.path(ne), s.ctx.fillStyle = et, me !== Se ? (ke = t.bounds.left + 0.5 * t.bounds.width, Ve = t.bounds.top + 0.5 * t.bounds.height, we = Se / me, Le = 1 / we, s.ctx.save(), s.ctx.translate(ke, Ve), s.ctx.transform(1, 0, 0, we, 0, 0), s.ctx.translate(-ke, -Ve), s.ctx.fillRect(k, Le * (N - Ve) + Ve, q, W * Le), s.ctx.restore()) : s.ctx.fill())), ot.label = 6;
                     case 6:
                       return A--, [
                         2
@@ -15746,9 +15746,9 @@ var oe = function(r, e, t, A, i) {
       });
     }, e.prototype.renderDashedDottedBorder = function(t, A, i, s, n) {
       return He(this, void 0, void 0, function() {
-        var o, a, l, h, u, c, d, p, w, E, b, y, D, I, H, F, H, F;
+        var o, a, l, h, u, c, d, p, w, E, b, y, S, I, R, Q, R, Q;
         return Fe(this, function(z) {
-          return this.ctx.save(), o = Ep(s, i), a = _n(s, i), n === 2 && (this.path(a), this.ctx.clip()), _e(a[0]) ? (l = a[0].start.x, h = a[0].start.y) : (l = a[0].x, h = a[0].y), _e(a[1]) ? (u = a[1].end.x, c = a[1].end.y) : (u = a[1].x, c = a[1].y), i === 0 || i === 2 ? d = Math.abs(l - u) : d = Math.abs(h - c), this.ctx.beginPath(), n === 3 ? this.formatPath(o) : this.formatPath(a.slice(0, 2)), p = A < 3 ? A * 3 : A * 2, w = A < 3 ? A * 2 : A, n === 3 && (p = A, w = A), E = !0, d <= p * 2 ? E = !1 : d <= p * 2 + w ? (b = d / (2 * p + w), p *= b, w *= b) : (y = Math.floor((d + w) / (p + w)), D = (d - y * p) / (y - 1), I = (d - (y + 1) * p) / y, w = I <= 0 || Math.abs(w - D) < Math.abs(w - I) ? D : I), E && (n === 3 ? this.ctx.setLineDash([0, p + w]) : this.ctx.setLineDash([p, w])), n === 3 ? (this.ctx.lineCap = "round", this.ctx.lineWidth = A) : this.ctx.lineWidth = A * 2 + 1.1, this.ctx.strokeStyle = Be(t), this.ctx.stroke(), this.ctx.setLineDash([]), n === 2 && (_e(a[0]) && (H = a[3], F = a[0], this.ctx.beginPath(), this.formatPath([new x(H.end.x, H.end.y), new x(F.start.x, F.start.y)]), this.ctx.stroke()), _e(a[1]) && (H = a[1], F = a[2], this.ctx.beginPath(), this.formatPath([new x(H.end.x, H.end.y), new x(F.start.x, F.start.y)]), this.ctx.stroke())), this.ctx.restore(), [
+          return this.ctx.save(), o = Ep(s, i), a = _n(s, i), n === 2 && (this.path(a), this.ctx.clip()), _e(a[0]) ? (l = a[0].start.x, h = a[0].start.y) : (l = a[0].x, h = a[0].y), _e(a[1]) ? (u = a[1].end.x, c = a[1].end.y) : (u = a[1].x, c = a[1].y), i === 0 || i === 2 ? d = Math.abs(l - u) : d = Math.abs(h - c), this.ctx.beginPath(), n === 3 ? this.formatPath(o) : this.formatPath(a.slice(0, 2)), p = A < 3 ? A * 3 : A * 2, w = A < 3 ? A * 2 : A, n === 3 && (p = A, w = A), E = !0, d <= p * 2 ? E = !1 : d <= p * 2 + w ? (b = d / (2 * p + w), p *= b, w *= b) : (y = Math.floor((d + w) / (p + w)), S = (d - y * p) / (y - 1), I = (d - (y + 1) * p) / y, w = I <= 0 || Math.abs(w - S) < Math.abs(w - I) ? S : I), E && (n === 3 ? this.ctx.setLineDash([0, p + w]) : this.ctx.setLineDash([p, w])), n === 3 ? (this.ctx.lineCap = "round", this.ctx.lineWidth = A) : this.ctx.lineWidth = A * 2 + 1.1, this.ctx.strokeStyle = Be(t), this.ctx.stroke(), this.ctx.setLineDash([]), n === 2 && (_e(a[0]) && (R = a[3], Q = a[0], this.ctx.beginPath(), this.formatPath([new x(R.end.x, R.end.y), new x(Q.start.x, Q.start.y)]), this.ctx.stroke()), _e(a[1]) && (R = a[1], Q = a[2], this.ctx.beginPath(), this.formatPath([new x(R.end.x, R.end.y), new x(Q.start.x, Q.start.y)]), this.ctx.stroke())), this.ctx.restore(), [
             2
             /*return*/
           ];
@@ -15865,7 +15865,7 @@ var oe = function(r, e, t, A, i) {
 typeof window < "u" && aa.setContext(window);
 var Vp = function(r, e) {
   return He(void 0, void 0, void 0, function() {
-    var t, A, i, s, n, o, a, l, h, u, c, d, p, w, E, b, y, D, I, H, z, F, z, K, P, ne, S, N, q, W, Z, le, he, qe, pe, Se, et, ke, Ve, me;
+    var t, A, i, s, n, o, a, l, h, u, c, d, p, w, E, b, y, S, I, R, z, Q, z, K, P, ne, k, N, q, W, Y, le, he, qe, me, Se, et, ke, Ve, we;
     return Fe(this, function(Le) {
       switch (Le.label) {
         case 0:
@@ -15880,11 +15880,11 @@ var Vp = function(r, e) {
             imageTimeout: (P = e.imageTimeout) !== null && P !== void 0 ? P : 15e3,
             proxy: e.proxy,
             useCORS: (ne = e.useCORS) !== null && ne !== void 0 ? ne : !1
-          }, s = er({ logging: (S = e.logging) !== null && S !== void 0 ? S : !0, cache: e.cache }, i), n = {
+          }, s = er({ logging: (k = e.logging) !== null && k !== void 0 ? k : !0, cache: e.cache }, i), n = {
             windowWidth: (N = e.windowWidth) !== null && N !== void 0 ? N : A.innerWidth,
             windowHeight: (q = e.windowHeight) !== null && q !== void 0 ? q : A.innerHeight,
             scrollX: (W = e.scrollX) !== null && W !== void 0 ? W : A.pageXOffset,
-            scrollY: (Z = e.scrollY) !== null && Z !== void 0 ? Z : A.pageYOffset
+            scrollY: (Y = e.scrollY) !== null && Y !== void 0 ? Y : A.pageYOffset
           }, o = new nt(n.scrollX, n.scrollY, n.windowWidth, n.windowHeight), a = new Kp(s, o), l = (le = e.foreignObjectRendering) !== null && le !== void 0 ? le : !1, h = {
             allowTaint: (he = e.allowTaint) !== null && he !== void 0 ? he : !1,
             onclone: e.onclone,
@@ -15893,23 +15893,23 @@ var Vp = function(r, e) {
             copyStyles: l
           }, a.logger.debug("Starting document clone with size " + o.width + "x" + o.height + " scrolled to " + -o.left + "," + -o.top), u = new Sn(a, r, h), c = u.clonedReferenceElement, c ? [4, u.toIFrame(t, o)] : [2, Promise.reject("Unable to find element in cloned iframe")];
         case 1:
-          return d = Le.sent(), p = Rr(c) || Ng(c) ? wu(c.ownerDocument) : Si(a, c), w = p.width, E = p.height, b = p.left, y = p.top, D = Np(a, c, e.backgroundColor), I = {
+          return d = Le.sent(), p = Rr(c) || Ng(c) ? wu(c.ownerDocument) : Si(a, c), w = p.width, E = p.height, b = p.left, y = p.top, S = Np(a, c, e.backgroundColor), I = {
             canvas: e.canvas,
-            backgroundColor: D,
-            scale: (pe = (qe = e.scale) !== null && qe !== void 0 ? qe : A.devicePixelRatio) !== null && pe !== void 0 ? pe : 1,
+            backgroundColor: S,
+            scale: (me = (qe = e.scale) !== null && qe !== void 0 ? qe : A.devicePixelRatio) !== null && me !== void 0 ? me : 1,
             x: ((Se = e.x) !== null && Se !== void 0 ? Se : 0) + b,
             y: ((et = e.y) !== null && et !== void 0 ? et : 0) + y,
             width: (ke = e.width) !== null && ke !== void 0 ? ke : Math.ceil(w),
             height: (Ve = e.height) !== null && Ve !== void 0 ? Ve : Math.ceil(E)
           }, l ? (a.logger.debug("Document cloned, using foreign object rendering"), z = new kp(a, I), [4, z.render(c)]) : [3, 3];
         case 2:
-          return H = Le.sent(), [3, 5];
+          return R = Le.sent(), [3, 5];
         case 3:
-          return a.logger.debug("Document cloned, element located at " + b + "," + y + " with size " + w + "x" + E + " using computed rendering"), a.logger.debug("Starting DOM parsing"), F = ea(a, c), D === F.styles.backgroundColor && (F.styles.backgroundColor = rt.TRANSPARENT), a.logger.debug("Starting renderer for element at " + I.x + "," + I.y + " with size " + I.width + "x" + I.height), z = new Tp(a, I), [4, z.render(F)];
+          return a.logger.debug("Document cloned, element located at " + b + "," + y + " with size " + w + "x" + E + " using computed rendering"), a.logger.debug("Starting DOM parsing"), Q = ea(a, c), S === Q.styles.backgroundColor && (Q.styles.backgroundColor = rt.TRANSPARENT), a.logger.debug("Starting renderer for element at " + I.x + "," + I.y + " with size " + I.width + "x" + I.height), z = new Tp(a, I), [4, z.render(Q)];
         case 4:
-          H = Le.sent(), Le.label = 5;
+          R = Le.sent(), Le.label = 5;
         case 5:
-          return (!((me = e.removeContainer) !== null && me !== void 0) || me) && (Sn.destroy(d) || a.logger.error("Cannot detach cloned iframe as it is not in the DOM anymore")), a.logger.debug("Finished rendering"), [2, H];
+          return (!((we = e.removeContainer) !== null && we !== void 0) || we) && (Sn.destroy(d) || a.logger.error("Cannot detach cloned iframe as it is not in the DOM anymore")), a.logger.debug("Finished rendering"), [2, R];
       }
     });
   });
@@ -15985,15 +15985,15 @@ const zp = { class: "positions-card" }, Gp = {
     const t = r, A = e, i = $(null), s = $(null), n = ["qty", "avgPrice", "price", "market_value", "unrealized_pnl", "computed_cash_flow_on_entry", "computed_cash_flow_on_exercise"], o = Ga(t.accountId, t.userId), a = As(() => {
       const f = o.data.value || [];
       return f.length ? f.map((g) => {
-        const C = { ...g };
+        const v = { ...g };
         for (const L of n) {
-          const k = C[L];
-          if (typeof k == "number" && Number.isFinite(k)) {
-            const B = k % 1;
-            (Math.abs(k) * 1 / 100 > B || k == 0) && (C[L] = Math.trunc(k));
+          const O = v[L];
+          if (typeof O == "number" && Number.isFinite(O)) {
+            const B = O % 1;
+            (Math.abs(O) * 1 / 100 > B || O == 0) && (v[L] = Math.trunc(O));
           }
         }
-        return C;
+        return v;
       }) : [];
     }), l = Wa();
     Xa();
@@ -16011,6 +16011,7 @@ const zp = { class: "positions-card" }, Gp = {
       { field: "avgPrice", label: "Avg Price" },
       { field: "price", label: "Market Price" },
       { field: "market_price", label: "Ul CM Price" },
+      { field: "instrument_market_price", label: "Instrument current market price" },
       { field: "market_value", label: "Market Value" },
       { field: "unrealized_pnl", label: "P&L Unrealized" },
       { field: "be_price_pnl", label: "Break even price P&L (computed)" },
@@ -16023,28 +16024,28 @@ const zp = { class: "positions-card" }, Gp = {
       const g = new URL(window.location.href).searchParams.get("position_col_renames");
       if (!g) return {};
       try {
-        const C = g.split("-and-"), L = {};
-        return C.forEach((k) => {
-          const [B, ...m] = k.split(":");
+        const v = g.split("-and-"), L = {};
+        return v.forEach((O) => {
+          const [B, ...m] = O.split(":");
           B && m.length && (L[B] = decodeURIComponent(m.join(":")));
         }), L;
       } catch {
         return {};
       }
     }
-    function D(f) {
-      const g = new URL(window.location.href), C = Object.entries(f).filter(([L, k]) => k && k.trim()).map(([L, k]) => `${L}:${encodeURIComponent(k)}`).join("-and-");
-      C ? g.searchParams.set("position_col_renames", C) : g.searchParams.delete("position_col_renames"), window.history.replaceState({}, "", g.toString());
+    function S(f) {
+      const g = new URL(window.location.href), v = Object.entries(f).filter(([L, O]) => O && O.trim()).map(([L, O]) => `${L}:${encodeURIComponent(O)}`).join("-and-");
+      v ? g.searchParams.set("position_col_renames", v) : g.searchParams.delete("position_col_renames"), window.history.replaceState({}, "", g.toString());
     }
-    const I = $(!1), H = $(null), F = $("");
+    const I = $(!1), R = $(null), Q = $("");
     function z(f, g) {
-      H.value = f, F.value = g, I.value = !0;
+      R.value = f, Q.value = g, I.value = !0;
     }
     function K() {
-      H.value && (b.value = {
+      R.value && (b.value = {
         ...b.value,
-        [H.value]: F.value.trim()
-      }, D(b.value), I.value = !1, ht(() => at()));
+        [R.value]: Q.value.trim()
+      }, S(b.value), I.value = !1, ht(() => at()));
     }
     function P() {
       I.value = !1;
@@ -16052,30 +16053,30 @@ const zp = { class: "positions-card" }, Gp = {
     function ne() {
       const g = new URL(window.location.href).searchParams.get("position_cols");
       if (!g)
-        return E.map((k) => k.field).filter((k) => !["asset_class", "conid", "undConid", "multiplier", "qty"].includes(k));
-      const C = g.split("-and-").map((k) => k.trim()).filter(Boolean), L = new Set(E.map((k) => k.field));
-      return C.filter((k) => L.has(k));
+        return E.map((O) => O.field).filter((O) => !["asset_class", "conid", "undConid", "multiplier", "qty"].includes(O));
+      const v = g.split("-and-").map((O) => O.trim()).filter(Boolean), L = new Set(E.map((O) => O.field));
+      return v.filter((O) => L.has(O));
     }
-    const S = $(ne());
+    const k = $(ne());
     function N() {
       const g = new URL(window.location.href).searchParams.get("position_col_widths");
       if (!g) return {};
       try {
-        const C = g.split("-and-"), L = {};
-        return C.forEach((k) => {
-          const [B, m] = k.split(":");
+        const v = g.split("-and-"), L = {};
+        return v.forEach((O) => {
+          const [B, m] = O.split(":");
           B && m && (L[B] = parseInt(m));
         }), L;
-      } catch (C) {
-        return console.warn("Error parsing column widths from URL:", C), {};
+      } catch (v) {
+        return console.warn("Error parsing column widths from URL:", v), {};
       }
     }
     function q(f) {
-      const g = new URL(window.location.href), C = Object.entries(f).filter(([L, k]) => k > 0).map(([L, k]) => `${L}:${k}`).join("-and-");
-      C ? g.searchParams.set("position_col_widths", C) : g.searchParams.delete("position_col_widths"), window.history.replaceState({}, "", g.toString());
+      const g = new URL(window.location.href), v = Object.entries(f).filter(([L, O]) => O > 0).map(([L, O]) => `${L}:${O}`).join("-and-");
+      v ? g.searchParams.set("position_col_widths", v) : g.searchParams.delete("position_col_widths"), window.history.replaceState({}, "", g.toString());
     }
     const W = $(N());
-    function Z(f) {
+    function Y(f) {
       return f == null || !Number.isFinite(f) ? "" : f % 1 == 0 ? new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -16096,53 +16097,53 @@ const zp = { class: "positions-card" }, Gp = {
     }
     function he(f) {
       if (!f) return [];
-      const g = String(f), C = g.match(/^([A-Z]+)\b/), L = (C == null ? void 0 : C[1]) ?? "", k = g.match(/\s([CP])\b/), B = (k == null ? void 0 : k[1]) ?? "", m = g.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), v = (m == null ? void 0 : m[1]) ?? "", R = g.match(/\b(\d{6})[CP]/), O = R ? qe(R[1]) : "";
-      return [L, O, v, B].filter(Boolean);
+      const g = String(f), v = g.match(/^([A-Z]+)\b/), L = (v == null ? void 0 : v[1]) ?? "", O = g.match(/\s([CP])\b/), B = (O == null ? void 0 : O[1]) ?? "", m = g.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/), C = (m == null ? void 0 : m[1]) ?? "", F = g.match(/\b(\d{6})[CP]/), D = F ? qe(F[1]) : "";
+      return [L, D, C, B].filter(Boolean);
     }
     function qe(f) {
       if (!f || f.length !== 6) return "";
-      const g = f.substring(0, 2), C = f.substring(2, 4), L = f.substring(4, 6);
-      return `20${g}-${C}-${L}`;
+      const g = f.substring(0, 2), v = f.substring(2, 4), L = f.substring(4, 6);
+      return `20${g}-${v}-${L}`;
     }
-    const pe = Ja(), Se = Ya();
+    const me = Ja(), Se = Ya();
     async function et(f, g) {
       try {
         if (g) {
-          const { error: C } = await pe.schema("hf").from("positionsAndThesisConnection").upsert({
+          const { error: v } = await me.schema("hf").from("positionsAndThesisConnection").upsert({
             symbol_root: f,
             thesis_id: g,
             updated_at: (/* @__PURE__ */ new Date()).toISOString()
           }, {
             onConflict: "symbol_root,thesis_id"
           });
-          if (C) throw C;
+          if (v) throw v;
         } else {
-          const { error: C } = await pe.schema("hf").from("positionsAndThesisConnection").delete().eq("symbol_root", f);
-          if (C) throw C;
+          const { error: v } = await me.schema("hf").from("positionsAndThesisConnection").delete().eq("symbol_root", f);
+          if (v) throw v;
         }
         await Promise.all([
           Se.invalidateQueries({ queryKey: ["positions"] }),
           Se.invalidateQueries({ queryKey: ["thesisConnections"] })
-        ]), me("success", "Thesis Updated", `All ${f} positions have been updated`);
-      } catch (C) {
-        throw console.error("Error updating thesis connection:", C), me("error", "Error", `Failed to update thesis: ${C.message}`), C;
+        ]), we("success", "Thesis Updated", `All ${f} positions have been updated`);
+      } catch (v) {
+        throw console.error("Error updating thesis connection:", v), we("error", "Error", `Failed to update thesis: ${v.message}`), v;
       }
     }
     const ke = $([]);
     let Ve = 0;
-    function me(f, g, C) {
+    function we(f, g, v) {
       const L = Ve++;
-      ke.value.push({ id: L, type: f, title: g, message: C }), setTimeout(() => Le(L), 5e3);
+      ke.value.push({ id: L, type: f, title: g, message: v }), setTimeout(() => Le(L), 5e3);
     }
     function Le(f) {
-      const g = ke.value.findIndex((C) => C.id === f);
+      const g = ke.value.findIndex((v) => v.id === f);
       g !== -1 && ke.value.splice(g, 1);
     }
     function ot(f) {
       if (!f)
         return "⏱️ Last Updated: Not available";
       try {
-        const g = new Date(f), C = Intl.DateTimeFormat().resolvedOptions().timeZone, k = {
+        const g = new Date(f), v = Intl.DateTimeFormat().resolvedOptions().timeZone, O = {
           "Asia/Kolkata": "IST",
           "Asia/Calcutta": "IST",
           "America/New_York": g.getMonth() >= 2 && g.getMonth() < 10 ? "EDT" : "EST",
@@ -16152,19 +16153,19 @@ const zp = { class: "positions-card" }, Gp = {
           "Europe/London": g.getMonth() >= 2 && g.getMonth() < 9 ? "BST" : "GMT",
           "Europe/Paris": g.getMonth() >= 2 && g.getMonth() < 9 ? "CEST" : "CET",
           "Australia/Sydney": g.getMonth() >= 9 || g.getMonth() < 3 ? "AEDT" : "AEST"
-        }[C] || C, B = g.toLocaleDateString("en-US", {
+        }[v] || v, B = g.toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
           year: "numeric",
-          timeZone: C
+          timeZone: v
         }), m = g.toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
           hour12: !0,
-          timeZone: C
+          timeZone: v
         });
-        return `⏱️ Last Updated: ${B} at ${m} ${k}`;
+        return `⏱️ Last Updated: ${B} at ${m} ${O}`;
       } catch {
         return `⏱️ Last Updated: ${f}`;
       }
@@ -16186,8 +16187,8 @@ const zp = { class: "positions-card" }, Gp = {
       ];
     }
     function ga(f) {
-      const g = S.value.indexOf(f);
-      g > -1 && (S.value.splice(g, 1), Lr(S.value), ht(() => {
+      const g = k.value.indexOf(f);
+      g > -1 && (k.value.splice(g, 1), Lr(k.value), ht(() => {
         at();
       }));
     }
@@ -16213,24 +16214,24 @@ const zp = { class: "positions-card" }, Gp = {
           minWidth: 80,
           width: W.value.legal_entity || void 0,
           frozen: !0,
-          visible: S.value.includes("legal_entity"),
+          visible: k.value.includes("legal_entity"),
           bottomCalc: f ? () => "All Accounts" : void 0,
           bottomCalcFormatter: f ? () => "All Accounts" : void 0,
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("legal_entity")}</span>
+          <span>${ge("legal_entity")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getRow().getData();
             if (m != null && m._isThesisGroup)
               return B.getValue() || "";
-            const v = B.getValue();
-            return typeof v == "object" && v !== null ? v.name || v.id || "" : v || "";
+            const C = B.getValue();
+            return typeof C == "object" && C !== null ? C.name || C.id || "" : C || "";
           },
           cellClick: (B, m) => {
-            var O;
-            if ((O = m.getRow().getData()) != null && O._isThesisGroup) return;
-            const v = m.getValue(), R = typeof v == "object" && v !== null ? v.name || v.id : v;
-            Yi("legal_entity", R);
+            var D;
+            if ((D = m.getRow().getData()) != null && D._isThesisGroup) return;
+            const C = m.getValue(), F = typeof C == "object" && C !== null ? C.name || C.id : C;
+            Yi("legal_entity", F);
           },
           contextMenu: [
             ...ue()
@@ -16243,27 +16244,27 @@ const zp = { class: "positions-card" }, Gp = {
           width: W.value.symbol || void 0,
           // ADD THIS LINE
           frozen: !0,
-          visible: S.value.includes("symbol"),
+          visible: k.value.includes("symbol"),
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("symbol")}</span>
+          <span>${ge("symbol")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getRow().getData();
             if (m != null && m._isThesisGroup) {
-              const O = "#495057", G = B.getValue() || "";
-              return `<span style="font-weight: 600; color: ${O};">${G}</span>`;
+              const D = "#495057", G = B.getValue() || "";
+              return `<span style="font-weight: 600; color: ${D};">${G}</span>`;
             }
-            const v = he(B.getValue()), R = new Set(c.value);
-            return v.map((O) => `<span class="${R.has(O) ? "fi-tag fi-tag-selected" : "fi-tag"}">${O}</span>`).join(" ");
+            const C = he(B.getValue()), F = new Set(c.value);
+            return C.map((D) => `<span class="${F.has(D) ? "fi-tag fi-tag-selected" : "fi-tag"}">${D}</span>`).join(" ");
           },
           cellClick: (B, m) => {
             var G;
-            const v = m.getRow().getData();
-            if (v != null && v._isThesisGroup) return;
-            const O = B.target.closest(".fi-tag");
-            if (O) {
-              const ae = (G = O.textContent) == null ? void 0 : G.trim();
-              ae && Yi("symbol", ae);
+            const C = m.getRow().getData();
+            if (C != null && C._isThesisGroup) return;
+            const D = B.target.closest(".fi-tag");
+            if (D) {
+              const oe = (G = D.textContent) == null ? void 0 : G.trim();
+              oe && Yi("symbol", oe);
             }
           },
           contextMenu: ue()
@@ -16274,16 +16275,16 @@ const zp = { class: "positions-card" }, Gp = {
           minWidth: 80,
           width: W.value.thesis || void 0,
           // ADD THIS LINE
-          visible: S.value.includes("thesis"),
+          visible: k.value.includes("thesis"),
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("thesis")}</span>
+          <span>${ge("thesis")}</span>
         </div>`,
           formatter: (B) => {
             try {
               const m = B.getRow().getData();
               if (m != null && m._isThesisGroup) return "";
-              const v = B.getValue();
-              return v ? `<span class="${d.value.includes(v.title) ? "thesis-tag thesis-tag-selected" : "thesis-tag"}" title="${v.description || ""}">${v.title}</span>` : '<span style="color: #6c757d; font-style: italic;">No thesis</span>';
+              const C = B.getValue();
+              return C ? `<span class="${d.value.includes(C.title) ? "thesis-tag thesis-tag-selected" : "thesis-tag"}" title="${C.description || ""}">${C.title}</span>` : '<span style="color: #6c757d; font-style: italic;">No thesis</span>';
             } catch (m) {
               return console.warn("Thesis formatter error:", m), '<span style="color: #6c757d; font-style: italic;">Error</span>';
             }
@@ -16296,10 +16297,10 @@ const zp = { class: "positions-card" }, Gp = {
               (l.data.value || []).forEach((G) => {
                 m[G.id] = G.title;
               });
-              const R = B.getRow().getData().thesis, O = (R == null ? void 0 : R.id) || "";
+              const F = B.getRow().getData().thesis, D = (F == null ? void 0 : F.id) || "";
               return {
                 values: m,
-                defaultValue: O,
+                defaultValue: D,
                 clearable: !0,
                 verticalNavigation: "editor"
               };
@@ -16307,51 +16308,51 @@ const zp = { class: "positions-card" }, Gp = {
               return console.warn("Thesis editor params error:", m), { values: { "": "No thesis" } };
             }
           },
-          mutator: (B, m, v) => {
+          mutator: (B, m, C) => {
             try {
               if (typeof B == "object" && B !== null)
                 return B;
               if (typeof B == "string") {
                 if (!B) return null;
-                const R = (l.data.value || []).find((O) => O.id === B);
-                return R ? { id: R.id, title: R.title, description: R.description } : null;
+                const F = (l.data.value || []).find((D) => D.id === B);
+                return F ? { id: F.id, title: F.title, description: F.description } : null;
               }
               return null;
-            } catch (R) {
-              return console.warn("Thesis mutator error:", R), null;
+            } catch (F) {
+              return console.warn("Thesis mutator error:", F), null;
             }
           },
           cellEdited: async (B) => {
             try {
-              const m = B.getValue(), v = (m == null ? void 0 : m.id) || null, R = B.getRow().getData(), O = R == null ? void 0 : R.symbol;
-              if (!O) return;
-              const G = ja(O);
+              const m = B.getValue(), C = (m == null ? void 0 : m.id) || null, F = B.getRow().getData(), D = F == null ? void 0 : F.symbol;
+              if (!D) return;
+              const G = ja(D);
               if (!G) return;
-              await et(G, v);
+              await et(G, C);
             } catch (m) {
               console.error("Failed to update thesis:", m);
               try {
                 B.restoreOldValue();
-              } catch (v) {
-                console.warn("Could not revert cell value:", v);
+              } catch (C) {
+                console.warn("Could not revert cell value:", C);
               }
             }
           },
           cellClick: (B, m) => {
             try {
-              const v = m.getRow().getData();
-              if (v != null && v._isThesisGroup) return;
+              const C = m.getRow().getData();
+              if (C != null && C._isThesisGroup) return;
               B.detail === 1 && setTimeout(() => handleThesisCellFilterClick(m), 200);
-            } catch (v) {
-              console.warn("Thesis cell click error:", v);
+            } catch (C) {
+              console.warn("Thesis cell click error:", C);
             }
           },
           cellDblClick: (B, m) => {
             try {
-              const v = m.getRow().getData();
-              v != null && v._isThesisGroup || m.edit();
-            } catch (v) {
-              console.warn("Thesis cell double click error:", v);
+              const C = m.getRow().getData();
+              C != null && C._isThesisGroup || m.edit();
+            } catch (C) {
+              console.warn("Thesis cell double click error:", C);
             }
           },
           contextMenu: ue()
@@ -16361,19 +16362,19 @@ const zp = { class: "positions-card" }, Gp = {
           field: "asset_class",
           minWidth: 80,
           width: W.value.asset_class || void 0,
-          visible: S.value.includes("asset_class"),
+          visible: k.value.includes("asset_class"),
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("asset_class")}</span>
+          <span>${ge("asset_class")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getRow().getData();
             return m != null && m._isThesisGroup ? "" : B.getValue() || "";
           },
           cellClick: (B, m) => {
-            const v = m.getRow().getData();
-            if (v != null && v._isThesisGroup) return;
-            const R = m.getValue();
-            Yi("asset_class", R);
+            const C = m.getRow().getData();
+            if (C != null && C._isThesisGroup) return;
+            const F = m.getValue();
+            Yi("asset_class", F);
           },
           contextMenu: ue()
         },
@@ -16383,9 +16384,9 @@ const zp = { class: "positions-card" }, Gp = {
           minWidth: 80,
           width: W.value.conid || void 0,
           // ADD THIS LINE
-          visible: S.value.includes("conid"),
+          visible: k.value.includes("conid"),
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("conid")}</span>
+          <span>${ge("conid")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getRow().getData();
@@ -16399,9 +16400,9 @@ const zp = { class: "positions-card" }, Gp = {
           minWidth: 80,
           width: W.value.undConid || void 0,
           // ADD THIS LINE
-          visible: S.value.includes("undConid"),
+          visible: k.value.includes("undConid"),
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("undConid")}</span>
+          <span>${ge("undConid")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getRow().getData();
@@ -16416,17 +16417,17 @@ const zp = { class: "positions-card" }, Gp = {
           width: W.value.multiplier || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: S.value.includes("multiplier"),
+          visible: k.value.includes("multiplier"),
           // Set bottom calc during initialization
           bottomCalc: f ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
           bottomCalcFormatter: f ? (B) => {
             const m = B.getValue();
-            let v = "";
-            return m > 0 ? v = "pnl-positive" : m < 0 ? v = "pnl-negative" : v = "pnl-zero", `<span class="${v}">${le(m)}</span>`;
+            let C = "";
+            return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${le(m)}</span>`;
           } : void 0,
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("multiplier")}</span>
+          <span>${ge("multiplier")}</span>
         </div>`,
           formatter: (B) => {
             var m;
@@ -16441,17 +16442,17 @@ const zp = { class: "positions-card" }, Gp = {
           width: W.value.qty || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: S.value.includes("qty"),
+          visible: k.value.includes("qty"),
           // Set bottom calc during initialization
           bottomCalc: f ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
           bottomCalcFormatter: f ? (B) => {
             const m = B.getValue();
-            let v = "";
-            return m > 0 ? v = "pnl-positive" : m < 0 ? v = "pnl-negative" : v = "pnl-zero", `<span class="${v}">${le(m)}</span>`;
+            let C = "";
+            return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${le(m)}</span>`;
           } : void 0,
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("qty")}</span>
+          <span>${ge("qty")}</span>
         </div>`,
           formatter: (B) => {
             var m;
@@ -16466,13 +16467,13 @@ const zp = { class: "positions-card" }, Gp = {
           width: W.value.avgPrice || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: S.value.includes("avgPrice"),
+          visible: k.value.includes("avgPrice"),
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("avgPrice")}</span>
+          <span>${ge("avgPrice")}</span>
         </div>`,
           formatter: (B) => {
             var m;
-            return (m = B.getRow().getData()) != null && m._isThesisGroup ? "" : Z(B.getValue());
+            return (m = B.getRow().getData()) != null && m._isThesisGroup ? "" : Y(B.getValue());
           },
           contextMenu: ue()
         },
@@ -16483,13 +16484,13 @@ const zp = { class: "positions-card" }, Gp = {
           width: W.value.price || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: S.value.includes("price"),
+          visible: k.value.includes("price"),
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("price")}</span>
+          <span>${ge("price")}</span>
         </div>`,
           formatter: (B) => {
             var m;
-            return (m = B.getRow().getData()) != null && m._isThesisGroup ? "" : Z(B.getValue());
+            return (m = B.getRow().getData()) != null && m._isThesisGroup ? "" : Y(B.getValue());
           },
           contextMenu: ue()
         },
@@ -16500,48 +16501,108 @@ const zp = { class: "positions-card" }, Gp = {
           width: W.value.market_price || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: S.value.includes("market_price"),
+          visible: k.value.includes("market_price"),
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("market_price")}</span>
+          <span>${ge("market_price")}</span>
         </div>`,
           formatter: (B) => {
-            var v;
-            if ((v = B.getRow().getData()) != null && v._isThesisGroup) return "";
+            var C;
+            if ((C = B.getRow().getData()) != null && C._isThesisGroup) return "";
             const m = B.getValue();
-            return m == null ? "-" : Z(m);
+            return m == null ? "-" : Y(m);
           },
           contextMenu: [
             {
               label: (B) => {
-                const v = B.getData().market_price_fetched_at;
-                if (!v)
+                const C = B.getData().market_price_fetched_at;
+                if (!C)
                   return "⏱️ Last Updated: Not available";
                 try {
-                  const R = new Date(v), O = Intl.DateTimeFormat().resolvedOptions().timeZone, ae = {
+                  const F = new Date(C), D = Intl.DateTimeFormat().resolvedOptions().timeZone, oe = {
                     "Asia/Kolkata": "IST",
                     "Asia/Calcutta": "IST",
-                    "America/New_York": R.getMonth() >= 2 && R.getMonth() < 10 ? "EDT" : "EST",
-                    "America/Los_Angeles": R.getMonth() >= 2 && R.getMonth() < 10 ? "PDT" : "PST",
-                    "America/Chicago": R.getMonth() >= 2 && R.getMonth() < 10 ? "CDT" : "CST",
-                    "America/Denver": R.getMonth() >= 2 && R.getMonth() < 10 ? "MDT" : "MST",
-                    "Europe/London": R.getMonth() >= 2 && R.getMonth() < 9 ? "BST" : "GMT",
-                    "Europe/Paris": R.getMonth() >= 2 && R.getMonth() < 9 ? "CEST" : "CET",
-                    "Australia/Sydney": R.getMonth() >= 9 || R.getMonth() < 3 ? "AEDT" : "AEST"
-                  }[O] || O, M = R.toLocaleDateString("en-US", {
+                    "America/New_York": F.getMonth() >= 2 && F.getMonth() < 10 ? "EDT" : "EST",
+                    "America/Los_Angeles": F.getMonth() >= 2 && F.getMonth() < 10 ? "PDT" : "PST",
+                    "America/Chicago": F.getMonth() >= 2 && F.getMonth() < 10 ? "CDT" : "CST",
+                    "America/Denver": F.getMonth() >= 2 && F.getMonth() < 10 ? "MDT" : "MST",
+                    "Europe/London": F.getMonth() >= 2 && F.getMonth() < 9 ? "BST" : "GMT",
+                    "Europe/Paris": F.getMonth() >= 2 && F.getMonth() < 9 ? "CEST" : "CET",
+                    "Australia/Sydney": F.getMonth() >= 9 || F.getMonth() < 3 ? "AEDT" : "AEST"
+                  }[D] || D, M = F.toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
-                    timeZone: O
-                  }), _ = R.toLocaleTimeString("en-US", {
+                    timeZone: D
+                  }), _ = F.toLocaleTimeString("en-US", {
                     hour: "2-digit",
                     minute: "2-digit",
                     second: "2-digit",
                     hour12: !0,
-                    timeZone: O
+                    timeZone: D
                   });
-                  return `⏱️ Last Updated: ${M} at ${_} ${ae}`;
+                  return `⏱️ Last Updated: ${M} at ${_} ${oe}`;
                 } catch {
-                  return `⏱️ Last Updated: ${v}`;
+                  return `⏱️ Last Updated: ${C}`;
+                }
+              },
+              action: () => {
+              },
+              disabled: !0
+            },
+            {
+              separator: !0
+            }
+          ]
+        },
+        {
+          title: "Instrument current market price",
+          field: "instrument_market_price",
+          minWidth: 80,
+          width: W.value.instrument_market_price || void 0,
+          // ADD THIS LINE
+          hozAlign: "right",
+          visible: k.value.includes("instrument_market_price"),
+          titleFormatter: (B) => `<div class="header-with-close">
+          <span>${ge("instrument_market_price")}</span>
+        </div>`,
+          formatter: (B) => {
+            var F;
+            if ((F = B.getRow().getData()) != null && F._isThesisGroup) return "";
+            const m = B.getRow().getData(), C = m.asset_class === "OPT" ? m.option_market_price : null;
+            return C == null ? "-" : Y(C);
+          },
+          contextMenu: [
+            {
+              label: (B) => {
+                const C = B.getData().market_price_fetched_at;
+                if (!C)
+                  return "⏱️ Last Updated: Not available";
+                try {
+                  const F = new Date(C), D = Intl.DateTimeFormat().resolvedOptions().timeZone, oe = {
+                    "Asia/Kolkata": "IST",
+                    "Asia/Calcutta": "IST",
+                    "America/New_York": F.getMonth() >= 2 && F.getMonth() < 10 ? "EDT" : "EST",
+                    "America/Los_Angeles": F.getMonth() >= 2 && F.getMonth() < 10 ? "PDT" : "PST",
+                    "America/Chicago": F.getMonth() >= 2 && F.getMonth() < 10 ? "CDT" : "CST",
+                    "America/Denver": F.getMonth() >= 2 && F.getMonth() < 10 ? "MDT" : "MST",
+                    "Europe/London": F.getMonth() >= 2 && F.getMonth() < 9 ? "BST" : "GMT",
+                    "Europe/Paris": F.getMonth() >= 2 && F.getMonth() < 9 ? "CEST" : "CET",
+                    "Australia/Sydney": F.getMonth() >= 9 || F.getMonth() < 3 ? "AEDT" : "AEST"
+                  }[D] || D, M = F.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    timeZone: D
+                  }), _ = F.toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: !0,
+                    timeZone: D
+                  });
+                  return `⏱️ Last Updated: ${M} at ${_} ${oe}`;
+                } catch {
+                  return `⏱️ Last Updated: ${C}`;
                 }
               },
               action: () => {
@@ -16560,21 +16621,21 @@ const zp = { class: "positions-card" }, Gp = {
           width: W.value.market_value || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: S.value.includes("market_value"),
+          visible: k.value.includes("market_value"),
           // Set bottom calc during initialization
           bottomCalc: f ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
           bottomCalcFormatter: f ? (B) => {
             const m = B.getValue();
-            let v = "";
-            return m > 0 ? v = "pnl-positive" : m < 0 ? v = "pnl-negative" : v = "pnl-zero", `<span class="${v}">${Z(m)}</span>`;
+            let C = "";
+            return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${Y(m)}</span>`;
           } : void 0,
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("market_value")}</span>
+          <span>${ge("market_value")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getRow().getData();
-            return m != null && m._isThesisGroup, Z(B.getValue());
+            return m != null && m._isThesisGroup, Y(B.getValue());
           },
           contextMenu: ue()
         },
@@ -16585,22 +16646,22 @@ const zp = { class: "positions-card" }, Gp = {
           width: W.value.unrealized_pnl || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: S.value.includes("unrealized_pnl"),
+          visible: k.value.includes("unrealized_pnl"),
           // Set bottom calc during initialization
           bottomCalc: f ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
           bottomCalcFormatter: f ? (B) => {
             const m = B.getValue();
-            let v = "";
-            return m > 0 ? v = "pnl-positive" : m < 0 ? v = "pnl-negative" : v = "pnl-zero", `<span class="${v}">${Z(m)}</span>`;
+            let C = "";
+            return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${Y(m)}</span>`;
           } : void 0,
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("unrealized_pnl")}</span>
+          <span>${ge("unrealized_pnl")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getValue();
-            let v = "";
-            return m > 0 ? v = "pnl-positive" : m < 0 ? v = "pnl-negative" : v = "pnl-zero", `<span class="${v}">${Z(m)}</span>`;
+            let C = "";
+            return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${Y(m)}</span>`;
           },
           contextMenu: ue()
         },
@@ -16611,20 +16672,20 @@ const zp = { class: "positions-card" }, Gp = {
           minWidth: 80,
           width: W.value.be_price_pnl || void 0,
           hozAlign: "right",
-          visible: S.value.includes("be_price_pnl"),
+          visible: k.value.includes("be_price_pnl"),
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("be_price_pnl")}</span>
+          <span>${ge("be_price_pnl")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getRow().getData();
             if (m.asset_class === "OPT" && m.symbol && m.symbol.includes("P")) {
-              const v = m.market_price, R = m.computed_be_price;
-              let O = m.qty;
+              const C = m.market_price, F = m.computed_be_price;
+              let D = m.qty;
               const G = m.multiplier, M = he(m.symbol)[2], _ = M ? parseFloat(M) : null;
-              if (O = Math.abs(O), v != null && R !== null && R !== void 0 && O !== null && O !== void 0 && G !== null && G !== void 0 && _ !== null && !isNaN(_)) {
-                const se = (Math.min(v, _) - R) * O * G, be = Math.abs(se), Qt = Math.abs(se % 1);
+              if (D = Math.abs(D), C != null && F !== null && F !== void 0 && D !== null && D !== void 0 && G !== null && G !== void 0 && _ !== null && !isNaN(_)) {
+                const se = (Math.min(C, _) - F) * D * G, be = Math.abs(se), Qt = Math.abs(se % 1);
                 let Ut;
-                be === 0 || Qt < be * 0.01 ? Ut = Z(Math.trunc(se)) : Ut = Z(se);
+                be === 0 || Qt < be * 0.01 ? Ut = Y(Math.trunc(se)) : Ut = Y(se);
                 let Ne = "";
                 return se > 0 ? Ne = "pnl-positive" : se < 0 ? Ne = "pnl-negative" : Ne = "pnl-zero", `<span class="${Ne}">${Ut}</span>`;
               }
@@ -16632,25 +16693,25 @@ const zp = { class: "positions-card" }, Gp = {
             return '<span style="color:#aaa;font-style:italic;">Not applicable</span>';
           },
           bottomCalc: f ? (B, m) => {
-            let v = 0;
-            for (const R of m)
-              if (R.asset_class === "OPT" && R.symbol && R.symbol.includes("P")) {
-                const O = R.market_price, G = R.computed_be_price;
-                let ae = R.qty;
-                const M = R.multiplier, V = he(R.symbol)[2], se = V ? parseFloat(V) : null;
-                if (ae = Math.abs(ae), O != null && G !== null && G !== void 0 && ae !== null && ae !== void 0 && M !== null && M !== void 0 && se !== null && !isNaN(se)) {
-                  const Qt = (Math.min(O, se) - G) * ae * M;
-                  v += Qt;
+            let C = 0;
+            for (const F of m)
+              if (F.asset_class === "OPT" && F.symbol && F.symbol.includes("P")) {
+                const D = F.market_price, G = F.computed_be_price;
+                let oe = F.qty;
+                const M = F.multiplier, V = he(F.symbol)[2], se = V ? parseFloat(V) : null;
+                if (oe = Math.abs(oe), D != null && G !== null && G !== void 0 && oe !== null && oe !== void 0 && M !== null && M !== void 0 && se !== null && !isNaN(se)) {
+                  const Qt = (Math.min(D, se) - G) * oe * M;
+                  C += Qt;
                 }
               }
-            return v;
+            return C;
           } : !1,
           bottomCalcFormatter: f ? (B) => {
-            const m = B.getValue(), v = Math.abs(m), R = Math.abs(m % 1);
-            let O;
-            v === 0 || R < v * 0.01 ? O = Z(Math.trunc(m)) : O = Z(m);
+            const m = B.getValue(), C = Math.abs(m), F = Math.abs(m % 1);
+            let D;
+            C === 0 || F < C * 0.01 ? D = Y(Math.trunc(m)) : D = Y(m);
             let G = "";
-            return m > 0 ? G = "pnl-positive" : m < 0 ? G = "pnl-negative" : G = "pnl-zero", `<span class="${G}">${O}</span>`;
+            return m > 0 ? G = "pnl-positive" : m < 0 ? G = "pnl-negative" : G = "pnl-zero", `<span class="${G}">${D}</span>`;
           } : void 0,
           // --- CONTEXT MENU FOR FULL DECIMAL CALCULATION ---
           contextMenu: [
@@ -16658,18 +16719,18 @@ const zp = { class: "positions-card" }, Gp = {
               label: (B) => {
                 const m = B.getData();
                 if (m.asset_class === "OPT" && m.symbol && m.symbol.includes("P")) {
-                  const v = m.market_price, R = m.computed_be_price;
-                  let O = m.qty;
+                  const C = m.market_price, F = m.computed_be_price;
+                  let D = m.qty;
                   const G = m.multiplier, M = he(m.symbol)[2], _ = M ? parseFloat(M) : null;
-                  if (O = Math.abs(O), v != null && R !== null && R !== void 0 && O !== null && O !== void 0 && G !== null && G !== void 0 && _ !== null && !isNaN(_)) {
-                    const V = Math.min(v, _), se = (V - R) * O * G;
+                  if (D = Math.abs(D), C != null && F !== null && F !== void 0 && D !== null && D !== void 0 && G !== null && G !== void 0 && _ !== null && !isNaN(_)) {
+                    const V = Math.min(C, _), se = (V - F) * D * G;
                     return [
                       "Calculation: (min(Market Price, Strike Price) - BE Price) × |Qty| × Multiplier",
-                      `= (min(${Z(v)}, ${Z(_)}) - ${Z(R)}) × ${O} × ${G}`,
-                      `= (${Z(V)} - ${Z(R)}) × ${O} × ${G}`,
-                      `= ${Z(V - R)} × ${O} × ${G}`,
-                      `= ${Z((V - R) * O)} × ${G}`,
-                      `<b>= ${Z(se)}</b> <span style="color:#888">(full decimal)</span>`
+                      `= (min(${Y(C)}, ${Y(_)}) - ${Y(F)}) × ${D} × ${G}`,
+                      `= (${Y(V)} - ${Y(F)}) × ${D} × ${G}`,
+                      `= ${Y(V - F)} × ${D} × ${G}`,
+                      `= ${Y((V - F) * D)} × ${G}`,
+                      `<b>= ${Y(se)}</b> <span style="color:#888">(full decimal)</span>`
                     ].join("<br>");
                   }
                 }
@@ -16689,22 +16750,22 @@ const zp = { class: "positions-card" }, Gp = {
           width: W.value.computed_cash_flow_on_entry || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: S.value.includes("computed_cash_flow_on_entry"),
+          visible: k.value.includes("computed_cash_flow_on_entry"),
           // Set bottom calc during initialization
           bottomCalc: f ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
           bottomCalcFormatter: f ? (B) => {
             const m = B.getValue();
-            let v = "";
-            return m > 0 ? v = "pnl-positive" : m < 0 ? v = "pnl-negative" : v = "pnl-zero", `<span class="${v}">${Z(m)}</span>`;
+            let C = "";
+            return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${Y(m)}</span>`;
           } : void 0,
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("computed_cash_flow_on_entry")}</span>
+          <span>${ge("computed_cash_flow_on_entry")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getValue();
-            let v = "";
-            return m > 0 ? v = "pnl-positive" : m < 0 ? v = "pnl-negative" : v = "pnl-zero", `<span class="${v}">${Z(m)}</span>`;
+            let C = "";
+            return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${Y(m)}</span>`;
           },
           contextMenu: ue()
         },
@@ -16715,22 +16776,22 @@ const zp = { class: "positions-card" }, Gp = {
           width: W.value.computed_cash_flow_on_exercise || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: S.value.includes("computed_cash_flow_on_exercise"),
+          visible: k.value.includes("computed_cash_flow_on_exercise"),
           // Set bottom calc during initialization
           bottomCalc: f ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
           bottomCalcFormatter: f ? (B) => {
             const m = B.getValue();
-            let v = "";
-            return m > 0 ? v = "pnl-positive" : m < 0 ? v = "pnl-negative" : v = "pnl-zero", `<span class="${v}">${Z(m)}</span>`;
+            let C = "";
+            return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${Y(m)}</span>`;
           } : void 0,
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("computed_cash_flow_on_exercise")}</span>
+          <span>${ge("computed_cash_flow_on_exercise")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getValue();
-            let v = "";
-            return m > 0 ? v = "pnl-positive" : m < 0 ? v = "pnl-negative" : v = "pnl-zero", `<span class="${v}">${Z(m)}</span>`;
+            let C = "";
+            return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${Y(m)}</span>`;
           },
           contextMenu: ue()
         },
@@ -16740,15 +16801,15 @@ const zp = { class: "positions-card" }, Gp = {
           minWidth: 100,
           width: W.value.entry_exercise_cash_flow_pct || void 0,
           hozAlign: "right",
-          visible: S.value.includes("entry_exercise_cash_flow_pct"),
+          visible: k.value.includes("entry_exercise_cash_flow_pct"),
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("entry_exercise_cash_flow_pct")}</span>
+          <span>${ge("entry_exercise_cash_flow_pct")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getRow().getData();
             if (m.asset_class === "OPT" && m.computed_cash_flow_on_entry != null && m.computed_cash_flow_on_exercise != null && m.computed_cash_flow_on_exercise !== 0) {
-              const v = m.computed_cash_flow_on_entry / m.computed_cash_flow_on_exercise * 100;
-              return `<span>${Math.abs(v.toFixed(2)) + "%"}</span>`;
+              const C = m.computed_cash_flow_on_entry / m.computed_cash_flow_on_exercise * 100;
+              return `<span>${Math.abs(C.toFixed(2)) + "%"}</span>`;
             }
             return '<span style="color:#aaa;font-style:italic;">Not applicable</span>';
           },
@@ -16759,11 +16820,11 @@ const zp = { class: "positions-card" }, Gp = {
               label: (B) => {
                 const m = B.getData();
                 if (m.asset_class === "OPT" && m.computed_cash_flow_on_entry != null && m.computed_cash_flow_on_exercise != null && m.computed_cash_flow_on_exercise !== 0) {
-                  const v = m.computed_cash_flow_on_entry / m.computed_cash_flow_on_exercise * 100;
+                  const C = m.computed_cash_flow_on_entry / m.computed_cash_flow_on_exercise * 100;
                   return [
                     "Calculation: (Entry cash flow / If exercised cash flow) × 100",
-                    `= (${Z(m.computed_cash_flow_on_entry)} / ${Z(m.computed_cash_flow_on_exercise)}) × 100`,
-                    `= ${v.toFixed(2)}%`
+                    `= (${Y(m.computed_cash_flow_on_entry)} / ${Y(m.computed_cash_flow_on_exercise)}) × 100`,
+                    `= ${C.toFixed(2)}%`
                   ].join("<br>");
                 }
                 return "Not applicable for this row";
@@ -16782,9 +16843,9 @@ const zp = { class: "positions-card" }, Gp = {
           width: W.value.computed_be_price || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: S.value.includes("computed_be_price"),
+          visible: k.value.includes("computed_be_price"),
           titleFormatter: (B) => `<div class="header-with-close">
-          <span>${we("computed_be_price")}</span>
+          <span>${ge("computed_be_price")}</span>
         </div>`,
           formatter: (B) => {
             const m = B.getValue();
@@ -16793,7 +16854,7 @@ const zp = { class: "positions-card" }, Gp = {
           contextMenu: ue()
         }
       ].forEach((B) => g.set(B.field, B));
-      const L = S.value.map((B) => g.get(B)).filter(Boolean), k = {
+      const L = k.value.map((B) => g.get(B)).filter(Boolean), O = {
         data: kt.value,
         columns: L,
         layout: "fitColumns",
@@ -16812,34 +16873,34 @@ const zp = { class: "positions-card" }, Gp = {
         paginationSizeSelector: [100, 200, 500],
         rowFormatter: (B) => {
           try {
-            const m = B.getData(), v = B.getElement();
-            m != null && m._isThesisGroup && v && (v.style.backgroundColor = "#f8f9fa", v.style.fontWeight = "bold", v.style.borderTop = "2px solid #dee2e6");
+            const m = B.getData(), C = B.getElement();
+            m != null && m._isThesisGroup && C && (C.style.backgroundColor = "#f8f9fa", C.style.fontWeight = "bold", C.style.borderTop = "2px solid #dee2e6");
           } catch (m) {
             console.warn("Row formatter error:", m);
           }
         },
         rowClick: (B, m) => {
           try {
-            const v = m.getData();
-            v._isThesisGroup || (A("row-click", v), t.onRowClick && t.onRowClick(v));
-          } catch (v) {
-            console.warn("Row click error:", v);
+            const C = m.getData();
+            C._isThesisGroup || (A("row-click", C), t.onRowClick && t.onRowClick(C));
+          } catch (C) {
+            console.warn("Row click error:", C);
           }
         },
         movableColumns: !0
       };
-      p.value && (k.dataTree = !0, k.dataTreeChildField = "_children", k.dataTreeStartExpanded = !0, k.dataTreeChildIndent = 20, k.dataTreeElementColumn = "symbol", k.pagination = !1);
+      p.value && (O.dataTree = !0, O.dataTreeChildField = "_children", O.dataTreeStartExpanded = !0, O.dataTreeChildIndent = 20, O.dataTreeElementColumn = "symbol", O.pagination = !1);
       try {
-        u = new mu(h.value, k), u.on("columnResized", (B) => {
-          const m = B.getField(), v = B.getWidth();
-          W.value[m] = v, q(W.value);
+        u = new mu(h.value, O), u.on("columnResized", (B) => {
+          const m = B.getField(), C = B.getWidth();
+          W.value[m] = C, q(W.value);
         }), u.on("tableBuilt", () => {
-          var R, O;
-          const B = (R = h.value) == null ? void 0 : R.querySelectorAll(".header-close-btn");
+          var F, D;
+          const B = (F = h.value) == null ? void 0 : F.querySelectorAll(".header-close-btn");
           B == null || B.forEach((G) => {
-            G.addEventListener("click", (ae) => {
-              ae.stopPropagation();
-              const M = ae.target.getAttribute("data-field");
+            G.addEventListener("click", (oe) => {
+              oe.stopPropagation();
+              const M = oe.target.getAttribute("data-field");
               M && ga(M);
             });
           });
@@ -16850,11 +16911,11 @@ const zp = { class: "positions-card" }, Gp = {
               title: G >= 140 ? "Break even price" : "BE Price"
             }), u.redraw(!0);
           }
-          const v = (O = h.value) == null ? void 0 : O.querySelectorAll(".header-rename-btn");
-          v == null || v.forEach((G) => {
-            G.addEventListener("click", (ae) => {
-              ae.stopPropagation();
-              const M = ae.target.getAttribute("data-field");
+          const C = (D = h.value) == null ? void 0 : D.querySelectorAll(".header-rename-btn");
+          C == null || C.forEach((G) => {
+            G.addEventListener("click", (oe) => {
+              oe.stopPropagation();
+              const M = oe.target.getAttribute("data-field");
               if (M) {
                 const _ = E.find((V) => V.field === M);
                 z(M, b.value[M] || ((_ == null ? void 0 : _.label) ?? M));
@@ -16891,13 +16952,13 @@ const zp = { class: "positions-card" }, Gp = {
       (l.data.value || []).forEach((M) => {
         g.set(M.id, { ...M });
       });
-      const C = /* @__PURE__ */ new Map();
+      const v = /* @__PURE__ */ new Map();
       f.forEach((M) => {
         const _ = M.thesis.id;
-        C.has(_) || C.set(_, []), C.get(_).push(M);
+        v.has(_) || v.set(_, []), v.get(_).push(M);
       });
       const L = /* @__PURE__ */ new Map();
-      function k(M, _ = []) {
+      function O(M, _ = []) {
         const V = g.get(M);
         if (!V) return null;
         const se = {
@@ -16924,36 +16985,36 @@ const zp = { class: "positions-card" }, Gp = {
           M[V] = se + be;
         }
       }
-      C.forEach((M, _) => {
-        const V = k(_, M);
+      v.forEach((M, _) => {
+        const V = O(_, M);
         V && L.set(_, V);
       });
       const m = new Set(L.keys());
-      function v(M) {
+      function C(M) {
         const _ = g.get(M);
         if (!_ || !_.parent_thesis_id) return;
         const V = _.parent_thesis_id;
         if (!L.has(V)) {
-          const se = k(V, []);
+          const se = O(V, []);
           se && L.set(V, se);
         }
-        v(V);
+        C(V);
       }
       m.forEach((M) => {
-        v(M);
+        C(M);
       });
-      const R = /* @__PURE__ */ new Map();
+      const F = /* @__PURE__ */ new Map();
       L.forEach((M, _) => {
         const V = g.get(_);
-        V && V.parent_thesis_id && L.has(V.parent_thesis_id) && (R.has(V.parent_thesis_id) || R.set(V.parent_thesis_id, []), R.get(V.parent_thesis_id).push(M));
+        V && V.parent_thesis_id && L.has(V.parent_thesis_id) && (F.has(V.parent_thesis_id) || F.set(V.parent_thesis_id, []), F.get(V.parent_thesis_id).push(M));
       });
-      const O = /* @__PURE__ */ new Set();
+      const D = /* @__PURE__ */ new Set();
       function G(M) {
-        if (O.has(M)) return;
-        O.add(M);
+        if (D.has(M)) return;
+        D.add(M);
         const _ = L.get(M);
         if (!_) return;
-        const V = R.get(M) || [];
+        const V = F.get(M) || [];
         if (V.forEach((se) => {
           G(se.thesis.id);
         }), V.length > 0) {
@@ -16971,11 +17032,11 @@ const zp = { class: "positions-card" }, Gp = {
         const V = g.get(_);
         V && !V.parent_thesis_id && G(_);
       });
-      const ae = [];
+      const oe = [];
       return L.forEach((M, _) => {
         const V = g.get(_);
-        V && !V.parent_thesis_id && ae.push(M);
-      }), ae;
+        V && !V.parent_thesis_id && oe.push(M);
+      }), oe;
     });
     function ye() {
       if (!(!u || !sA.value))
@@ -16986,8 +17047,8 @@ const zp = { class: "positions-card" }, Gp = {
             if (c.value.length > 0) {
               const g = f.symbol;
               if (!g) return !1;
-              const C = he(g);
-              if (!c.value.every((k) => C.includes(k))) return !1;
+              const v = he(g);
+              if (!c.value.every((O) => v.includes(O))) return !1;
             }
             if (d.value.length > 0) {
               const g = f.thesis;
@@ -17049,11 +17110,11 @@ const zp = { class: "positions-card" }, Gp = {
           console.warn("Error updating table data:", g);
           try {
             at();
-          } catch (C) {
-            console.error("Failed to rebuild table:", C);
+          } catch (v) {
+            console.error("Failed to rebuild table:", v);
           }
         }
-    }, { deep: !0 }), Je(S, async (f) => {
+    }, { deep: !0 }), Je(k, async (f) => {
       if (Lr(f), !!u)
         try {
           at();
@@ -17074,8 +17135,8 @@ const zp = { class: "positions-card" }, Gp = {
       g.searchParams.set("position_cols", f.join("-and-")), window.history.replaceState({}, "", g.toString());
     }
     function Ir() {
-      const f = new URL(window.location.href), g = f.searchParams.get("all_cts_fi"), C = g ? g.split("-and-").join(",") : void 0, L = f.searchParams.get("fac") || void 0, k = f.searchParams.get("all_cts_clientId") || void 0, B = f.searchParams.get("all_cts_thesis"), m = B ? B.split("-and-").join(",") : void 0;
-      return { symbol: C, asset_class: L, legal_entity: k, thesis: m };
+      const f = new URL(window.location.href), g = f.searchParams.get("all_cts_fi"), v = g ? g.split("-and-").join(",") : void 0, L = f.searchParams.get("fac") || void 0, O = f.searchParams.get("all_cts_clientId") || void 0, B = f.searchParams.get("all_cts_thesis"), m = B ? B.split("-and-").join(",") : void 0;
+      return { symbol: v, asset_class: L, legal_entity: O, thesis: m };
     }
     function Ji() {
       const f = new URL(window.location.href);
@@ -17123,28 +17184,28 @@ const zp = { class: "positions-card" }, Gp = {
     }
     function Yi(f, g) {
       if (f === "symbol") {
-        const C = String(g).trim(), L = c.value.indexOf(C);
-        L >= 0 ? c.value.splice(L, 1) : c.value.push(C), ye(), Re && Re.emit("symbol-filter-changed", {
+        const v = String(g).trim(), L = c.value.indexOf(v);
+        L >= 0 ? c.value.splice(L, 1) : c.value.push(v), ye(), Re && Re.emit("symbol-filter-changed", {
           symbolTags: c.value,
           source: "positions"
         });
         return;
       } else if (f === "thesis") {
-        const C = (g == null ? void 0 : g.title) || String(g), L = d.value.indexOf(C);
-        L >= 0 ? d.value.splice(L, 1) : d.value.push(C), ye();
+        const v = (g == null ? void 0 : g.title) || String(g), L = d.value.indexOf(v);
+        L >= 0 ? d.value.splice(L, 1) : d.value.push(v), ye();
         return;
       } else if (f === "legal_entity") {
-        const C = String(g);
-        i.value = C;
+        const v = String(g);
+        i.value = v;
         const L = new URL(window.location.href);
-        L.searchParams.set("all_cts_clientId", C), window.history.replaceState({}, "", L.toString()), ye(), Re && Re.emit("account-filter-changed", {
-          accountId: C,
+        L.searchParams.set("all_cts_clientId", v), window.history.replaceState({}, "", L.toString()), ye(), Re && Re.emit("account-filter-changed", {
+          accountId: v,
           source: "positions"
         });
         return;
       } else if (f === "asset_class") {
-        const C = String(g);
-        s.value = C, ye();
+        const v = String(g);
+        s.value = v, ye();
         return;
       }
     }
@@ -17157,18 +17218,18 @@ const zp = { class: "positions-card" }, Gp = {
     }
     function Qa(f) {
       if (nA.value === null || nA.value === f) return;
-      const g = [...S.value], [C] = g.splice(nA.value, 1);
-      g.splice(f, 0, C), S.value = g, nA.value = null;
+      const g = [...k.value], [v] = g.splice(nA.value, 1);
+      g.splice(f, 0, v), k.value = g, nA.value = null;
     }
     function Ua(f) {
       if (f <= 0) return;
-      const g = [...S.value];
-      [g[f - 1], g[f]] = [g[f], g[f - 1]], S.value = g;
+      const g = [...k.value];
+      [g[f - 1], g[f]] = [g[f], g[f - 1]], k.value = g;
     }
     function Ha(f) {
-      if (f >= S.value.length - 1) return;
-      const g = [...S.value];
-      [g[f], g[f + 1]] = [g[f + 1], g[f]], S.value = g;
+      if (f >= k.value.length - 1) return;
+      const g = [...k.value];
+      [g[f], g[f + 1]] = [g[f + 1], g[f]], k.value = g;
     }
     Je(
       [() => o.isSuccess.value, i, c, d, p],
@@ -17182,24 +17243,24 @@ const zp = { class: "positions-card" }, Gp = {
       const f = Ir();
       c.value = f.symbol ? f.symbol.split(",").map((g) => g.trim()) : [], d.value = f.thesis ? f.thesis.split(",").map((g) => g.trim()) : [], i.value = f.legal_entity || null, b.value = y(), ye();
     });
-    function we(f) {
-      const g = E.find((C) => C.field === f);
+    function ge(f) {
+      const g = E.find((v) => v.field === f);
       return b.value[f] || ((g == null ? void 0 : g.label) ?? f);
     }
     const Zi = $(!1), $i = $(null), Ra = $(""), KA = $("");
     async function xa() {
       if (console.log("Saving account alias:", t.userId, "for account ID:", $i.value), !(!t.userId || !$i.value))
         try {
-          const { error: f } = await pe.schema("hf").from("user_account_alias").upsert({
+          const { error: f } = await me.schema("hf").from("user_account_alias").upsert({
             user_id: t.userId,
             internal_account_id: $i.value,
             alias: KA.value,
             updated_at: (/* @__PURE__ */ new Date()).toISOString()
           }, { onConflict: "user_id,internal_account_id" });
           if (f) throw f;
-          Zi.value = !1, await Se.invalidateQueries({ queryKey: ["positions"] }), me("success", "Account renamed", `Account name updated to "${KA.value}"`);
+          Zi.value = !1, await Se.invalidateQueries({ queryKey: ["positions"] }), we("success", "Account renamed", `Account name updated to "${KA.value}"`);
         } catch (f) {
-          me("error", "Rename failed", f.message);
+          we("error", "Rename failed", f.message);
         }
     }
     const qi = $(0);
@@ -17222,7 +17283,7 @@ const zp = { class: "positions-card" }, Gp = {
       }
       aA.value = !1, NA.value = !0;
       try {
-        const g = (await Pp(h.value)).toDataURL("image/png"), { error: C } = await pe.schema("hf").from("position_screenshots").insert([{
+        const g = (await Pp(h.value)).toDataURL("image/png"), { error: v } = await me.schema("hf").from("position_screenshots").insert([{
           user_id: t.userId,
           created_at: (/* @__PURE__ */ new Date()).toISOString(),
           image_data: g.replace(/^data:image\/png;base64,/, ""),
@@ -17234,25 +17295,25 @@ const zp = { class: "positions-card" }, Gp = {
               assetClass: s.value,
               symbolTags: c.value,
               thesisTags: d.value,
-              columns: S.value
+              columns: k.value
             }
           }
         }]);
-        if (C) throw C;
-        me("success", "Screenshot saved!"), WA();
+        if (v) throw v;
+        we("success", "Screenshot saved!"), WA();
       } catch (f) {
-        me("error", "Screenshot failed", f.message);
+        we("error", "Screenshot failed", f.message);
       } finally {
         NA.value = !1;
       }
     }
     async function Ia(f) {
       try {
-        const { error: g } = await pe.schema("hf").from("position_screenshots").update({ archived: !0 }).eq("id", f);
+        const { error: g } = await me.schema("hf").from("position_screenshots").update({ archived: !0 }).eq("id", f);
         if (g) throw g;
-        me("success", "Screenshot archived"), WA();
+        we("success", "Screenshot archived"), WA();
       } catch (g) {
-        me("error", "Archive failed", g.message);
+        we("error", "Archive failed", g.message);
       }
     }
     async function WA() {
@@ -17261,7 +17322,7 @@ const zp = { class: "positions-card" }, Gp = {
         return;
       }
       es.value = !0;
-      const { data: f, error: g } = await pe.schema("hf").from("position_screenshots").select("*").eq("user_id", t.userId).eq("archived", !1).order("created_at", { ascending: !1 }).limit(20);
+      const { data: f, error: g } = await me.schema("hf").from("position_screenshots").select("*").eq("user_id", t.userId).eq("archived", !1).order("created_at", { ascending: !1 }).limit(20);
       g || (VA.value = f || []), es.value = !1;
     }
     function Ma(f) {
@@ -17270,34 +17331,34 @@ const zp = { class: "positions-card" }, Gp = {
     async function Da() {
       if (ts.value)
         try {
-          const { error: f } = await pe.schema("hf").from("position_screenshots").update({ name: GA.value }).eq("id", ts.value);
+          const { error: f } = await me.schema("hf").from("position_screenshots").update({ name: GA.value }).eq("id", ts.value);
           if (f) throw f;
-          zA.value = !1, me("success", "Screenshot renamed"), WA();
+          zA.value = !1, we("success", "Screenshot renamed"), WA();
         } catch (f) {
-          me("error", "Rename failed", f.message);
+          we("error", "Rename failed", f.message);
         }
     }
     return Je(PA, (f) => {
       f && WA();
     }), (f, g) => (j(), J("div", zp, [
       XA(o).isLoading.value ? (j(), J("div", Gp, [...g[18] || (g[18] = [
-        U("div", { class: "loading-spinner" }, null, -1),
+        H("div", { class: "loading-spinner" }, null, -1),
         _t(" Loading positions... ", -1)
       ])])) : XA(o).isError.value ? (j(), J("div", Wp, [
-        g[19] || (g[19] = U("h3", null, "Error loading positions", -1)),
-        U("p", null, Ie(XA(o).error.value), 1)
+        g[19] || (g[19] = H("h3", null, "Error loading positions", -1)),
+        H("p", null, Ie(XA(o).error.value), 1)
       ])) : XA(o).isSuccess.value ? (j(), J("div", Xp, [
-        U("div", Jp, [
-          U("h2", null, [
+        H("div", Jp, [
+          H("h2", null, [
             r.showHeaderLink ? (j(), J("span", {
               key: 0,
               class: "positions-link",
               onClick: Ea
             }, "Positions")) : (j(), J("span", jp, "Positions"))
           ]),
-          U("div", Yp, [
-            U("div", Zp, Ie(qi.value) + " positions", 1),
-            U("button", {
+          H("div", Yp, [
+            H("div", Zp, Ie(qi.value) + " positions", 1),
+            H("button", {
               onClick: Ta,
               class: "screenshot-btn",
               title: "Take Screenshot",
@@ -17305,39 +17366,39 @@ const zp = { class: "positions-card" }, Gp = {
             }, [
               NA.value ? (j(), J("span", qp)) : (j(), J("span", em, "📸"))
             ], 8, $p),
-            U("button", {
-              onClick: g[0] || (g[0] = (C) => PA.value = !0),
+            H("button", {
+              onClick: g[0] || (g[0] = (v) => PA.value = !0),
               class: "screenshot-btn",
               title: "See Old Screenshots"
             }, "🖼️"),
-            U("button", {
+            H("button", {
               class: Sr(["thesis-group-btn", { active: p.value }]),
-              onClick: g[1] || (g[1] = (C) => p.value = !p.value),
+              onClick: g[1] || (g[1] = (v) => p.value = !p.value),
               title: "Group positions by thesis"
             }, [
-              g[20] || (g[20] = U("span", { class: "icon" }, "📊", -1)),
+              g[20] || (g[20] = H("span", { class: "icon" }, "📊", -1)),
               _t(" " + Ie(p.value ? "Ungroup" : "Group by Thesis"), 1)
             ], 2),
-            U("button", {
+            H("button", {
               ref_key: "columnsBtnRef",
               ref: Wi,
               class: "columns-btn",
               onClick: je(Ba, ["stop"])
             }, [...g[21] || (g[21] = [
-              U("svg", {
+              H("svg", {
                 class: "icon",
                 viewBox: "0 0 24 24",
                 width: "18",
                 height: "18"
               }, [
-                U("path", {
+                H("path", {
                   fill: "currentColor",
                   d: "M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.21-.37-.3-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.03-.22-.22-.39-.44-.39h-3.84c-.22 0-.41.16-.44.39l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.09-.47 0-.59.22l-1.92 3.32c-.12.21-.07.47.12.61l2.03 1.58c.04.31.06.63.06.94s-.02.63-.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.21.37.3.59.22l2.39.96c.5.38 1.03.7 1.62.94l.36 2.54c.03.22.22.39.44.39h3.84c.22 0 .41-.16.44-.39l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.09.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.03-1.58ZM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5Z"
                 })
               ], -1)
             ])], 512),
-            U("button", {
-              onClick: g[2] || (g[2] = (C) => A("minimize")),
+            H("button", {
+              onClick: g[2] || (g[2] = (v) => A("minimize")),
               class: "minimize-button",
               title: "Minimize Positions"
             }, " − "),
@@ -17349,72 +17410,72 @@ const zp = { class: "positions-card" }, Gp = {
               onClick: g[6] || (g[6] = je(() => {
               }, ["stop"]))
             }, [
-              g[22] || (g[22] = U("div", { class: "popup-header" }, "Columns", -1)),
-              U("div", tm, [
-                (j(!0), J(hA, null, uA(S.value.map((C) => E.find((L) => L.field === C)).filter(Boolean), (C, L) => (j(), J("label", {
-                  key: C.field,
+              g[22] || (g[22] = H("div", { class: "popup-header" }, "Columns", -1)),
+              H("div", tm, [
+                (j(!0), J(hA, null, uA(k.value.map((v) => E.find((L) => L.field === v)).filter(Boolean), (v, L) => (j(), J("label", {
+                  key: v.field,
                   class: "popup-item",
                   draggable: "true",
-                  onDragstart: (k) => ya(L),
+                  onDragstart: (O) => ya(L),
                   onDragover: Fa,
-                  onDrop: (k) => Qa(L),
+                  onDrop: (O) => Qa(L),
                   style: { "align-items": "center" }
                 }, [
-                  Kt(U("input", {
+                  Kt(H("input", {
                     type: "checkbox",
-                    value: C.field,
-                    "onUpdate:modelValue": g[3] || (g[3] = (k) => S.value = k)
+                    value: v.field,
+                    "onUpdate:modelValue": g[3] || (g[3] = (O) => k.value = O)
                   }, null, 8, im), [
-                    [kr, S.value]
+                    [kr, k.value]
                   ]),
-                  U("span", null, [
-                    _t(Ie(b.value[C.field] || C.label) + " ", 1),
-                    b.value[C.field] ? (j(), J("span", sm, " (" + Ie(C.label) + ") ", 1)) : ze("", !0)
+                  H("span", null, [
+                    _t(Ie(b.value[v.field] || v.label) + " ", 1),
+                    b.value[v.field] ? (j(), J("span", sm, " (" + Ie(v.label) + ") ", 1)) : ze("", !0)
                   ]),
-                  U("button", {
+                  H("button", {
                     class: "col-rename-btn",
                     type: "button",
-                    onClick: je((k) => z(C.field, b.value[C.field] || C.label), ["stop"]),
+                    onClick: je((O) => z(v.field, b.value[v.field] || v.label), ["stop"]),
                     title: "Rename column",
                     style: { "margin-left": "6px", "font-size": "13px", background: "none", border: "none", color: "#888", cursor: "pointer" }
                   }, "✎", 8, rm),
-                  U("span", nm, [
-                    U("button", {
+                  H("span", nm, [
+                    H("button", {
                       type: "button",
-                      onClick: je((k) => Ua(L), ["stop"]),
+                      onClick: je((O) => Ua(L), ["stop"]),
                       disabled: L === 0,
                       title: "Move up",
                       style: { background: "none", border: "none", cursor: "pointer", padding: "0", "margin-bottom": "2px" }
                     }, " ▲ ", 8, om),
-                    U("button", {
+                    H("button", {
                       type: "button",
-                      onClick: je((k) => Ha(L), ["stop"]),
-                      disabled: L === S.value.length - 1,
+                      onClick: je((O) => Ha(L), ["stop"]),
+                      disabled: L === k.value.length - 1,
                       title: "Move down",
                       style: { background: "none", border: "none", cursor: "pointer", padding: "0" }
                     }, " ▼ ", 8, am)
                   ])
                 ], 40, Am))), 128)),
-                (j(!0), J(hA, null, uA(E.filter((C) => !S.value.includes(C.field)), (C) => (j(), J("label", {
-                  key: C.field,
+                (j(!0), J(hA, null, uA(E.filter((v) => !k.value.includes(v.field)), (v) => (j(), J("label", {
+                  key: v.field,
                   class: "popup-item"
                 }, [
-                  Kt(U("input", {
+                  Kt(H("input", {
                     type: "checkbox",
-                    value: C.field,
-                    "onUpdate:modelValue": g[4] || (g[4] = (L) => S.value = L)
+                    value: v.field,
+                    "onUpdate:modelValue": g[4] || (g[4] = (L) => k.value = L)
                   }, null, 8, lm), [
-                    [kr, S.value]
+                    [kr, k.value]
                   ]),
-                  U("span", null, Ie(C.label), 1)
+                  H("span", null, Ie(v.label), 1)
                 ]))), 128))
               ]),
-              U("div", hm, [
-                U("button", {
+              H("div", hm, [
+                H("button", {
                   class: "btn btn-clear",
-                  onClick: g[5] || (g[5] = (C) => S.value = E.map((L) => L.field))
+                  onClick: g[5] || (g[5] = (v) => k.value = E.map((L) => L.field))
                 }, "Show All"),
-                U("button", {
+                H("button", {
                   class: "btn",
                   onClick: xr
                 }, "Done")
@@ -17423,52 +17484,52 @@ const zp = { class: "positions-card" }, Gp = {
           ])
         ]),
         w.value.length ? (j(), J("div", um, [
-          g[23] || (g[23] = U("span", { class: "filters-label" }, "Filtered by:", -1)),
-          U("div", cm, [
-            (j(!0), J(hA, null, uA(w.value, (C) => (j(), J("span", {
-              key: `${C.field}-${C.value}`,
+          g[23] || (g[23] = H("span", { class: "filters-label" }, "Filtered by:", -1)),
+          H("div", cm, [
+            (j(!0), J(hA, null, uA(w.value, (v) => (j(), J("span", {
+              key: `${v.field}-${v.value}`,
               class: "filter-tag"
             }, [
-              U("strong", null, Ie(C.field === "symbol" ? "Financial Instrument" : C.field === "legal_entity" ? "Account" : C.field === "thesis" ? "Thesis" : "Asset Class") + ":", 1),
-              _t(" " + Ie(C.value) + " ", 1),
-              U("button", {
+              H("strong", null, Ie(v.field === "symbol" ? "Financial Instrument" : v.field === "legal_entity" ? "Account" : v.field === "thesis" ? "Thesis" : "Asset Class") + ":", 1),
+              _t(" " + Ie(v.value) + " ", 1),
+              H("button", {
                 class: "tag-clear",
-                onClick: (L) => wa(C.field)
+                onClick: (L) => wa(v.field)
               }, "✕", 8, dm)
             ]))), 128)),
-            U("button", {
+            H("button", {
               class: "btn btn-clear-all",
               onClick: ba
             }, "Clear all")
           ])
         ])) : ze("", !0),
-        U("div", {
+        H("div", {
           ref_key: "tableDiv",
           ref: h,
           class: "positions-grid"
         }, null, 512)
       ])) : ze("", !0),
-      U("div", fm, [
+      H("div", fm, [
         Va(Na, {
           name: "toast",
           tag: "div"
         }, {
           default: za(() => [
-            (j(!0), J(hA, null, uA(ke.value, (C) => (j(), J("div", {
-              key: C.id,
-              class: Sr(["toast", `toast-${C.type}`]),
-              onClick: (L) => Le(C.id)
+            (j(!0), J(hA, null, uA(ke.value, (v) => (j(), J("div", {
+              key: v.id,
+              class: Sr(["toast", `toast-${v.type}`]),
+              onClick: (L) => Le(v.id)
             }, [
-              U("div", pm, [
-                C.type === "success" ? (j(), J("span", mm, "✅")) : C.type === "error" ? (j(), J("span", wm, "❌")) : C.type === "warning" ? (j(), J("span", bm, "⚠️")) : (j(), J("span", Bm, "ℹ️"))
+              H("div", pm, [
+                v.type === "success" ? (j(), J("span", mm, "✅")) : v.type === "error" ? (j(), J("span", wm, "❌")) : v.type === "warning" ? (j(), J("span", bm, "⚠️")) : (j(), J("span", Bm, "ℹ️"))
               ]),
-              U("div", Cm, [
-                U("div", vm, Ie(C.title), 1),
-                C.message ? (j(), J("div", Em, Ie(C.message), 1)) : ze("", !0)
+              H("div", Cm, [
+                H("div", vm, Ie(v.title), 1),
+                v.message ? (j(), J("div", Em, Ie(v.message), 1)) : ze("", !0)
               ]),
-              U("button", {
+              H("button", {
                 class: "toast-close",
-                onClick: je((L) => Le(C.id), ["stop"])
+                onClick: je((L) => Le(v.id), ["stop"])
               }, "×", 8, ym)
             ], 10, gm))), 128))
           ]),
@@ -17476,78 +17537,78 @@ const zp = { class: "positions-card" }, Gp = {
         })
       ]),
       Zi.value ? (j(), J("div", Fm, [
-        U("div", Qm, [
-          g[24] || (g[24] = U("h3", null, "Rename Account", -1)),
-          Kt(U("input", {
-            "onUpdate:modelValue": g[7] || (g[7] = (C) => KA.value = C),
+        H("div", Qm, [
+          g[24] || (g[24] = H("h3", null, "Rename Account", -1)),
+          Kt(H("input", {
+            "onUpdate:modelValue": g[7] || (g[7] = (v) => KA.value = v),
             placeholder: Ra.value
           }, null, 8, Um), [
             [JA, KA.value]
           ]),
-          U("div", Hm, [
-            U("button", { onClick: xa }, "Save"),
-            U("button", {
-              onClick: g[8] || (g[8] = (C) => Zi.value = !1)
+          H("div", Hm, [
+            H("button", { onClick: xa }, "Save"),
+            H("button", {
+              onClick: g[8] || (g[8] = (v) => Zi.value = !1)
             }, "Cancel")
           ])
         ])
       ])) : ze("", !0),
       I.value ? (j(), J("div", Rm, [
-        U("div", xm, [
-          g[25] || (g[25] = U("h3", null, "Rename Column", -1)),
-          Kt(U("input", {
-            "onUpdate:modelValue": g[9] || (g[9] = (C) => F.value = C),
+        H("div", xm, [
+          g[25] || (g[25] = H("h3", null, "Rename Column", -1)),
+          Kt(H("input", {
+            "onUpdate:modelValue": g[9] || (g[9] = (v) => Q.value = v),
             placeholder: "Column name"
           }, null, 512), [
-            [JA, F.value]
+            [JA, Q.value]
           ]),
-          U("div", { class: "dialog-actions" }, [
-            U("button", { onClick: K }, "Save"),
-            U("button", { onClick: P }, "Cancel")
+          H("div", { class: "dialog-actions" }, [
+            H("button", { onClick: K }, "Save"),
+            H("button", { onClick: P }, "Cancel")
           ])
         ])
       ])) : ze("", !0),
       PA.value ? (j(), J("div", Tm, [
-        U("div", Lm, [
-          g[27] || (g[27] = U("h3", { class: "screenshots-title" }, "Past Screenshots", -1)),
+        H("div", Lm, [
+          g[27] || (g[27] = H("h3", { class: "screenshots-title" }, "Past Screenshots", -1)),
           es.value ? (j(), J("div", Im, "Loading screenshots...")) : VA.value.length === 0 ? (j(), J("div", Mm, "No screenshots yet.")) : (j(), J("div", Dm, [
-            (j(!0), J(hA, null, uA(VA.value, (C) => (j(), J("div", {
-              key: C.id,
+            (j(!0), J(hA, null, uA(VA.value, (v) => (j(), J("div", {
+              key: v.id,
               class: "screenshot-list-item",
-              onClick: (L) => lt.value = C
+              onClick: (L) => lt.value = v
             }, [
-              U("img", {
-                src: `data:image/png;base64,${C.image_data}`,
+              H("img", {
+                src: `data:image/png;base64,${v.image_data}`,
                 class: "screenshot-thumb",
-                alt: `Screenshot taken at ${new Date(C.created_at).toLocaleString()}`
+                alt: `Screenshot taken at ${new Date(v.created_at).toLocaleString()}`
               }, null, 8, km),
-              U("div", Om, [
-                C.name ? (j(), J("strong", _m, Ie(C.name), 1)) : (j(), J("span", Km, "(Unnamed)")),
-                U("span", null, [
-                  _t(Ie(new Date(C.created_at).toLocaleString("en-US", {
+              H("div", Om, [
+                v.name ? (j(), J("strong", _m, Ie(v.name), 1)) : (j(), J("span", Km, "(Unnamed)")),
+                H("span", null, [
+                  _t(Ie(new Date(v.created_at).toLocaleString("en-US", {
                     timeZone: "America/Los_Angeles",
                     dateStyle: "medium",
                     timeStyle: "short"
                   })) + " ", 1),
-                  g[26] || (g[26] = U("span", { style: { color: "#888", "font-size": "12px" } }, "PST", -1))
+                  g[26] || (g[26] = H("span", { style: { color: "#888", "font-size": "12px" } }, "PST", -1))
                 ]),
-                U("div", Pm, [
-                  U("a", {
-                    href: `data:image/png;base64,${C.image_data}`,
-                    download: `positions-screenshot-${C.id}.png`,
+                H("div", Pm, [
+                  H("a", {
+                    href: `data:image/png;base64,${v.image_data}`,
+                    download: `positions-screenshot-${v.id}.png`,
                     class: "screenshot-download-link",
                     onClick: g[10] || (g[10] = je(() => {
                     }, ["stop"]))
                   }, "⬇️", 8, Vm),
-                  U("button", {
+                  H("button", {
                     class: "screenshot-archive-btn",
-                    onClick: je((L) => Ia(C.id), ["stop"]),
+                    onClick: je((L) => Ia(v.id), ["stop"]),
                     title: "Archive screenshot",
                     style: { background: "none", border: "1px solid #e9ecef", padding: "4px 8px", "border-radius": "6px", cursor: "pointer" }
                   }, " 🗄️ ", 8, Nm),
-                  U("button", {
+                  H("button", {
                     class: "screenshot-rename-btn",
-                    onClick: je((L) => Ma(C), ["stop"]),
+                    onClick: je((L) => Ma(v), ["stop"]),
                     title: "Rename screenshot",
                     style: { background: "none", border: "1px solid #e9ecef", padding: "4px 8px", "border-radius": "6px", cursor: "pointer" }
                   }, " ✏️ ", 8, zm)
@@ -17555,9 +17616,9 @@ const zp = { class: "positions-card" }, Gp = {
               ])
             ], 8, Sm))), 128))
           ])),
-          U("div", Gm, [
-            U("button", {
-              onClick: g[11] || (g[11] = (C) => PA.value = !1),
+          H("div", Gm, [
+            H("button", {
+              onClick: g[11] || (g[11] = (v) => PA.value = !1),
               class: "screenshots-close"
             }, "Close")
           ])
@@ -17565,29 +17626,29 @@ const zp = { class: "positions-card" }, Gp = {
         lt.value ? (j(), J("div", {
           key: 0,
           class: "screenshot-preview-modal",
-          onClick: g[13] || (g[13] = je((C) => lt.value = null, ["self"]))
+          onClick: g[13] || (g[13] = je((v) => lt.value = null, ["self"]))
         }, [
-          U("div", Wm, [
-            U("img", {
+          H("div", Wm, [
+            H("img", {
               src: `data:image/png;base64,${lt.value.image_data}`,
               class: "screenshot-full-img"
             }, null, 8, Xm),
-            U("div", Jm, [
-              U("span", null, [
+            H("div", Jm, [
+              H("span", null, [
                 _t(Ie(new Date(lt.value.created_at).toLocaleString("en-US", {
                   timeZone: "America/Los_Angeles",
                   dateStyle: "medium",
                   timeStyle: "short"
                 })) + " ", 1),
-                g[28] || (g[28] = U("span", { style: { color: "#888", "font-size": "12px" } }, "PST", -1))
+                g[28] || (g[28] = H("span", { style: { color: "#888", "font-size": "12px" } }, "PST", -1))
               ]),
-              U("a", {
+              H("a", {
                 href: `data:image/png;base64,${lt.value.image_data}`,
                 download: `positions-screenshot-${lt.value.id}.png`,
                 class: "screenshot-download-link"
               }, "⬇️ Download", 8, jm),
-              U("button", {
-                onClick: g[12] || (g[12] = (C) => lt.value = null),
+              H("button", {
+                onClick: g[12] || (g[12] = (v) => lt.value = null),
                 class: "screenshot-preview-close"
               }, "Close")
             ])
@@ -17595,35 +17656,35 @@ const zp = { class: "positions-card" }, Gp = {
         ])) : ze("", !0)
       ])) : ze("", !0),
       aA.value ? (j(), J("div", Ym, [
-        U("div", Zm, [
-          g[29] || (g[29] = U("h3", null, "Name screenshot", -1)),
-          Kt(U("input", {
-            "onUpdate:modelValue": g[14] || (g[14] = (C) => lA.value = C),
+        H("div", Zm, [
+          g[29] || (g[29] = H("h3", null, "Name screenshot", -1)),
+          Kt(H("input", {
+            "onUpdate:modelValue": g[14] || (g[14] = (v) => lA.value = v),
             placeholder: "Enter a name (optional)"
           }, null, 512), [
             [JA, lA.value]
           ]),
-          U("div", $m, [
-            U("button", { onClick: La }, "Save & Capture"),
-            U("button", {
-              onClick: g[15] || (g[15] = (C) => aA.value = !1)
+          H("div", $m, [
+            H("button", { onClick: La }, "Save & Capture"),
+            H("button", {
+              onClick: g[15] || (g[15] = (v) => aA.value = !1)
             }, "Cancel")
           ])
         ])
       ])) : ze("", !0),
       zA.value ? (j(), J("div", qm, [
-        U("div", ew, [
-          g[30] || (g[30] = U("h3", null, "Rename Screenshot", -1)),
-          Kt(U("input", {
-            "onUpdate:modelValue": g[16] || (g[16] = (C) => GA.value = C),
+        H("div", ew, [
+          g[30] || (g[30] = H("h3", null, "Rename Screenshot", -1)),
+          Kt(H("input", {
+            "onUpdate:modelValue": g[16] || (g[16] = (v) => GA.value = v),
             placeholder: "Enter new name"
           }, null, 512), [
             [JA, GA.value]
           ]),
-          U("div", tw, [
-            U("button", { onClick: Da }, "Save"),
-            U("button", {
-              onClick: g[17] || (g[17] = (C) => zA.value = !1)
+          H("div", tw, [
+            H("button", { onClick: Da }, "Save"),
+            H("button", {
+              onClick: g[17] || (g[17] = (v) => zA.value = !1)
             }, "Cancel")
           ])
         ])
@@ -17635,7 +17696,7 @@ const zp = { class: "positions-card" }, Gp = {
   for (const [A, i] of e)
     t[A] = i;
   return t;
-}, hw = /* @__PURE__ */ iw(Aw, [["__scopeId", "data-v-8eb420a9"]]);
+}, hw = /* @__PURE__ */ iw(Aw, [["__scopeId", "data-v-a19e5900"]]);
 export {
   hw as Positions,
   hw as default
