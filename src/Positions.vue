@@ -407,6 +407,23 @@ function hideColumnFromHeader(field: ColumnField) {
   }
 }
 
+function writeSortToUrl(field: string, dir: 'asc' | 'desc') {
+  const url = new URL(window.location.href)
+  url.searchParams.set('positions_sort', `${field}:${dir}`)
+  window.history.replaceState({}, '', url.toString())
+}
+
+function parseSortFromUrl(): { field: string, dir: 'asc' | 'desc' } | null {
+  const url = new URL(window.location.href)
+  const param = url.searchParams.get('positions_sort')
+  if (!param) return null
+  const [field, dir] = param.split(':')
+  if (field && (dir === 'asc' || dir === 'desc')) {
+    return { field, dir }
+  }
+  return null
+}
+
 // Initialize Tabulator
 const isTabulatorReady = ref(false)
 
@@ -1362,7 +1379,25 @@ function initializeTabulator() {
         console.warn('Row click error:', error)
       }
     },
+    sortChanged: (sorters: any[]) => {
+      if (sorters && sorters.length > 0) {
+        const { field, dir } = sorters[0]
+        writeSortToUrl(field, dir)
+      } else {
+        // If no sorters, remove param
+        const url = new URL(window.location.href)
+        url.searchParams.delete('positions_sort')
+        window.history.replaceState({}, '', url.toString())
+      }
+    },
     movableColumns: true
+  }
+
+  const sortFromUrl = parseSortFromUrl()
+  if (sortFromUrl) {
+    tabulatorConfig.initialSort = [
+      { column: sortFromUrl.field, dir: sortFromUrl.dir }
+    ]
   }
 
   // Enable tree view when grouping by thesis
@@ -1431,6 +1466,17 @@ function initializeTabulator() {
           }
         })
       })
+
+      const headersCell = tableDiv.value?.querySelectorAll('.tabulator-col');
+      headersCell?.forEach(header => {
+        header.addEventListener('click', (e: any) => {
+          // Find sorted column
+          const sortedCol = tabulator.getSorters()[0];
+          if (sortedCol) {
+            writeSortToUrl(sortedCol.field, sortedCol.dir);
+          }
+        });
+      });
 
       updateFilteredPositionsCount()
     })
@@ -2240,6 +2286,10 @@ window.addEventListener('popstate', () => {
 
   columnRenames.value = parseColumnRenamesFromUrl()
   updateFilters()
+  const sortFromUrl = parseSortFromUrl()
+  if (tabulator && sortFromUrl) {
+    tabulator.setSort(sortFromUrl.field, sortFromUrl.dir)
+  }
 })
 
 // --- In initializeTabulator(), update column titles and add rename button ---
