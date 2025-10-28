@@ -1,7 +1,7 @@
 var Wa = Object.defineProperty;
 var Xa = (r, e, t) => e in r ? Wa(r, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : r[e] = t;
 var R = (r, e, t) => Xa(r, typeof e != "symbol" ? e + "" : e, t);
-import { defineComponent as Ja, ref as Y, computed as os, watch as Ze, nextTick as ct, inject as ja, onMounted as Ya, onBeforeUnmount as Za, createElementBlock as G, openBlock as W, Fragment as Pt, createElementVNode as E, createCommentVNode as xe, unref as YA, createTextVNode as Rt, toDisplayString as ue, normalizeClass as Gr, withModifiers as Ge, renderList as dA, withDirectives as Vt, vModelCheckbox as Wr, createVNode as $a, TransitionGroup as qa, withCtx as el, vModelText as ZA } from "vue";
+import { defineComponent as Ja, ref as Y, computed as os, watch as Ze, nextTick as ct, inject as ja, onMounted as Ya, onBeforeUnmount as Za, createElementBlock as G, openBlock as W, Fragment as Pt, createElementVNode as E, createCommentVNode as xe, unref as YA, createTextVNode as Rt, toDisplayString as ce, normalizeClass as Gr, withModifiers as Ge, renderList as dA, withDirectives as Vt, vModelCheckbox as Wr, createVNode as $a, TransitionGroup as qa, withCtx as el, vModelText as ZA } from "vue";
 import { usePositionsQuery as tl, useThesisQuery as Al, useThesisConnectionsQuery as il, useSupabase as sl, extractSymbolRoot as rl } from "@y2kfund/core";
 import { useQueryClient as nl } from "@tanstack/vue-query";
 class ye {
@@ -2061,11 +2061,11 @@ function El(r, e, t) {
   var A = this, i = e.sheetName || "Sheet1", s = this.dependencyRegistry.lookup("XLSX"), n = s.utils.book_new(), o = new ye(this), a = "compress" in e ? e.compress : !0, l = e.writeOptions || { bookType: "xlsx", bookSST: !0, compression: a }, h;
   l.type = "binary", n.SheetNames = [], n.Sheets = {};
   function u() {
-    var p = [], b = [], v = {}, B = { s: { c: 0, r: 0 }, e: { c: r[0] ? r[0].columns.reduce((F, k) => F + (k && k.width ? k.width : 1), 0) : 0, r: r.length } };
-    return r.forEach((F, k) => {
+    var p = [], b = [], v = {}, B = { s: { c: 0, r: 0 }, e: { c: r[0] ? r[0].columns.reduce((F, _) => F + (_ && _.width ? _.width : 1), 0) : 0, r: r.length } };
+    return r.forEach((F, _) => {
       var I = [];
       F.columns.forEach(function(x, H) {
-        x ? (I.push(!(x.value instanceof Date) && typeof x.value == "object" ? JSON.stringify(x.value) : x.value), (x.width > 1 || x.height > -1) && (x.height > 1 || x.width > 1) && b.push({ s: { r: k, c: H }, e: { r: k + x.height - 1, c: H + x.width - 1 } })) : I.push("");
+        x ? (I.push(!(x.value instanceof Date) && typeof x.value == "object" ? JSON.stringify(x.value) : x.value), (x.width > 1 || x.height > -1) && (x.height > 1 || x.width > 1) && b.push({ s: { r: _, c: H }, e: { r: _ + x.height - 1, c: H + x.width - 1 } })) : I.push("");
       }), p.push(I);
     }), s.utils.sheet_add_aoa(v, p), v["!ref"] = s.utils.encode_range(B), b.length && (v["!merges"] = b), v;
   }
@@ -2847,19 +2847,19 @@ function Sl(r, e, t, A, i) {
 function Dl(r, e, t, A, i) {
   var s = this, n = r.getElement(), o = r.getValue(), a = n.getElementsByTagName("svg").length || 5, l = n.getElementsByTagName("svg")[0] ? n.getElementsByTagName("svg")[0].getAttribute("width") : 14, h = [], u = document.createElement("div"), c = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   function f(B) {
-    h.forEach(function(F, k) {
-      k < B ? (s.table.browser == "ie" ? F.setAttribute("class", "tabulator-star-active") : F.classList.replace("tabulator-star-inactive", "tabulator-star-active"), F.innerHTML = '<polygon fill="#488CE9" stroke="#014AAE" stroke-width="37.6152" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="259.216,29.942 330.27,173.919 489.16,197.007 374.185,309.08 401.33,467.31 259.216,392.612 117.104,467.31 144.25,309.08 29.274,197.007 188.165,173.919 "/>') : (s.table.browser == "ie" ? F.setAttribute("class", "tabulator-star-inactive") : F.classList.replace("tabulator-star-active", "tabulator-star-inactive"), F.innerHTML = '<polygon fill="#010155" stroke="#686868" stroke-width="37.6152" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="259.216,29.942 330.27,173.919 489.16,197.007 374.185,309.08 401.33,467.31 259.216,392.612 117.104,467.31 144.25,309.08 29.274,197.007 188.165,173.919 "/>');
+    h.forEach(function(F, _) {
+      _ < B ? (s.table.browser == "ie" ? F.setAttribute("class", "tabulator-star-active") : F.classList.replace("tabulator-star-inactive", "tabulator-star-active"), F.innerHTML = '<polygon fill="#488CE9" stroke="#014AAE" stroke-width="37.6152" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="259.216,29.942 330.27,173.919 489.16,197.007 374.185,309.08 401.33,467.31 259.216,392.612 117.104,467.31 144.25,309.08 29.274,197.007 188.165,173.919 "/>') : (s.table.browser == "ie" ? F.setAttribute("class", "tabulator-star-inactive") : F.classList.replace("tabulator-star-active", "tabulator-star-inactive"), F.innerHTML = '<polygon fill="#010155" stroke="#686868" stroke-width="37.6152" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="259.216,29.942 330.27,173.919 489.16,197.007 374.185,309.08 401.33,467.31 259.216,392.612 117.104,467.31 144.25,309.08 29.274,197.007 188.165,173.919 "/>');
     });
   }
   function p(B) {
-    var F = document.createElement("span"), k = c.cloneNode(!0);
-    h.push(k), F.addEventListener("mouseenter", function(I) {
+    var F = document.createElement("span"), _ = c.cloneNode(!0);
+    h.push(_), F.addEventListener("mouseenter", function(I) {
       I.stopPropagation(), I.stopImmediatePropagation(), f(B);
     }), F.addEventListener("mousemove", function(I) {
       I.stopPropagation(), I.stopImmediatePropagation();
     }), F.addEventListener("click", function(I) {
       I.stopPropagation(), I.stopImmediatePropagation(), t(B), n.blur();
-    }), F.appendChild(k), u.appendChild(F);
+    }), F.appendChild(_), u.appendChild(F);
   }
   function b(B) {
     o = B, f(B);
@@ -3780,8 +3780,8 @@ const rt = class rt extends Z {
         }), l.addEventListener("click", function(B) {
           B.stopPropagation(), l.focus();
         }), l.addEventListener("focus", (B) => {
-          var F = this.table.columnManager.contentsElement.scrollLeft, k = this.table.rowManager.element.scrollLeft;
-          F !== k && (this.table.rowManager.scrollHorizontal(F), this.table.columnManager.scrollHorizontal(F));
+          var F = this.table.columnManager.contentsElement.scrollLeft, _ = this.table.rowManager.element.scrollLeft;
+          F !== _ && (this.table.rowManager.scrollHorizontal(F), this.table.columnManager.scrollHorizontal(F));
         }), u = !1, c = function(B) {
           u && clearTimeout(u), u = setTimeout(function() {
             s(l.value);
@@ -9487,7 +9487,7 @@ class lu extends _i {
   //////////////////////////////////////
   //full virtual render
   _virtualRenderFill(e, t, A) {
-    var i = this.tableElement, s = this.elementVertical, n = 0, o = 0, a = 0, l = 0, h = 0, u = 0, c = this.rows(), f = c.length, p = 0, b, v, B = [], F = 0, k = 0, I = this.table.rowManager.fixedHeight, x = this.elementVertical.clientHeight, H = this.table.options.rowHeight, X = !0;
+    var i = this.tableElement, s = this.elementVertical, n = 0, o = 0, a = 0, l = 0, h = 0, u = 0, c = this.rows(), f = c.length, p = 0, b, v, B = [], F = 0, _ = 0, I = this.table.rowManager.fixedHeight, x = this.elementVertical.clientHeight, H = this.table.options.rowHeight, X = !0;
     if (e = e || 0, A = A || 0, !e)
       this.clear();
     else {
@@ -9495,8 +9495,8 @@ class lu extends _i {
       l = (f - e + 1) * this.vDomRowHeight, l < x && (e -= Math.ceil((x - l) / this.vDomRowHeight), e < 0 && (e = 0)), n = Math.min(Math.max(Math.floor(this.vDomWindowBuffer / this.vDomRowHeight), this.vDomWindowMinMarginRows), e), e -= n;
     }
     if (f && ne.elVisible(this.elementVertical)) {
-      for (this.vDomTop = e, this.vDomBottom = e - 1, I || this.table.options.maxHeight ? (H && (k = x / H + this.vDomWindowBuffer / H), k = Math.max(this.vDomWindowMinTotalRows, Math.ceil(k))) : k = f; (k == f || o <= x + this.vDomWindowBuffer || F < this.vDomWindowMinTotalRows) && this.vDomBottom < f - 1; ) {
-        for (B = [], v = document.createDocumentFragment(), u = 0; u < k && this.vDomBottom < f - 1; )
+      for (this.vDomTop = e, this.vDomBottom = e - 1, I || this.table.options.maxHeight ? (H && (_ = x / H + this.vDomWindowBuffer / H), _ = Math.max(this.vDomWindowMinTotalRows, Math.ceil(_))) : _ = f; (_ == f || o <= x + this.vDomWindowBuffer || F < this.vDomWindowMinTotalRows) && this.vDomBottom < f - 1; ) {
+        for (B = [], v = document.createDocumentFragment(), u = 0; u < _ && this.vDomBottom < f - 1; )
           p = this.vDomBottom + 1, b = c[p], this.styleRow(b, p), b.initialize(!1, !0), !b.heightInitialized && !this.table.options.rowHeight && b.clearCellHeight(), v.appendChild(b.getElement()), B.push(b), this.vDomBottom++, u++;
         if (!B.length)
           break;
@@ -9506,7 +9506,7 @@ class lu extends _i {
           V.heightInitialized || V.setCellHeight();
         }), B.forEach((V) => {
           a = V.getHeight(), F < n ? h += a : o += a, a > this.vDomWindowBuffer && (this.vDomWindowBuffer = a * 2), F++;
-        }), X = this.table.rowManager.adjustTableSize(), x = this.elementVertical.clientHeight, X && (I || this.table.options.maxHeight) && (H = o / F, k = Math.max(this.vDomWindowMinTotalRows, Math.ceil(x / H + this.vDomWindowBuffer / H)));
+        }), X = this.table.rowManager.adjustTableSize(), x = this.elementVertical.clientHeight, X && (I || this.table.options.maxHeight) && (H = o / F, _ = Math.max(this.vDomWindowMinTotalRows, Math.ceil(x / H + this.vDomWindowBuffer / H)));
       }
       e ? (this.vDomTopPad = t ? this.vDomRowHeight * this.vDomTop + A : this.scrollTop - h, this.vDomBottomPad = this.vDomBottom == f - 1 ? 0 : Math.max(this.vDomScrollHeight - this.vDomTopPad - o - h, 0)) : (this.vDomTopPad = 0, this.vDomRowHeight = Math.floor((o + h) / F), this.vDomBottomPad = this.vDomRowHeight * (f - this.vDomBottom - 1), this.vDomScrollHeight = h + o + this.vDomBottomPad - x), i.style.paddingTop = this.vDomTopPad + "px", i.style.paddingBottom = this.vDomBottomPad + "px", t && (this.scrollTop = this.vDomTopPad + h + A - (this.elementVertical.scrollWidth > this.elementVertical.clientWidth ? this.elementVertical.offsetHeight - x : 0)), this.scrollTop = Math.min(this.scrollTop, this.elementVertical.scrollHeight - x), this.elementVertical.scrollWidth > this.elementVertical.clientWidth && t && (this.scrollTop += this.elementVertical.offsetHeight - x), this.vDomScrollPosTop = this.scrollTop, this.vDomScrollPosBottom = this.scrollTop, s.scrollTop = this.scrollTop, this.dispatch("render-virtual-fill");
     }
@@ -10395,20 +10395,20 @@ function Cu(r, e) {
     return typeof p == "string" ? p.indexOf("%") > -1 ? b = t / 100 * parseInt(p) : b = parseInt(p) : b = p, b;
   }
   function f(p, b, v, B) {
-    var F = [], k = 0, I = 0, x = 0, H = s, X = 0, V = 0, N = [];
+    var F = [], _ = 0, I = 0, x = 0, H = s, X = 0, V = 0, N = [];
     function ae(z) {
       return v * (z.column.definition.widthGrow || 1);
     }
-    function _(z) {
+    function D(z) {
       return c(z.width) - v * (z.column.definition.widthShrink || 0);
     }
     return p.forEach(function(z, Ae) {
-      var J = B ? _(z) : ae(z);
+      var J = B ? D(z) : ae(z);
       z.column.minWidth >= J ? F.push(z) : z.column.maxWidth && z.column.maxWidth < J ? (z.width = z.column.maxWidth, b -= z.column.maxWidth, H -= B ? z.column.definition.widthShrink || 1 : z.column.definition.widthGrow || 1, H && (v = Math.floor(b / H))) : (N.push(z), V += B ? z.column.definition.widthShrink || 1 : z.column.definition.widthGrow || 1);
     }), F.length ? (F.forEach(function(z) {
-      k += B ? z.width - z.column.minWidth : z.column.minWidth, z.width = z.column.minWidth;
-    }), I = b - k, x = V ? Math.floor(I / V) : I, X = f(N, I, x, B)) : (X = V ? b - Math.floor(b / V) * V : b, N.forEach(function(z) {
-      z.width = B ? _(z) : ae(z);
+      _ += B ? z.width - z.column.minWidth : z.column.minWidth, z.width = z.column.minWidth;
+    }), I = b - _, x = V ? Math.floor(I / V) : I, X = f(N, I, x, B)) : (X = V ? b - Math.floor(b / V) * V : b, N.forEach(function(z) {
+      z.width = B ? D(z) : ae(z);
     })), X;
   }
   this.table.options.responsiveLayout && this.table.modExists("responsiveLayout", !0) && this.table.modules.responsiveLayout.update(), this.table.rowManager.element.scrollHeight > this.table.rowManager.element.clientHeight && (t -= this.table.rowManager.element.offsetWidth - this.table.rowManager.element.clientWidth), r.forEach(function(p) {
@@ -11889,7 +11889,7 @@ var Xu = "KwAAAAAAAAAACA4AUD0AADAgAAACAAAAAAAIABAAGABAAEgAUABYAGAAaABgAGgAYgBqAF
   return e === 11 && r.type === 12 || e === 28 && r.type === 29 ? !0 : e === 2 && r.type === 3;
 }, Ut = function(r) {
   return r.type === 17 || r.type === 15;
-}, pe = function(r) {
+}, me = function(r) {
   return r.type === 16 || Ut(r);
 }, ko = function(r) {
   return r.length > 1 ? [r[0], r[1]] : [r[0]];
@@ -12045,7 +12045,7 @@ function ms(r, e, t) {
   return t < 0 && (t += 1), t >= 1 && (t -= 1), t < 1 / 6 ? (e - r) * t * 6 + r : t < 1 / 2 ? e : t < 2 / 3 ? (e - r) * 6 * (2 / 3 - t) + r : r;
 }
 var pn = function(r, e) {
-  var t = e.filter(sA), A = t[0], i = t[1], s = t[2], n = t[3], o = (A.type === 17 ? Ve(A.number) : Pi.parse(r, A)) / (Math.PI * 2), a = pe(i) ? i.number / 100 : 0, l = pe(s) ? s.number / 100 : 0, h = typeof n < "u" && pe(n) ? oe(n, 1) : 1;
+  var t = e.filter(sA), A = t[0], i = t[1], s = t[2], n = t[3], o = (A.type === 17 ? Ve(A.number) : Pi.parse(r, A)) / (Math.PI * 2), a = me(i) ? i.number / 100 : 0, l = me(s) ? s.number / 100 : 0, h = typeof n < "u" && me(n) ? oe(n, 1) : 1;
   if (a === 0)
     return yt(l * 255, l * 255, l * 255, 1);
   var u = l <= 0.5 ? l * (a + 1) : l + a - l * a, c = l * 2 - u, f = ms(c, u, o + 1 / 3), p = ms(c, u, o), b = ms(c, u, o - 1 / 3);
@@ -12232,7 +12232,7 @@ var pn = function(r, e) {
   format: "color"
 }, Vi = function(r, e) {
   var t = Ft.parse(r, e[0]), A = e[1];
-  return A && pe(A) ? { color: t, stop: A } : { color: t, stop: null };
+  return A && me(A) ? { color: t, stop: A } : { color: t, stop: null };
 }, mn = function(r, e) {
   var t = r[0], A = r[r.length - 1];
   t.stop === null && (t.stop = Ee), A.stop === null && (A.stop = Et);
@@ -12407,7 +12407,7 @@ var pn = function(r, e) {
               case "bottom":
                 return s.push(Et), u;
             }
-          else (pe(c) || Ut(c)) && s.push(c);
+          else (me(c) || Ut(c)) && s.push(c);
         else if (re(c))
           switch (c.value) {
             case Jo:
@@ -12427,7 +12427,7 @@ var pn = function(r, e) {
             case Xo:
               return A = 3, !1;
           }
-        else if (Ut(c) || pe(c))
+        else if (Ut(c) || me(c))
           return Array.isArray(A) || (A = []), A.push(c), !1;
         return u;
       }, a);
@@ -12460,7 +12460,7 @@ var pn = function(r, e) {
           case "bottom":
             return s.push(Et), !1;
         }
-      else if (pe(u) || Ut(u))
+      else if (me(u) || Ut(u))
         return s.push(u), !1;
       return h;
     }, a) : o === 1 && (a = n.reduce(function(h, u) {
@@ -12481,7 +12481,7 @@ var pn = function(r, e) {
           case Xo:
             return A = 3, !1;
         }
-      else if (Ut(u) || pe(u))
+      else if (Ut(u) || me(u))
         return Array.isArray(A) || (A = []), A.push(u), !1;
       return h;
     }, a)), a) {
@@ -12574,7 +12574,7 @@ var $o = {
   prefix: !1,
   parse: function(r, e) {
     return qe(e).map(function(t) {
-      return t.filter(pe);
+      return t.filter(me);
     }).map(ko);
   }
 }, Ld = {
@@ -12618,7 +12618,7 @@ var Md = {
     });
   }
 }, Sd = function(r) {
-  return re(r) || pe(r);
+  return re(r) || me(r);
 }, Ni = function(r) {
   return {
     name: "border-" + r + "-color",
@@ -12634,7 +12634,7 @@ var Md = {
     prefix: !1,
     type: 1,
     parse: function(e, t) {
-      return ko(t.filter(pe));
+      return ko(t.filter(me));
     }
   };
 }, Kd = zi("top-left"), Pd = zi("top-right"), Vd = zi("bottom-right"), Nd = zi("bottom-left"), Gi = function(r) {
@@ -12817,7 +12817,7 @@ var rf = {
   type: 4
   /* TOKEN_VALUE */
 }, bn = function(r, e) {
-  return re(r) && r.value === "normal" ? 1.2 * e : r.type === 17 ? e * r.number : pe(r) ? oe(r, e) : e;
+  return re(r) && r.value === "normal" ? 1.2 * e : r.type === 17 ? e * r.number : me(r) ? oe(r, e) : e;
 }, of = {
   name: "list-style-image",
   initialValue: "none",
@@ -13127,7 +13127,7 @@ var rf = {
   prefix: !0,
   type: 1,
   parse: function(r, e) {
-    var t = e.filter(pe);
+    var t = e.filter(me);
     return t.length !== 2 ? Uf : [t[0], t[1]];
   }
 }, Rf = {
@@ -13549,7 +13549,7 @@ var xf = {
           return Ut(o) ? o : Ee;
         case "length-percentage":
           var a = s.parseComponentValue();
-          return pe(a) ? a : Ee;
+          return me(a) ? a : Ee;
         case "time":
           return qo.parse(r, s.parseComponentValue());
       }
@@ -14674,10 +14674,10 @@ var mg = 1, Bs = 2, Cs = 3, Qn = 4, Un = 5, wg = 7, Hn = 8, vs = 9, Es = 10, Rn 
                   l.appendChild(o.createTextNode(_A(B, F, !1)));
                 }
               } else if (u.name === "counters") {
-                var k = u.values.filter(sA), b = k[0], I = k[1], v = k[2];
+                var _ = u.values.filter(sA), b = _[0], I = _[1], v = _[2];
                 if (b && re(b)) {
-                  var x = s.counters.getCounterValues(b.value), H = v && re(v) ? wr.parse(s.context, v.value) : 3, X = I && I.type === 0 ? I.value : "", V = x.map(function(_) {
-                    return _A(_, H, !1);
+                  var x = s.counters.getCounterValues(b.value), H = v && re(v) ? wr.parse(s.context, v.value) : 3, X = I && I.type === 0 ? I.value : "", V = x.map(function(D) {
+                    return _A(D, H, !1);
                   }).join(X);
                   l.appendChild(o.createTextNode(V));
                 }
@@ -14905,8 +14905,8 @@ var sp = function(r, e) {
       v.push((s + a) / A.width), v.push((p + u) / A.width), v.push((n + b) / A.height), v.push((l + c) / A.height);
       var B = Math.max.apply(Math, v);
       B > 1 && (s /= B, n /= B, a /= B, l /= B, u /= B, c /= B, p /= B, b /= B);
-      var F = A.width - a, k = A.height - c, I = A.width - u, x = A.height - b, H = t.borderTopWidth, X = t.borderRightWidth, V = t.borderBottomWidth, N = t.borderLeftWidth, ae = oe(t.paddingTop, e.bounds.width), _ = oe(t.paddingRight, e.bounds.width), z = oe(t.paddingBottom, e.bounds.width), Ae = oe(t.paddingLeft, e.bounds.width);
-      this.topLeftBorderDoubleOuterBox = s > 0 || n > 0 ? le(A.left + N / 3, A.top + H / 3, s - N / 3, n - H / 3, ie.TOP_LEFT) : new T(A.left + N / 3, A.top + H / 3), this.topRightBorderDoubleOuterBox = s > 0 || n > 0 ? le(A.left + F, A.top + H / 3, a - X / 3, l - H / 3, ie.TOP_RIGHT) : new T(A.left + A.width - X / 3, A.top + H / 3), this.bottomRightBorderDoubleOuterBox = u > 0 || c > 0 ? le(A.left + I, A.top + k, u - X / 3, c - V / 3, ie.BOTTOM_RIGHT) : new T(A.left + A.width - X / 3, A.top + A.height - V / 3), this.bottomLeftBorderDoubleOuterBox = p > 0 || b > 0 ? le(A.left + N / 3, A.top + x, p - N / 3, b - V / 3, ie.BOTTOM_LEFT) : new T(A.left + N / 3, A.top + A.height - V / 3), this.topLeftBorderDoubleInnerBox = s > 0 || n > 0 ? le(A.left + N * 2 / 3, A.top + H * 2 / 3, s - N * 2 / 3, n - H * 2 / 3, ie.TOP_LEFT) : new T(A.left + N * 2 / 3, A.top + H * 2 / 3), this.topRightBorderDoubleInnerBox = s > 0 || n > 0 ? le(A.left + F, A.top + H * 2 / 3, a - X * 2 / 3, l - H * 2 / 3, ie.TOP_RIGHT) : new T(A.left + A.width - X * 2 / 3, A.top + H * 2 / 3), this.bottomRightBorderDoubleInnerBox = u > 0 || c > 0 ? le(A.left + I, A.top + k, u - X * 2 / 3, c - V * 2 / 3, ie.BOTTOM_RIGHT) : new T(A.left + A.width - X * 2 / 3, A.top + A.height - V * 2 / 3), this.bottomLeftBorderDoubleInnerBox = p > 0 || b > 0 ? le(A.left + N * 2 / 3, A.top + x, p - N * 2 / 3, b - V * 2 / 3, ie.BOTTOM_LEFT) : new T(A.left + N * 2 / 3, A.top + A.height - V * 2 / 3), this.topLeftBorderStroke = s > 0 || n > 0 ? le(A.left + N / 2, A.top + H / 2, s - N / 2, n - H / 2, ie.TOP_LEFT) : new T(A.left + N / 2, A.top + H / 2), this.topRightBorderStroke = s > 0 || n > 0 ? le(A.left + F, A.top + H / 2, a - X / 2, l - H / 2, ie.TOP_RIGHT) : new T(A.left + A.width - X / 2, A.top + H / 2), this.bottomRightBorderStroke = u > 0 || c > 0 ? le(A.left + I, A.top + k, u - X / 2, c - V / 2, ie.BOTTOM_RIGHT) : new T(A.left + A.width - X / 2, A.top + A.height - V / 2), this.bottomLeftBorderStroke = p > 0 || b > 0 ? le(A.left + N / 2, A.top + x, p - N / 2, b - V / 2, ie.BOTTOM_LEFT) : new T(A.left + N / 2, A.top + A.height - V / 2), this.topLeftBorderBox = s > 0 || n > 0 ? le(A.left, A.top, s, n, ie.TOP_LEFT) : new T(A.left, A.top), this.topRightBorderBox = a > 0 || l > 0 ? le(A.left + F, A.top, a, l, ie.TOP_RIGHT) : new T(A.left + A.width, A.top), this.bottomRightBorderBox = u > 0 || c > 0 ? le(A.left + I, A.top + k, u, c, ie.BOTTOM_RIGHT) : new T(A.left + A.width, A.top + A.height), this.bottomLeftBorderBox = p > 0 || b > 0 ? le(A.left, A.top + x, p, b, ie.BOTTOM_LEFT) : new T(A.left, A.top + A.height), this.topLeftPaddingBox = s > 0 || n > 0 ? le(A.left + N, A.top + H, Math.max(0, s - N), Math.max(0, n - H), ie.TOP_LEFT) : new T(A.left + N, A.top + H), this.topRightPaddingBox = a > 0 || l > 0 ? le(A.left + Math.min(F, A.width - X), A.top + H, F > A.width + X ? 0 : Math.max(0, a - X), Math.max(0, l - H), ie.TOP_RIGHT) : new T(A.left + A.width - X, A.top + H), this.bottomRightPaddingBox = u > 0 || c > 0 ? le(A.left + Math.min(I, A.width - N), A.top + Math.min(k, A.height - V), Math.max(0, u - X), Math.max(0, c - V), ie.BOTTOM_RIGHT) : new T(A.left + A.width - X, A.top + A.height - V), this.bottomLeftPaddingBox = p > 0 || b > 0 ? le(A.left + N, A.top + Math.min(x, A.height - V), Math.max(0, p - N), Math.max(0, b - V), ie.BOTTOM_LEFT) : new T(A.left + N, A.top + A.height - V), this.topLeftContentBox = s > 0 || n > 0 ? le(A.left + N + Ae, A.top + H + ae, Math.max(0, s - (N + Ae)), Math.max(0, n - (H + ae)), ie.TOP_LEFT) : new T(A.left + N + Ae, A.top + H + ae), this.topRightContentBox = a > 0 || l > 0 ? le(A.left + Math.min(F, A.width + N + Ae), A.top + H + ae, F > A.width + N + Ae ? 0 : a - N + Ae, l - (H + ae), ie.TOP_RIGHT) : new T(A.left + A.width - (X + _), A.top + H + ae), this.bottomRightContentBox = u > 0 || c > 0 ? le(A.left + Math.min(I, A.width - (N + Ae)), A.top + Math.min(k, A.height + H + ae), Math.max(0, u - (X + _)), c - (V + z), ie.BOTTOM_RIGHT) : new T(A.left + A.width - (X + _), A.top + A.height - (V + z)), this.bottomLeftContentBox = p > 0 || b > 0 ? le(A.left + N + Ae, A.top + x, Math.max(0, p - (N + Ae)), b - (V + z), ie.BOTTOM_LEFT) : new T(A.left + N + Ae, A.top + A.height - (V + z));
+      var F = A.width - a, _ = A.height - c, I = A.width - u, x = A.height - b, H = t.borderTopWidth, X = t.borderRightWidth, V = t.borderBottomWidth, N = t.borderLeftWidth, ae = oe(t.paddingTop, e.bounds.width), D = oe(t.paddingRight, e.bounds.width), z = oe(t.paddingBottom, e.bounds.width), Ae = oe(t.paddingLeft, e.bounds.width);
+      this.topLeftBorderDoubleOuterBox = s > 0 || n > 0 ? le(A.left + N / 3, A.top + H / 3, s - N / 3, n - H / 3, ie.TOP_LEFT) : new T(A.left + N / 3, A.top + H / 3), this.topRightBorderDoubleOuterBox = s > 0 || n > 0 ? le(A.left + F, A.top + H / 3, a - X / 3, l - H / 3, ie.TOP_RIGHT) : new T(A.left + A.width - X / 3, A.top + H / 3), this.bottomRightBorderDoubleOuterBox = u > 0 || c > 0 ? le(A.left + I, A.top + _, u - X / 3, c - V / 3, ie.BOTTOM_RIGHT) : new T(A.left + A.width - X / 3, A.top + A.height - V / 3), this.bottomLeftBorderDoubleOuterBox = p > 0 || b > 0 ? le(A.left + N / 3, A.top + x, p - N / 3, b - V / 3, ie.BOTTOM_LEFT) : new T(A.left + N / 3, A.top + A.height - V / 3), this.topLeftBorderDoubleInnerBox = s > 0 || n > 0 ? le(A.left + N * 2 / 3, A.top + H * 2 / 3, s - N * 2 / 3, n - H * 2 / 3, ie.TOP_LEFT) : new T(A.left + N * 2 / 3, A.top + H * 2 / 3), this.topRightBorderDoubleInnerBox = s > 0 || n > 0 ? le(A.left + F, A.top + H * 2 / 3, a - X * 2 / 3, l - H * 2 / 3, ie.TOP_RIGHT) : new T(A.left + A.width - X * 2 / 3, A.top + H * 2 / 3), this.bottomRightBorderDoubleInnerBox = u > 0 || c > 0 ? le(A.left + I, A.top + _, u - X * 2 / 3, c - V * 2 / 3, ie.BOTTOM_RIGHT) : new T(A.left + A.width - X * 2 / 3, A.top + A.height - V * 2 / 3), this.bottomLeftBorderDoubleInnerBox = p > 0 || b > 0 ? le(A.left + N * 2 / 3, A.top + x, p - N * 2 / 3, b - V * 2 / 3, ie.BOTTOM_LEFT) : new T(A.left + N * 2 / 3, A.top + A.height - V * 2 / 3), this.topLeftBorderStroke = s > 0 || n > 0 ? le(A.left + N / 2, A.top + H / 2, s - N / 2, n - H / 2, ie.TOP_LEFT) : new T(A.left + N / 2, A.top + H / 2), this.topRightBorderStroke = s > 0 || n > 0 ? le(A.left + F, A.top + H / 2, a - X / 2, l - H / 2, ie.TOP_RIGHT) : new T(A.left + A.width - X / 2, A.top + H / 2), this.bottomRightBorderStroke = u > 0 || c > 0 ? le(A.left + I, A.top + _, u - X / 2, c - V / 2, ie.BOTTOM_RIGHT) : new T(A.left + A.width - X / 2, A.top + A.height - V / 2), this.bottomLeftBorderStroke = p > 0 || b > 0 ? le(A.left + N / 2, A.top + x, p - N / 2, b - V / 2, ie.BOTTOM_LEFT) : new T(A.left + N / 2, A.top + A.height - V / 2), this.topLeftBorderBox = s > 0 || n > 0 ? le(A.left, A.top, s, n, ie.TOP_LEFT) : new T(A.left, A.top), this.topRightBorderBox = a > 0 || l > 0 ? le(A.left + F, A.top, a, l, ie.TOP_RIGHT) : new T(A.left + A.width, A.top), this.bottomRightBorderBox = u > 0 || c > 0 ? le(A.left + I, A.top + _, u, c, ie.BOTTOM_RIGHT) : new T(A.left + A.width, A.top + A.height), this.bottomLeftBorderBox = p > 0 || b > 0 ? le(A.left, A.top + x, p, b, ie.BOTTOM_LEFT) : new T(A.left, A.top + A.height), this.topLeftPaddingBox = s > 0 || n > 0 ? le(A.left + N, A.top + H, Math.max(0, s - N), Math.max(0, n - H), ie.TOP_LEFT) : new T(A.left + N, A.top + H), this.topRightPaddingBox = a > 0 || l > 0 ? le(A.left + Math.min(F, A.width - X), A.top + H, F > A.width + X ? 0 : Math.max(0, a - X), Math.max(0, l - H), ie.TOP_RIGHT) : new T(A.left + A.width - X, A.top + H), this.bottomRightPaddingBox = u > 0 || c > 0 ? le(A.left + Math.min(I, A.width - N), A.top + Math.min(_, A.height - V), Math.max(0, u - X), Math.max(0, c - V), ie.BOTTOM_RIGHT) : new T(A.left + A.width - X, A.top + A.height - V), this.bottomLeftPaddingBox = p > 0 || b > 0 ? le(A.left + N, A.top + Math.min(x, A.height - V), Math.max(0, p - N), Math.max(0, b - V), ie.BOTTOM_LEFT) : new T(A.left + N, A.top + A.height - V), this.topLeftContentBox = s > 0 || n > 0 ? le(A.left + N + Ae, A.top + H + ae, Math.max(0, s - (N + Ae)), Math.max(0, n - (H + ae)), ie.TOP_LEFT) : new T(A.left + N + Ae, A.top + H + ae), this.topRightContentBox = a > 0 || l > 0 ? le(A.left + Math.min(F, A.width + N + Ae), A.top + H + ae, F > A.width + N + Ae ? 0 : a - N + Ae, l - (H + ae), ie.TOP_RIGHT) : new T(A.left + A.width - (X + D), A.top + H + ae), this.bottomRightContentBox = u > 0 || c > 0 ? le(A.left + Math.min(I, A.width - (N + Ae)), A.top + Math.min(_, A.height + H + ae), Math.max(0, u - (X + D)), c - (V + z), ie.BOTTOM_RIGHT) : new T(A.left + A.width - (X + D), A.top + A.height - (V + z)), this.bottomLeftContentBox = p > 0 || b > 0 ? le(A.left + N + Ae, A.top + x, Math.max(0, p - (N + Ae)), b - (V + z), ie.BOTTOM_LEFT) : new T(A.left + N + Ae, A.top + A.height - (V + z));
     }
     return r;
   }()
@@ -15186,7 +15186,7 @@ var le = function(r, e, t, A, i) {
   var A = e[0], i = e[1], s = e[2], n = r[0], o = r[1];
   if (!n)
     return [0, 0];
-  if (pe(n) && o && pe(o))
+  if (me(n) && o && me(o))
     return [oe(n, t.width), oe(o, t.height)];
   var a = Bi(s);
   if (re(n) && (n.value === iA.CONTAIN || n.value === iA.COVER)) {
@@ -15211,11 +15211,11 @@ var le = function(r, e, t, A, i) {
   }
   if (a) {
     var B = 0, F = 0;
-    return pe(n) ? B = oe(n, t.width) : pe(o) && (F = oe(o, t.height)), Jt(n) ? B = F * s : (!o || Jt(o)) && (F = B / s), [B, F];
+    return me(n) ? B = oe(n, t.width) : me(o) && (F = oe(o, t.height)), Jt(n) ? B = F * s : (!o || Jt(o)) && (F = B / s), [B, F];
   }
-  var k = null, I = null;
-  if (pe(n) ? k = oe(n, t.width) : o && pe(o) && (I = oe(o, t.height)), k !== null && (!o || Jt(o)) && (I = h && u ? k / A * i : t.height), I !== null && Jt(n) && (k = h && u ? I / i * A : t.width), k !== null && I !== null)
-    return [k, I];
+  var _ = null, I = null;
+  if (me(n) ? _ = oe(n, t.width) : o && me(o) && (I = oe(o, t.height)), _ !== null && (!o || Jt(o)) && (I = h && u ? _ / A * i : t.height), I !== null && Jt(n) && (_ = h && u ? I / i * A : t.width), _ !== null && I !== null)
+    return [_, I];
   throw new Error("Unable to calculate background-size for element");
 }, Yt = function(r, e) {
   var t = r[e];
@@ -15400,7 +15400,7 @@ var le = function(r, e, t, A, i) {
       }
     }, e.prototype.renderNodeContent = function(t) {
       return Te(this, void 0, void 0, function() {
-        var A, i, s, n, o, a, F, F, l, h, u, c, I, f, p, x, b, v, B, F, k, I, x;
+        var A, i, s, n, o, a, F, F, l, h, u, c, I, f, p, x, b, v, B, F, _, I, x;
         return Ue(this, function(H) {
           switch (H.label) {
             case 0:
@@ -15475,13 +15475,13 @@ var le = function(r, e, t, A, i) {
               )) return [3, 20];
               if (A.styles.listStyleImage === null) return [3, 19];
               if (B = A.styles.listStyleImage, B.type !== 0) return [3, 18];
-              F = void 0, k = B.url, H.label = 15;
+              F = void 0, _ = B.url, H.label = 15;
             case 15:
-              return H.trys.push([15, 17, , 18]), [4, this.context.cache.match(k)];
+              return H.trys.push([15, 17, , 18]), [4, this.context.cache.match(_)];
             case 16:
               return F = H.sent(), this.ctx.drawImage(F, A.bounds.left - (F.width + 10), A.bounds.top), [3, 18];
             case 17:
-              return H.sent(), this.context.logger.error("Error loading list-style-image " + k), [3, 18];
+              return H.sent(), this.context.logger.error("Error loading list-style-image " + _), [3, 18];
             case 18:
               return [3, 20];
             case 19:
@@ -15600,7 +15600,7 @@ var le = function(r, e, t, A, i) {
           switch (l.label) {
             case 0:
               A = t.styles.backgroundImage.length - 1, i = function(h) {
-                var u, c, f, ae, de, he, Ae, J, V, p, ae, de, he, Ae, J, b, v, B, F, k, I, x, H, X, V, N, ae, _, z, Ae, J, q, de, he, tt, me, _e, At, Oe, ze, Be, Se;
+                var u, c, f, ae, de, he, Ae, J, V, p, ae, de, he, Ae, J, b, v, B, F, _, I, x, H, X, V, N, ae, D, z, Ae, J, q, de, he, tt, we, _e, At, Oe, ze, Be, Se;
                 return Ue(this, function(lt) {
                   switch (lt.label) {
                     case 0:
@@ -15619,15 +15619,15 @@ var le = function(r, e, t, A, i) {
                         u.width / u.height
                       ]), ae = f[0], de = f[1], he = f[2], Ae = f[3], J = f[4], V = s.ctx.createPattern(s.resizeImage(u, Ae, J), "repeat"), s.renderRepeat(ae, V, de, he)), [3, 6];
                     case 5:
-                      Qd(h) ? (p = xs(t, A, [null, null, null]), ae = p[0], de = p[1], he = p[2], Ae = p[3], J = p[4], b = Cd(h.angle, Ae, J), v = b[0], B = b[1], F = b[2], k = b[3], I = b[4], x = document.createElement("canvas"), x.width = Ae, x.height = J, H = x.getContext("2d"), X = H.createLinearGradient(B, k, F, I), mn(h.stops, v).forEach(function(ce) {
-                        return X.addColorStop(ce.stop, Ce(ce.color));
+                      Qd(h) ? (p = xs(t, A, [null, null, null]), ae = p[0], de = p[1], he = p[2], Ae = p[3], J = p[4], b = Cd(h.angle, Ae, J), v = b[0], B = b[1], F = b[2], _ = b[3], I = b[4], x = document.createElement("canvas"), x.width = Ae, x.height = J, H = x.getContext("2d"), X = H.createLinearGradient(B, _, F, I), mn(h.stops, v).forEach(function(ue) {
+                        return X.addColorStop(ue.stop, Ce(ue.color));
                       }), H.fillStyle = X, H.fillRect(0, 0, Ae, J), Ae > 0 && J > 0 && (V = s.ctx.createPattern(x, "repeat"), s.renderRepeat(ae, V, de, he))) : Ud(h) && (N = xs(t, A, [
                         null,
                         null,
                         null
-                      ]), ae = N[0], _ = N[1], z = N[2], Ae = N[3], J = N[4], q = h.position.length === 0 ? [Rr] : h.position, de = oe(q[0], Ae), he = oe(q[q.length - 1], J), tt = vd(h, de, he, Ae, J), me = tt[0], _e = tt[1], me > 0 && _e > 0 && (At = s.ctx.createRadialGradient(_ + de, z + he, 0, _ + de, z + he, me), mn(h.stops, me * 2).forEach(function(ce) {
-                        return At.addColorStop(ce.stop, Ce(ce.color));
-                      }), s.path(ae), s.ctx.fillStyle = At, me !== _e ? (Oe = t.bounds.left + 0.5 * t.bounds.width, ze = t.bounds.top + 0.5 * t.bounds.height, Be = _e / me, Se = 1 / Be, s.ctx.save(), s.ctx.translate(Oe, ze), s.ctx.transform(1, 0, 0, Be, 0, 0), s.ctx.translate(-Oe, -ze), s.ctx.fillRect(_, Se * (z - ze) + ze, Ae, J * Se), s.ctx.restore()) : s.ctx.fill())), lt.label = 6;
+                      ]), ae = N[0], D = N[1], z = N[2], Ae = N[3], J = N[4], q = h.position.length === 0 ? [Rr] : h.position, de = oe(q[0], Ae), he = oe(q[q.length - 1], J), tt = vd(h, de, he, Ae, J), we = tt[0], _e = tt[1], we > 0 && _e > 0 && (At = s.ctx.createRadialGradient(D + de, z + he, 0, D + de, z + he, we), mn(h.stops, we * 2).forEach(function(ue) {
+                        return At.addColorStop(ue.stop, Ce(ue.color));
+                      }), s.path(ae), s.ctx.fillStyle = At, we !== _e ? (Oe = t.bounds.left + 0.5 * t.bounds.width, ze = t.bounds.top + 0.5 * t.bounds.height, Be = _e / we, Se = 1 / Be, s.ctx.save(), s.ctx.translate(Oe, ze), s.ctx.transform(1, 0, 0, Be, 0, 0), s.ctx.translate(-Oe, -ze), s.ctx.fillRect(D, Se * (z - ze) + ze, Ae, J * Se), s.ctx.restore()) : s.ctx.fill())), lt.label = 6;
                     case 6:
                       return A--, [
                         2
@@ -15746,9 +15746,9 @@ var le = function(r, e, t, A, i) {
       });
     }, e.prototype.renderDashedDottedBorder = function(t, A, i, s, n) {
       return Te(this, void 0, void 0, function() {
-        var o, a, l, h, u, c, f, p, b, v, B, F, k, I, x, H, x, H;
+        var o, a, l, h, u, c, f, p, b, v, B, F, _, I, x, H, x, H;
         return Ue(this, function(X) {
-          return this.ctx.save(), o = Ip(s, i), a = Jn(s, i), n === 2 && (this.path(a), this.ctx.clip()), Pe(a[0]) ? (l = a[0].start.x, h = a[0].start.y) : (l = a[0].x, h = a[0].y), Pe(a[1]) ? (u = a[1].end.x, c = a[1].end.y) : (u = a[1].x, c = a[1].y), i === 0 || i === 2 ? f = Math.abs(l - u) : f = Math.abs(h - c), this.ctx.beginPath(), n === 3 ? this.formatPath(o) : this.formatPath(a.slice(0, 2)), p = A < 3 ? A * 3 : A * 2, b = A < 3 ? A * 2 : A, n === 3 && (p = A, b = A), v = !0, f <= p * 2 ? v = !1 : f <= p * 2 + b ? (B = f / (2 * p + b), p *= B, b *= B) : (F = Math.floor((f + b) / (p + b)), k = (f - F * p) / (F - 1), I = (f - (F + 1) * p) / F, b = I <= 0 || Math.abs(b - k) < Math.abs(b - I) ? k : I), v && (n === 3 ? this.ctx.setLineDash([0, p + b]) : this.ctx.setLineDash([p, b])), n === 3 ? (this.ctx.lineCap = "round", this.ctx.lineWidth = A) : this.ctx.lineWidth = A * 2 + 1.1, this.ctx.strokeStyle = Ce(t), this.ctx.stroke(), this.ctx.setLineDash([]), n === 2 && (Pe(a[0]) && (x = a[3], H = a[0], this.ctx.beginPath(), this.formatPath([new T(x.end.x, x.end.y), new T(H.start.x, H.start.y)]), this.ctx.stroke()), Pe(a[1]) && (x = a[1], H = a[2], this.ctx.beginPath(), this.formatPath([new T(x.end.x, x.end.y), new T(H.start.x, H.start.y)]), this.ctx.stroke())), this.ctx.restore(), [
+          return this.ctx.save(), o = Ip(s, i), a = Jn(s, i), n === 2 && (this.path(a), this.ctx.clip()), Pe(a[0]) ? (l = a[0].start.x, h = a[0].start.y) : (l = a[0].x, h = a[0].y), Pe(a[1]) ? (u = a[1].end.x, c = a[1].end.y) : (u = a[1].x, c = a[1].y), i === 0 || i === 2 ? f = Math.abs(l - u) : f = Math.abs(h - c), this.ctx.beginPath(), n === 3 ? this.formatPath(o) : this.formatPath(a.slice(0, 2)), p = A < 3 ? A * 3 : A * 2, b = A < 3 ? A * 2 : A, n === 3 && (p = A, b = A), v = !0, f <= p * 2 ? v = !1 : f <= p * 2 + b ? (B = f / (2 * p + b), p *= B, b *= B) : (F = Math.floor((f + b) / (p + b)), _ = (f - F * p) / (F - 1), I = (f - (F + 1) * p) / F, b = I <= 0 || Math.abs(b - _) < Math.abs(b - I) ? _ : I), v && (n === 3 ? this.ctx.setLineDash([0, p + b]) : this.ctx.setLineDash([p, b])), n === 3 ? (this.ctx.lineCap = "round", this.ctx.lineWidth = A) : this.ctx.lineWidth = A * 2 + 1.1, this.ctx.strokeStyle = Ce(t), this.ctx.stroke(), this.ctx.setLineDash([]), n === 2 && (Pe(a[0]) && (x = a[3], H = a[0], this.ctx.beginPath(), this.formatPath([new T(x.end.x, x.end.y), new T(H.start.x, H.start.y)]), this.ctx.stroke()), Pe(a[1]) && (x = a[1], H = a[2], this.ctx.beginPath(), this.formatPath([new T(x.end.x, x.end.y), new T(H.start.x, H.start.y)]), this.ctx.stroke())), this.ctx.restore(), [
             2
             /*return*/
           ];
@@ -15865,7 +15865,7 @@ var le = function(r, e, t, A, i) {
 typeof window < "u" && ma.setContext(window);
 var $p = function(r, e) {
   return Te(void 0, void 0, void 0, function() {
-    var t, A, i, s, n, o, a, l, h, u, c, f, p, b, v, B, F, k, I, x, X, H, X, V, N, ae, _, z, Ae, J, q, de, he, tt, me, _e, At, Oe, ze, Be;
+    var t, A, i, s, n, o, a, l, h, u, c, f, p, b, v, B, F, _, I, x, X, H, X, V, N, ae, D, z, Ae, J, q, de, he, tt, we, _e, At, Oe, ze, Be;
     return Ue(this, function(Se) {
       switch (Se.label) {
         case 0:
@@ -15880,7 +15880,7 @@ var $p = function(r, e) {
             imageTimeout: (N = e.imageTimeout) !== null && N !== void 0 ? N : 15e3,
             proxy: e.proxy,
             useCORS: (ae = e.useCORS) !== null && ae !== void 0 ? ae : !1
-          }, s = rr({ logging: (_ = e.logging) !== null && _ !== void 0 ? _ : !0, cache: e.cache }, i), n = {
+          }, s = rr({ logging: (D = e.logging) !== null && D !== void 0 ? D : !0, cache: e.cache }, i), n = {
             windowWidth: (z = e.windowWidth) !== null && z !== void 0 ? z : A.innerWidth,
             windowHeight: (Ae = e.windowHeight) !== null && Ae !== void 0 ? Ae : A.innerHeight,
             scrollX: (J = e.scrollX) !== null && J !== void 0 ? J : A.pageXOffset,
@@ -15893,10 +15893,10 @@ var $p = function(r, e) {
             copyStyles: l
           }, a.logger.debug("Starting document clone with size " + o.width + "x" + o.height + " scrolled to " + -o.left + "," + -o.top), u = new Gn(a, r, h), c = u.clonedReferenceElement, c ? [4, u.toIFrame(t, o)] : [2, Promise.reject("Unable to find element in cloned iframe")];
         case 1:
-          return f = Se.sent(), p = Mr(c) || qg(c) ? Hu(c.ownerDocument) : Oi(a, c), b = p.width, v = p.height, B = p.left, F = p.top, k = qp(a, c, e.backgroundColor), I = {
+          return f = Se.sent(), p = Mr(c) || qg(c) ? Hu(c.ownerDocument) : Oi(a, c), b = p.width, v = p.height, B = p.left, F = p.top, _ = qp(a, c, e.backgroundColor), I = {
             canvas: e.canvas,
-            backgroundColor: k,
-            scale: (me = (tt = e.scale) !== null && tt !== void 0 ? tt : A.devicePixelRatio) !== null && me !== void 0 ? me : 1,
+            backgroundColor: _,
+            scale: (we = (tt = e.scale) !== null && tt !== void 0 ? tt : A.devicePixelRatio) !== null && we !== void 0 ? we : 1,
             x: ((_e = e.x) !== null && _e !== void 0 ? _e : 0) + B,
             y: ((At = e.y) !== null && At !== void 0 ? At : 0) + F,
             width: (Oe = e.width) !== null && Oe !== void 0 ? Oe : Math.ceil(b),
@@ -15905,7 +15905,7 @@ var $p = function(r, e) {
         case 2:
           return x = Se.sent(), [3, 5];
         case 3:
-          return a.logger.debug("Document cloned, element located at " + B + "," + F + " with size " + b + "x" + v + " using computed rendering"), a.logger.debug("Starting DOM parsing"), H = la(a, c), k === H.styles.backgroundColor && (H.styles.backgroundColor = ot.TRANSPARENT), a.logger.debug("Starting renderer for element at " + I.x + "," + I.y + " with size " + I.width + "x" + I.height), X = new Pp(a, I), [4, X.render(H)];
+          return a.logger.debug("Document cloned, element located at " + B + "," + F + " with size " + b + "x" + v + " using computed rendering"), a.logger.debug("Starting DOM parsing"), H = la(a, c), _ === H.styles.backgroundColor && (H.styles.backgroundColor = ot.TRANSPARENT), a.logger.debug("Starting renderer for element at " + I.x + "," + I.y + " with size " + I.width + "x" + I.height), X = new Pp(a, I), [4, X.render(H)];
         case 4:
           x = Se.sent(), Se.label = 5;
         case 5:
@@ -16028,7 +16028,8 @@ const em = { class: "positions-card" }, tm = {
       { field: "computed_cash_flow_on_entry", label: "Entry cash flow" },
       { field: "computed_cash_flow_on_exercise", label: "If exercised cash flow" },
       { field: "entry_exercise_cash_flow_pct", label: "(Entry / If exercised) cash flow (computed)" },
-      { field: "computed_be_price", label: "BE Price" }
+      { field: "computed_be_price", label: "BE Price" },
+      { field: "maintenance_margin_change", label: "Maintenance Margin Change" }
     ], B = Y({});
     function F() {
       const d = new URL(window.location.href).searchParams.get("position_col_renames");
@@ -16043,7 +16044,7 @@ const em = { class: "positions-card" }, tm = {
         return {};
       }
     }
-    function k(g) {
+    function _(g) {
       const d = new URL(window.location.href), Q = Object.entries(g).filter(([K, P]) => P && P.trim()).map(([K, P]) => `${K}:${encodeURIComponent(P)}`).join("-and-");
       Q ? d.searchParams.set("position_col_renames", Q) : d.searchParams.delete("position_col_renames"), window.history.replaceState({}, "", d.toString());
     }
@@ -16055,7 +16056,7 @@ const em = { class: "positions-card" }, tm = {
       x.value && (B.value = {
         ...B.value,
         [x.value]: H.value.trim()
-      }, k(B.value), I.value = !1, ct(() => ht()));
+      }, _(B.value), I.value = !1, ct(() => ht()));
     }
     function N() {
       I.value = !1;
@@ -16067,7 +16068,7 @@ const em = { class: "positions-card" }, tm = {
       const Q = d.split("-and-").map((P) => P.trim()).filter(Boolean), K = new Set(v.map((P) => P.field));
       return Q.filter((P) => K.has(P));
     }
-    const _ = Y(ae());
+    const D = Y(ae());
     function z() {
       const d = new URL(window.location.href).searchParams.get("position_col_widths");
       if (!d) return {};
@@ -16115,11 +16116,11 @@ const em = { class: "positions-card" }, tm = {
       const d = g.substring(0, 2), Q = g.substring(2, 4), K = g.substring(4, 6);
       return `20${d}-${Q}-${K}`;
     }
-    const me = sl(), _e = nl();
+    const we = sl(), _e = nl();
     async function At(g, d) {
       try {
         if (d) {
-          const { error: Q } = await me.schema("hf").from("positionsAndThesisConnection").upsert({
+          const { error: Q } = await we.schema("hf").from("positionsAndThesisConnection").upsert({
             symbol_root: g,
             thesis_id: d,
             updated_at: (/* @__PURE__ */ new Date()).toISOString()
@@ -16128,7 +16129,7 @@ const em = { class: "positions-card" }, tm = {
           });
           if (Q) throw Q;
         } else {
-          const { error: Q } = await me.schema("hf").from("positionsAndThesisConnection").delete().eq("symbol_root", g);
+          const { error: Q } = await we.schema("hf").from("positionsAndThesisConnection").delete().eq("symbol_root", g);
           if (Q) throw Q;
         }
         await Promise.all([
@@ -16180,7 +16181,7 @@ const em = { class: "positions-card" }, tm = {
         return `⏱️ Last Updated: ${g}`;
       }
     }
-    function ce() {
+    function ue() {
       return [
         {
           label: "Margin Impact",
@@ -16207,8 +16208,8 @@ const em = { class: "positions-card" }, tm = {
       ];
     }
     function ya(g) {
-      const d = _.value.indexOf(g);
-      d > -1 && (_.value.splice(d, 1), Pr(_.value), ct(() => {
+      const d = D.value.indexOf(g);
+      d > -1 && (D.value.splice(d, 1), Pr(D.value), ct(() => {
         ht();
       }));
     }
@@ -16244,11 +16245,11 @@ const em = { class: "positions-card" }, tm = {
           minWidth: 80,
           width: J.value.legal_entity || void 0,
           frozen: !0,
-          visible: _.value.includes("legal_entity"),
+          visible: D.value.includes("legal_entity"),
           bottomCalc: g ? () => "All Accounts" : void 0,
           bottomCalcFormatter: g ? () => "All Accounts" : void 0,
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("legal_entity")}</span>
+          <span>${pe("legal_entity")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getRow().getData();
@@ -16258,13 +16259,13 @@ const em = { class: "positions-card" }, tm = {
             return typeof C == "object" && C !== null ? C.name || C.id || "" : C || "";
           },
           cellClick: (w, m) => {
-            var D;
-            if ((D = m.getRow().getData()) != null && D._isThesisGroup) return;
+            var k;
+            if ((k = m.getRow().getData()) != null && k._isThesisGroup) return;
             const C = m.getValue(), y = typeof C == "object" && C !== null ? C.name || C.id : C;
             ts("legal_entity", y);
           },
           contextMenu: [
-            ...ce()
+            ...ue()
           ]
         },
         {
@@ -16274,30 +16275,30 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.symbol || void 0,
           // ADD THIS LINE
           frozen: !0,
-          visible: _.value.includes("symbol"),
+          visible: D.value.includes("symbol"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("symbol")}</span>
+          <span>${pe("symbol")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getRow().getData();
             if (m != null && m._isThesisGroup) {
-              const D = "#495057", j = w.getValue() || "";
-              return `<span style="font-weight: 600; color: ${D};">${j}</span>`;
+              const k = "#495057", j = w.getValue() || "";
+              return `<span style="font-weight: 600; color: ${k};">${j}</span>`;
             }
             const C = he(w.getValue()), y = new Set(c.value);
-            return C.map((D) => `<span class="${y.has(D) ? "fi-tag fi-tag-selected" : "fi-tag"}">${D}</span>`).join(" ");
+            return C.map((k) => `<span class="${y.has(k) ? "fi-tag fi-tag-selected" : "fi-tag"}">${k}</span>`).join(" ");
           },
           cellClick: (w, m) => {
             var j;
             const C = m.getRow().getData();
             if (C != null && C._isThesisGroup) return;
-            const D = w.target.closest(".fi-tag");
-            if (D) {
-              const O = (j = D.textContent) == null ? void 0 : j.trim();
+            const k = w.target.closest(".fi-tag");
+            if (k) {
+              const O = (j = k.textContent) == null ? void 0 : j.trim();
               O && ts("symbol", O);
             }
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "Expiry date",
@@ -16305,8 +16306,8 @@ const em = { class: "positions-card" }, tm = {
           minWidth: 110,
           width: J.value.expiry_date || void 0,
           hozAlign: "center",
-          visible: _.value.includes("expiry_date"),
-          sorter: (w, m, C, y, D, j, O) => {
+          visible: D.value.includes("expiry_date"),
+          sorter: (w, m, C, y, k, j, O) => {
             const M = (te) => te.asset_class === "OPT" && he(te.symbol)[1] || "", S = M(C.getData()), $ = M(y.getData());
             return S < $ ? -1 : S > $ ? 1 : 0;
           },
@@ -16321,7 +16322,7 @@ const em = { class: "positions-card" }, tm = {
             }
             return '<span style="color:#aaa;font-style:italic;">Not applicable</span>';
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "Thesis",
@@ -16329,9 +16330,9 @@ const em = { class: "positions-card" }, tm = {
           minWidth: 80,
           width: J.value.thesis || void 0,
           // ADD THIS LINE
-          visible: _.value.includes("thesis"),
+          visible: D.value.includes("thesis"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("thesis")}</span>
+          <span>${pe("thesis")}</span>
         </div>`,
           formatter: (w) => {
             try {
@@ -16351,10 +16352,10 @@ const em = { class: "positions-card" }, tm = {
               (l.data.value || []).forEach((j) => {
                 m[j.id] = j.title;
               });
-              const y = w.getRow().getData().thesis, D = (y == null ? void 0 : y.id) || "";
+              const y = w.getRow().getData().thesis, k = (y == null ? void 0 : y.id) || "";
               return {
                 values: m,
-                defaultValue: D,
+                defaultValue: k,
                 clearable: !0,
                 verticalNavigation: "editor"
               };
@@ -16368,7 +16369,7 @@ const em = { class: "positions-card" }, tm = {
                 return w;
               if (typeof w == "string") {
                 if (!w) return null;
-                const y = (l.data.value || []).find((D) => D.id === w);
+                const y = (l.data.value || []).find((k) => k.id === w);
                 return y ? { id: y.id, title: y.title, description: y.description } : null;
               }
               return null;
@@ -16378,9 +16379,9 @@ const em = { class: "positions-card" }, tm = {
           },
           cellEdited: async (w) => {
             try {
-              const m = w.getValue(), C = (m == null ? void 0 : m.id) || null, y = w.getRow().getData(), D = y == null ? void 0 : y.symbol;
-              if (!D) return;
-              const j = rl(D);
+              const m = w.getValue(), C = (m == null ? void 0 : m.id) || null, y = w.getRow().getData(), k = y == null ? void 0 : y.symbol;
+              if (!k) return;
+              const j = rl(k);
               if (!j) return;
               await At(j, C);
             } catch (m) {
@@ -16409,16 +16410,16 @@ const em = { class: "positions-card" }, tm = {
               console.warn("Thesis cell double click error:", C);
             }
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "Asset Class",
           field: "asset_class",
           minWidth: 80,
           width: J.value.asset_class || void 0,
-          visible: _.value.includes("asset_class"),
+          visible: D.value.includes("asset_class"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("asset_class")}</span>
+          <span>${pe("asset_class")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getRow().getData();
@@ -16430,7 +16431,7 @@ const em = { class: "positions-card" }, tm = {
             const y = m.getValue();
             ts("asset_class", y);
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "Conid",
@@ -16438,15 +16439,15 @@ const em = { class: "positions-card" }, tm = {
           minWidth: 80,
           width: J.value.conid || void 0,
           // ADD THIS LINE
-          visible: _.value.includes("conid"),
+          visible: D.value.includes("conid"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("conid")}</span>
+          <span>${pe("conid")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getRow().getData();
             return m != null && m._isThesisGroup ? "" : w.getValue() || "";
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "Underlying Conid",
@@ -16454,15 +16455,15 @@ const em = { class: "positions-card" }, tm = {
           minWidth: 80,
           width: J.value.undConid || void 0,
           // ADD THIS LINE
-          visible: _.value.includes("undConid"),
+          visible: D.value.includes("undConid"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("undConid")}</span>
+          <span>${pe("undConid")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getRow().getData();
             return m != null && m._isThesisGroup ? "" : w.getValue() || "";
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "Multiplier",
@@ -16471,7 +16472,7 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.multiplier || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("multiplier"),
+          visible: D.value.includes("multiplier"),
           // Set bottom calc during initialization
           bottomCalc: g ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
@@ -16481,13 +16482,13 @@ const em = { class: "positions-card" }, tm = {
             return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${de(m)}</span>`;
           } : void 0,
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("multiplier")}</span>
+          <span>${pe("multiplier")}</span>
         </div>`,
           formatter: (w) => {
             var m;
             return (m = w.getRow().getData()) != null && m._isThesisGroup ? "" : de(w.getValue());
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "Qty",
@@ -16496,7 +16497,7 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.qty || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("qty"),
+          visible: D.value.includes("qty"),
           // Set bottom calc during initialization
           bottomCalc: g ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
@@ -16506,13 +16507,13 @@ const em = { class: "positions-card" }, tm = {
             return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${de(m)}</span>`;
           } : void 0,
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("qty")}</span>
+          <span>${pe("qty")}</span>
         </div>`,
           formatter: (w) => {
             var m;
             return (m = w.getRow().getData()) != null && m._isThesisGroup, de(w.getValue());
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "Avg Price",
@@ -16521,15 +16522,15 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.avgPrice || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("avgPrice"),
+          visible: D.value.includes("avgPrice"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("avgPrice")}</span>
+          <span>${pe("avgPrice")}</span>
         </div>`,
           formatter: (w) => {
             var m;
             return (m = w.getRow().getData()) != null && m._isThesisGroup ? "" : q(w.getValue());
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "Market Price",
@@ -16538,15 +16539,15 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.price || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("price"),
+          visible: D.value.includes("price"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("price")}</span>
+          <span>${pe("price")}</span>
         </div>`,
           formatter: (w) => {
             var m;
             return (m = w.getRow().getData()) != null && m._isThesisGroup ? "" : q(w.getValue());
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "Ul CM Price",
@@ -16555,9 +16556,9 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.market_price || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("market_price"),
+          visible: D.value.includes("market_price"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("market_price")}</span>
+          <span>${pe("market_price")}</span>
         </div>`,
           formatter: (w) => {
             var y;
@@ -16574,7 +16575,7 @@ const em = { class: "positions-card" }, tm = {
                 if (!C)
                   return "⏱️ Last Updated: Not available";
                 try {
-                  const y = new Date(C), D = Intl.DateTimeFormat().resolvedOptions().timeZone, O = {
+                  const y = new Date(C), k = Intl.DateTimeFormat().resolvedOptions().timeZone, O = {
                     "Asia/Kolkata": "IST",
                     "Asia/Calcutta": "IST",
                     "America/New_York": y.getMonth() >= 2 && y.getMonth() < 10 ? "EDT" : "EST",
@@ -16584,17 +16585,17 @@ const em = { class: "positions-card" }, tm = {
                     "Europe/London": y.getMonth() >= 2 && y.getMonth() < 9 ? "BST" : "GMT",
                     "Europe/Paris": y.getMonth() >= 2 && y.getMonth() < 9 ? "CEST" : "CET",
                     "Australia/Sydney": y.getMonth() >= 9 || y.getMonth() < 3 ? "AEDT" : "AEST"
-                  }[D] || D, M = y.toLocaleDateString("en-US", {
+                  }[k] || k, M = y.toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
-                    timeZone: D
+                    timeZone: k
                   }), S = y.toLocaleTimeString("en-US", {
                     hour: "2-digit",
                     minute: "2-digit",
                     second: "2-digit",
                     hour12: !0,
-                    timeZone: D
+                    timeZone: k
                   });
                   return `⏱️ Last Updated: ${M} at ${S} ${O}`;
                 } catch {
@@ -16617,9 +16618,9 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.instrument_market_price || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("instrument_market_price"),
+          visible: D.value.includes("instrument_market_price"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("instrument_market_price")}</span>
+          <span>${pe("instrument_market_price")}</span>
         </div>`,
           formatter: (w) => {
             var y;
@@ -16635,7 +16636,7 @@ const em = { class: "positions-card" }, tm = {
                 if (!C)
                   return "⏱️ Last Updated: Not available";
                 try {
-                  const y = new Date(C), D = Intl.DateTimeFormat().resolvedOptions().timeZone, O = {
+                  const y = new Date(C), k = Intl.DateTimeFormat().resolvedOptions().timeZone, O = {
                     "Asia/Kolkata": "IST",
                     "Asia/Calcutta": "IST",
                     "America/New_York": y.getMonth() >= 2 && y.getMonth() < 10 ? "EDT" : "EST",
@@ -16645,17 +16646,17 @@ const em = { class: "positions-card" }, tm = {
                     "Europe/London": y.getMonth() >= 2 && y.getMonth() < 9 ? "BST" : "GMT",
                     "Europe/Paris": y.getMonth() >= 2 && y.getMonth() < 9 ? "CEST" : "CET",
                     "Australia/Sydney": y.getMonth() >= 9 || y.getMonth() < 3 ? "AEDT" : "AEST"
-                  }[D] || D, M = y.toLocaleDateString("en-US", {
+                  }[k] || k, M = y.toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
-                    timeZone: D
+                    timeZone: k
                   }), S = y.toLocaleTimeString("en-US", {
                     hour: "2-digit",
                     minute: "2-digit",
                     second: "2-digit",
                     hour12: !0,
-                    timeZone: D
+                    timeZone: k
                   });
                   return `⏱️ Last Updated: ${M} at ${S} ${O}`;
                 } catch {
@@ -16678,7 +16679,7 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.market_value || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("market_value"),
+          visible: D.value.includes("market_value"),
           // Set bottom calc during initialization
           bottomCalc: g ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
@@ -16688,13 +16689,13 @@ const em = { class: "positions-card" }, tm = {
             return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${q(m)}</span>`;
           } : void 0,
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("market_value")}</span>
+          <span>${pe("market_value")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getRow().getData();
             return m != null && m._isThesisGroup, q(w.getValue());
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "P&L Unrealized",
@@ -16703,7 +16704,7 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.unrealized_pnl || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("unrealized_pnl"),
+          visible: D.value.includes("unrealized_pnl"),
           // Set bottom calc during initialization
           bottomCalc: g ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
@@ -16713,14 +16714,14 @@ const em = { class: "positions-card" }, tm = {
             return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${q(m)}</span>`;
           } : void 0,
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("unrealized_pnl")}</span>
+          <span>${pe("unrealized_pnl")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getValue();
             let C = "";
             return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${q(m)}</span>`;
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         // ...inside columns array, after 'unrealized_pnl' column...
         {
@@ -16729,18 +16730,18 @@ const em = { class: "positions-card" }, tm = {
           minWidth: 80,
           width: J.value.be_price_pnl || void 0,
           hozAlign: "right",
-          visible: _.value.includes("be_price_pnl"),
+          visible: D.value.includes("be_price_pnl"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("be_price_pnl")}</span>
+          <span>${pe("be_price_pnl")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getRow().getData();
             if (m.asset_class === "OPT" && m.symbol && m.symbol.includes("P")) {
               const C = m.market_price, y = m.computed_be_price;
-              let D = m.qty;
+              let k = m.qty;
               const j = m.multiplier, M = he(m.symbol)[2], S = M ? parseFloat(M) : null;
-              if (D = Math.abs(D), C != null && y !== null && y !== void 0 && D !== null && D !== void 0 && j !== null && j !== void 0 && S !== null && !isNaN(S)) {
-                const te = (Math.min(C, S) - y) * D * j, je = Math.abs(te), Ht = Math.abs(te % 1);
+              if (k = Math.abs(k), C != null && y !== null && y !== void 0 && k !== null && k !== void 0 && j !== null && j !== void 0 && S !== null && !isNaN(S)) {
+                const te = (Math.min(C, S) - y) * k * j, je = Math.abs(te), Ht = Math.abs(te % 1);
                 let Ye;
                 je === 0 || Ht < je * 0.01 ? Ye = q(Math.trunc(te)) : Ye = q(te);
                 let jA = "";
@@ -16753,11 +16754,11 @@ const em = { class: "positions-card" }, tm = {
             let C = 0;
             for (const y of m)
               if (y.asset_class === "OPT" && y.symbol && y.symbol.includes("P")) {
-                const D = y.market_price, j = y.computed_be_price;
+                const k = y.market_price, j = y.computed_be_price;
                 let O = y.qty;
                 const M = y.multiplier, $ = he(y.symbol)[2], te = $ ? parseFloat($) : null;
-                if (O = Math.abs(O), D != null && j !== null && j !== void 0 && O !== null && O !== void 0 && M !== null && M !== void 0 && te !== null && !isNaN(te)) {
-                  const Ht = (Math.min(D, te) - j) * O * M;
+                if (O = Math.abs(O), k != null && j !== null && j !== void 0 && O !== null && O !== void 0 && M !== null && M !== void 0 && te !== null && !isNaN(te)) {
+                  const Ht = (Math.min(k, te) - j) * O * M;
                   C += Ht;
                 }
               }
@@ -16765,10 +16766,10 @@ const em = { class: "positions-card" }, tm = {
           } : !1,
           bottomCalcFormatter: g ? (w) => {
             const m = w.getValue(), C = Math.abs(m), y = Math.abs(m % 1);
-            let D;
-            C === 0 || y < C * 0.01 ? D = q(Math.trunc(m)) : D = q(m);
+            let k;
+            C === 0 || y < C * 0.01 ? k = q(Math.trunc(m)) : k = q(m);
             let j = "";
-            return m > 0 ? j = "pnl-positive" : m < 0 ? j = "pnl-negative" : j = "pnl-zero", `<span class="${j}">${D}</span>`;
+            return m > 0 ? j = "pnl-positive" : m < 0 ? j = "pnl-negative" : j = "pnl-zero", `<span class="${j}">${k}</span>`;
           } : void 0,
           // --- CONTEXT MENU FOR FULL DECIMAL CALCULATION ---
           contextMenu: [
@@ -16777,16 +16778,16 @@ const em = { class: "positions-card" }, tm = {
                 const m = w.getData();
                 if (m.asset_class === "OPT" && m.symbol && m.symbol.includes("P")) {
                   const C = m.market_price, y = m.computed_be_price;
-                  let D = m.qty;
+                  let k = m.qty;
                   const j = m.multiplier, M = he(m.symbol)[2], S = M ? parseFloat(M) : null;
-                  if (D = Math.abs(D), C != null && y !== null && y !== void 0 && D !== null && D !== void 0 && j !== null && j !== void 0 && S !== null && !isNaN(S)) {
-                    const $ = Math.min(C, S), te = ($ - y) * D * j;
+                  if (k = Math.abs(k), C != null && y !== null && y !== void 0 && k !== null && k !== void 0 && j !== null && j !== void 0 && S !== null && !isNaN(S)) {
+                    const $ = Math.min(C, S), te = ($ - y) * k * j;
                     return [
                       "Calculation: (min(Market Price, Strike Price) - BE Price) × |Qty| × Multiplier",
-                      `= (min(${q(C)}, ${q(S)}) - ${q(y)}) × ${D} × ${j}`,
-                      `= (${q($)} - ${q(y)}) × ${D} × ${j}`,
-                      `= ${q($ - y)} × ${D} × ${j}`,
-                      `= ${q(($ - y) * D)} × ${j}`,
+                      `= (min(${q(C)}, ${q(S)}) - ${q(y)}) × ${k} × ${j}`,
+                      `= (${q($)} - ${q(y)}) × ${k} × ${j}`,
+                      `= ${q($ - y)} × ${k} × ${j}`,
+                      `= ${q(($ - y) * k)} × ${j}`,
                       `<b>= ${q(te)}</b> <span style="color:#888">(full decimal)</span>`
                     ].join("<br>");
                   }
@@ -16807,7 +16808,7 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.computed_cash_flow_on_entry || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("computed_cash_flow_on_entry"),
+          visible: D.value.includes("computed_cash_flow_on_entry"),
           // Set bottom calc during initialization
           bottomCalc: g ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
@@ -16817,14 +16818,14 @@ const em = { class: "positions-card" }, tm = {
             return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${q(m)}</span>`;
           } : void 0,
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("computed_cash_flow_on_entry")}</span>
+          <span>${pe("computed_cash_flow_on_entry")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getValue();
             let C = "";
             return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${q(m)}</span>`;
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "If exercised cash flow",
@@ -16833,7 +16834,7 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.computed_cash_flow_on_exercise || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("computed_cash_flow_on_exercise"),
+          visible: D.value.includes("computed_cash_flow_on_exercise"),
           // Set bottom calc during initialization
           bottomCalc: g ? "sum" : void 0,
           //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
@@ -16843,14 +16844,14 @@ const em = { class: "positions-card" }, tm = {
             return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${q(m)}</span>`;
           } : void 0,
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("computed_cash_flow_on_exercise")}</span>
+          <span>${pe("computed_cash_flow_on_exercise")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getValue();
             let C = "";
             return m > 0 ? C = "pnl-positive" : m < 0 ? C = "pnl-negative" : C = "pnl-zero", `<span class="${C}">${q(m)}</span>`;
           },
-          contextMenu: ce()
+          contextMenu: ue()
         },
         {
           title: "(Entry / If exercised) cash flow",
@@ -16858,9 +16859,9 @@ const em = { class: "positions-card" }, tm = {
           minWidth: 100,
           width: J.value.entry_exercise_cash_flow_pct || void 0,
           hozAlign: "right",
-          visible: _.value.includes("entry_exercise_cash_flow_pct"),
+          visible: D.value.includes("entry_exercise_cash_flow_pct"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("entry_exercise_cash_flow_pct")}</span>
+          <span>${pe("entry_exercise_cash_flow_pct")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getRow().getData();
@@ -16900,18 +16901,36 @@ const em = { class: "positions-card" }, tm = {
           width: J.value.computed_be_price || void 0,
           // ADD THIS LINE
           hozAlign: "right",
-          visible: _.value.includes("computed_be_price"),
+          visible: D.value.includes("computed_be_price"),
           titleFormatter: (w) => `<div class="header-with-close">
-          <span>${we("computed_be_price")}</span>
+          <span>${pe("computed_be_price")}</span>
         </div>`,
           formatter: (w) => {
             const m = w.getValue();
             return m == null ? "-" : de(m);
           },
-          contextMenu: ce()
+          contextMenu: ue()
+        },
+        {
+          title: "Maintenance Margin Change",
+          field: "maintenance_margin_change",
+          minWidth: 180,
+          width: J.value.maintenance_margin_change || void 0,
+          hozAlign: "right",
+          visible: D.value.includes("maintenance_margin_change"),
+          titleFormatter: (w) => `<div class="header-with-close">
+          <span>${pe("maintenance_margin_change")}</span>
+        </div>`,
+          formatter: (w) => {
+            const m = w.getValue();
+            if (m == null || m === "") return "-";
+            const C = parseFloat(m.replace(/,/g, ""));
+            return q(C);
+          },
+          contextMenu: ue()
         }
       ].forEach((w) => d.set(w.field, w));
-      const K = _.value.map((w) => d.get(w)).filter(Boolean), P = {
+      const K = D.value.map((w) => d.get(w)).filter(Boolean), P = {
         data: Ot.value,
         columns: K,
         layout: "fitColumns",
@@ -16963,8 +16982,8 @@ const em = { class: "positions-card" }, tm = {
           const m = w.getField(), C = w.getWidth();
           J.value[m] = C, Ae(J.value);
         }), u.on("tableBuilt", () => {
-          var D, j, O;
-          const w = (D = h.value) == null ? void 0 : D.querySelectorAll(".header-close-btn");
+          var k, j, O;
+          const w = (k = h.value) == null ? void 0 : k.querySelectorAll(".header-close-btn");
           w == null || w.forEach((M) => {
             M.addEventListener("click", (S) => {
               S.stopPropagation();
@@ -17084,14 +17103,14 @@ const em = { class: "positions-card" }, tm = {
         S && S.parent_thesis_id && K.has(S.parent_thesis_id) && (C.has(S.parent_thesis_id) || C.set(S.parent_thesis_id, []), C.get(S.parent_thesis_id).push(O));
       });
       const y = /* @__PURE__ */ new Set();
-      function D(O) {
+      function k(O) {
         if (y.has(O)) return;
         y.add(O);
         const M = K.get(O);
         if (!M) return;
         const S = C.get(O) || [];
         if (S.forEach(($) => {
-          D($.thesis.id);
+          k($.thesis.id);
         }), S.length > 0) {
           const $ = M._children.length + S.reduce((te, je) => {
             var Ye;
@@ -17105,7 +17124,7 @@ const em = { class: "positions-card" }, tm = {
       }
       K.forEach((O, M) => {
         const S = d.get(M);
-        S && !S.parent_thesis_id && D(M);
+        S && !S.parent_thesis_id && k(M);
       });
       const j = [];
       return K.forEach((O, M) => {
@@ -17168,7 +17187,7 @@ const em = { class: "positions-card" }, tm = {
     async function Ra(g) {
       kr.value = g, Zi.value = !0, Qe.value = null, aA.value = null, $i.value = !0;
       try {
-        const d = g.internal_account_id, Q = g.conid, K = Math.abs(g.qty), P = g.qty > 0 ? "SELL" : "BUY", { data: U, error: w } = await me.schema("hf").from("user_accounts_master").select("broker_account_id, api_url").eq("internal_account_id", d).single();
+        const d = g.internal_account_id, Q = g.conid, K = Math.abs(g.qty), P = g.qty > 0 ? "SELL" : "BUY", { data: U, error: w } = await we.schema("hf").from("user_accounts_master").select("broker_account_id, api_url").eq("internal_account_id", d).single();
         if (w || !U)
           throw new Error(`Account not found: ${(w == null ? void 0 : w.message) || "No account data"}`);
         const m = U.broker_account_id, y = `${U.api_url}/api/margin-impact?conid=${Q}&side=${P}&quantity=${K}&account_id=${m}`, j = await (await fetch(y)).json();
@@ -17206,7 +17225,7 @@ const em = { class: "positions-card" }, tm = {
             console.error("Failed to rebuild table:", Q);
           }
         }
-    }, { deep: !0 }), Ze(_, async (g) => {
+    }, { deep: !0 }), Ze(D, async (g) => {
       if (Pr(g), !!u)
         try {
           ht();
@@ -17310,18 +17329,18 @@ const em = { class: "positions-card" }, tm = {
     }
     function Da(g) {
       if (lA.value === null || lA.value === g) return;
-      const d = [..._.value], [Q] = d.splice(lA.value, 1);
-      d.splice(g, 0, Q), _.value = d, lA.value = null;
+      const d = [...D.value], [Q] = d.splice(lA.value, 1);
+      d.splice(g, 0, Q), D.value = d, lA.value = null;
     }
     function ka(g) {
       if (g <= 0) return;
-      const d = [..._.value];
-      [d[g - 1], d[g]] = [d[g], d[g - 1]], _.value = d;
+      const d = [...D.value];
+      [d[g - 1], d[g]] = [d[g], d[g - 1]], D.value = d;
     }
     function _a(g) {
-      if (g >= _.value.length - 1) return;
-      const d = [..._.value];
-      [d[g], d[g + 1]] = [d[g + 1], d[g]], _.value = d;
+      if (g >= D.value.length - 1) return;
+      const d = [...D.value];
+      [d[g], d[g + 1]] = [d[g + 1], d[g]], D.value = d;
     }
     Ze(
       [() => o.isSuccess.value, i, c, f, p],
@@ -17337,7 +17356,7 @@ const em = { class: "positions-card" }, tm = {
       const d = Dr();
       u && d && u.setSort(d.field, d.dir);
     });
-    function we(g) {
+    function pe(g) {
       const d = v.find((Q) => Q.field === g);
       return B.value[g] || ((d == null ? void 0 : d.label) ?? g);
     }
@@ -17345,7 +17364,7 @@ const em = { class: "positions-card" }, tm = {
     async function Ka() {
       if (console.log("Saving account alias:", t.userId, "for account ID:", is.value), !(!t.userId || !is.value))
         try {
-          const { error: g } = await me.schema("hf").from("user_account_alias").upsert({
+          const { error: g } = await we.schema("hf").from("user_account_alias").upsert({
             user_id: t.userId,
             internal_account_id: is.value,
             alias: VA.value,
@@ -17377,7 +17396,7 @@ const em = { class: "positions-card" }, tm = {
       }
       uA.value = !1, GA.value = !0;
       try {
-        const d = (await Zp(h.value)).toDataURL("image/png"), { error: Q } = await me.schema("hf").from("position_screenshots").insert([{
+        const d = (await Zp(h.value)).toDataURL("image/png"), { error: Q } = await we.schema("hf").from("position_screenshots").insert([{
           user_id: t.userId,
           created_at: (/* @__PURE__ */ new Date()).toISOString(),
           image_data: d.replace(/^data:image\/png;base64,/, ""),
@@ -17389,7 +17408,7 @@ const em = { class: "positions-card" }, tm = {
               assetClass: s.value,
               symbolTags: c.value,
               thesisTags: f.value,
-              columns: _.value
+              columns: D.value
             }
           }
         }]);
@@ -17403,7 +17422,7 @@ const em = { class: "positions-card" }, tm = {
     }
     async function Na(g) {
       try {
-        const { error: d } = await me.schema("hf").from("position_screenshots").update({ archived: !0 }).eq("id", g);
+        const { error: d } = await we.schema("hf").from("position_screenshots").update({ archived: !0 }).eq("id", g);
         if (d) throw d;
         Be("success", "Screenshot archived"), JA();
       } catch (d) {
@@ -17416,7 +17435,7 @@ const em = { class: "positions-card" }, tm = {
         return;
       }
       rs.value = !0;
-      const { data: g, error: d } = await me.schema("hf").from("position_screenshots").select("*").eq("user_id", t.userId).eq("archived", !1).order("created_at", { ascending: !1 }).limit(20);
+      const { data: g, error: d } = await we.schema("hf").from("position_screenshots").select("*").eq("user_id", t.userId).eq("archived", !1).order("created_at", { ascending: !1 }).limit(20);
       d || (zA.value = g || []), rs.value = !1;
     }
     function za(g) {
@@ -17425,7 +17444,7 @@ const em = { class: "positions-card" }, tm = {
     async function Ga() {
       if (ns.value)
         try {
-          const { error: g } = await me.schema("hf").from("position_screenshots").update({ name: XA.value }).eq("id", ns.value);
+          const { error: g } = await we.schema("hf").from("position_screenshots").update({ name: XA.value }).eq("id", ns.value);
           if (g) throw g;
           WA.value = !1, Be("success", "Screenshot renamed"), JA();
         } catch (g) {
@@ -17443,7 +17462,7 @@ const em = { class: "positions-card" }, tm = {
             Rt(" Loading positions... ", -1)
           ])])) : YA(o).isError.value ? (W(), G("div", Am, [
             d[20] || (d[20] = E("h3", null, "Error loading positions", -1)),
-            E("p", null, ue(YA(o).error.value), 1)
+            E("p", null, ce(YA(o).error.value), 1)
           ])) : YA(o).isSuccess.value ? (W(), G("div", im, [
             E("div", sm, [
               E("h2", null, [
@@ -17454,7 +17473,7 @@ const em = { class: "positions-card" }, tm = {
                 }, "Positions")) : (W(), G("span", rm, "Positions"))
               ]),
               E("div", nm, [
-                E("div", om, ue(ss.value) + " positions", 1),
+                E("div", om, ce(ss.value) + " positions", 1),
                 E("button", {
                   onClick: Pa,
                   class: "screenshot-btn",
@@ -17474,7 +17493,7 @@ const em = { class: "positions-card" }, tm = {
                   title: "Group positions by thesis"
                 }, [
                   d[21] || (d[21] = E("span", { class: "icon" }, "📊", -1)),
-                  Rt(" " + ue(p.value ? "Ungroup" : "Group by Thesis"), 1)
+                  Rt(" " + ce(p.value ? "Ungroup" : "Group by Thesis"), 1)
                 ], 2),
                 E("button", {
                   ref_key: "columnsBtnRef",
@@ -17509,7 +17528,7 @@ const em = { class: "positions-card" }, tm = {
                 }, [
                   d[23] || (d[23] = E("div", { class: "popup-header" }, "Columns", -1)),
                   E("div", um, [
-                    (W(!0), G(Pt, null, dA(_.value.map((U) => v.find((w) => w.field === U)).filter(Boolean), (U, w) => (W(), G("label", {
+                    (W(!0), G(Pt, null, dA(D.value.map((U) => v.find((w) => w.field === U)).filter(Boolean), (U, w) => (W(), G("label", {
                       key: U.field,
                       class: "popup-item",
                       draggable: "true",
@@ -17521,13 +17540,13 @@ const em = { class: "positions-card" }, tm = {
                       Vt(E("input", {
                         type: "checkbox",
                         value: U.field,
-                        "onUpdate:modelValue": d[3] || (d[3] = (m) => _.value = m)
+                        "onUpdate:modelValue": d[3] || (d[3] = (m) => D.value = m)
                       }, null, 8, dm), [
-                        [Wr, _.value]
+                        [Wr, D.value]
                       ]),
                       E("span", null, [
-                        Rt(ue(B.value[U.field] || U.label) + " ", 1),
-                        B.value[U.field] ? (W(), G("span", fm, " (" + ue(U.label) + ") ", 1)) : xe("", !0)
+                        Rt(ce(B.value[U.field] || U.label) + " ", 1),
+                        B.value[U.field] ? (W(), G("span", fm, " (" + ce(U.label) + ") ", 1)) : xe("", !0)
                       ]),
                       E("button", {
                         class: "col-rename-btn",
@@ -17547,30 +17566,30 @@ const em = { class: "positions-card" }, tm = {
                         E("button", {
                           type: "button",
                           onClick: Ge((m) => _a(w), ["stop"]),
-                          disabled: w === _.value.length - 1,
+                          disabled: w === D.value.length - 1,
                           title: "Move down",
                           style: { background: "none", border: "none", cursor: "pointer", padding: "0" }
                         }, " ▼ ", 8, wm)
                       ])
                     ], 40, cm))), 128)),
-                    (W(!0), G(Pt, null, dA(v.filter((U) => !_.value.includes(U.field)), (U) => (W(), G("label", {
+                    (W(!0), G(Pt, null, dA(v.filter((U) => !D.value.includes(U.field)), (U) => (W(), G("label", {
                       key: U.field,
                       class: "popup-item"
                     }, [
                       Vt(E("input", {
                         type: "checkbox",
                         value: U.field,
-                        "onUpdate:modelValue": d[4] || (d[4] = (w) => _.value = w)
+                        "onUpdate:modelValue": d[4] || (d[4] = (w) => D.value = w)
                       }, null, 8, bm), [
-                        [Wr, _.value]
+                        [Wr, D.value]
                       ]),
-                      E("span", null, ue(U.label), 1)
+                      E("span", null, ce(U.label), 1)
                     ]))), 128))
                   ]),
                   E("div", Bm, [
                     E("button", {
                       class: "btn btn-clear",
-                      onClick: d[5] || (d[5] = (U) => _.value = v.map((w) => w.field))
+                      onClick: d[5] || (d[5] = (U) => D.value = v.map((w) => w.field))
                     }, "Show All"),
                     E("button", {
                       class: "btn",
@@ -17587,8 +17606,8 @@ const em = { class: "positions-card" }, tm = {
                   key: `${U.field}-${U.value}`,
                   class: "filter-tag"
                 }, [
-                  E("strong", null, ue(U.field === "symbol" ? "Financial Instrument" : U.field === "legal_entity" ? "Account" : U.field === "thesis" ? "Thesis" : "Asset Class") + ":", 1),
-                  Rt(" " + ue(U.value) + " ", 1),
+                  E("strong", null, ce(U.field === "symbol" ? "Financial Instrument" : U.field === "legal_entity" ? "Account" : U.field === "thesis" ? "Thesis" : "Asset Class") + ":", 1),
+                  Rt(" " + ce(U.value) + " ", 1),
                   E("button", {
                     class: "tag-clear",
                     onClick: (w) => Ua(U.field)
@@ -17621,8 +17640,8 @@ const em = { class: "positions-card" }, tm = {
                     U.type === "success" ? (W(), G("span", Um, "✅")) : U.type === "error" ? (W(), G("span", Hm, "❌")) : U.type === "warning" ? (W(), G("span", Rm, "⚠️")) : (W(), G("span", xm, "ℹ️"))
                   ]),
                   E("div", Tm, [
-                    E("div", Lm, ue(U.title), 1),
-                    U.message ? (W(), G("div", Im, ue(U.message), 1)) : xe("", !0)
+                    E("div", Lm, ce(U.title), 1),
+                    U.message ? (W(), G("div", Im, ce(U.message), 1)) : xe("", !0)
                   ]),
                   E("button", {
                     class: "toast-close",
@@ -17680,9 +17699,9 @@ const em = { class: "positions-card" }, tm = {
                     alt: `Screenshot taken at ${new Date(U.created_at).toLocaleString()}`
                   }, null, 8, Xm),
                   E("div", Jm, [
-                    U.name ? (W(), G("strong", jm, ue(U.name), 1)) : (W(), G("span", Ym, "(Unnamed)")),
+                    U.name ? (W(), G("strong", jm, ce(U.name), 1)) : (W(), G("span", Ym, "(Unnamed)")),
                     E("span", null, [
-                      Rt(ue(new Date(U.created_at).toLocaleString("en-US", {
+                      Rt(ce(new Date(U.created_at).toLocaleString("en-US", {
                         timeZone: "America/Los_Angeles",
                         dateStyle: "medium",
                         timeStyle: "short"
@@ -17732,7 +17751,7 @@ const em = { class: "positions-card" }, tm = {
                 }, null, 8, iw),
                 E("div", sw, [
                   E("span", null, [
-                    Rt(ue(new Date(ut.value.created_at).toLocaleString("en-US", {
+                    Rt(ce(new Date(ut.value.created_at).toLocaleString("en-US", {
                       timeZone: "America/Los_Angeles",
                       dateStyle: "medium",
                       timeStyle: "short"
@@ -17809,7 +17828,7 @@ const em = { class: "positions-card" }, tm = {
               $i.value ? (W(), G("div", dw, [...d[33] || (d[33] = [
                 E("div", { class: "loading-spinner" }, null, -1),
                 Rt(" Loading margin impact data... ", -1)
-              ])])) : aA.value ? (W(), G("div", fw, " Error loading margin impact: " + ue(aA.value), 1)) : Qe.value ? (W(), G("div", pw, [
+              ])])) : aA.value ? (W(), G("div", fw, " Error loading margin impact: " + ce(aA.value), 1)) : Qe.value ? (W(), G("div", pw, [
                 E("table", mw, [
                   d[37] || (d[37] = E("thead", null, [
                     E("tr", null, [
@@ -17822,21 +17841,21 @@ const em = { class: "positions-card" }, tm = {
                   E("tbody", null, [
                     (Q = Qe.value.margin_impact) != null && Q.equity_with_loan ? (W(), G("tr", ww, [
                       d[34] || (d[34] = E("td", null, "Equity with Loan", -1)),
-                      E("td", null, ue(Qe.value.margin_impact.equity_with_loan.current), 1),
-                      E("td", null, ue(Qe.value.margin_impact.equity_with_loan.change), 1),
-                      E("td", null, ue(Qe.value.margin_impact.equity_with_loan.post_trade), 1)
+                      E("td", null, ce(Qe.value.margin_impact.equity_with_loan.current), 1),
+                      E("td", null, ce(Qe.value.margin_impact.equity_with_loan.change), 1),
+                      E("td", null, ce(Qe.value.margin_impact.equity_with_loan.post_trade), 1)
                     ])) : xe("", !0),
                     (K = Qe.value.margin_impact) != null && K.initial_margin ? (W(), G("tr", bw, [
                       d[35] || (d[35] = E("td", null, "Initial Margin", -1)),
-                      E("td", null, ue(Qe.value.margin_impact.initial_margin.current), 1),
-                      E("td", null, ue(Qe.value.margin_impact.initial_margin.change), 1),
-                      E("td", null, ue(Qe.value.margin_impact.initial_margin.post_trade), 1)
+                      E("td", null, ce(Qe.value.margin_impact.initial_margin.current), 1),
+                      E("td", null, ce(Qe.value.margin_impact.initial_margin.change), 1),
+                      E("td", null, ce(Qe.value.margin_impact.initial_margin.post_trade), 1)
                     ])) : xe("", !0),
                     (P = Qe.value.margin_impact) != null && P.maintenance_margin ? (W(), G("tr", Bw, [
                       d[36] || (d[36] = E("td", null, "Maintenance Margin", -1)),
-                      E("td", null, ue(Qe.value.margin_impact.maintenance_margin.current), 1),
-                      E("td", null, ue(Qe.value.margin_impact.maintenance_margin.change), 1),
-                      E("td", null, ue(Qe.value.margin_impact.maintenance_margin.post_trade), 1)
+                      E("td", null, ce(Qe.value.margin_impact.maintenance_margin.current), 1),
+                      E("td", null, ce(Qe.value.margin_impact.maintenance_margin.change), 1),
+                      E("td", null, ce(Qe.value.margin_impact.maintenance_margin.post_trade), 1)
                     ])) : xe("", !0)
                   ])
                 ])
@@ -17852,7 +17871,7 @@ const em = { class: "positions-card" }, tm = {
   for (const [A, i] of e)
     t[A] = i;
   return t;
-}, Rw = /* @__PURE__ */ vw(Cw, [["__scopeId", "data-v-5eddad56"]]);
+}, Rw = /* @__PURE__ */ vw(Cw, [["__scopeId", "data-v-56067d76"]]);
 export {
   Rw as Positions,
   Rw as default

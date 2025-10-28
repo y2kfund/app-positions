@@ -64,7 +64,7 @@ type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis
 const activeFilters = ref<ActiveFilter[]>([])
 
 // Column visibility
-type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'instrument_market_price' | 'market_value' | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct' | 'computed_be_price' | 'thesis'
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'instrument_market_price' | 'market_value' | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct' | 'computed_be_price' | 'thesis' | 'maintenance_margin_change'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'thesis', label: 'Thesis' },
@@ -85,7 +85,8 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'computed_cash_flow_on_entry', label: 'Entry cash flow' },
   { field: 'computed_cash_flow_on_exercise', label: 'If exercised cash flow' },
   { field: 'entry_exercise_cash_flow_pct', label: '(Entry / If exercised) cash flow (computed)' },
-  { field: 'computed_be_price', label: 'BE Price' }
+  { field: 'computed_be_price', label: 'BE Price' },
+  { field: 'maintenance_margin_change', label: 'Maintenance Margin Change' }
 ]
 
 type ColumnRenames = Partial<Record<ColumnField, string>>
@@ -1327,6 +1328,27 @@ function initializeTabulator() {
       formatter: (cell: any) => {
         const value = cell.getValue()
         return value === null || value === undefined ? '-' : formatNumber(value)
+      },
+      contextMenu: createFetchedAtContextMenu()
+    },
+    {
+      title: 'Maintenance Margin Change',
+      field: 'maintenance_margin_change',
+      minWidth: 180,
+      width: columnWidths.value['maintenance_margin_change'] || undefined,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('maintenance_margin_change'),
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>${getColLabel('maintenance_margin_change')}</span>
+        </div>`
+      },
+      formatter: (cell: any) => {
+        const value = cell.getValue()
+        if (value === null || value === undefined || value === '') return '-'
+        // Parse string to number: remove commas and convert
+        const numValue = parseFloat(value.replace(/,/g, ''))
+        return formatCurrency(numValue)
       },
       contextMenu: createFetchedAtContextMenu()
     }
