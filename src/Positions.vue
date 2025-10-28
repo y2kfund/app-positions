@@ -369,6 +369,16 @@ function formatTimestampWithTimezone(timestamp: string | null | undefined): stri
 function createFetchedAtContextMenu() {
   return [
     {
+      label: "Margin Impact",
+      action: (e: any, cell: any) => {
+        const rowData = cell.getRow().getData()
+        openMarginImpactModal(rowData)
+      }
+    },
+    {
+      separator: true
+    },
+    {
       label: (component: any) => {
         const rowData = component.getData()
         return formatTimestampWithTimezone(rowData.fetched_at)
@@ -1740,6 +1750,60 @@ const showColumnsPopup = ref(false)
 const columnsBtnRef = ref<HTMLElement | null>(null)
 const columnsPopupRef = ref<HTMLElement | null>(null)
 
+// Margin Impact Modal
+const showMarginImpactModal = ref(false)
+const marginImpactRowData = ref<any>(null)
+const marginImpactData = ref<any>(null)
+const marginImpactLoading = ref(false)
+const marginImpactError = ref<string | null>(null)
+
+async function openMarginImpactModal(rowData: any) {
+  marginImpactRowData.value = rowData
+  showMarginImpactModal.value = true
+  marginImpactData.value = null
+  marginImpactError.value = null
+  marginImpactLoading.value = true
+
+  try {
+    const internalAccountId = rowData.internal_account_id
+    const conid = rowData.conid
+    const quantity = Math.abs(rowData.qty)
+    const side = rowData.qty > 0 ? 'SELL' : 'BUY'
+
+    // Fetch account details from user_accounts_master
+    const { data: accountData, error: accountError } = await supabase
+      .schema('hf')
+      .from('user_accounts_master')
+      .select('broker_account_id, api_url')
+      .eq('internal_account_id', internalAccountId)
+      .single()
+
+    if (accountError || !accountData) {
+      throw new Error(`Account not found: ${accountError?.message || 'No account data'}`)
+    }
+
+    const brokerAccountId = accountData.broker_account_id
+    const apiUrl = accountData.api_url
+
+    const url = `${apiUrl}/api/margin-impact?conid=${conid}&side=${side}&quantity=${quantity}&account_id=${brokerAccountId}`
+
+    //console.log('Fetching margin impact from URL:', url); return;
+    const response = await fetch(url)
+    const data = await response.json()
+
+    marginImpactData.value = data
+  } catch (error: any) {
+    marginImpactError.value = error.message
+  } finally {
+    marginImpactLoading.value = false
+  }
+}function closeMarginImpactModal() {
+  showMarginImpactModal.value = false
+  marginImpactRowData.value = null
+  marginImpactData.value = null
+  marginImpactError.value = null
+}
+
 function toggleColumnsPopup() {
   showColumnsPopup.value = !showColumnsPopup.value
 }
@@ -2588,6 +2652,92 @@ watch(showScreenshotsModal, (open) => {
         <div class="dialog-actions">
           <button @click="saveScreenshotRename">Save</button>
           <button @click="showScreenshotRenameModal = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Margin Impact Modal -->
+  <div v-if="showMarginImpactModal" class="modal-overlay" @click="closeMarginImpactModal">
+    <div class="modal-content" @click.stop>
+      <div class="modal-header">
+        <h3>Margin Impact</h3>
+        <button class="modal-close" @click="closeMarginImpactModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Closing out this position would have the following impact on your margin requirements:</p>
+        
+        <div v-if="marginImpactLoading" class="loading-state">
+          <div class="loading-spinner"></div>
+          Loading margin impact data...
+        </div>
+        
+        <div v-else-if="marginImpactError" class="error-state">
+          Error loading margin impact: {{ marginImpactError }}
+        </div>
+        
+        <div v-else-if="!marginImpactData" class="no-data-state">
+          No margin impact data available
+        </div>
+        
+        <div v-else>
+          <table class="margin-impact-table">
+            <thead>
+              <tr>
+                <th>Account Metric</th>
+                <th>Current</th>
+                <th>Change</th>
+                <th>Post-Trade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="marginImpactData.margin_impact?.equity_with_loan">
+                <td>Equity with Loan</td>
+                <td>{{ marginImpactData.margin_impact.equity_with_loan.current }}</td>
+                <td>{{ marginImpactData.margin_impact.equity_with_loan.change }}</td>
+                <td>{{ marginImpactData.margin_impact.equity_with_loan.post_trade }}</td>
+              </tr>
+              <tr v-if="marginImpactData.margin_impact?.initial_margin">
+                <td>Initial Margin</td>
+                <td>{{ marginImpactData.margin_impact.initial_margin.current }}</td>
+                <td>{{ marginImpactData.margin_impact.initial_margin.change }}</td>
+                <td>{{ marginImpactData.margin_impact.initial_margin.post_trade }}</td>
+              </tr>
+              <tr v-if="marginImpactData.margin_impact?.maintenance_margin">
+                <td>Maintenance Margin</td>
+                <td>{{ marginImpactData.margin_impact.maintenance_margin.current }}</td>
+                <td>{{ marginImpactData.margin_impact.maintenance_margin.change }}</td>
+                <td>{{ marginImpactData.margin_impact.maintenance_margin.post_trade }}</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- <div v-if="marginImpactData.cost_info" class="cost-info-section">
+            <h4>Cost Information</h4>
+            <div class="cost-details">
+              <div class="cost-item">
+                <span class="cost-label">Amount:</span>
+                <span class="cost-value">{{ marginImpactData.cost_info.amount }}</span>
+              </div>
+              <div class="cost-item">
+                <span class="cost-label">Commission:</span>
+                <span class="cost-value">{{ marginImpactData.cost_info.commission }}</span>
+              </div>
+              <div class="cost-item">
+                <span class="cost-label">Total:</span>
+                <span class="cost-value">{{ marginImpactData.cost_info.total }}</span>
+              </div>
+            </div>
+          </div> -->
+          
+          <!-- div v-if="marginImpactData.warnings && marginImpactData.warnings.length" class="warnings-section">
+            <h4>Warnings</h4>
+            <ul class="warnings-list">
+              <li v-for="warning in marginImpactData.warnings" :key="warning" class="warning-item">
+                {{ warning }}
+              </li>
+            </ul>
+          </div -->
         </div>
       </div>
     </div>
@@ -3578,4 +3728,176 @@ h1 {
 .screenshots-list { display: flex; flex-wrap: wrap; gap: 1rem; }
 .screenshot-item { max-width: 220px; }
 .screenshot-meta { font-size: 12px; color: #888; margin-top: 4px; }
+</style>
+
+<style scoped>
+/* Margin Impact Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.modal-close:hover {
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-body p {
+  margin: 0 0 1rem 0;
+  color: #495057;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.margin-impact-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.margin-impact-table th,
+.margin-impact-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.margin-impact-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.875rem;
+}
+
+.margin-impact-table td {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.margin-impact-table tr:last-child td {
+  border-bottom: none;
+}
+
+.loading-state, .error-state, .no-data-state {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.error-state {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+.cost-info-section, .warnings-section {
+  margin-top: 1.5rem;
+}
+
+.cost-info-section h4, .warnings-section h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.cost-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cost-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.cost-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.cost-value {
+  font-weight: 600;
+  color: #6c757d;
+}
+
+.warnings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.warning-item {
+  padding: 0.75rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  color: #856404;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.warning-item:last-child {
+  margin-bottom: 0;
+}
 </style>
