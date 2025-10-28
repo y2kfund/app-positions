@@ -69,6 +69,7 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'thesis', label: 'Thesis' },
   { field: 'symbol', label: 'Financial Instrument' },
+  { field: 'expiry_date', label: 'Expiry date' },
   { field: 'asset_class', label: 'Asset Class' },
   { field: 'conid', label: 'Conid' },
   { field: 'undConid', label: 'Underlying Conid' },
@@ -500,6 +501,45 @@ function initializeTabulator() {
           const clickedTag = tagSpan.textContent?.trim()
           if (clickedTag) handleCellFilterClick('symbol', clickedTag)
         }
+      },
+      contextMenu: createFetchedAtContextMenu()
+    },
+    {
+      title: 'Expiry date',
+      field: 'expiry_date',
+      minWidth: 110,
+      width: columnWidths.value['expiry_date'] || undefined,
+      hozAlign: 'center',
+      visible: visibleCols.value.includes('expiry_date'),
+      sorter: (a: any, b: any, aRow: any, bRow: any, column: any, dir: any, sorterParams: any) => {
+        // Extract expiry string for OPT, otherwise empty string
+        const getExpiry = (row: any) => {
+          if (row.asset_class === 'OPT') {
+            const tags = extractTagsFromSymbol(row.symbol)
+            return tags[1] || ''
+          }
+          return ''
+        }
+        const expiryA = getExpiry(aRow.getData())
+        const expiryB = getExpiry(bRow.getData())
+        // Sort by date string (ISO format: YYYY-MM-DD)
+        if (expiryA < expiryB) return -1
+        if (expiryA > expiryB) return 1
+        return 0
+      },
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>Expiry date</span>
+        </div>`
+      },
+      formatter: (cell: any) => {
+        const row = cell.getRow().getData()
+        if (row.asset_class === 'OPT') {
+          const tags = extractTagsFromSymbol(row.symbol)
+          const expiry = tags[1] || ''
+          return expiry ? expiry : '<span style="color:#aaa;font-style:italic;">Unknown</span>'
+        }
+        return '<span style="color:#aaa;font-style:italic;">Not applicable</span>'
       },
       contextMenu: createFetchedAtContextMenu()
     },
