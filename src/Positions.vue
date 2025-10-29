@@ -10,7 +10,8 @@ const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
   highlightPnL: false,
   showHeaderLink: false,
-  userId: null
+  userId: null,
+  window: null
   //userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
 })
 
@@ -23,6 +24,7 @@ const accountFilter = ref<string | null>(null)
 const assetClassFilter = ref<string | null>(null)
 
 const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'computed_cash_flow_on_entry', 'computed_cash_flow_on_exercise'] as const
+const windowId = props.window || inject<string | null>('positions', null)
 
 // Query positions data
 const q = usePositionsQuery(props.accountId, props.userId)
@@ -95,7 +97,7 @@ const columnRenames = ref<ColumnRenames>({})
 // --- Helpers for URL sync of column renames ---
 function parseColumnRenamesFromUrl(): ColumnRenames {
   const url = new URL(window.location.href)
-  const param = url.searchParams.get('position_col_renames')
+  const param = url.searchParams.get(`${windowId}_position_col_renames`)
   if (!param) return {}
   try {
     const pairs = param.split('-and-')
@@ -118,9 +120,9 @@ function writeColumnRenamesToUrl(renames: ColumnRenames) {
     .map(([field, name]) => `${field}:${encodeURIComponent(name)}`)
     .join('-and-')
   if (pairs) {
-    url.searchParams.set('position_col_renames', pairs)
+    url.searchParams.set(`${windowId}_position_col_renames`, pairs)
   } else {
-    url.searchParams.delete('position_col_renames')
+    url.searchParams.delete(`${windowId}_position_col_renames`)
   }
   window.history.replaceState({}, '', url.toString())
 }
@@ -152,7 +154,7 @@ function cancelColRename() {
 
 function parseVisibleColsFromUrl(): ColumnField[] {
   const url = new URL(window.location.href)
-  const colsParam = url.searchParams.get('position_cols')
+  const colsParam = url.searchParams.get(`${windowId}_position_cols`)
   if (!colsParam) {
     return allColumnOptions
       .map(c => c.field)
@@ -168,7 +170,7 @@ const visibleCols = ref<ColumnField[]>(parseVisibleColsFromUrl())
 // Add URL parameter helpers for column widths
 function parseColumnWidthsFromUrl(): Record<string, number> {
   const url = new URL(window.location.href)
-  const widthsParam = url.searchParams.get('position_col_widths')
+  const widthsParam = url.searchParams.get(`${windowId}_position_col_widths`)
   if (!widthsParam) return {}
   
   try {
@@ -195,9 +197,9 @@ function writeColumnWidthsToUrl(widths: Record<string, number>) {
     .join('-and-')
   
   if (widthPairs) {
-    url.searchParams.set('position_col_widths', widthPairs)
+    url.searchParams.set(`${windowId}_position_col_widths`, widthPairs)
   } else {
-    url.searchParams.delete('position_col_widths')
+    url.searchParams.delete(`${windowId}_position_col_widths`)
   }
   window.history.replaceState({}, '', url.toString())
 }
@@ -410,13 +412,13 @@ function hideColumnFromHeader(field: ColumnField) {
 
 function writeSortToUrl(field: string, dir: 'asc' | 'desc') {
   const url = new URL(window.location.href)
-  url.searchParams.set('positions_sort', `${field}:${dir}`)
+  url.searchParams.set(`${windowId}_positions_sort`, `${field}:${dir}`)
   window.history.replaceState({}, '', url.toString())
 }
 
 function parseSortFromUrl(): { field: string, dir: 'asc' | 'desc' } | null {
   const url = new URL(window.location.href)
-  const param = url.searchParams.get('positions_sort')
+  const param = url.searchParams.get(`${windowId}_positions_sort`)
   if (!param) return null
   const [field, dir] = param.split(':')
   if (field && (dir === 'asc' || dir === 'desc')) {
@@ -1408,7 +1410,7 @@ function initializeTabulator() {
       } else {
         // If no sorters, remove param
         const url = new URL(window.location.href)
-        url.searchParams.delete('positions_sort')
+        url.searchParams.delete(`${windowId}_positions_sort`)
         window.history.replaceState({}, '', url.toString())
       }
     },
@@ -1813,7 +1815,7 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'
   } else if (field === 'legal_entity') {
     accountFilter.value = null
     const url = new URL(window.location.href)
-    url.searchParams.delete('all_cts_clientId')
+    url.searchParams.delete(`${windowId}_all_cts_clientId`)
     window.history.replaceState({}, '', url.toString())
     // --- ADD THIS ---
     if (eventBus) {
@@ -1836,10 +1838,10 @@ function clearAllFilters() {
   assetClassFilter.value = null 
 
   const url = new URL(window.location.href)
-  url.searchParams.delete('all_cts_clientId')
-  url.searchParams.delete('all_cts_fi')
-  url.searchParams.delete('all_cts_thesis')
-  url.searchParams.delete('fac')
+  url.searchParams.delete(`${windowId}_all_cts_clientId`)
+  url.searchParams.delete(`${windowId}_all_cts_fi`)
+  url.searchParams.delete(`${windowId}_all_cts_thesis`)
+  url.searchParams.delete(`${windowId}_fac`)
   
   window.history.replaceState({}, '', url.toString())
   // --- ADD THIS ---
@@ -2024,18 +2026,18 @@ watch(groupByThesis, async (value) => {
 // Add URL synchronization for column visibility
 function writeVisibleColsToUrl(cols: ColumnField[]) {
   const url = new URL(window.location.href)
-  url.searchParams.set('position_cols', cols.join('-and-'))
+  url.searchParams.set(`${windowId}_position_cols`, cols.join('-and-'))
   window.history.replaceState({}, '', url.toString())
 }
 
 // Add URL synchronization for filters
 function parseFiltersFromUrl(): { symbol?: string; asset_class?: string; legal_entity?: string; thesis?: string } {
   const url = new URL(window.location.href)
-  const symbolParam = url.searchParams.get('all_cts_fi')
+  const symbolParam = url.searchParams.get(`${windowId}_all_cts_fi`)
   const symbol = symbolParam ? symbolParam.split('-and-').join(',') : undefined
-  const asset = url.searchParams.get('fac') || undefined
-  const account = url.searchParams.get('all_cts_clientId') || undefined
-  const thesisParam = url.searchParams.get('all_cts_thesis')
+  const asset = url.searchParams.get(`${windowId}_fac`) || undefined
+  const account = url.searchParams.get(`${windowId}_all_cts_clientId`) || undefined
+  const thesisParam = url.searchParams.get(`${windowId}_all_cts_thesis`)
   const thesis = thesisParam ? thesisParam.split('-and-').join(',') : undefined
   return { symbol, asset_class: asset, legal_entity: account, thesis }
 }
@@ -2045,23 +2047,23 @@ function writeFiltersToUrl() {
   
   // Handle symbol filters
   if (symbolTagFilters.value.length > 0) {
-    url.searchParams.set('all_cts_fi', symbolTagFilters.value.join('-and-'))
+    url.searchParams.set(`${windowId}_all_cts_fi`, symbolTagFilters.value.join('-and-'))
   } else {
-    url.searchParams.delete('all_cts_fi')
+    url.searchParams.delete(`${windowId}_all_cts_fi`)
   }
   
   // Handle thesis filters
   if (thesisTagFilters.value.length > 0) {
-    url.searchParams.set('all_cts_thesis', thesisTagFilters.value.join('-and-'))
+    url.searchParams.set(`${windowId}_all_cts_thesis`, thesisTagFilters.value.join('-and-'))
   } else {
-    url.searchParams.delete('all_cts_thesis')
+    url.searchParams.delete(`${windowId}_all_cts_thesis`)
   }
 
   // --- ADD THIS BLOCK ---
   if (assetClassFilter.value) {
-    url.searchParams.set('fac', assetClassFilter.value)
+    url.searchParams.set(`${windowId}_fac`, assetClassFilter.value)
   } else {
-    url.searchParams.delete('fac')
+    url.searchParams.delete(`${windowId}_fac`)
   }
   // --- END ---
 
@@ -2095,15 +2097,15 @@ const appNameInput = ref('')
 
 function parseAppNameFromUrl(): string {
   const url = new URL(window.location.href)
-  return url.searchParams.get('positions_app_name') || 'Positions'
+  return url.searchParams.get(`${windowId}_positions_app_name`) || 'Positions'
 }
 
 function writeAppNameToUrl(name: string) {
   const url = new URL(window.location.href)
   if (name && name.trim() && name !== 'Positions') {
-    url.searchParams.set('positions_app_name', name.trim())
+    url.searchParams.set(`${windowId}_positions_app_name`, name.trim())
   } else {
-    url.searchParams.delete('positions_app_name')
+    url.searchParams.delete(`${windowId}_positions_app_name`)
   }
   window.history.replaceState({}, '', url.toString())
 }
@@ -2123,6 +2125,7 @@ onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
   appName.value = parseAppNameFromUrl()
 
+  console.log('📍 [Positions] Mounted component, initializing filters from URL', props)
   // Initialize filters from URL
   const filters = parseFiltersFromUrl()
   if (filters.symbol) symbolTagFilters.value = filters.symbol.split(',').map(s => s.trim())
@@ -2176,9 +2179,9 @@ function handleExternalAccountFilter(payload: { accountId: string | null, source
   accountFilter.value = payload.accountId
   const url = new URL(window.location.href)
   if (payload.accountId) {
-    url.searchParams.set('all_cts_clientId', payload.accountId)
+    url.searchParams.set(`${windowId}_all_cts_clientId`, payload.accountId)
   } else {
-    url.searchParams.delete('all_cts_clientId')
+    url.searchParams.delete(`${windowId}_all_cts_clientId`)
   }
   window.history.replaceState({}, '', url.toString())
   updateFilters()
@@ -2192,9 +2195,9 @@ function handleExternalSymbolFilter(payload: { symbolTags: string[], source: str
   symbolTagFilters.value = payload.symbolTags
   const url = new URL(window.location.href)
   if (payload.symbolTags.length > 0) {
-    url.searchParams.set('all_cts_fi', payload.symbolTags.join('-and-'))
+    url.searchParams.set(`${windowId}_all_cts_fi`, payload.symbolTags.join('-and-'))
   } else {
-    url.searchParams.delete('all_cts_fi')
+    url.searchParams.delete(`${windowId}_all_cts_fi`)
   }
   window.history.replaceState({}, '', url.toString())
   updateFilters()
@@ -2258,7 +2261,7 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
     const accountId = String(value)
     accountFilter.value = accountId // <-- Track filter
     const url = new URL(window.location.href)
-    url.searchParams.set('all_cts_clientId', accountId)
+    url.searchParams.set(`${windowId}_all_cts_clientId`, accountId)
     window.history.replaceState({}, '', url.toString())
 
     updateFilters() // <-- Only call updateFilters, don't set Tabulator filter directly

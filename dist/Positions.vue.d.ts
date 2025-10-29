@@ -11,6 +11,7 @@ declare const _default: import('vue').DefineComponent<PositionsProps, {}, {}, {}
     highlightPnL: boolean;
     showHeaderLink: boolean;
     userId: string | null;
+    window: string | null;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, false, {
     columnsBtnRef: HTMLButtonElement;
     columnsPopupRef: HTMLDivElement;
