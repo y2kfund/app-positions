@@ -2089,9 +2089,39 @@ function writeGroupByThesisToUrl(isGrouped: boolean) {
 
 // Lifecycle
 const eventBus = inject<any>('eventBus')
+const appName = ref('Positions')
+const showAppNameDialog = ref(false)
+const appNameInput = ref('')
+
+function parseAppNameFromUrl(): string {
+  const url = new URL(window.location.href)
+  return url.searchParams.get('positions_app_name') || 'Positions'
+}
+
+function writeAppNameToUrl(name: string) {
+  const url = new URL(window.location.href)
+  if (name && name.trim() && name !== 'Positions') {
+    url.searchParams.set('positions_app_name', name.trim())
+  } else {
+    url.searchParams.delete('positions_app_name')
+  }
+  window.history.replaceState({}, '', url.toString())
+}
+
+function openAppNameDialog() {
+  appNameInput.value = appName.value
+  showAppNameDialog.value = true
+}
+
+function saveAppName() {
+  appName.value = appNameInput.value.trim() || 'Positions'
+  writeAppNameToUrl(appName.value)
+  showAppNameDialog.value = false
+}
 
 onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
+  appName.value = parseAppNameFromUrl()
 
   // Initialize filters from URL
   const filters = parseFiltersFromUrl()
@@ -2312,6 +2342,8 @@ window.addEventListener('popstate', () => {
   if (tabulator && sortFromUrl) {
     tabulator.setSort(sortFromUrl.field, sortFromUrl.dir)
   }
+
+  appName.value = parseAppNameFromUrl()
 })
 
 // --- In initializeTabulator(), update column titles and add rename button ---
@@ -2506,8 +2538,14 @@ watch(showScreenshotsModal, (open) => {
     <div v-else-if="q.isSuccess.value" class="positions-container">
       <div class="positions-header">
         <h2>
-          <span v-if="showHeaderLink" class="positions-link" @click="handleHeaderClick">Positions</span>
-          <span v-else>Positions</span>
+          <span v-if="showHeaderLink" class="positions-link" @click="handleHeaderClick">{{ appName }}</span>
+          <span v-else>{{ appName }}</span>
+          <button
+            class="appname-rename-btn"
+            @click="openAppNameDialog"
+            title="Rename app"
+            style="width:auto;padding: 2px 7px; font-size: 13px; background: none; border: none; color: #888; cursor: pointer;"
+          >✎</button>
         </h2>
         <div class="positions-tools">
           <div class="positions-count">{{ filteredPositionsCount }} positions</div>
@@ -2851,6 +2889,16 @@ watch(showScreenshotsModal, (open) => {
             </ul>
           </div -->
         </div>
+      </div>
+    </div>
+  </div>
+  <div v-if="showAppNameDialog" class="rename-dialog-backdrop">
+    <div class="rename-dialog">
+      <h3>Rename App</h3>
+      <input v-model="appNameInput" placeholder="App name" />
+      <div class="dialog-actions">
+        <button @click="saveAppName">Save</button>
+        <button @click="showAppNameDialog = false">Cancel</button>
       </div>
     </div>
   </div>
