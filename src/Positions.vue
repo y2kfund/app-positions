@@ -2575,7 +2575,7 @@ watch(showScreenshotsModal, (open) => {
             </svg>
           </button>
           
-          <button @click="emit('minimize')" class="minimize-button" title="Minimize Positions">
+          <button @click="emit('minimize')" class="minimize-button" title="Close">
             X
           </button>
           

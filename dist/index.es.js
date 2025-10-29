@@ -17539,7 +17539,7 @@ const am = { class: "positions-card" }, lm = {
                 E("button", {
                   onClick: d[2] || (d[2] = (Q) => A("minimize")),
                   class: "minimize-button",
-                  title: "Minimize Positions"
+                  title: "Close"
                 }, " X "),
                 lA.value ? (W(), G("div", {
                   key: 0,
@@ -17911,7 +17911,7 @@ const am = { class: "positions-card" }, lm = {
   for (const [A, i] of e)
     t[A] = i;
   return t;
-}, Kw = /* @__PURE__ */ Iw(Lw, [["__scopeId", "data-v-04a1e6b5"]]);
+}, Kw = /* @__PURE__ */ Iw(Lw, [["__scopeId", "data-v-ba854333"]]);
 export {
   Kw as Positions,
   Kw as default
