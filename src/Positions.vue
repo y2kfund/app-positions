@@ -2576,7 +2576,7 @@ watch(showScreenshotsModal, (open) => {
           </button>
           
           <button @click="emit('minimize')" class="minimize-button" title="Minimize Positions">
-            −
+            X
           </button>
           
           <div v-if="showColumnsPopup" ref="columnsPopupRef" class="columns-popup" @click.stop>
