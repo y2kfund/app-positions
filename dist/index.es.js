@@ -17258,11 +17258,11 @@ const am = { class: "positions-card" }, lm = {
       f.value.length > 0 ? g.searchParams.set(`${o}_all_cts_fi`, f.value.join("-and-")) : g.searchParams.delete(`${o}_all_cts_fi`), p.value.length > 0 ? g.searchParams.set(`${o}_all_cts_thesis`, p.value.join("-and-")) : g.searchParams.delete(`${o}_all_cts_thesis`), s.value ? g.searchParams.set(`${o}_fac`, s.value) : g.searchParams.delete(`${o}_fac`), window.history.replaceState({}, "", g.toString());
     }
     function ka() {
-      return new URL(window.location.href).searchParams.get("group_by_thesis") === "true";
+      return new URL(window.location.href).searchParams.get(`${o}_group_by_thesis`) === "true";
     }
     function _a(g) {
       const d = new URL(window.location.href);
-      g ? d.searchParams.set("group_by_thesis", "true") : d.searchParams.delete("group_by_thesis"), window.history.replaceState({}, "", d.toString());
+      g ? d.searchParams.set(`${o}_group_by_thesis`, "true") : d.searchParams.delete(`${o}_group_by_thesis`), window.history.replaceState({}, "", d.toString());
     }
     const Me = Yr("eventBus"), Rt = j("Positions"), GA = j(!1), WA = j("");
     function Xr() {
@@ -17911,7 +17911,7 @@ const am = { class: "positions-card" }, lm = {
   for (const [A, i] of e)
     t[A] = i;
   return t;
-}, Kw = /* @__PURE__ */ Iw(Lw, [["__scopeId", "data-v-2e397ff8"]]);
+}, Kw = /* @__PURE__ */ Iw(Lw, [["__scopeId", "data-v-1e8441b5"]]);
 export {
   Kw as Positions,
   Kw as default

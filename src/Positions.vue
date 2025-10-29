@@ -2073,15 +2073,15 @@ function writeFiltersToUrl() {
 // Add URL synchronization for group by thesis
 function parseGroupByThesisFromUrl(): boolean {
   const url = new URL(window.location.href)
-  return url.searchParams.get('group_by_thesis') === 'true'
+  return url.searchParams.get(`${windowId}_group_by_thesis`) === 'true'
 }
 
 function writeGroupByThesisToUrl(isGrouped: boolean) {
   const url = new URL(window.location.href)
   if (isGrouped) {
-    url.searchParams.set('group_by_thesis', 'true')
+    url.searchParams.set(`${windowId}_group_by_thesis`, 'true')
   } else {
-    url.searchParams.delete('group_by_thesis')
+    url.searchParams.delete(`${windowId}_group_by_thesis`)
   }
   window.history.replaceState({}, '', url.toString())
 }
