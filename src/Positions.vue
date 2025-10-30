@@ -26,8 +26,12 @@ const assetClassFilter = ref<string | null>(null)
 const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'computed_cash_flow_on_entry', 'computed_cash_flow_on_exercise'] as const
 const windowId = props.window || inject<string | null>('positions', null)
 
+const today = new Date().toISOString().slice(0, 10)
+const asOfDate = ref<string | null>(null)
+function clearAsOfDate() { asOfDate.value = null }
+
 // Query positions data
-const q = usePositionsQuery(props.accountId, props.userId)
+const q = usePositionsQuery(props.accountId, props.userId, asOfDate)
 //console.log('Positions query data:', q.data)
 const sourcePositions = computed(() => {
   const positions = q.data.value || []
@@ -2524,6 +2528,10 @@ async function saveScreenshotRename() {
 watch(showScreenshotsModal, (open) => {
   if (open) fetchScreenshots()
 })
+
+watch(asOfDate, () => {
+  if (q.refetch) q.refetch()
+})
 </script>
 
 <template>
@@ -2550,6 +2558,18 @@ watch(showScreenshotsModal, (open) => {
             style="width:auto;padding: 2px 7px; font-size: 13px; background: none; border: none; color: #888; cursor: pointer;"
           >✎</button>
         </h2>
+        <div class="positions-date-picker">
+          <label for="asOfDate">As of:</label>
+          <input
+            id="asOfDate"
+            type="date"
+            v-model="asOfDate"
+            :max="today"
+            style="margin-left: 0.5em;"
+          />
+          <button v-if="asOfDate" @click="clearAsOfDate" style="margin-left: 0.5em;">Clear</button>
+          <span v-if="q.isFetching.value" style="margin-left: 0.7em; color: #888;">Loading...</span>
+        </div>
         <div class="positions-tools">
           <div class="positions-count">{{ filteredPositionsCount }} positions</div>
           
