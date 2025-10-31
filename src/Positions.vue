@@ -5,14 +5,15 @@ import { usePositionsQuery, useThesisQuery, useThesisConnectionsQuery, extractSy
 import { useQueryClient } from '@tanstack/vue-query'
 import type { PositionsProps } from './index'
 import html2canvas from 'html2canvas'
+import { useSymbolCommentsQuery, upsertSymbolComment } from '@y2kfund/core'
 
 const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
   highlightPnL: false,
   showHeaderLink: false,
-  userId: null,
-  window: null
-  //userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
+  //userId: null,
+  window: null,
+  userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
 })
 
 const emit = defineEmits<{ 
@@ -29,6 +30,8 @@ const windowId = props.window || inject<string | null>('positions', null)
 const today = new Date().toISOString().slice(0, 10)
 const asOfDate = ref<string | null>(null)
 function clearAsOfDate() { asOfDate.value = null }
+
+const symbolCommentsQuery = props.userId ? useSymbolCommentsQuery(props.userId) : null
 
 // Query positions data
 const q = usePositionsQuery(props.accountId, props.userId, asOfDate)
@@ -48,6 +51,10 @@ const sourcePositions = computed(() => {
         }
       }
     }
+
+    const symbolRoot = extractSymbolRoot(newP.symbol)
+    newP.symbol_comment = symbolRoot ? symbolCommentMap.value.get(symbolRoot) || '' : ''
+
     return newP
   })
 })
@@ -70,11 +77,12 @@ type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis
 const activeFilters = ref<ActiveFilter[]>([])
 
 // Column visibility
-type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'instrument_market_price' | 'market_value' | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct' | 'computed_be_price' | 'thesis' | 'maintenance_margin_change'
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'instrument_market_price' | 'market_value' | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct' | 'computed_be_price' | 'thesis' | 'maintenance_margin_change' | 'symbol_comment'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'thesis', label: 'Thesis' },
   { field: 'symbol', label: 'Financial Instrument' },
+  { field: 'symbol_comment', label: 'Comment' },
   { field: 'expiry_date', label: 'Expiry date' },
   { field: 'asset_class', label: 'Asset Class' },
   { field: 'conid', label: 'Conid' },
@@ -97,6 +105,16 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
 
 type ColumnRenames = Partial<Record<ColumnField, string>>
 const columnRenames = ref<ColumnRenames>({})
+
+const symbolCommentMap = computed(() => {
+  const map = new Map<string, string>()
+  if (symbolCommentsQuery?.data.value) {
+    for (const c of symbolCommentsQuery.data.value) {
+      map.set(c.symbol_root, c.comment)
+    }
+  }
+  return map
+})
 
 // --- Helpers for URL sync of column renames ---
 function parseColumnRenamesFromUrl(): ColumnRenames {
@@ -676,6 +694,42 @@ function initializeTabulator() {
         } catch (error) {
           console.warn('Thesis cell double click error:', error)
         }
+      },
+      contextMenu: createFetchedAtContextMenu()
+    },
+    {
+      title: 'Comment',
+      field: 'symbol_comment',
+      minWidth: 120,
+      width: columnWidths.value['symbol_comment'] || undefined,
+      visible: visibleCols.value.includes('symbol_comment'),
+      editor: 'input',
+      titleFormatter: (cell: any) => `<div class="header-with-close"><span>Comment</span></div>`,
+      /*formatter: (cell: any) => {
+        const data = cell.getRow().getData()
+        if (data?._isThesisGroup) return ''
+        const symbolRoot = extractSymbolRoot(data.symbol)
+        return symbolCommentMap.value.get(symbolRoot) || ''
+      },*/
+      formatter: (cell: any) => cell.getValue() || '',
+      cellEdited: async (cell: any) => {
+        const data = cell.getRow().getData()
+        const symbolRoot = extractSymbolRoot(data.symbol)
+        const comment = cell.getValue()
+        if (symbolRoot && props.userId) {
+          try {
+            await upsertSymbolComment(supabase, symbolRoot, props.userId, comment)
+            await symbolCommentsQuery?.refetch?.()
+            // Force Tabulator to redraw the cell so the new comment appears immediately
+            cell.getRow().getTable().redraw(true)
+            showToast('success', 'Comment saved')
+          } catch (err: any) {
+            showToast('error', 'Failed to save comment', err.message)
+          }
+        }
+      },
+      cellClick: (e: any, cell: any) => {
+        if (!cell.getRow().getData()?._isThesisGroup) cell.edit()
       },
       contextMenu: createFetchedAtContextMenu()
     },
