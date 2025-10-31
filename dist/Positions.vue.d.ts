@@ -3,9 +3,11 @@ import { PositionsProps } from './index';
 declare const _default: import('vue').DefineComponent<PositionsProps, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {
     "row-click": (row: Position) => any;
     minimize: () => any;
+    maximize: () => any;
 }, string, import('vue').PublicProps, Readonly<PositionsProps> & Readonly<{
     "onRow-click"?: ((row: Position) => any) | undefined;
     onMinimize?: (() => any) | undefined;
+    onMaximize?: (() => any) | undefined;
 }>, {
     accountId: string;
     highlightPnL: boolean;

@@ -15996,7 +15996,7 @@ const gm = { class: "positions-card" }, pm = {
     userId: { default: "67e578fd-2cf7-48a4-b028-a11a3f89bb9b" },
     window: { default: null }
   },
-  emits: ["row-click", "minimize"],
+  emits: ["row-click", "minimize", "maximize"],
   setup(r, { emit: e }) {
     const t = r, A = e, i = J(null), s = J(null), n = ["qty", "avgPrice", "price", "market_value", "unrealized_pnl", "computed_cash_flow_on_entry", "computed_cash_flow_on_exercise"], o = t.window || en("positions", null), a = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10), l = J(null);
     function h() {
@@ -17522,11 +17522,11 @@ const gm = { class: "positions-card" }, pm = {
       var H, K, N;
       return W(), G(Gt, null, [
         E("div", gm, [
-          Wt(c).isLoading.value ? (W(), G("div", pm, [...d[22] || (d[22] = [
+          Wt(c).isLoading.value ? (W(), G("div", pm, [...d[23] || (d[23] = [
             E("div", { class: "loading-spinner" }, null, -1),
             It(" Loading positions... ", -1)
           ])])) : Wt(c).isError.value ? (W(), G("div", mm, [
-            d[23] || (d[23] = E("h3", null, "Error loading positions", -1)),
+            d[24] || (d[24] = E("h3", null, "Error loading positions", -1)),
             E("p", null, le(Wt(c).error.value), 1)
           ])) : Wt(c).isSuccess.value ? (W(), G("div", wm, [
             E("div", bm, [
@@ -17544,7 +17544,7 @@ const gm = { class: "positions-card" }, pm = {
                 }, "✎")
               ]),
               E("div", Cm, [
-                d[24] || (d[24] = E("label", { for: "asOfDate" }, "As of:", -1)),
+                d[25] || (d[25] = E("label", { for: "asOfDate" }, "As of:", -1)),
                 ft(E("input", {
                   id: "asOfDate",
                   type: "date",
@@ -17581,7 +17581,7 @@ const gm = { class: "positions-card" }, pm = {
                   onClick: d[2] || (d[2] = (Q) => T.value = !T.value),
                   title: "Group positions by thesis"
                 }, [
-                  d[25] || (d[25] = E("span", { class: "icon" }, "📊", -1)),
+                  d[26] || (d[26] = E("span", { class: "icon" }, "📊", -1)),
                   It(" " + le(T.value ? "Ungroup" : "Group by Thesis"), 1)
                 ], 2),
                 E("button", {
@@ -17589,7 +17589,7 @@ const gm = { class: "positions-card" }, pm = {
                   ref: is,
                   class: "columns-btn",
                   onClick: We(Va, ["stop"])
-                }, [...d[26] || (d[26] = [
+                }, [...d[27] || (d[27] = [
                   E("svg", {
                     class: "icon",
                     viewBox: "0 0 24 24",
@@ -17603,7 +17603,12 @@ const gm = { class: "positions-card" }, pm = {
                   ], -1)
                 ])], 512),
                 E("button", {
-                  onClick: d[3] || (d[3] = (Q) => A("minimize")),
+                  onClick: d[3] || (d[3] = (Q) => A("maximize")),
+                  class: "minimize-button",
+                  title: "Maximize"
+                }, " ⤢ "),
+                E("button", {
+                  onClick: d[4] || (d[4] = (Q) => A("minimize")),
                   class: "minimize-button",
                   title: "Close"
                 }, " X "),
@@ -17612,10 +17617,10 @@ const gm = { class: "positions-card" }, pm = {
                   ref_key: "columnsPopupRef",
                   ref: ss,
                   class: "columns-popup",
-                  onClick: d[7] || (d[7] = We(() => {
+                  onClick: d[8] || (d[8] = We(() => {
                   }, ["stop"]))
                 }, [
-                  d[27] || (d[27] = E("div", { class: "popup-header" }, "Columns", -1)),
+                  d[28] || (d[28] = E("div", { class: "popup-header" }, "Columns", -1)),
                   E("div", Rm, [
                     (W(!0), G(Gt, null, wA(O.value.map((Q) => x.find((m) => m.field === Q)).filter(Boolean), (Q, m) => (W(), G("label", {
                       key: Q.field,
@@ -17629,7 +17634,7 @@ const gm = { class: "positions-card" }, pm = {
                       ft(E("input", {
                         type: "checkbox",
                         value: Q.field,
-                        "onUpdate:modelValue": d[4] || (d[4] = (p) => O.value = p)
+                        "onUpdate:modelValue": d[5] || (d[5] = (p) => O.value = p)
                       }, null, 8, Tm), [
                         [An, O.value]
                       ]),
@@ -17668,7 +17673,7 @@ const gm = { class: "positions-card" }, pm = {
                       ft(E("input", {
                         type: "checkbox",
                         value: Q.field,
-                        "onUpdate:modelValue": d[5] || (d[5] = (m) => O.value = m)
+                        "onUpdate:modelValue": d[6] || (d[6] = (m) => O.value = m)
                       }, null, 8, km), [
                         [An, O.value]
                       ]),
@@ -17678,7 +17683,7 @@ const gm = { class: "positions-card" }, pm = {
                   E("div", _m, [
                     E("button", {
                       class: "btn btn-clear",
-                      onClick: d[6] || (d[6] = (Q) => O.value = x.map((m) => m.field))
+                      onClick: d[7] || (d[7] = (Q) => O.value = x.map((m) => m.field))
                     }, "Show All"),
                     E("button", {
                       class: "btn",
@@ -17689,7 +17694,7 @@ const gm = { class: "positions-card" }, pm = {
               ])
             ]),
             M.value.length ? (W(), G("div", Om, [
-              d[28] || (d[28] = E("span", { class: "filters-label" }, "Filtered by:", -1)),
+              d[29] || (d[29] = E("span", { class: "filters-label" }, "Filtered by:", -1)),
               E("div", Km, [
                 (W(!0), G(Gt, null, wA(M.value, (Q) => (W(), G("span", {
                   key: `${Q.field}-${Q.value}`,
@@ -17743,9 +17748,9 @@ const gm = { class: "positions-card" }, pm = {
           ]),
           hs.value ? (W(), G("div", qm, [
             E("div", ew, [
-              d[29] || (d[29] = E("h3", null, "Rename Account", -1)),
+              d[30] || (d[30] = E("h3", null, "Rename Account", -1)),
               ft(E("input", {
-                "onUpdate:modelValue": d[8] || (d[8] = (Q) => YA.value = Q),
+                "onUpdate:modelValue": d[9] || (d[9] = (Q) => YA.value = Q),
                 placeholder: el.value
               }, null, 8, tw), [
                 [Xt, YA.value]
@@ -17753,16 +17758,16 @@ const gm = { class: "positions-card" }, pm = {
               E("div", Aw, [
                 E("button", { onClick: tl }, "Save"),
                 E("button", {
-                  onClick: d[9] || (d[9] = (Q) => hs.value = !1)
+                  onClick: d[10] || (d[10] = (Q) => hs.value = !1)
                 }, "Cancel")
               ])
             ])
           ])) : Ce("", !0),
           se.value ? (W(), G("div", iw, [
             E("div", sw, [
-              d[30] || (d[30] = E("h3", null, "Rename Column", -1)),
+              d[31] || (d[31] = E("h3", null, "Rename Column", -1)),
               ft(E("input", {
-                "onUpdate:modelValue": d[10] || (d[10] = (Q) => z.value = Q),
+                "onUpdate:modelValue": d[11] || (d[11] = (Q) => z.value = Q),
                 placeholder: "Column name"
               }, null, 512), [
                 [Xt, z.value]
@@ -17775,7 +17780,7 @@ const gm = { class: "positions-card" }, pm = {
           ])) : Ce("", !0),
           ZA.value ? (W(), G("div", rw, [
             E("div", nw, [
-              d[32] || (d[32] = E("h3", { class: "screenshots-title" }, "Past Screenshots", -1)),
+              d[33] || (d[33] = E("h3", { class: "screenshots-title" }, "Past Screenshots", -1)),
               ds.value ? (W(), G("div", ow, "Loading screenshots...")) : $A.value.length === 0 ? (W(), G("div", aw, "No screenshots yet.")) : (W(), G("div", lw, [
                 (W(!0), G(Gt, null, wA($A.value, (Q) => (W(), G("div", {
                   key: Q.id,
@@ -17795,14 +17800,14 @@ const gm = { class: "positions-card" }, pm = {
                         dateStyle: "medium",
                         timeStyle: "short"
                       })) + " ", 1),
-                      d[31] || (d[31] = E("span", { style: { color: "#888", "font-size": "12px" } }, "PST", -1))
+                      d[32] || (d[32] = E("span", { style: { color: "#888", "font-size": "12px" } }, "PST", -1))
                     ]),
                     E("div", gw, [
                       E("a", {
                         href: `data:image/png;base64,${Q.image_data}`,
                         download: `positions-screenshot-${Q.id}.png`,
                         class: "screenshot-download-link",
-                        onClick: d[11] || (d[11] = We(() => {
+                        onClick: d[12] || (d[12] = We(() => {
                         }, ["stop"]))
                       }, "⬇️", 8, pw),
                       E("button", {
@@ -17823,7 +17828,7 @@ const gm = { class: "positions-card" }, pm = {
               ])),
               E("div", bw, [
                 E("button", {
-                  onClick: d[12] || (d[12] = (Q) => ZA.value = !1),
+                  onClick: d[13] || (d[13] = (Q) => ZA.value = !1),
                   class: "screenshots-close"
                 }, "Close")
               ])
@@ -17831,7 +17836,7 @@ const gm = { class: "positions-card" }, pm = {
             ct.value ? (W(), G("div", {
               key: 0,
               class: "screenshot-preview-modal",
-              onClick: d[14] || (d[14] = We((Q) => ct.value = null, ["self"]))
+              onClick: d[15] || (d[15] = We((Q) => ct.value = null, ["self"]))
             }, [
               E("div", Bw, [
                 E("img", {
@@ -17845,7 +17850,7 @@ const gm = { class: "positions-card" }, pm = {
                       dateStyle: "medium",
                       timeStyle: "short"
                     })) + " ", 1),
-                    d[33] || (d[33] = E("span", { style: { color: "#888", "font-size": "12px" } }, "PST", -1))
+                    d[34] || (d[34] = E("span", { style: { color: "#888", "font-size": "12px" } }, "PST", -1))
                   ]),
                   E("a", {
                     href: `data:image/png;base64,${ct.value.image_data}`,
@@ -17853,7 +17858,7 @@ const gm = { class: "positions-card" }, pm = {
                     class: "screenshot-download-link"
                   }, "⬇️ Download", 8, Ew),
                   E("button", {
-                    onClick: d[13] || (d[13] = (Q) => ct.value = null),
+                    onClick: d[14] || (d[14] = (Q) => ct.value = null),
                     class: "screenshot-preview-close"
                   }, "Close")
                 ])
@@ -17862,9 +17867,9 @@ const gm = { class: "positions-card" }, pm = {
           ])) : Ce("", !0),
           pA.value ? (W(), G("div", yw, [
             E("div", Fw, [
-              d[34] || (d[34] = E("h3", null, "Name screenshot", -1)),
+              d[35] || (d[35] = E("h3", null, "Name screenshot", -1)),
               ft(E("input", {
-                "onUpdate:modelValue": d[15] || (d[15] = (Q) => mA.value = Q),
+                "onUpdate:modelValue": d[16] || (d[16] = (Q) => mA.value = Q),
                 placeholder: "Enter a name (optional)"
               }, null, 512), [
                 [Xt, mA.value]
@@ -17872,16 +17877,16 @@ const gm = { class: "positions-card" }, pm = {
               E("div", Qw, [
                 E("button", { onClick: il }, "Save & Capture"),
                 E("button", {
-                  onClick: d[16] || (d[16] = (Q) => pA.value = !1)
+                  onClick: d[17] || (d[17] = (Q) => pA.value = !1)
                 }, "Cancel")
               ])
             ])
           ])) : Ce("", !0),
           ei.value ? (W(), G("div", Uw, [
             E("div", Hw, [
-              d[35] || (d[35] = E("h3", null, "Rename Screenshot", -1)),
+              d[36] || (d[36] = E("h3", null, "Rename Screenshot", -1)),
               ft(E("input", {
-                "onUpdate:modelValue": d[17] || (d[17] = (Q) => ti.value = Q),
+                "onUpdate:modelValue": d[18] || (d[18] = (Q) => ti.value = Q),
                 placeholder: "Enter new name"
               }, null, 512), [
                 [Xt, ti.value]
@@ -17889,7 +17894,7 @@ const gm = { class: "positions-card" }, pm = {
               E("div", Rw, [
                 E("button", { onClick: nl }, "Save"),
                 E("button", {
-                  onClick: d[18] || (d[18] = (Q) => ei.value = !1)
+                  onClick: d[19] || (d[19] = (Q) => ei.value = !1)
                 }, "Cancel")
               ])
             ])
@@ -17902,24 +17907,24 @@ const gm = { class: "positions-card" }, pm = {
         }, [
           E("div", {
             class: "modal-content",
-            onClick: d[19] || (d[19] = We(() => {
+            onClick: d[20] || (d[20] = We(() => {
             }, ["stop"]))
           }, [
             E("div", { class: "modal-header" }, [
-              d[36] || (d[36] = E("h3", null, "Margin Impact", -1)),
+              d[37] || (d[37] = E("h3", null, "Margin Impact", -1)),
               E("button", {
                 class: "modal-close",
                 onClick: Wr
               }, "×")
             ]),
             E("div", xw, [
-              d[42] || (d[42] = E("p", null, "Closing out this position would have the following impact on your margin requirements:", -1)),
-              ns.value ? (W(), G("div", Tw, [...d[37] || (d[37] = [
+              d[43] || (d[43] = E("p", null, "Closing out this position would have the following impact on your margin requirements:", -1)),
+              ns.value ? (W(), G("div", Tw, [...d[38] || (d[38] = [
                 E("div", { class: "loading-spinner" }, null, -1),
                 It(" Loading margin impact data... ", -1)
               ])])) : dA.value ? (W(), G("div", Lw, " Error loading margin impact: " + le(dA.value), 1)) : He.value ? (W(), G("div", Mw, [
                 E("table", Sw, [
-                  d[41] || (d[41] = E("thead", null, [
+                  d[42] || (d[42] = E("thead", null, [
                     E("tr", null, [
                       E("th", null, "Account Metric"),
                       E("th", null, "Current"),
@@ -17929,19 +17934,19 @@ const gm = { class: "positions-card" }, pm = {
                   ], -1)),
                   E("tbody", null, [
                     (H = He.value.margin_impact) != null && H.equity_with_loan ? (W(), G("tr", Dw, [
-                      d[38] || (d[38] = E("td", null, "Equity with Loan", -1)),
+                      d[39] || (d[39] = E("td", null, "Equity with Loan", -1)),
                       E("td", null, le(He.value.margin_impact.equity_with_loan.current), 1),
                       E("td", null, le(He.value.margin_impact.equity_with_loan.change), 1),
                       E("td", null, le(He.value.margin_impact.equity_with_loan.post_trade), 1)
                     ])) : Ce("", !0),
                     (K = He.value.margin_impact) != null && K.initial_margin ? (W(), G("tr", kw, [
-                      d[39] || (d[39] = E("td", null, "Initial Margin", -1)),
+                      d[40] || (d[40] = E("td", null, "Initial Margin", -1)),
                       E("td", null, le(He.value.margin_impact.initial_margin.current), 1),
                       E("td", null, le(He.value.margin_impact.initial_margin.change), 1),
                       E("td", null, le(He.value.margin_impact.initial_margin.post_trade), 1)
                     ])) : Ce("", !0),
                     (N = He.value.margin_impact) != null && N.maintenance_margin ? (W(), G("tr", _w, [
-                      d[40] || (d[40] = E("td", null, "Maintenance Margin", -1)),
+                      d[41] || (d[41] = E("td", null, "Maintenance Margin", -1)),
                       E("td", null, le(He.value.margin_impact.maintenance_margin.current), 1),
                       E("td", null, le(He.value.margin_impact.maintenance_margin.change), 1),
                       E("td", null, le(He.value.margin_impact.maintenance_margin.post_trade), 1)
@@ -17954,9 +17959,9 @@ const gm = { class: "positions-card" }, pm = {
         ])) : Ce("", !0),
         JA.value ? (W(), G("div", Ow, [
           E("div", Kw, [
-            d[43] || (d[43] = E("h3", null, "Rename App", -1)),
+            d[44] || (d[44] = E("h3", null, "Rename App", -1)),
             ft(E("input", {
-              "onUpdate:modelValue": d[20] || (d[20] = (Q) => jA.value = Q),
+              "onUpdate:modelValue": d[21] || (d[21] = (Q) => jA.value = Q),
               placeholder: "App name"
             }, null, 512), [
               [Xt, jA.value]
@@ -17964,7 +17969,7 @@ const gm = { class: "positions-card" }, pm = {
             E("div", Pw, [
               E("button", { onClick: Xa }, "Save"),
               E("button", {
-                onClick: d[21] || (d[21] = (Q) => JA.value = !1)
+                onClick: d[22] || (d[22] = (Q) => JA.value = !1)
               }, "Cancel")
             ])
           ])
@@ -17977,7 +17982,7 @@ const gm = { class: "positions-card" }, pm = {
   for (const [A, i] of e)
     t[A] = i;
   return t;
-}, Yw = /* @__PURE__ */ Nw(Vw, [["__scopeId", "data-v-bb40c029"]]);
+}, Yw = /* @__PURE__ */ Nw(Vw, [["__scopeId", "data-v-36683f3b"]]);
 export {
   Yw as Positions,
   Yw as default

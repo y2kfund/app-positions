@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<PositionsProps>(), {
 const emit = defineEmits<{ 
   'row-click': [row: Position]
   'minimize': []
+  'maximize': []
 }>()
 
 const accountFilter = ref<string | null>(null)
@@ -2649,6 +2650,13 @@ watch(asOfDate, () => {
             </svg>
           </button>
           
+          <button
+              @click="emit('maximize')"
+              class="minimize-button"
+              title="Maximize"
+            >
+            ⤢
+          </button>
           <button @click="emit('minimize')" class="minimize-button" title="Close">
             X
           </button>
