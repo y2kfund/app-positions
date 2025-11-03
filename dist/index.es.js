@@ -18449,7 +18449,7 @@ const Vm = { class: "positions-card" }, Nm = {
   for (const [A, i] of e)
     t[A] = i;
   return t;
-}, Kb = /* @__PURE__ */ Mb(Ib, [["__scopeId", "data-v-c9bd62b7"]]);
+}, Kb = /* @__PURE__ */ Mb(Ib, [["__scopeId", "data-v-78336aed"]]);
 export {
   Kb as Positions,
   Kb as default

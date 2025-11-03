@@ -3694,9 +3694,9 @@ button.screenshot-btn {
 }
 button.attach-trades-btn {
     border-radius: 50%;
-    padding: 0;
+    padding: 0 !important;
     height: 18px;
-    width: 18px;
+    width: 18px !important;
     border: 2px solid #28a745;
     color: #28a745;
     cursor: pointer;
@@ -4731,6 +4731,7 @@ h1 {
 .trade-item input[type="checkbox"] {
   margin-top: 2px;
   cursor: pointer;
+  width: auto;
 }
 
 .trade-details {
