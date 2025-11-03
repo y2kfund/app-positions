@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, computed, ref, watch, inject, nextTick } from 'vue'
 import { TabulatorFull as Tabulator } from 'tabulator-tables'
-import { usePositionsQuery, useThesisQuery, useThesisConnectionsQuery, extractSymbolRoot, type Position, type Thesis, type ThesisConnection, useSupabase } from '@y2kfund/core'
+import { usePositionsQuery, useThesisQuery, useThesisConnectionsQuery, extractSymbolRoot, type Position, type Thesis, type ThesisConnection, useSupabase, useSymbolCommentsQuery, upsertSymbolComment, generateCommentKey } from '@y2kfund/core'
 import { useQueryClient } from '@tanstack/vue-query'
 import type { PositionsProps } from './index'
 import html2canvas from 'html2canvas'
-import { useSymbolCommentsQuery, upsertSymbolComment } from '@y2kfund/core'
 
 const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
@@ -53,8 +52,15 @@ const sourcePositions = computed(() => {
       }
     }
 
-    const symbolRoot = extractSymbolRoot(newP.symbol)
-    newP.symbol_comment = symbolRoot ? symbolCommentMap.value.get(symbolRoot) || '' : ''
+    // Generate comment key from multiple columns
+    const commentKey = generateCommentKey({
+      internal_account_id: newP.internal_account_id,
+      symbol: newP.symbol,
+      qty: newP.qty,
+      asset_class: newP.asset_class,
+      conid: newP.conid
+    })
+    newP.symbol_comment = symbolCommentMap.value.get(commentKey) || ''
 
     return newP
   })
@@ -111,7 +117,7 @@ const symbolCommentMap = computed(() => {
   const map = new Map<string, string>()
   if (symbolCommentsQuery?.data.value) {
     for (const c of symbolCommentsQuery.data.value) {
-      map.set(c.symbol_root, c.comment)
+      map.set(c.comment_key, c.comment)
     }
   }
   return map
@@ -706,22 +712,21 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('symbol_comment'),
       editor: 'input',
       titleFormatter: (cell: any) => `<div class="header-with-close"><span>Comment</span></div>`,
-      /*formatter: (cell: any) => {
-        const data = cell.getRow().getData()
-        if (data?._isThesisGroup) return ''
-        const symbolRoot = extractSymbolRoot(data.symbol)
-        return symbolCommentMap.value.get(symbolRoot) || ''
-      },*/
       formatter: (cell: any) => cell.getValue() || '',
       cellEdited: async (cell: any) => {
         const data = cell.getRow().getData()
-        const symbolRoot = extractSymbolRoot(data.symbol)
+        const commentKey = generateCommentKey({
+          internal_account_id: data.internal_account_id,
+          symbol: data.symbol,
+          qty: data.qty,
+          asset_class: data.asset_class,
+          conid: data.conid
+        })
         const comment = cell.getValue()
-        if (symbolRoot && props.userId) {
+        if (commentKey && props.userId) {
           try {
-            await upsertSymbolComment(supabase, symbolRoot, props.userId, comment)
+            await upsertSymbolComment(supabase, commentKey, props.userId, comment)
             await symbolCommentsQuery?.refetch?.()
-            // Force Tabulator to redraw the cell so the new comment appears immediately
             cell.getRow().getTable().redraw(true)
             showToast('success', 'Comment saved')
           } catch (err: any) {
