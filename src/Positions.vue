@@ -2994,14 +2994,14 @@ async function saveScreenshotRename() {
 function formatTradeDate(dateStr: string): string {
   if (!dateStr) return ''
   
-  // Check if it's already in MM/DD/YYYY format
-  const mmddyyyyMatch = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(String(dateStr).trim())
+  // Check if it's in DD/MM/YYYY format (day first)
+  const ddmmyyyyMatch = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(String(dateStr).trim())
   let dt: Date
   
-  if (mmddyyyyMatch) {
-    const month = parseInt(mmddyyyyMatch[1]) - 1
-    const day = parseInt(mmddyyyyMatch[2])
-    let year = parseInt(mmddyyyyMatch[3])
+  if (ddmmyyyyMatch) {
+    const day = parseInt(ddmmyyyyMatch[1])      // First number is day
+    const month = parseInt(ddmmyyyyMatch[2]) - 1 // Second number is month (0-indexed)
+    let year = parseInt(ddmmyyyyMatch[3])
     if (year < 100) {
       year = 2000 + year
     }
@@ -3012,7 +3012,7 @@ function formatTradeDate(dateStr: string): string {
     if (isNaN(dt.getTime())) return String(dateStr)
   }
   
-  // Format as DD-MMM-YYYY (e.g., 24-AUG-2025)
+  // Format as DD-MMM-YYYY (e.g., 31-OCT-2025)
   const day = dt.getDate().toString().padStart(2, '0')
   const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
                       'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
