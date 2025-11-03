@@ -2314,14 +2314,24 @@ const tradesQuery = useTradesQuery(props.accountId, props.userId)
 const filteredTrades = computed(() => {
   if (!tradesQuery.data.value) return []
   
-  const query = tradeSearchQuery.value.toLowerCase()
+  const query = tradeSearchQuery.value.toLowerCase().trim()
+  if (!query) return tradesQuery.data.value
+  
+  // Split by comma and clean up each term
+  const searchTerms = query.split(',').map(term => term.trim()).filter(Boolean)
+  
   return tradesQuery.data.value.filter(trade => {
-    if (!query) return true
-    return (
-      trade.symbol.toLowerCase().includes(query) ||
-      trade.assetCategory.toLowerCase().includes(query) ||
-      trade.tradeDate.includes(query)
-    )
+    // Check if ALL search terms match (AND logic)
+    return searchTerms.every(term => {
+      return (
+        trade.symbol.toLowerCase().includes(term) ||
+        trade.assetCategory.toLowerCase().includes(term) ||
+        trade.buySell.toLowerCase().includes(term) ||
+        trade.tradeDate.includes(term) ||
+        (trade.description && trade.description.toLowerCase().includes(term)) ||
+        (trade.tradeID && trade.tradeID.toLowerCase().includes(term))
+      )
+    })
   })
 })
 
@@ -3454,9 +3464,12 @@ watch(expandedPositions, () => {
           <input 
             v-model="tradeSearchQuery" 
             type="text" 
-            placeholder="Search trades by symbol, asset class, or date..."
+            placeholder="Search trades (e.g., 'META, BUY' or 'OPT, 31-OCT-2025')..."
             class="search-input"
           />
+          <div class="search-hint">
+            💡 Use commas to search multiple terms. All terms must match.
+          </div>
         </div>
         
         <div v-if="tradesQuery.isLoading.value" class="loading-state">
@@ -4925,5 +4938,11 @@ h1 {
   color: #6c757d;
   font-weight: 500;
   margin-left: 4px;
+}
+.search-hint {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+  font-style: italic;
 }
 </style>
