@@ -1583,6 +1583,9 @@ function initializeTabulator() {
               const nestedTable = new Tabulator(tableEl, {
                 data: attachedTrades,
                 layout: 'fitDataStretch',
+                initialSort: [
+                  { column: 'tradeDate', dir: 'desc' }
+                ],
                 columns: [
                   {
                     title: 'Side',
@@ -2988,6 +2991,37 @@ async function saveScreenshotRename() {
   }
 }
 
+function formatTradeDate(dateStr: string): string {
+  if (!dateStr) return ''
+  
+  // Check if it's already in MM/DD/YYYY format
+  const mmddyyyyMatch = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(String(dateStr).trim())
+  let dt: Date
+  
+  if (mmddyyyyMatch) {
+    const month = parseInt(mmddyyyyMatch[1]) - 1
+    const day = parseInt(mmddyyyyMatch[2])
+    let year = parseInt(mmddyyyyMatch[3])
+    if (year < 100) {
+      year = 2000 + year
+    }
+    dt = new Date(year, month, day)
+  } else {
+    // Try parsing as ISO date or other format
+    dt = new Date(dateStr)
+    if (isNaN(dt.getTime())) return String(dateStr)
+  }
+  
+  // Format as DD-MMM-YYYY (e.g., 24-AUG-2025)
+  const day = dt.getDate().toString().padStart(2, '0')
+  const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
+                      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+  const month = monthNames[dt.getMonth()]
+  const year = dt.getFullYear()
+  
+  return `${day}-${month}-${year}`
+}
+
 watch(showScreenshotsModal, (open) => {
   if (open) fetchScreenshots()
 })
@@ -3461,7 +3495,7 @@ watch(expandedPositions, () => {
                 </span>
               </div>
               <div class="trade-secondary">
-                {{ trade.assetCategory }} • {{ trade.tradeDate }} • 
+                {{ trade.assetCategory }} • Trade date: {{ formatTradeDate(trade.tradeDate) }} • 
                 Commission: {{ formatCurrency(parseFloat(trade.ibCommission)) }}
               </div>
             </div>
