@@ -932,6 +932,7 @@ function initializeTabulator() {
       width: columnWidths.value['qty'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('qty'),
+      sorter: 'number',
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
@@ -3456,7 +3457,11 @@ watch(expandedPositions, () => {
       
       <div class="modal-body">
         <div v-if="selectedPositionForTrades" class="position-info">
-          <strong>Position:</strong> {{ selectedPositionForTrades.symbol }} 
+          <strong>Position: </strong> 
+          <span v-for="tag in extractTagsFromSymbol(selectedPositionForTrades.symbol)" :key="tag" class="fi-tag position-tag">
+            {{ tag }}
+          </span>
+           •
           ({{ selectedPositionForTrades.qty }} @ {{ formatCurrency(selectedPositionForTrades.avgPrice) }})
         </div>
         
