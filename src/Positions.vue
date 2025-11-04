@@ -2602,8 +2602,17 @@ function saveAppName() {
   showAppNameDialog.value = false
 }
 
+function handleEscKey(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    if (showTradeAttachModal.value) {
+      showTradeAttachModal.value = false
+    }
+  }
+}
+
 onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
+  document.addEventListener('keydown', handleEscKey)
   appName.value = parseAppNameFromUrl()
 
   console.log('📍 [Positions] Mounted component, initializing filters from URL', props)
@@ -2643,6 +2652,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('keydown', handleEscKey)
   if (tabulator) {
     tabulator.destroy()
   }
