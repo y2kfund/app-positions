@@ -26,9 +26,9 @@ const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
   highlightPnL: false,
   showHeaderLink: false,
-  userId: null,
+  //userId: null,
   window: null,
-  //userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
+  userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
 })
 
 const emit = defineEmits<{ 
@@ -317,6 +317,40 @@ function extractTagsFromSymbol(symbolText: string): string[] {
   const strike = strikeMatch?.[1] ?? ''
   const codeMatch = text.match(/\b(\d{6})[CP]/)
   const expiry = codeMatch ? formatExpiryFromYyMmDd(codeMatch[1]) : ''
+  return [base, expiry, strike, right].filter(Boolean)
+}
+
+function extractTagsFromTradesSymbol(symbolText: string): string[] {
+  if (!symbolText) return []
+  const text = String(symbolText).trim()
+  
+  // Match base symbol (one or more uppercase letters at start)
+  const symMatch = text.match(/^([A-Z]+)\s*/)
+  const base = symMatch?.[1] ?? ''
+  
+  // Remove base symbol from text for further processing
+  const remaining = text.slice(symMatch?.[0]?.length || 0)
+  
+  // Match expiry code (6 digits) followed by option type (C/P)
+  const expiryMatch = remaining.match(/(\d{6})([CP])/)
+  let expiry = ''
+  let right = ''
+  let strike = ''
+  
+  if (expiryMatch) {
+    expiry = formatExpiryFromYyMmDd(expiryMatch[1])
+    right = expiryMatch[2]
+    
+    // Extract strike price (remaining digits after expiry and option type)
+    const afterExpiry = remaining.slice(expiryMatch[0].length)
+    const strikeMatch = afterExpiry.match(/(\d+)/)
+    if (strikeMatch) {
+      // Parse as number, divide by 1000 to handle decimal places, then format
+      const strikeValue = parseInt(strikeMatch[1], 10) / 1000
+      strike = strikeValue.toString()
+    }
+  }
+  
   return [base, expiry, strike, right].filter(Boolean)
 }
 
@@ -1621,7 +1655,19 @@ function initializeTabulator() {
                   {
                     title: 'Symbol',
                     field: 'symbol',
-                    width: 150
+                    width: 150,
+                    formatter: (cell: any) => {
+                      const symbol = cell.getValue()
+                      if (!symbol) return '<span style="color: #6c757d; font-style: italic;">N/A</span>'
+                      
+                      const tags = extractTagsFromTradesSymbol(symbol)
+                      const selectedTags = symbolTagFilters.value
+                      
+                      return tags.map(tag => {
+                        const isSelected = selectedTags.includes(tag)
+                        return `<span class="fi-tag" data-tag="${tag}">${tag}</span>`
+                      }).join(' ')
+                    }
                   },
                   {
                     title: 'Asset Class',
@@ -3514,7 +3560,7 @@ watch(expandedPositions, () => {
             <div class="trade-details">
               <div class="trade-primary">
                 <strong>
-                  <span v-for="tag in extractTagsFromSymbol(trade.symbol)" :key="tag" class="fi-tag position-tag">
+                  <span v-for="tag in extractTagsFromTradesSymbol(trade.symbol)" :key="tag" class="fi-tag position-tag">
                     {{ tag }}
                   </span>
                 </strong>
