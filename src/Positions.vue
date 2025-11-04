@@ -26,9 +26,9 @@ const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
   highlightPnL: false,
   showHeaderLink: false,
-  //userId: null,
+  userId: null,
   window: null,
-  userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
+  //userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
 })
 
 const emit = defineEmits<{ 
@@ -2368,9 +2368,13 @@ const filteredTrades = computed(() => {
   const searchTerms = query.split(',').map(term => term.trim()).filter(Boolean)
   
   return tradesQuery.data.value.filter(trade => {
+    // Use extractTagsFromTradesSymbol instead of extractTagsFromSymbol
+    const symbolTags = extractTagsFromTradesSymbol(trade.symbol).map(tag => tag.toLowerCase())
+    
     // Check if ALL search terms match (AND logic)
     return searchTerms.every(term => {
       return (
+        symbolTags.some(tag => tag.includes(term)) ||
         trade.symbol.toLowerCase().includes(term) ||
         trade.assetCategory.toLowerCase().includes(term) ||
         trade.buySell.toLowerCase().includes(term) ||
@@ -3079,14 +3083,12 @@ function formatTradeDate(dateStr: string): string {
     if (isNaN(dt.getTime())) return String(dateStr)
   }
   
-  // Format as DD-MMM-YYYY (e.g., 31-OCT-2025)
-  const day = dt.getDate().toString().padStart(2, '0')
-  const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
-                      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-  const month = monthNames[dt.getMonth()]
+  // Format as YYYY-MM-DD
   const year = dt.getFullYear()
+  const month = (dt.getMonth() + 1).toString().padStart(2, '0')
+  const day = dt.getDate().toString().padStart(2, '0')
   
-  return `${day}-${month}-${year}`
+  return `${year}-${month}-${day}`
 }
 
 watch(showScreenshotsModal, (open) => {
