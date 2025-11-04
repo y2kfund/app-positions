@@ -3462,7 +3462,7 @@ watch(expandedPositions, () => {
             {{ tag }}
           </span>
            •
-          ({{ selectedPositionForTrades.qty }} @ {{ formatCurrency(selectedPositionForTrades.avgPrice) }})
+          (Qty: {{ selectedPositionForTrades.qty }} . Avg price: {{ formatCurrency(selectedPositionForTrades.avgPrice) }})
         </div>
         
         <div class="trade-search">
@@ -3503,11 +3503,15 @@ watch(expandedPositions, () => {
             <span v-else style="color: #dc3545; font-size: 0.75rem;">⚠️</span>
             <div class="trade-details">
               <div class="trade-primary">
-                <strong>{{ trade.symbol }}</strong>
+                <strong>
+                  <span v-for="tag in extractTagsFromSymbol(trade.symbol)" :key="tag" class="fi-tag position-tag">
+                    {{ tag }}
+                  </span>
+                </strong>
                 <span class="trade-side" :class="trade.buySell.toLowerCase()">
                   {{ trade.buySell }}
                 </span>
-                <span>{{ trade.quantity }} @ {{ formatCurrency(parseFloat(trade.tradePrice)) }}</span>
+                <span>Qty: {{ trade.quantity }} . Avg price: {{ formatCurrency(parseFloat(trade.tradePrice)) }}</span>
                 <span v-if="trade.tradeID" style="color: #6c757d; font-size: 0.75rem; margin-left: 0.5rem;">
                   ID: {{ trade.tradeID }}
                 </span>
