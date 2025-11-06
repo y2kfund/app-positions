@@ -118,7 +118,7 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'contract_quantity', label: 'Contract Quantity' },
   { field: 'accounting_quantity', label: 'Accounting Quantity' },
   { field: 'avgPrice', label: 'Avg cost price per a/cing unit' },
-  { field: 'weighted_avg_price', label: 'Weighted avg price per a/cing unit of all positions across different accounts for this instrument' },
+  { field: 'weighted_avg_price', label: 'Weighted avg price per a/cing unit of all positions across different accounts for this instrument (computed)' },
   { field: 'price', label: 'Market Price' },
   { field: 'market_price', label: 'Ul CM Price' },
   { field: 'instrument_market_price', label: 'Instrument current market price' },
@@ -1506,7 +1506,7 @@ function initializeTabulator() {
       contextMenu: createFetchedAtContextMenu()
     },
     {
-      title: 'Weighted avg price per a/cing unit of all positions across different accounts for this instrument',
+      title: 'Weighted avg price per a/cing unit of all positions across different accounts for this instrument (computed)',
       field: 'weighted_avg_price',
       minWidth: 180,
       width: columnWidths.value['weighted_avg_price'] || undefined,

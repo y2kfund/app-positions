@@ -17779,7 +17779,7 @@ const Mw = { class: "pie-chart-header" }, Lw = { class: "pie-chart-content" }, I
       { field: "contract_quantity", label: "Contract Quantity" },
       { field: "accounting_quantity", label: "Accounting Quantity" },
       { field: "avgPrice", label: "Avg cost price per a/cing unit" },
-      { field: "weighted_avg_price", label: "Weighted avg price per a/cing unit of all positions across different accounts for this instrument" },
+      { field: "weighted_avg_price", label: "Weighted avg price per a/cing unit of all positions across different accounts for this instrument (computed)" },
       { field: "price", label: "Market Price" },
       { field: "market_price", label: "Ul CM Price" },
       { field: "instrument_market_price", label: "Instrument current market price" },
@@ -18683,7 +18683,7 @@ const Mw = { class: "pie-chart-header" }, Lw = { class: "pie-chart-content" }, I
           contextMenu: Re()
         },
         {
-          title: "Weighted avg price per a/cing unit of all positions across different accounts for this instrument",
+          title: "Weighted avg price per a/cing unit of all positions across different accounts for this instrument (computed)",
           field: "weighted_avg_price",
           minWidth: 180,
           width: fe.value.weighted_avg_price || void 0,
@@ -20809,7 +20809,7 @@ const Mw = { class: "pie-chart-header" }, Lw = { class: "pie-chart-content" }, I
       ], 64);
     };
   }
-}), jB = /* @__PURE__ */ Xl(VB, [["__scopeId", "data-v-df5e02f0"]]);
+}), jB = /* @__PURE__ */ Xl(VB, [["__scopeId", "data-v-31c34a01"]]);
 export {
   jB as Positions,
   jB as default
