@@ -342,6 +342,12 @@ function extractTagsFromTradesSymbol(symbolText: string): string[] {
   if (expiryMatch) {
     expiry = formatExpiryFromYyMmDd(expiryMatch[1])
     right = expiryMatch[2]
+
+    if (right === 'C') {
+      right = 'Call'
+    } else if (right === 'P') {
+      right = 'Put'
+    }
     
     // Extract strike price (remaining digits after expiry and option type)
     const afterExpiry = remaining.slice(expiryMatch[0].length)
