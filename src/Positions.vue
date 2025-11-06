@@ -1838,6 +1838,7 @@ function initializeTabulator() {
       width: columnWidths.value['market_value'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('market_value'),
+      sorter: 'number',
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       headerFilter: 'input',  // ADD THIS

@@ -18995,6 +18995,7 @@ const Mw = { class: "pie-chart-header" }, Lw = { class: "pie-chart-content" }, I
           // ADD THIS LINE
           hozAlign: "right",
           visible: ie.value.includes("market_value"),
+          sorter: "number",
           // Set bottom calc during initialization
           bottomCalc: m ? "sum" : void 0,
           headerFilter: "input",
@@ -20809,7 +20810,7 @@ const Mw = { class: "pie-chart-header" }, Lw = { class: "pie-chart-content" }, I
       ], 64);
     };
   }
-}), jB = /* @__PURE__ */ Xl(VB, [["__scopeId", "data-v-31c34a01"]]);
+}), jB = /* @__PURE__ */ Xl(VB, [["__scopeId", "data-v-e4de9030"]]);
 export {
   jB as Positions,
   jB as default
