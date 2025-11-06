@@ -2855,6 +2855,37 @@ const selectedTradeIds = ref<Set<string>>(new Set())
 const tradesQuery = useTradesQuery(props.accountId, props.userId)
 
 // Computed filtered trades for modal
+/*const filteredTrades = computed(() => {
+  if (!tradesQuery.data.value) return []
+  
+  const query = tradeSearchQuery.value.toLowerCase().trim()
+  if (!query) return tradesQuery.data.value
+  
+  // Split by comma and clean up each term
+  const searchTerms = query.split(',').map(term => term.trim()).filter(Boolean)
+  
+  return tradesQuery.data.value.filter(trade => {
+    const symbolTags = extractTagsFromTradesSymbol(trade.symbol).map(tag => tag.toLowerCase())
+    
+    // Check if ALL search terms match (AND logic)
+    return searchTerms.every(term => {
+      // First, try exact match against symbol tags
+      if (symbolTags.some(tag => tag === term)) {
+        return true
+      }
+      
+      // Then try exact match against other fields (not partial matching)
+      // This prevents "p" from matching "OPT"
+      return (
+        trade.assetCategory.toLowerCase() === term ||
+        trade.buySell.toLowerCase() === term ||
+        trade.tradeDate === term ||
+        (trade.description && trade.description.toLowerCase() === term) ||
+        (trade.tradeID && trade.tradeID.toLowerCase() === term)
+      )
+    })
+  })
+})*/
 const filteredTrades = computed(() => {
   if (!tradesQuery.data.value) return []
   
@@ -2865,14 +2896,22 @@ const filteredTrades = computed(() => {
   const searchTerms = query.split(',').map(term => term.trim()).filter(Boolean)
   
   return tradesQuery.data.value.filter(trade => {
-    // Use extractTagsFromTradesSymbol instead of extractTagsFromSymbol
     const symbolTags = extractTagsFromTradesSymbol(trade.symbol).map(tag => tag.toLowerCase())
     
     // Check if ALL search terms match (AND logic)
     return searchTerms.every(term => {
+      // Normalize search term: treat 'put' as 'p' and 'call' as 'c'
+      let normalizedTerm = term
+      if (term === 'put') normalizedTerm = 'p'
+      if (term === 'call') normalizedTerm = 'c'
+      
+      // Check if any tag contains the normalized term
+      if (symbolTags.some(tag => tag.includes(normalizedTerm))) {
+        return true
+      }
+      
+      // For fallback matching, check other fields
       return (
-        symbolTags.some(tag => tag.includes(term)) ||
-        trade.symbol.toLowerCase().includes(term) ||
         trade.assetCategory.toLowerCase().includes(term) ||
         trade.buySell.toLowerCase().includes(term) ||
         trade.tradeDate.includes(term) ||
