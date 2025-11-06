@@ -44,7 +44,7 @@ const emit = defineEmits<{
 const accountFilter = ref<string | null>(null)
 const assetClassFilter = ref<string | null>(null)
 
-const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'computed_cash_flow_on_entry', 'computed_cash_flow_on_exercise'] as const
+const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'computed_cash_flow_on_entry', 'computed_cash_flow_on_exercise', 'contract_quantity', 'accounting_quantity'] as const
 const windowId = props.window || inject<string | null>('positions', null)
 
 const today = new Date().toISOString().slice(0, 10)
@@ -76,7 +76,7 @@ const sourcePositions = computed(() => {
     const commentKey = generateCommentKey({
       internal_account_id: newP.internal_account_id,
       symbol: newP.symbol,
-      qty: newP.qty,
+      contract_quantity: newP.contract_quantity,
       asset_class: newP.asset_class,
       conid: newP.conid
     })
@@ -104,7 +104,7 @@ type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis
 const activeFilters = ref<ActiveFilter[]>([])
 
 // Column visibility
-type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'qty' | 'avgPrice' | 'price' | 'market_price' | 'instrument_market_price' | 'market_value' | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct' | 'computed_be_price' | 'thesis' | 'maintenance_margin_change' | 'symbol_comment'
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'contract_quantity' | 'accounting_quantity' | 'avgPrice' | 'price' | 'market_price' | 'instrument_market_price' | 'market_value' | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct' | 'computed_be_price' | 'thesis' | 'maintenance_margin_change' | 'symbol_comment'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'thesis', label: 'Thesis' },
@@ -115,7 +115,8 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'conid', label: 'Conid' },
   { field: 'undConid', label: 'Underlying Conid' },
   { field: 'multiplier', label: 'Multiplier' },
-  { field: 'qty', label: 'Qty' },
+  { field: 'contract_quantity', label: 'Contract Quantity' },
+  { field: 'accounting_quantity', label: 'Accounting Quantity' },
   { field: 'avgPrice', label: 'Avg Price' },
   { field: 'price', label: 'Market Price' },
   { field: 'market_price', label: 'Ul CM Price' },
@@ -234,7 +235,7 @@ function parseVisibleColsFromUrl(): ColumnField[] {
   if (!colsParam) {
     return allColumnOptions
       .map(c => c.field)
-      .filter(field => !['asset_class', 'conid', 'undConid', 'multiplier', 'qty'].includes(field))
+      .filter(field => !['asset_class', 'conid', 'undConid', 'multiplier', 'qty', 'contract_quantity', 'accounting_quantity'].includes(field))
   }
   const fromUrl = colsParam.split('-and-').map(s => s.trim()).filter(Boolean) as ColumnField[]
   const valid = new Set(allColumnOptions.map(c => c.field))
@@ -1010,22 +1011,26 @@ function initializeTabulator() {
       headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
         if (!headerValue) return true
         const comment = String(rowValue || '')
+        //console.log('Filtering comment:', comment, 'against', headerValue)
         return comment.toLowerCase().includes(String(headerValue).toLowerCase())
       },
       titleFormatter: (cell: any) => `<div class="header-with-close"><span>Comment</span></div>`,
       formatter: (cell: any) => cell.getValue() || '',
       cellEdited: async (cell: any) => {
         const data = cell.getRow().getData()
+        //console.log('Saving comment for', data)
         const commentKey = generateCommentKey({
           internal_account_id: data.internal_account_id,
           symbol: data.symbol,
-          qty: data.qty,
+          contract_quantity: data.contract_quantity,
           asset_class: data.asset_class,
           conid: data.conid
         })
         const comment = cell.getValue()
+        //console.log('Generated comment key:', commentKey, 'userId:', props.userId)
         if (commentKey && props.userId) {
           try {
+            //console.log('Upserting comment:', commentKey, comment)
             await upsertSymbolComment(supabase, commentKey, props.userId, comment)
             await symbolCommentsQuery?.refetch?.()
             cell.getRow().getTable().redraw(true)
@@ -1137,16 +1142,16 @@ function initializeTabulator() {
       contextMenu: createFetchedAtContextMenu()
     },
     {
-      title: 'Qty',
-      field: 'qty',
-      minWidth: 70,
-      width: columnWidths.value['qty'] || undefined, // ADD THIS LINE
+      title: 'Contract Quantity',
+      field: 'contract_quantity',
+      minWidth: 100,
+      width: columnWidths.value['contract_quantity'] || undefined,
       hozAlign: 'right',
-      visible: visibleCols.value.includes('qty'),
+      visible: visibleCols.value.includes('contract_quantity'),
       sorter: 'number',
-      headerFilter: 'input',  // ADD THIS
-      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
-      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+      headerFilter: 'input',
+      headerFilterPlaceholder: 'e.g. >100 or 100',
+      headerFilterFunc: (headerValue: any, rowValue: any) => {
         if (!headerValue) return true
         const s = String(headerValue).trim()
         const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
@@ -1169,9 +1174,7 @@ function initializeTabulator() {
           default: return false
         }
       },
-      // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
-      //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
         const value = cell.getValue()
         let className = ''
@@ -1182,7 +1185,60 @@ function initializeTabulator() {
       } : undefined,
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
-          <span>${getColLabel('qty')}</span>
+          <span>${getColLabel('contract_quantity')}</span>
+        </div>`
+      },
+      formatter: (cell: any) => {
+        if (cell.getRow().getData()?._isThesisGroup) return formatNumber(cell.getValue())
+        return formatNumber(cell.getValue())
+      },
+      contextMenu: createFetchedAtContextMenu()
+    },
+    {
+      title: 'Accounting Quantity',
+      field: 'accounting_quantity',
+      minWidth: 100,
+      width: columnWidths.value['accounting_quantity'] || undefined,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('accounting_quantity'),
+      sorter: 'number',
+      headerFilter: 'input',
+      headerFilterPlaceholder: 'e.g. >100 or 100',
+      headerFilterFunc: (headerValue: any, rowValue: any) => {
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
+      bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
+      bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
+        const value = cell.getValue()
+        let className = ''
+        if (value > 0) className = 'pnl-positive'
+        else if (value < 0) className = 'pnl-negative'
+        else className = 'pnl-zero'
+        return `<span class="${className}">${formatNumber(value)}</span>`
+      } : undefined,
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>${getColLabel('accounting_quantity')}</span>
         </div>`
       },
       formatter: (cell: any) => {
@@ -1631,7 +1687,7 @@ function initializeTabulator() {
         if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
           const ulCmPrice = row.market_price
           const bePrice = row.computed_be_price
-          let qty = row.qty
+          let qty = row.contract_quantity
           const multiplier = row.multiplier
 
           // Get strike price from third tag of symbol
@@ -1682,7 +1738,7 @@ function initializeTabulator() {
           if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
             const ulCmPrice = row.market_price
             const bePrice = row.computed_be_price
-            let qty = row.qty
+            let qty = row.contract_quantity
             const multiplier = row.multiplier
             const tags = extractTagsFromSymbol(row.symbol)
             const strikeTag = tags[2]
@@ -1728,7 +1784,7 @@ function initializeTabulator() {
             if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
               const ulCmPrice = row.market_price
               const bePrice = row.computed_be_price
-              let qty = row.qty
+              let qty = row.contract_quantity
               const multiplier = row.multiplier
               const tags = extractTagsFromSymbol(row.symbol)
               const strikeTag = tags[2]
@@ -2798,8 +2854,8 @@ async function openMarginImpactModal(rowData: any) {
   try {
     const internalAccountId = rowData.internal_account_id
     const conid = rowData.conid
-    const quantity = Math.abs(rowData.qty)
-    const side = rowData.qty > 0 ? 'SELL' : 'BUY'
+    const quantity = Math.abs(rowData.contract_quantity)
+    const side = rowData.contract_quantity > 0 ? 'SELL' : 'BUY'
 
     // Fetch account details from user_accounts_master
     const { data: accountData, error: accountError } = await supabase
@@ -2943,7 +2999,7 @@ function getPositionKey(position: Position): string {
   return generatePositionMappingKey({
     internal_account_id: position.internal_account_id,
     symbol: position.symbol,
-    qty: position.qty,
+    contract_quantity: position.contract_quantity,
     asset_class: position.asset_class,
     conid: position.conid
   })
@@ -4078,7 +4134,7 @@ watch(expandedPositions, () => {
             {{ tag }}
           </span>
            •
-          (Qty: {{ selectedPositionForTrades.qty }} . Avg price: {{ formatCurrency(selectedPositionForTrades.avgPrice) }})
+          (Contract Qty: {{ selectedPositionForTrades.contract_quantity }} . Avg price: {{ formatCurrency(selectedPositionForTrades.avgPrice) }})
         </div>
         
         <div class="trade-search">
