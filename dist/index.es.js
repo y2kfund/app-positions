@@ -17778,7 +17778,7 @@ const Tw = { class: "pie-chart-header" }, Dw = { class: "pie-chart-content" }, R
       { field: "multiplier", label: "Multiplier" },
       { field: "contract_quantity", label: "Contract Quantity" },
       { field: "accounting_quantity", label: "Accounting Quantity" },
-      { field: "avgPrice", label: "Avg Price" },
+      { field: "avgPrice", label: "Avg cost price per a/cing unit" },
       { field: "price", label: "Market Price" },
       { field: "market_price", label: "Ul CM Price" },
       { field: "instrument_market_price", label: "Instrument current market price" },
@@ -18524,7 +18524,7 @@ const Tw = { class: "pie-chart-header" }, Dw = { class: "pie-chart-content" }, R
           contextMenu: Re()
         },
         {
-          title: "Avg Price",
+          title: "Avg cost price per a/cing unit",
           field: "avgPrice",
           minWidth: 80,
           width: fe.value.avgPrice || void 0,
@@ -20618,7 +20618,7 @@ const Tw = { class: "pie-chart-header" }, Dw = { class: "pie-chart-content" }, R
       ], 64);
     };
   }
-}), XB = /* @__PURE__ */ Wl(PB, [["__scopeId", "data-v-be63df77"]]);
+}), XB = /* @__PURE__ */ Wl(PB, [["__scopeId", "data-v-272f923a"]]);
 export {
   XB as Positions,
   XB as default
