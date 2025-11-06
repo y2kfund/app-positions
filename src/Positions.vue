@@ -104,7 +104,7 @@ type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis
 const activeFilters = ref<ActiveFilter[]>([])
 
 // Column visibility
-type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'contract_quantity' | 'accounting_quantity' | 'avgPrice' | 'price' | 'market_price' | 'instrument_market_price' | 'market_value' | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct' | 'computed_be_price' | 'thesis' | 'maintenance_margin_change' | 'symbol_comment'
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'contract_quantity' | 'accounting_quantity' | 'avgPrice' | 'price' | 'market_price' | 'instrument_market_price' | 'market_value' | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct' | 'computed_be_price' | 'thesis' | 'maintenance_margin_change' | 'symbol_comment' | 'weighted_avg_price'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'thesis', label: 'Thesis' },
@@ -118,6 +118,7 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'contract_quantity', label: 'Contract Quantity' },
   { field: 'accounting_quantity', label: 'Accounting Quantity' },
   { field: 'avgPrice', label: 'Avg cost price per a/cing unit' },
+  { field: 'weighted_avg_price', label: 'Weighted avg price per a/cing unit of all positions across different accounts for this instrument' },
   { field: 'price', label: 'Market Price' },
   { field: 'market_price', label: 'Ul CM Price' },
   { field: 'instrument_market_price', label: 'Instrument current market price' },
@@ -701,6 +702,77 @@ function parseDate(val: any): number | null {
   }
   const dt = new Date(s)
   return isNaN(dt.getTime()) ? null : dt.getTime()
+}
+
+const weightedAveragePrices = computed(() => {
+  const map = new Map<string, { totalWeightedPrice: number; totalQty: number }>()
+  
+  sourcePositions.value.forEach(position => {
+    const symbol = position.symbol
+    if (!symbol) return
+    
+    const avgPrice = position.avgPrice
+    const accountingQty = position.accounting_quantity
+    
+    if (avgPrice == null || accountingQty == null) return
+    
+    if (!map.has(symbol)) {
+      map.set(symbol, { totalWeightedPrice: 0, totalQty: 0 })
+    }
+    
+    const entry = map.get(symbol)!
+    entry.totalWeightedPrice += avgPrice * accountingQty
+    entry.totalQty += accountingQty
+  })
+  
+  // Calculate weighted average for each symbol
+  const result = new Map<string, number>()
+  map.forEach((value, symbol) => {
+    if (value.totalQty !== 0) {
+      result.set(symbol, value.totalWeightedPrice / value.totalQty)
+    }
+  })
+  
+  return result
+})
+
+function getWeightedAvgDetails(symbol: string): string {
+  const positions = sourcePositions.value.filter(p => p.symbol === symbol)
+  if (positions.length === 0) return 'No positions found'
+  
+  const calculations: string[] = []
+  let totalWeightedPrice = 0
+  let totalQty = 0
+  
+  positions.forEach((pos, index) => {
+    const avgPrice = pos.avgPrice || 0
+    const accountingQty = pos.accounting_quantity || 0
+    const weightedPrice = avgPrice * accountingQty
+    
+    totalWeightedPrice += weightedPrice
+    totalQty += accountingQty
+    
+    const accountName = typeof pos.legal_entity === 'object' && pos.legal_entity !== null
+      ? (pos.legal_entity.name || pos.legal_entity.id)
+      : pos.legal_entity
+    
+    calculations.push(
+      `${accountName}: ${formatCurrency(avgPrice)} × ${accountingQty} = ${formatCurrency(weightedPrice)}`
+    )
+  })
+  
+  const weightedAvg = totalQty !== 0 ? totalWeightedPrice / totalQty : 0
+  
+  return [
+    '<b>Weighted Average Price Calculation:</b>',
+    '',
+    ...calculations,
+    '',
+    `<b>Total Weighted Price:</b> ${formatCurrency(totalWeightedPrice)}`,
+    `<b>Total Quantity:</b> ${totalQty}`,
+    '',
+    `<b>Weighted Average:</b> ${formatCurrency(totalWeightedPrice)} ÷ ${totalQty} = <b>${formatCurrency(weightedAvg)}</b>`
+  ].join('<br>')
 }
 
 // Initialize Tabulator
@@ -1432,6 +1504,72 @@ function initializeTabulator() {
         return formatCurrency(cell.getValue())
       },
       contextMenu: createFetchedAtContextMenu()
+    },
+    {
+      title: 'Weighted avg price per a/cing unit of all positions across different accounts for this instrument',
+      field: 'weighted_avg_price',
+      minWidth: 180,
+      width: columnWidths.value['weighted_avg_price'] || undefined,
+      hozAlign: 'right',
+      visible: visibleCols.value.includes('weighted_avg_price'),
+      headerFilter: 'input',
+      headerFilterPlaceholder: 'e.g. >100 or 100',
+      headerFilterFunc: (headerValue: any, rowValue: any) => {
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
+      titleFormatter: (cell: any) => {
+        return `<div class="header-with-close">
+          <span>${getColLabel('weighted_avg_price')}</span>
+        </div>`
+      },
+      accessor: (value: any, data: any) => {
+        if (data?._isThesisGroup || data?._isTrade) return null
+        return weightedAveragePrices.value.get(data.symbol) || null
+      },
+      formatter: (cell: any) => {
+        const data = cell.getRow().getData()
+        if (data?._isThesisGroup || data?._isTrade) return ''
+        
+        // Get the value directly from the computed map instead of cell.getValue()
+        const value = weightedAveragePrices.value.get(data.symbol)
+        
+        return value === null || value === undefined ? '-' : formatCurrency(value)
+      },
+      contextMenu: [
+        {
+          label: (component: any) => {
+            const row = component.getData()
+            if (row?._isThesisGroup || row?._isTrade) {
+              return 'Not applicable for this row'
+            }
+            return getWeightedAvgDetails(row.symbol)
+          },
+          action: () => {},
+          disabled: true
+        },
+        { separator: true },
+        ...createFetchedAtContextMenu()
+      ]
     },
     {
       title: 'Market Price',
