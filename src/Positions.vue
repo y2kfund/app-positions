@@ -21,6 +21,8 @@ import { useQueryClient } from '@tanstack/vue-query'
 import type { PositionsProps } from './index'
 import html2canvas from 'html2canvas'
 import { useTradesQuery, type Trade } from '@y2kfund/core/trades'
+import flatpickr from 'flatpickr'
+import 'flatpickr/dist/flatpickr.min.css'
 
 const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
@@ -533,6 +535,22 @@ function parseSortFromUrl(): { field: string, dir: 'asc' | 'desc' } | null {
   return null
 }
 
+function parseDate(val: any): number | null {
+  if (!val) return null
+  const s = String(val).trim()
+  const m = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(s)
+  if (m) {
+    let day = Number(m[1])
+    let month = Number(m[2]) - 1
+    let year = Number(m[3])
+    if (year < 100) year += 2000
+    const dt = new Date(year, month, day)
+    return isNaN(dt.getTime()) ? null : dt.getTime()
+  }
+  const dt = new Date(s)
+  return isNaN(dt.getTime()) ? null : dt.getTime()
+}
+
 // Initialize Tabulator
 const isTabulatorReady = ref(false)
 
@@ -563,6 +581,15 @@ function initializeTabulator() {
       width: columnWidths.value['legal_entity'] || undefined,
       frozen: true,
       visible: visibleCols.value.includes('legal_entity'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'Filter',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const accountVal = (typeof rowValue === 'object' && rowValue !== null)
+          ? (rowValue.name || rowValue.id || '')
+          : (rowValue || '')
+        return String(accountVal).toLowerCase().includes(String(headerValue).toLowerCase())
+      },
       bottomCalc: shouldShowBottomCalcs ? () => 'All Accounts' : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? () => 'All Accounts' : undefined,
       titleFormatter: (cell: any) => {
@@ -652,6 +679,13 @@ function initializeTabulator() {
       width: columnWidths.value['symbol'] || undefined, // ADD THIS LINE
       frozen: true,
       visible: visibleCols.value.includes('symbol'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'Filter',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const symbol = String(rowValue || '')
+        return symbol.toLowerCase().includes(String(headerValue).toLowerCase())
+      },
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('symbol')}</span>
@@ -713,6 +747,120 @@ function initializeTabulator() {
         if (expiryA < expiryB) return -1
         if (expiryA > expiryB) return 1
         return 0
+      },
+      headerFilter: function(cell: any, onRendered: any, success: any) {
+        const container = document.createElement('div')
+        container.style.position = 'relative'
+        const input = document.createElement('input')
+        input.type = 'text'
+        input.placeholder = 'Select date range'
+        input.style.width = '100%'
+        input.style.boxSizing = 'border-box'
+        input.style.paddingRight = '28px'
+        container.appendChild(input)
+
+        const clearBtn = document.createElement('button')
+        clearBtn.type = 'button'
+        clearBtn.innerText = '✕'
+        clearBtn.title = 'Clear'
+        clearBtn.style.position = 'absolute'
+        clearBtn.style.right = '6px'
+        clearBtn.style.top = '50%'
+        clearBtn.style.transform = 'translateY(-50%)'
+        clearBtn.style.border = 'none'
+        clearBtn.style.background = 'transparent'
+        clearBtn.style.cursor = 'pointer'
+        clearBtn.style.fontSize = '12px'
+        clearBtn.style.padding = '2px 6px'
+        clearBtn.style.display = 'none'
+        clearBtn.style.color = '#6c757d'
+        clearBtn.style.borderRadius = '3px'
+        container.appendChild(clearBtn)
+
+        let fp: any = null
+
+        function updateClearVisibility() {
+          const hasValue = !!input.value && input.value.trim() !== ''
+          if (hasValue && container.matches(':hover')) {
+            clearBtn.style.display = 'block'
+          } else {
+            clearBtn.style.display = 'none'
+          }
+        }
+
+        container.addEventListener('mouseenter', updateClearVisibility)
+        container.addEventListener('mouseleave', updateClearVisibility)
+
+        onRendered(() => {
+          try {
+            fp = flatpickr(input, {
+              mode: 'range',
+              dateFormat: 'Y-m-d',
+              allowInput: true,
+              onChange: (selectedDates: Date[]) => {
+                if (!selectedDates || selectedDates.length === 0) {
+                  success({ min: '', max: '' })
+                  input.value = ''
+                  updateClearVisibility()
+                  return
+                }
+                const min = selectedDates[0] ? selectedDates[0].toISOString().slice(0, 10) : ''
+                const max = selectedDates[1] ? selectedDates[1].toISOString().slice(0, 10) : ''
+                input.value = max ? `${min} to ${max}` : min
+                success({ min: min || '', max: max || '' })
+                updateClearVisibility()
+              }
+            })
+          } catch (e) {
+            input.addEventListener('change', () => {
+              const val = input.value || ''
+              const parts = val.split(' to ').map(s => s.trim())
+              success({ min: parts[0] || '', max: parts[1] || '' })
+              updateClearVisibility()
+            })
+          }
+        })
+
+        clearBtn.addEventListener('click', (ev) => {
+          ev.preventDefault()
+          ev.stopPropagation()
+          if (fp) {
+            try { fp.clear() } catch (err) {}
+          }
+          input.value = ''
+          success({ min: '', max: '' })
+          updateClearVisibility()
+        })
+
+        input.addEventListener('input', updateClearVisibility)
+
+        return container
+      },
+      headerFilterFunc: (headerValue: any, rowValue: any, rowData: any) => {
+        if (!headerValue || (!headerValue.min && !headerValue.max)) return true
+        
+        // Extract expiry date from symbol tags for OPT
+        if (rowData.asset_class !== 'OPT') return true
+        
+        const tags = extractTagsFromSymbol(rowData.symbol)
+        const expiryStr = tags[1] || ''
+        if (!expiryStr) return false
+        
+        const ts = new Date(expiryStr).getTime()
+        if (isNaN(ts)) return false
+        
+        if (headerValue.min) {
+          const minTs = new Date(headerValue.min).getTime()
+          if (isNaN(minTs)) return false
+          if (ts < minTs) return false
+        }
+        if (headerValue.max) {
+          const maxTs = new Date(headerValue.max).getTime()
+          if (isNaN(maxTs)) return false
+          const maxInclusive = maxTs + (24 * 60 * 60 * 1000) - 1
+          if (ts > maxInclusive) return false
+        }
+        return true
       },
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
@@ -849,6 +997,13 @@ function initializeTabulator() {
       width: columnWidths.value['symbol_comment'] || undefined,
       visible: visibleCols.value.includes('symbol_comment'),
       editor: 'input',
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'Filter',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const comment = String(rowValue || '')
+        return comment.toLowerCase().includes(String(headerValue).toLowerCase())
+      },
       titleFormatter: (cell: any) => `<div class="header-with-close"><span>Comment</span></div>`,
       formatter: (cell: any) => cell.getValue() || '',
       cellEdited: async (cell: any) => {
@@ -883,6 +1038,13 @@ function initializeTabulator() {
       minWidth: 80,
       width: columnWidths.value['asset_class'] || undefined,
       visible: visibleCols.value.includes('asset_class'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'Filter',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const v = String(rowValue || '')
+        return v.toLowerCase().includes(String(headerValue).toLowerCase())
+      },
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('asset_class')}</span>
@@ -974,6 +1136,31 @@ function initializeTabulator() {
       hozAlign: 'right',
       visible: visibleCols.value.includes('qty'),
       sorter: 'number',
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatNumber(cell.getValue()) : undefined,
@@ -1003,6 +1190,31 @@ function initializeTabulator() {
       width: columnWidths.value['avgPrice'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('avgPrice'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('avgPrice')}</span>
@@ -1021,6 +1233,31 @@ function initializeTabulator() {
       width: columnWidths.value['price'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('price'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('price')}</span>
@@ -1039,6 +1276,31 @@ function initializeTabulator() {
       width: columnWidths.value['market_price'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('market_price'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('market_price')}</span>
@@ -1111,6 +1373,31 @@ function initializeTabulator() {
       width: columnWidths.value['instrument_market_price'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('instrument_market_price'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('instrument_market_price')}</span>
@@ -1188,6 +1475,31 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('market_value'),
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
         const value = cell.getValue()
@@ -1218,6 +1530,31 @@ function initializeTabulator() {
       visible: visibleCols.value.includes('unrealized_pnl'),
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
       bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => {
         const value = cell.getValue()
@@ -1250,6 +1587,31 @@ function initializeTabulator() {
       width: columnWidths.value['be_price_pnl'] || undefined,
       hozAlign: 'right',
       visible: visibleCols.value.includes('be_price_pnl'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('be_price_pnl')}</span>
@@ -1399,6 +1761,31 @@ function initializeTabulator() {
       width: columnWidths.value['computed_cash_flow_on_entry'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('computed_cash_flow_on_entry'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
@@ -1432,6 +1819,31 @@ function initializeTabulator() {
       width: columnWidths.value['computed_cash_flow_on_exercise'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('computed_cash_flow_on_exercise'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       // Set bottom calc during initialization
       bottomCalc: shouldShowBottomCalcs ? 'sum' : undefined,
       //bottomCalcFormatter: shouldShowBottomCalcs ? (cell: any) => formatCurrency(cell.getValue()) : undefined,
@@ -1465,6 +1877,31 @@ function initializeTabulator() {
       width: columnWidths.value['entry_exercise_cash_flow_pct'] || undefined,
       hozAlign: 'right',
       visible: visibleCols.value.includes('entry_exercise_cash_flow_pct'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('entry_exercise_cash_flow_pct')}</span>
@@ -1518,6 +1955,31 @@ function initializeTabulator() {
       width: columnWidths.value['computed_be_price'] || undefined, // ADD THIS LINE
       hozAlign: 'right',
       visible: visibleCols.value.includes('computed_be_price'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       titleFormatter: (cell: any) => {
         /*const bePriceCol = columnWidths.value['computed_be_price'] && columnWidths.value['computed_be_price'] >= 140 
           ? 'Break even price' 
@@ -1543,6 +2005,31 @@ function initializeTabulator() {
       width: columnWidths.value['maintenance_margin_change'] || undefined,
       hozAlign: 'right',
       visible: visibleCols.value.includes('maintenance_margin_change'),
+      headerFilter: 'input',  // ADD THIS
+      headerFilterPlaceholder: 'e.g. >100 or 100',  // ADD THIS
+      headerFilterFunc: (headerValue: any, rowValue: any) => {  // ADD THIS
+        if (!headerValue) return true
+        const s = String(headerValue).trim()
+        const opMatch = s.match(/^(<=|>=|=|!=|<|>)/)
+        let op = '='
+        let numStr = s
+        if (opMatch) {
+          op = opMatch[1]
+          numStr = s.slice(op.length).trim()
+        }
+        const numVal = parseFloat(numStr)
+        if (isNaN(numVal)) return false
+        const val = parseFloat(rowValue) || 0
+        switch (op) {
+          case '=': return val === numVal
+          case '!=': return val !== numVal
+          case '<': return val < numVal
+          case '<=': return val <= numVal
+          case '>': return val > numVal
+          case '>=': return val >= numVal
+          default: return false
+        }
+      },
       titleFormatter: (cell: any) => {
         return `<div class="header-with-close">
           <span>${getColLabel('maintenance_margin_change')}</span>
