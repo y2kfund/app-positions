@@ -23,6 +23,7 @@ import html2canvas from 'html2canvas'
 import { useTradesQuery, type Trade } from '@y2kfund/core/trades'
 import flatpickr from 'flatpickr'
 import 'flatpickr/dist/flatpickr.min.css'
+import PositionsPieChart from './components/PositionsPieChart.vue'
 
 const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
@@ -32,6 +33,7 @@ const props = withDefaults(defineProps<PositionsProps>(), {
   window: null,
   //userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
 })
+const showPieChart = ref(false)
 
 const emit = defineEmits<{ 
   'row-click': [row: Position]
@@ -3486,6 +3488,16 @@ function updateFilteredPositionsCount() {
   filteredPositionsCount.value = filteredRows.length
 }
 
+const filteredPositions = computed(() => {
+  if (!tabulator) return sourcePositions.value
+  
+  // Get filtered rows from tabulator
+  const rows = tabulator.rowManager?.getDisplayRows() || []
+  return rows
+    .filter((row: any) => row.type === 'row' && !row.getData()?._isThesisGroup)
+    .map((row: any) => row.getData())
+})
+
 // Screenshot functionality
 const showScreenshotsModal = ref(false)
 const screenshots = ref<any[]>([])
@@ -3686,6 +3698,10 @@ watch(expandedPositions, () => {
         </div>
         <div class="positions-tools">
           <div class="positions-count">{{ filteredPositionsCount }} positions</div>
+
+          <button @click="showPieChart = true" class="screenshot-btn" title="View Pie Chart">
+            📊
+          </button>
           
           <button @click="promptScreenshotName" class="screenshot-btn" title="Take Screenshot" :disabled="takingScreenshot">
             <span v-if="takingScreenshot" class="screenshot-spinner"></span>
@@ -4138,6 +4154,12 @@ watch(expandedPositions, () => {
       </div>
     </div>
   </div>
+
+  <PositionsPieChart
+    v-if="showPieChart"
+    :positions="filteredPositions"
+    @close="showPieChart = false"
+  />
 </template>
 
 <style>
