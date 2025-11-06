@@ -660,17 +660,24 @@ function initializeTabulator() {
       formatter: (cell: any) => {
         const data = cell.getRow().getData()
         if (data?._isThesisGroup) {
-          const color = '#495057'
-          const symbolValue = cell.getValue() || ''
-          return `<span style="font-weight: 600; color: ${color};">${symbolValue}</span>`
+          const isParent = !data.thesis?.parent_thesis_id
+          const badge = isParent 
+            ? '<span style="background:#1e3a8a;color:white;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-right:8px;">PARENT THESIS</span>'
+            : '<span style="background:#7c3aed;color:white;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-right:8px;">SUB-THESIS</span>'
+          
+          const icon = isParent ? '📊' : '📁'
+          return `${badge}${icon} ${data.thesis.title}`
         }
+        
+        // Position rows
         const tags = extractTagsFromSymbol(cell.getValue())
         const selectedTags = new Set(symbolTagFilters.value)
-        return tags.map(tag => {
-          const isSelected = selectedTags.has(tag)
-          const className = isSelected ? 'fi-tag fi-tag-selected' : 'fi-tag'
-          return `<span class="${className}">${tag}</span>`
-        }).join(' ')
+        return '<span style="color:#666;margin-right:6px;">📄</span>' + 
+          tags.map(tag => {
+            const isSelected = selectedTags.has(tag)
+            const className = isSelected ? 'fi-tag fi-tag-selected' : 'fi-tag'
+            return `<span class="${className}">${tag}</span>`
+          }).join(' ')
       },
       cellClick: (e: any, cell: any) => {
         const data = cell.getRow().getData()
@@ -2010,8 +2017,11 @@ const groupedHierarchicalData = computed(() => {
     const thesisGroup = {
       id: `thesis-${thesisId}`,
       _isThesisGroup: true,
+      _isParentThesis: !thesis.parent_thesis_id,
       thesis,
-      symbol: `📋 ${thesis.title}`,
+      symbol: thesis.parent_thesis_id 
+        ? `  ├─ 📁 ${thesis.title}` 
+        : `📊 PARENT: ${thesis.title}`,
       legal_entity: `${positions.length} position${positions.length !== 1 ? 's' : ''}`,
       _children: positions.map(p => ({
         ...p,
@@ -3641,20 +3651,24 @@ watch(expandedPositions, () => {
 /* Style for thesis group rows */
 .tabulator .tabulator-row.tabulator-tree-level-0, 
 .tabulator-row.tabulator-tree-level-0 .tabulator-cell {
-  background-color: #e3f2fd !important;
-  font-weight: 600;
+  background-color: #1e3a8a !important; /* Dark blue */
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
 }
 
 /* Style for child thesis rows (level 1) */
 .tabulator .tabulator-row.tabulator-tree-level-1,
 .tabulator-row.tabulator-tree-level-1 .tabulator-cell {
-  background-color: #f3e5f5 !important;
-  font-weight: 500;
+  background-color: #7c3aed !important; /* Purple */
+  color: white !important;
+  font-weight: 600 !important;
 }
 
 /* Style for position rows (level 2+) */
 .tabulator .tabulator-row.tabulator-tree-level-2 {
-  background-color: #fff;
+  background-color: #fff !important;
+  border-left: 3px solid #e9ecef !important;
 }
 
 /* Add subtle indentation visual guide */
@@ -3662,6 +3676,14 @@ watch(expandedPositions, () => {
 .tabulator .tabulator-row.tabulator-tree-level-2 .tabulator-cell:first-child {
   border-left: 2px solid #e9ecef;
 }
+
+.tabulator .tabulator-row.tabulator-tree-level-0 .pnl-negative,
+.tabulator .tabulator-row.tabulator-tree-level-1 .pnl-negative,
+.tabulator .tabulator-row.tabulator-tree-level-0 .pnl-positive,
+.tabulator .tabulator-row.tabulator-tree-level-1 .pnl-positive {
+  color: #fff !important; 
+}
+
 
 /* Make the tree branch lines more visible */
 .tabulator .tabulator-row .tabulator-data-tree-branch {
