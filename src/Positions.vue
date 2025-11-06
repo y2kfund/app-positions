@@ -437,6 +437,149 @@ function removeToast(id: number) {
   if (index !== -1) toasts.value.splice(index, 1)
 }
 
+// Fetch latest price for a specific conid and undConid
+async function fetchLatestPriceForConid(rowData: any) {
+  try {
+    showToast('info', 'Fetching Price', `Fetching latest price for ${rowData.symbol}...`)
+    
+    const conid = rowData.conid
+    const undConid = rowData.undConid
+    
+    if (!conid) {
+      showToast('error', 'Error', 'No conid available for this position')
+      return
+    }
+
+    // Step 1: Get the latest last_fetched_at value from market_price table
+    const latestFetchQuery = await supabase
+      .schema('hf')
+      .from('market_price')
+      .select('last_fetched_at')
+      .order('id', { ascending: false })
+      .limit(1)
+      .single()
+
+    let latestFetchedAt = new Date().toISOString()
+    if (latestFetchQuery.data) {
+      latestFetchedAt = latestFetchQuery.data.last_fetched_at
+    }
+
+    // Helper function to fetch and upsert a single price
+    async function fetchAndUpsertPrice(targetConid: string, targetSymbol: string) {
+      const ibkrApiUrl = `https://ibkr.bansi.to5001.aiworkspace.pro/api/marketdata?conid=${targetConid}`
+      console.log('Fetching price from IBKR API URL:', ibkrApiUrl, 'for symbol:', targetSymbol)
+      
+      const response = await fetch(ibkrApiUrl)
+      if (!response.ok) {
+        console.warn(`Failed to fetch price for conid ${targetConid}: ${response.status}`)
+        return null
+      }
+
+      const data = await response.json()
+      console.log('API Response data:', data)
+      
+      // Parse the price from API response (price is in the '31' key)
+      let price = null
+      if (data && data['31']) {
+        const rawPriceStr = String(data['31'])
+        const priceStr = rawPriceStr.replace(/^[^\d.-]+/, '') // Remove non-numeric prefix (e.g., "C" from "C95.20")
+        price = parseFloat(priceStr)
+        console.log(`Price parsing for conid ${targetConid}:`, { raw: rawPriceStr, cleaned: priceStr, parsed: price })
+      }
+
+      if (!price || isNaN(price)) {
+        console.warn(`Could not parse price for conid ${targetConid}, data['31']:`, data['31'])
+        return null
+      }
+
+      // Check if conid exists in market_price table
+      const existingQuery = await supabase
+        .schema('hf')
+        .from('market_price')
+        .select('id, conid')
+        .eq('conid', targetConid)
+        .limit(1)
+
+      if (existingQuery.data && existingQuery.data.length > 0) {
+        // Update all rows with this conid
+        const { error: updateError } = await supabase
+          .schema('hf')
+          .from('market_price')
+          .update({
+            market_price: price,
+            last_fetched_at: latestFetchedAt,
+            updated_at: new Date().toISOString()
+          })
+          .eq('conid', targetConid)
+
+        if (updateError) {
+          throw updateError
+        }
+
+        return { action: 'updated', conid: targetConid, price }
+      } else {
+        // Insert new row
+        const { error: insertError } = await supabase
+          .schema('hf')
+          .from('market_price')
+          .insert({
+            conid: targetConid,
+            symbol: targetSymbol,
+            market_price: price,
+            last_fetched_at: latestFetchedAt,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+
+        if (insertError) {
+          throw insertError
+        }
+
+        return { action: 'inserted', conid: targetConid, price }
+      }
+    }
+
+    // Step 2: Fetch prices for both conid and undConid (if available)
+    const results = []
+    
+    // Fetch price for the main conid
+    const conidResult = await fetchAndUpsertPrice(conid, rowData.symbol)
+    if (conidResult) {
+      results.push(conidResult)
+    }
+
+    // Fetch price for undConid if it exists (for options)
+    if (undConid && undConid !== conid) {
+      const undConidResult = await fetchAndUpsertPrice(undConid, rowData.symbol)
+      if (undConidResult) {
+        results.push(undConidResult)
+      }
+    }
+
+    // Show success message
+    if (results.length === 0) {
+      showToast('error', 'Error', 'Could not fetch any prices')
+      return
+    }
+
+    if (results.length === 1) {
+      const result = results[0]
+      const action = result.action === 'updated' ? 'Updated' : 'Added'
+      showToast('success', `Price ${action}`, `${action} price for ${rowData.symbol}: ${formatCurrency(result.price)}`)
+    } else {
+      const messages = results.map(r => `${r.conid}: ${formatCurrency(r.price)}`).join(', ')
+      showToast('success', 'Prices Updated', `Updated ${results.length} prices for ${rowData.symbol} (${messages})`)
+    }
+
+    // Refresh positions data
+    await queryClient.invalidateQueries({ queryKey: ['positions'] })
+
+  } catch (error: any) {
+    console.error('Error fetching latest price:', error)
+    showToast('error', 'Error', `Failed to fetch price: ${error.message}`)
+  }
+}
+
 // Generic timezone formatting function
 function formatTimestampWithTimezone(timestamp: string | null | undefined): string {
   if (!timestamp) {
@@ -1381,6 +1524,16 @@ function initializeTabulator() {
       },
       contextMenu: [
         {
+          label: "🔄 Fetch latest price",
+          action: (e: any, cell: any) => {
+            const rowData = cell.getRow().getData()
+            fetchLatestPriceForConid(rowData)
+          }
+        },
+        {
+          separator: true
+        },
+        {
           label: (component: any) => {
             const rowData = component.getData()
             const fetchedAt = rowData.market_price_fetched_at
@@ -1480,6 +1633,16 @@ function initializeTabulator() {
         return value === null || value === undefined ? '-' : formatCurrency(value)
       },
       contextMenu: [
+        {
+          label: "🔄 Fetch latest price",
+          action: (e: any, cell: any) => {
+            const rowData = cell.getRow().getData()
+            fetchLatestPriceForConid(rowData)
+          }
+        },
+        {
+          separator: true
+        },
         {
           label: (component: any) => {
             const rowData = component.getData()
