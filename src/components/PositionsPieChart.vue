@@ -17,8 +17,9 @@ const chartData = computed(() => {
   
   props.positions.forEach(pos => {
     // Extract symbol root (e.g., "META" from "META 241101P00550000")
-    const symbolMatch = pos.symbol.match(/^([A-Z]+)/)
-    const symbol = symbolMatch?.[1] || pos.symbol
+    //const symbolMatch = pos.symbol.match(/^([A-Z]+)/)
+    //const symbol = symbolMatch?.[1] || pos.symbol
+    const symbol = pos.symbol
     
     const currentValue = grouped.get(symbol) || 0
     grouped.set(symbol, currentValue + (pos.market_value || 0))
@@ -114,7 +115,49 @@ const pieSlices = computed(() => {
   })
 })
 
+function extractTagsFromSymbol(symbolText: string): string[] {
+  if (!symbolText) return []
+  const text = String(symbolText)
+  const symMatch = text.match(/^([A-Z]+)\b/)
+  const base = symMatch?.[1] ?? ''
+  const rightMatch = text.match(/\s([CP])\b/)
+  const right = rightMatch?.[1] ?? ''
+  const strikeMatch = text.match(/\s(\d+(?:\.\d+)?)\s+[CP]\b/)
+  const strike = strikeMatch?.[1] ?? ''
+  const codeMatch = text.match(/\b(\d{6})[CP]/)
+  const expiry = codeMatch ? formatExpiryFromYyMmDd(codeMatch[1]) : ''
+  return [base, expiry, strike, right].filter(Boolean)
+}
+
+function formatExpiryFromYyMmDd(code: string): string {
+  if (!code || code.length !== 6) return ''
+  const yy = code.substring(0, 2)
+  const mm = code.substring(2, 4)
+  const dd = code.substring(4, 6)
+  return `20${yy}-${mm}-${dd}`
+}
+
 const hoveredSlice = ref<number | null>(null)
+const tooltipVisible = ref(false)
+const tooltipX = ref(0)
+const tooltipY = ref(0)
+const tooltipData = ref<{ symbol: string; value: number; percentage: string } | null>(null)
+
+function handleMouseMove(event: MouseEvent, slice: any) {
+  tooltipVisible.value = true
+  tooltipX.value = event.clientX
+  tooltipY.value = event.clientY
+  tooltipData.value = {
+    symbol: slice.symbol,
+    value: slice.value,
+    percentage: slice.percentage
+  }
+}
+
+function handleMouseLeave() {
+  tooltipVisible.value = false
+  tooltipData.value = null
+}
 </script>
 
 <template>
@@ -132,7 +175,8 @@ const hoveredSlice = ref<number | null>(null)
               v-for="(slice, index) in pieSlices"
               :key="slice.symbol"
               @mouseenter="hoveredSlice = index"
-              @mouseleave="hoveredSlice = null"
+              @mouseleave="hoveredSlice = null; handleMouseLeave()"
+              @mousemove="handleMouseMove($event, slice)"
             >
               <path
                 :d="slice.path"
@@ -147,7 +191,7 @@ const hoveredSlice = ref<number | null>(null)
                 class="slice-label"
                 text-anchor="middle"
               >
-                {{ slice.symbol }}
+                <tspan class="fi-tag" v-for="tag in extractTagsFromSymbol(slice.symbol)" :key="tag">{{ tag }}</tspan>
               </text>
             </g>
             
@@ -189,15 +233,33 @@ const hoveredSlice = ref<number | null>(null)
           >
             <div class="legend-color" :style="{ backgroundColor: getColor(index) }"></div>
             <div class="legend-details">
-              <div class="legend-symbol">{{ item.symbol }}</div>
-              <div class="legend-value">
-                {{ formatCurrency(Math.abs(item.value)) }}
-                <span class="legend-percentage">({{ getPercentage(item.value) }})</span>
-              </div>
+                <div class="legend-symbol">
+                    <span v-for="tag in extractTagsFromSymbol(item.symbol)" :key="tag" class="tag fi-tag">{{ tag }}</span>
+                </div>
+                <div class="legend-value">
+                    {{ formatCurrency(Math.abs(item.value)) }}
+                    <span class="legend-percentage">({{ getPercentage(item.value) }})</span>
+                </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+    
+    <!-- Tooltip -->
+    <div
+      v-if="tooltipVisible && tooltipData"
+      class="tooltip"
+      :style="{
+        left: tooltipX + 'px',
+        top: tooltipY + 'px'
+      }"
+    >
+        <div class="tooltip-symbol">
+            <span v-for="tag in extractTagsFromSymbol(tooltipData.symbol)" :key="tag" class="tag fi-tag">{{ tag }}</span>
+        </div>
+        <div class="tooltip-value">{{ formatCurrency(Math.abs(tooltipData.value)) }}</div>
+        <div class="tooltip-percentage">{{ tooltipData.percentage }}</div>
     </div>
   </div>
 </template>
@@ -366,6 +428,38 @@ const hoveredSlice = ref<number | null>(null)
 .legend-percentage {
   color: #adb5bd;
   margin-left: 0.25rem;
+}
+
+/* Tooltip styles */
+.tooltip {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 10001;
+  transform: translate(-50%, -100%);
+  margin-top: -10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 150px;
+}
+
+.tooltip-symbol {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.tooltip-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.tooltip-percentage {
+  font-size: 0.85rem;
+  color: #adb5bd;
 }
 
 @media (max-width: 768px) {
