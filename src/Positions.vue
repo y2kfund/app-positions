@@ -4025,7 +4025,7 @@ onBeforeUnmount(() => {
 
 function handleExternalAccountFilter(payload: { accountId: string | null, source: string }) {
   console.log('📍 [Positions] Received account filter:', payload)
-  if (payload.source === 'positions') return
+  //if (payload.source === 'positions') return
 
   // Apply or clear the filter
   accountFilter.value = payload.accountId

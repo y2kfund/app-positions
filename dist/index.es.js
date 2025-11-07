@@ -20344,8 +20344,7 @@ const Ab = { class: "pie-chart-header" }, ib = { class: "pie-chart-content" }, s
       document.removeEventListener("click", p), document.removeEventListener("keydown", va), B && B.destroy(), pt && (pt.off("account-filter-changed", Ba), pt.off("symbol-filter-changed", Ca));
     });
     function Ba(m) {
-      if (console.log("📍 [Positions] Received account filter:", m), m.source === "positions") return;
-      s.value = m.accountId;
+      console.log("📍 [Positions] Received account filter:", m), s.value = m.accountId;
       const d = new URL(window.location.href);
       m.accountId ? d.searchParams.set("all_cts_clientId", m.accountId) : d.searchParams.delete("all_cts_clientId"), window.history.replaceState({}, "", d.toString()), Xe();
     }
@@ -21167,7 +21166,7 @@ const Ab = { class: "pie-chart-header" }, ib = { class: "pie-chart-content" }, s
       ], 64);
     };
   }
-}), LB = /* @__PURE__ */ hh(FB, [["__scopeId", "data-v-aaae1dac"]]);
+}), LB = /* @__PURE__ */ hh(FB, [["__scopeId", "data-v-f62f268e"]]);
 export {
   LB as Positions,
   LB as default
