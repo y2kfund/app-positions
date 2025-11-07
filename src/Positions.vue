@@ -23,7 +23,7 @@ import {
 import { useQueryClient } from '@tanstack/vue-query'
 import type { PositionsProps } from './index'
 import html2canvas from 'html2canvas'
-import { useTradesQuery, type Trade } from '@y2kfund/core/trades'
+import { useTradeQuery, type Trade } from '@y2kfund/core/trades'
 import flatpickr from 'flatpickr'
 import 'flatpickr/dist/flatpickr.min.css'
 import PositionsPieChart from './components/PositionsPieChart.vue'
@@ -3499,7 +3499,7 @@ const selectedPositionKeys = ref<Set<string>>(new Set())
 const attachmentTab = ref<'trades' | 'positions'>('trades')
 
 // Query trades
-const tradesQuery = useTradesQuery(props.accountId, props.userId)
+const tradesQuery = useTradeQuery(props.accountId, props.userId)
 
 // Computed filtered trades for modal
 /*const filteredTrades = computed(() => {

@@ -15967,7 +15967,39 @@ function Yw(r, e) {
       if (!h.data || h.data.length === 0)
         return console.log("⚠️ No trades found in database"), [];
       const u = h.data[0].fetched_at;
-      console.log("📅 Latest fetched_at:", u);
+      console.log("📅 Latest fetched_at:", u), console.log("Trades fetch for these fields: ", {
+        id: !0,
+        accountId: !0,
+        internal_account_id: !0,
+        symbol: !0,
+        assetCategory: !0,
+        quantity: !0,
+        tradePrice: !0,
+        buySell: !0,
+        tradeDate: !0,
+        settleDateTarget: !0,
+        ibCommission: !0,
+        fetched_at: !0,
+        description: !0,
+        currency: !0,
+        netCash: !0,
+        proceeds: !0,
+        fifoPnlRealized: !0,
+        openCloseIndicator: !0,
+        multiplier: !0,
+        mtmPnl: !0,
+        closePrice: !0,
+        underlyingSymbol: !0,
+        putCall: !0,
+        strike: !0,
+        expiry: !0,
+        tradeID: !0,
+        conid: !0,
+        contract_quantity: !0,
+        accounting_quantity: !0,
+        underlyingConid: !0,
+        tradeMoney: !0
+      });
       let c = t.schema("hf").from("trades").select(`
           id,
           "accountId",
@@ -15996,10 +16028,10 @@ function Yw(r, e) {
           expiry,
           "tradeID",
           conid,
+          "contract_quantity",
+          "accounting_quantity",
           "underlyingConid",
-          "tradeMoney",
-          contract_quantity,
-          accounting_quantity
+          "tradeMoney"
         `).eq("fetched_at", u);
       l.length > 0 ? (console.log("🔒 Applying access filter for accounts:", l), c = c.in("internal_account_id", l)) : console.log("🔓 No access filter applied - showing all trades"), c = c.order('"tradeDate"', { ascending: !1 });
       const [v, C, y] = await Promise.all([
@@ -21135,7 +21167,7 @@ const Ab = { class: "pie-chart-header" }, ib = { class: "pie-chart-content" }, s
       ], 64);
     };
   }
-}), LB = /* @__PURE__ */ hh(FB, [["__scopeId", "data-v-00624e29"]]);
+}), LB = /* @__PURE__ */ hh(FB, [["__scopeId", "data-v-8341a80a"]]);
 export {
   LB as Positions,
   LB as default
