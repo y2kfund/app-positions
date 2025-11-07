@@ -18,7 +18,8 @@ import {
   usePositionTradeMappingsQuery,
   usePositionPositionMappingsQuery,
   savePositionPositionMappings,
-  fetchPositionPositionMappings
+  fetchPositionPositionMappings,
+  fetchPositionsBySymbolRoot
 } from '@y2kfund/core'
 import { useQueryClient } from '@tanstack/vue-query'
 import type { PositionsProps } from './index'
@@ -3542,39 +3543,59 @@ const positionPositionsMap = computed(() => {
   return positionPositionMappingsQuery.data.value || new Map<string, Set<string>>()
 })
 
-const filteredPositionsForAttach = computed(() => {
-  if (!sourcePositions.value || !selectedPositionForPositions.value) return []
-  
-  // Get symbol root of the selected position
-  const selectedRoot = extractSymbolRoot(selectedPositionForPositions.value.symbol)
-  if (!selectedRoot) return []
-  
-  const query = positionSearchQuery.value.toLowerCase().trim()
-  
-  // Filter positions by matching symbol root
-  let positions = sourcePositions.value.filter(pos => {
-    const posRoot = extractSymbolRoot(pos.symbol)
-    return posRoot === selectedRoot
-  })
-  
-  // Apply search filter if present
-  if (query) {
-    const searchTerms = query.split(',').map(term => term.trim()).filter(Boolean)
-    positions = positions.filter(pos => {
-      const symbolTags = extractTagsFromSymbol(pos.symbol).map(tag => tag.toLowerCase())
-      
-      return searchTerms.every(term => {
-        return (
-          symbolTags.some(tag => tag.includes(term)) ||
-          pos.asset_class.toLowerCase().includes(term) ||
-          (pos.legal_entity && String(pos.legal_entity).toLowerCase().includes(term))
-        )
-      })
-    })
+const filteredPositionsForAttach = ref<Position[]>([])
+const loadingAttachablePositions = ref(false)
+
+async function loadAttachablePositions() {
+  if (!selectedPositionForPositions.value || !props.userId) {
+    filteredPositionsForAttach.value = []
+    return
   }
   
-  return positions
-})
+  loadingAttachablePositions.value = true
+  
+  try {
+    // Get symbol root of the selected position
+    const selectedRoot = extractSymbolRoot(selectedPositionForPositions.value.symbol)
+    if (!selectedRoot) {
+      filteredPositionsForAttach.value = []
+      return
+    }
+    
+    // Fetch positions from database using the new function
+    const positions = await fetchPositionsBySymbolRoot(
+      supabase,
+      selectedRoot,
+      props.userId,
+      selectedPositionForPositions.value.internal_account_id
+    )
+    console.log(`Fetched attachable positions for root: ${selectedRoot}`, positions)
+    const query = positionSearchQuery.value.toLowerCase().trim()
+    
+    // Apply search filter if present
+    if (query) {
+      const searchTerms = query.split(',').map(term => term.trim()).filter(Boolean)
+      filteredPositionsForAttach.value = positions.filter(pos => {
+        const symbolTags = extractTagsFromSymbol(pos.symbol).map(tag => tag.toLowerCase())
+        
+        return searchTerms.every(term => {
+          return (
+            symbolTags.some(tag => tag.includes(term)) ||
+            pos.asset_class.toLowerCase().includes(term) ||
+            (pos.legal_entity && String(pos.legal_entity).toLowerCase().includes(term))
+          )
+        })
+      })
+    } else {
+      filteredPositionsForAttach.value = positions
+    }
+  } catch (error) {
+    console.error('Error loading attachable positions:', error)
+    filteredPositionsForAttach.value = []
+  } finally {
+    loadingAttachablePositions.value = false
+  }
+}
 
 // Check if position is expired
 function isPositionExpired(position: Position): boolean {
@@ -3602,7 +3623,24 @@ function openPositionAttachModal(position: Position) {
   selectedPositionKeys.value = new Set(positionPositionsMap.value.get(posKey) || [])
   
   showPositionAttachModal.value = true
+  
+  // Load attachable positions when modal opens
+  loadAttachablePositions()
 }
+
+// Watch for search query changes
+watch(positionSearchQuery, () => {
+  if (showPositionAttachModal.value && attachmentTab.value === 'positions') {
+    loadAttachablePositions()
+  }
+})
+
+// Watch for tab changes
+watch(attachmentTab, (newTab) => {
+  if (newTab === 'positions' && showPositionAttachModal.value) {
+    loadAttachablePositions()
+  }
+})
 
 // Toggle position selection
 function togglePositionSelection(positionKey: string) {
@@ -4840,12 +4878,11 @@ watch(expandedPositions, () => {
       
       <div class="modal-body">
         <div v-if="selectedPositionForPositions" class="position-info">
-          <strong>Position: </strong> 
-          <span v-for="tag in extractTagsFromSymbol(selectedPositionForPositions.symbol)" :key="tag" class="fi-tag position-tag">
-            {{ tag }}
+          <strong>Position:</strong> 
+          <span style="background: #e3f2fd; padding: 2px 8px; border-radius: 4px; margin-left: 8px;">
+            {{ selectedPositionForPositions.symbol }}
           </span>
-           •
-          (Contract Qty: {{ selectedPositionForPositions.contract_quantity }} . Avg price: {{ formatCurrency(selectedPositionForPositions.avgPrice) }})
+          • (Contract Qty: {{ selectedPositionForPositions.contract_quantity }} . Avg price: ${{ selectedPositionForPositions.avgPrice }})
         </div>
 
         <!-- Tabs -->
@@ -4869,61 +4906,50 @@ watch(expandedPositions, () => {
         <!-- Trades Tab -->
         <div v-if="attachmentTab === 'trades'">
           <div class="trade-search">
-            <input 
-              v-model="tradeSearchQuery" 
-              type="text" 
-              placeholder="Search trades (e.g., 'META, BUY' or 'OPT, 31-OCT-2025')..."
+            <input
+              v-model="tradeSearchQuery"
+              type="text"
               class="search-input"
+              placeholder="Search trades (e.g., 'Put' or 'Call, 250')..."
             />
             <div class="search-hint">
-              💡 Use commas to search multiple terms. All terms must match.
+              💡 <em>Use commas to search multiple terms (AND logic)</em>
             </div>
           </div>
           
-          <div v-if="tradesQuery.isLoading.value" class="loading-state">
-            <div class="loading-spinner"></div>
-            Loading trades...
-          </div>
-          
-          <div v-else-if="tradesQuery.isError.value" class="error-state">
-            Error loading trades
-          </div>
-          
-          <div v-else class="trades-list">
-            <div 
-              v-for="trade in filteredTrades" 
-              :key="trade.tradeID || trade.id"
+          <div class="trades-list">
+            <div
+              v-for="trade in filteredTrades"
+              :key="trade.tradeID"
               class="trade-item"
-              :class="{ selected: trade.tradeID && selectedTradeIds.has(trade.tradeID) }"
-              @click="trade.tradeID && toggleTradeSelection(trade.tradeID)"
+              :class="{ selected: selectedTradeIds.has(trade.tradeID!) }"
+              @click="toggleTradeSelection(trade.tradeID!)"
             >
-              <input 
-                v-if="trade.tradeID"
-                type="checkbox" 
-                :checked="selectedTradeIds.has(trade.tradeID)"
-                @click.stop="toggleTradeSelection(trade.tradeID)"
+              <input
+                type="checkbox"
+                :checked="selectedTradeIds.has(trade.tradeID!)"
+                @click.stop="toggleTradeSelection(trade.tradeID!)"
               />
-              <span v-else style="color: #dc3545; font-size: 0.75rem;">⚠️</span>
               <div class="trade-details">
                 <div class="trade-primary">
-                  <strong>
-                    <span v-for="tag in extractTagsFromTradesSymbol(trade.symbol)" :key="tag" class="fi-tag position-tag">
-                      {{ tag }}
-                    </span>
-                  </strong>
                   <span class="trade-side" :class="trade.buySell.toLowerCase()">
                     {{ trade.buySell }}
                   </span>
-                  <span>Qty: {{ trade.quantity }} . Avg price: {{ formatCurrency(parseFloat(trade.tradePrice)) }}</span>
-                  <span v-if="trade.tradeID" style="color: #6c757d; font-size: 0.75rem; margin-left: 0.5rem;">
-                    ID: {{ trade.tradeID }}
-                  </span>
+                  <strong>{{ trade.symbol }}</strong>
+                  <span style="color: #6c757d;">×{{ trade.quantity }}</span>
+                  <span style="color: #6c757d;">@${{ trade.tradePrice }}</span>
                 </div>
                 <div class="trade-secondary">
-                  {{ trade.assetCategory }} • Trade date: {{ formatTradeDate(trade.tradeDate) }} • 
-                  Commission: {{ formatCurrency(parseFloat(trade.ibCommission)) }}
+                  <span>{{ formatTradeDate(trade.tradeDate) }}</span>
+                  <span>•</span>
+                  <span>{{ trade.assetCategory }}</span>
+                  <span v-if="trade.description">• {{ trade.description }}</span>
                 </div>
               </div>
+            </div>
+            
+            <div v-if="filteredTrades.length === 0" style="padding: 2rem; text-align: center; color: #6c757d;">
+              No trades found
             </div>
           </div>
         </div>
@@ -4931,35 +4957,35 @@ watch(expandedPositions, () => {
         <!-- Positions Tab -->
         <div v-else-if="attachmentTab === 'positions'">
           <div class="trade-search">
-            <input 
-              v-model="positionSearchQuery" 
-              type="text" 
-              placeholder="Search positions (e.g., 'Put' or 'Call, 250')..."
+            <input
+              v-model="positionSearchQuery"
+              type="text"
               class="search-input"
+              placeholder="Search positions (e.g., 'Put' or 'Call, 250')..."
             />
             <div class="search-hint">
-              💡 Showing positions with same underlying symbol. Use commas to search multiple terms.
+              💡 <em>Showing positions with same underlying symbol. Use commas to search multiple terms.</em>
             </div>
           </div>
           
-          <div v-if="q.isLoading.value" class="loading-state">
-            <div class="loading-spinner"></div>
+          <!-- Add loading state -->
+          <div v-if="loadingAttachablePositions" style="padding: 2rem; text-align: center; color: #6c757d;">
             Loading positions...
           </div>
           
           <div v-else class="trades-list">
-            <div 
-              v-for="position in filteredPositionsForAttach" 
+            <div
+              v-for="position in filteredPositionsForAttach"
               :key="getPositionKey(position)"
-              class="trade-item position-item"
+              class="trade-item"
               :class="{ 
                 selected: selectedPositionKeys.has(getPositionKey(position)),
                 expired: isPositionExpired(position)
               }"
               @click="togglePositionSelection(getPositionKey(position))"
             >
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 :checked="selectedPositionKeys.has(getPositionKey(position))"
                 @click.stop="togglePositionSelection(getPositionKey(position))"
               />
@@ -4970,34 +4996,37 @@ watch(expandedPositions, () => {
                       {{ tag }}
                     </span>
                   </strong>
+                  <span style="color: #6c757d;">Qty: {{ position.contract_quantity }}</span>
+                  <span style="color: #6c757d;">Avg price: ${{ position.avgPrice }}</span>
                   <span v-if="isPositionExpired(position)" class="expired-badge">EXPIRED</span>
-                  <span>Qty: {{ position.contract_quantity }} . Avg price: {{ formatCurrency(position.avgPrice) }}</span>
                 </div>
                 <div class="trade-secondary">
-                  {{ position.asset_class }} • 
-                  Account: {{ typeof position.legal_entity === 'object' ? position.legal_entity.name : position.legal_entity }} • 
-                  Market Value: {{ formatCurrency(position.market_value) }} •
-                  P&L: <span :class="{
-                    'pnl-positive': position.unrealized_pnl > 0,
-                    'pnl-negative': position.unrealized_pnl < 0
-                  }">{{ formatCurrency(position.unrealized_pnl) }}</span>
+                  <span>{{ position.asset_class }}</span>
+                  <span>•</span>
+                  <span>{{ position.legal_entity }}</span>
+                  <span v-if="position.market_value">• MV: ${{ formatCurrency(position.market_value) }}</span>
                 </div>
               </div>
+            </div>
+            
+            <div v-if="filteredPositionsForAttach.length === 0" style="padding: 2rem; text-align: center; color: #6c757d;">
+              No positions found
             </div>
           </div>
         </div>
       </div>
       
       <div class="modal-footer">
-        <button class="btn btn-secondary" @click="showPositionAttachModal = false">Cancel</button>
+        <button class="btn btn-secondary" @click="showPositionAttachModal = false">
+          Cancel
+        </button>
         <button 
           class="btn btn-primary" 
           @click="saveAttachments"
-          :disabled="isSavingTrades || isSavingPositions"
+          :disabled="attachmentTab === 'trades' ? selectedTradeIds.size === 0 : selectedPositionKeys.size === 0"
         >
-          <span v-if="isSavingTrades || isSavingPositions">Saving...</span>
-          <span v-else-if="attachmentTab === 'trades'">Attach {{ selectedTradeIds.size }} Trade(s)</span>
-          <span v-else>Attach {{ selectedPositionKeys.size }} Position(s)</span>
+          Attach {{ attachmentTab === 'trades' ? selectedTradeIds.size : selectedPositionKeys.size }} 
+          {{ attachmentTab === 'trades' ? 'Trade(s)' : 'Position(s)' }}
         </button>
       </div>
     </div>
