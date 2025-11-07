@@ -3369,7 +3369,7 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'
   } else if (field === 'legal_entity') {
     accountFilter.value = null
     const url = new URL(window.location.href)
-    url.searchParams.delete(`${windowId}_all_cts_clientId`)
+    url.searchParams.delete(`all_cts_clientId`)
     window.history.replaceState({}, '', url.toString())
     // --- ADD THIS ---
     if (eventBus) {
@@ -3392,7 +3392,7 @@ function clearAllFilters() {
   assetClassFilter.value = null 
 
   const url = new URL(window.location.href)
-  url.searchParams.delete(`${windowId}_all_cts_clientId`)
+  url.searchParams.delete(`all_cts_clientId`)
   url.searchParams.delete(`${windowId}_all_cts_fi`)
   url.searchParams.delete(`${windowId}_all_cts_thesis`)
   url.searchParams.delete(`${windowId}_fac`)
@@ -3878,7 +3878,7 @@ function parseFiltersFromUrl(): { symbol?: string; asset_class?: string; legal_e
   const symbolParam = url.searchParams.get(`${windowId}_all_cts_fi`)
   const symbol = symbolParam ? symbolParam.split('-and-').join(',') : undefined
   const asset = url.searchParams.get(`${windowId}_fac`) || undefined
-  const account = url.searchParams.get(`${windowId}_all_cts_clientId`) || undefined
+  const account = url.searchParams.get(`all_cts_clientId`) || undefined
   const thesisParam = url.searchParams.get(`${windowId}_all_cts_thesis`)
   const thesis = thesisParam ? thesisParam.split('-and-').join(',') : undefined
   return { symbol, asset_class: asset, legal_entity: account, thesis }
@@ -4031,9 +4031,9 @@ function handleExternalAccountFilter(payload: { accountId: string | null, source
   accountFilter.value = payload.accountId
   const url = new URL(window.location.href)
   if (payload.accountId) {
-    url.searchParams.set(`${windowId}_all_cts_clientId`, payload.accountId)
+    url.searchParams.set(`all_cts_clientId`, payload.accountId)
   } else {
-    url.searchParams.delete(`${windowId}_all_cts_clientId`)
+    url.searchParams.delete(`all_cts_clientId`)
   }
   window.history.replaceState({}, '', url.toString())
   updateFilters()
@@ -4113,7 +4113,7 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
     const accountId = String(value)
     accountFilter.value = accountId // <-- Track filter
     const url = new URL(window.location.href)
-    url.searchParams.set(`${windowId}_all_cts_clientId`, accountId)
+    url.searchParams.set(`all_cts_clientId`, accountId)
     window.history.replaceState({}, '', url.toString())
 
     updateFilters() // <-- Only call updateFilters, don't set Tabulator filter directly

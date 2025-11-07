@@ -20126,7 +20126,7 @@ const Ab = { class: "pie-chart-header" }, ib = { class: "pie-chart-content" }, s
       else if (m === "legal_entity") {
         s.value = null;
         const d = new URL(window.location.href);
-        d.searchParams.delete(`${o}_all_cts_clientId`), window.history.replaceState({}, "", d.toString()), pt && pt.emit("account-filter-changed", {
+        d.searchParams.delete("all_cts_clientId"), window.history.replaceState({}, "", d.toString()), pt && pt.emit("account-filter-changed", {
           accountId: null,
           source: "positions"
         });
@@ -20136,7 +20136,7 @@ const Ab = { class: "pie-chart-header" }, ib = { class: "pie-chart-content" }, s
     function wr() {
       M.value = [], O.value = [], s.value = null, n.value = null;
       const m = new URL(window.location.href);
-      m.searchParams.delete(`${o}_all_cts_clientId`), m.searchParams.delete(`${o}_all_cts_fi`), m.searchParams.delete(`${o}_all_cts_thesis`), m.searchParams.delete(`${o}_fac`), window.history.replaceState({}, "", m.toString()), pt && pt.emit("account-filter-changed", {
+      m.searchParams.delete("all_cts_clientId"), m.searchParams.delete(`${o}_all_cts_fi`), m.searchParams.delete(`${o}_all_cts_thesis`), m.searchParams.delete(`${o}_fac`), window.history.replaceState({}, "", m.toString()), pt && pt.emit("account-filter-changed", {
         accountId: null,
         source: "positions"
       }), Xe();
@@ -20303,7 +20303,7 @@ const Ab = { class: "pie-chart-header" }, ib = { class: "pie-chart-content" }, s
       d.searchParams.set(`${o}_position_cols`, m.join("-and-")), window.history.replaceState({}, "", d.toString());
     }
     function wa() {
-      const m = new URL(window.location.href), d = m.searchParams.get(`${o}_all_cts_fi`), D = d ? d.split("-and-").join(",") : void 0, z = m.searchParams.get(`${o}_fac`) || void 0, V = m.searchParams.get(`${o}_all_cts_clientId`) || void 0, H = m.searchParams.get(`${o}_all_cts_thesis`), f = H ? H.split("-and-").join(",") : void 0;
+      const m = new URL(window.location.href), d = m.searchParams.get(`${o}_all_cts_fi`), D = d ? d.split("-and-").join(",") : void 0, z = m.searchParams.get(`${o}_fac`) || void 0, V = m.searchParams.get("all_cts_clientId") || void 0, H = m.searchParams.get(`${o}_all_cts_thesis`), f = H ? H.split("-and-").join(",") : void 0;
       return { symbol: D, asset_class: z, legal_entity: V, thesis: f };
     }
     function yr() {
@@ -20347,7 +20347,7 @@ const Ab = { class: "pie-chart-header" }, ib = { class: "pie-chart-content" }, s
       if (console.log("📍 [Positions] Received account filter:", m), m.source === "positions") return;
       s.value = m.accountId;
       const d = new URL(window.location.href);
-      m.accountId ? d.searchParams.set(`${o}_all_cts_clientId`, m.accountId) : d.searchParams.delete(`${o}_all_cts_clientId`), window.history.replaceState({}, "", d.toString()), Xe();
+      m.accountId ? d.searchParams.set("all_cts_clientId", m.accountId) : d.searchParams.delete("all_cts_clientId"), window.history.replaceState({}, "", d.toString()), Xe();
     }
     function Ca(m) {
       if (console.log("📍 [Positions] Received symbol filter:", m), m.source === "positions") return;
@@ -20382,7 +20382,7 @@ const Ab = { class: "pie-chart-header" }, ib = { class: "pie-chart-content" }, s
         const D = String(d);
         s.value = D;
         const z = new URL(window.location.href);
-        z.searchParams.set(`${o}_all_cts_clientId`, D), window.history.replaceState({}, "", z.toString()), Xe(), pt && pt.emit("account-filter-changed", {
+        z.searchParams.set("all_cts_clientId", D), window.history.replaceState({}, "", z.toString()), Xe(), pt && pt.emit("account-filter-changed", {
           accountId: D,
           source: "positions"
         });
@@ -21167,7 +21167,7 @@ const Ab = { class: "pie-chart-header" }, ib = { class: "pie-chart-content" }, s
       ], 64);
     };
   }
-}), LB = /* @__PURE__ */ hh(FB, [["__scopeId", "data-v-8341a80a"]]);
+}), LB = /* @__PURE__ */ hh(FB, [["__scopeId", "data-v-aaae1dac"]]);
 export {
   LB as Positions,
   LB as default
