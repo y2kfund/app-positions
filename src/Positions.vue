@@ -15,7 +15,10 @@ import {
   generateCommentKey, 
   generatePositionMappingKey,
   savePositionTradeMappings,
-  usePositionTradeMappingsQuery
+  usePositionTradeMappingsQuery,
+  usePositionPositionMappingsQuery,
+  savePositionPositionMappings,
+  fetchPositionPositionMappings
 } from '@y2kfund/core'
 import { useQueryClient } from '@tanstack/vue-query'
 import type { PositionsProps } from './index'
@@ -29,9 +32,9 @@ const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
   highlightPnL: false,
   showHeaderLink: false,
-  userId: null,
+  //userId: null,
   window: null,
-  //userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
+  userId: '67e578fd-2cf7-48a4-b028-a11a3f89bb9b'
 })
 const showPieChart = ref(false)
 
@@ -832,26 +835,33 @@ function initializeTabulator() {
         const value = cell.getValue()
         const accountName = typeof value === 'object' && value !== null ? (value.name || value.id) : value
         
-        // Check if this position has attached trades
+        // Check if this position has attached trades OR positions
         const posKey = getPositionKey(data)
         const attachedTradeIds = positionTradesMap.value.get(posKey)
-        const hasAttachedTrades = attachedTradeIds && attachedTradeIds.size > 0
+        const attachedPositionKeys = positionPositionsMap.value.get(posKey)
+        const hasAttachments = (attachedTradeIds && attachedTradeIds.size > 0) || (attachedPositionKeys && attachedPositionKeys.size > 0)
         const isExpanded = expandedPositions.value.has(posKey)
         
-        // Show expand/collapse arrow if has trades
-        const expandArrow = hasAttachedTrades 
-          ? `<span class="expand-arrow ${isExpanded ? 'expanded' : ''}" data-position-key="${posKey}" title="${isExpanded ? 'Collapse' : 'Expand'} trades">
+        // Show expand/collapse arrow if has any attachments
+        const expandArrow = hasAttachments
+          ? `<span class="expand-arrow ${isExpanded ? 'expanded' : ''}" data-position-key="${posKey}" title="${isExpanded ? 'Collapse' : 'Expand'} attachments">
               ${isExpanded ? '▼' : '▶'}
             </span>`
           : '<span class="expand-arrow">&nbsp;</span>'
         
-        // Add + icon for attaching trades
+        // Calculate total attachment count
+        const totalAttachments = (attachedTradeIds?.size || 0) + (attachedPositionKeys?.size || 0)
+        const attachmentLabel = totalAttachments > 0 
+          ? `<span class="trade-count">(${totalAttachments})</span>`
+          : ''
+        
+        // Add + icon for attaching trades/positions
         return `
           <div style="display: flex; align-items: center; gap: 6px;">
             ${expandArrow}
             <button 
               class="attach-trades-btn" 
-              title="Attach trades"
+              title="Attach trades or positions"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -859,7 +869,7 @@ function initializeTabulator() {
               </svg>
             </button>
             <span>${accountName}</span>
-            ${hasAttachedTrades ? `<span class="trade-count">(${attachedTradeIds.size})</span>` : ''}
+            ${attachmentLabel}
           </div>
         `
       },
@@ -2448,220 +2458,485 @@ function initializeTabulator() {
           return
         }
 
-        // Handle position rows with attached trades
+        // Handle position rows with attached trades or positions
         if (!groupByThesis.value && data && !data._isThesisGroup) {
           const posKey = getPositionKey(data)
           const attachedTradeIds = positionTradesMap.value.get(posKey)
+          const attachedPositionKeys = positionPositionsMap.value.get(posKey)
           const isExpanded = expandedPositions.value.has(posKey)
           
-          if (isExpanded && attachedTradeIds && attachedTradeIds.size > 0) {
-            // Get attached trades
-            const attachedTrades = (tradesQuery.data.value || [])
-              .filter(trade => trade.tradeID && attachedTradeIds.has(trade.tradeID))
-            
-            if (attachedTrades.length > 0) {
-              // Create nested table container
-              const holderEl = document.createElement('div')
-              holderEl.style.boxSizing = 'border-box'
-              holderEl.style.padding = '10px 30px'
-              holderEl.style.borderTop = '1px solid #dee2e6'
-              holderEl.style.borderBottom = '1px solid #dee2e6'
-              holderEl.style.background = '#f8f9fa'
+          if (isExpanded && (
+            (attachedTradeIds && attachedTradeIds.size > 0) || 
+            (attachedPositionKeys && attachedPositionKeys.size > 0)
+          )) {
+            // Create container for both tables
+            const holderEl = document.createElement('div')
+            holderEl.style.boxSizing = 'border-box'
+            holderEl.style.padding = '10px 30px'
+            holderEl.style.borderTop = '1px solid #dee2e6'
+            holderEl.style.borderBottom = '1px solid #dee2e6'
+            holderEl.style.background = '#f8f9fa'
+            holderEl.style.display = 'flex'
+            holderEl.style.flexDirection = 'column'
+            holderEl.style.gap = '20px'
 
-              // Create nested table
-              const tableEl = document.createElement('div')
-              holderEl.appendChild(tableEl)
+            // Create trades table if there are attached trades
+            if (attachedTradeIds && attachedTradeIds.size > 0) {
+              const attachedTrades = (tradesQuery.data.value || [])
+                .filter(trade => trade.tradeID && attachedTradeIds.has(trade.tradeID))
+              
+              if (attachedTrades.length > 0) {
+                const tradesSection = document.createElement('div')
+                const tradesHeader = document.createElement('div')
+                tradesHeader.style.fontWeight = '600'
+                tradesHeader.style.marginBottom = '8px'
+                tradesHeader.style.color = '#495057'
+                tradesHeader.textContent = `Attached Trades (${attachedTrades.length})`
+                tradesSection.appendChild(tradesHeader)
 
-              element.appendChild(holderEl)
+                const tradesTableEl = document.createElement('div')
+                tradesSection.appendChild(tradesTableEl)
+                holderEl.appendChild(tradesSection)
 
-              // Initialize nested Tabulator with columns matching Trades.vue
-              const nestedTable = new Tabulator(tableEl, {
-                data: attachedTrades,
-                layout: 'fitDataStretch',
-                initialSort: [
-                  { column: 'tradeDate', dir: 'desc' }
-                ],
-                columns: [
-                  {
-                    title: 'Side',
-                    field: 'buySell',
-                    width: 80,
-                    formatter: (cell: any) => {
-                      const value = cell.getValue()
-                      if (value === 'BUY') {
-                        return `<span style="color: #28a745; font-weight: bold;">BUY</span>`
+                // Initialize trades Tabulator
+                new Tabulator(tradesTableEl, {
+                  data: attachedTrades,
+                  layout: 'fitDataStretch',
+                  initialSort: [{ column: 'tradeDate', dir: 'desc' }],
+                  columns: [
+                    {
+                      title: 'Side',
+                      field: 'buySell',
+                      width: 80,
+                      formatter: (cell: any) => {
+                        const value = cell.getValue()
+                        if (value === 'BUY') {
+                          return `<span style="color: #28a745; font-weight: bold;">BUY</span>`
+                        }
+                        if (value === 'SELL') {
+                          return `<span style="color: #dc3545; font-weight: bold;">SELL</span>`
+                        }
+                        return value
                       }
-                      if (value === 'SELL') {
-                        return `<span style="color: #dc3545; font-weight: bold;">SELL</span>`
+                    },
+                    {
+                      title: 'Open/Close',
+                      field: 'openCloseIndicator',
+                      width: 100,
+                      formatter: (cell: any) => {
+                        const value = cell.getValue()
+                        if (value === 'O') {
+                          return `<span style="color: #17a2b8; font-weight: bold;">OPEN</span>`
+                        }
+                        if (value === 'C') {
+                          return `<span style="color: #6f42c1; font-weight: bold;">CLOSE</span>`
+                        }
+                        return value
                       }
-                      return value
-                    }
-                  },
-                  {
-                    title: 'Open/Close',
-                    field: 'openCloseIndicator',
-                    width: 100,
-                    formatter: (cell: any) => {
-                      const value = cell.getValue()
-                      if (value === 'O') {
-                        return `<span style="color: #17a2b8; font-weight: bold;">OPEN</span>`
+                    },
+                    {
+                      title: 'Symbol',
+                      field: 'symbol',
+                      width: 150,
+                      formatter: (cell: any) => {
+                        const symbol = cell.getValue()
+                        if (!symbol) return '<span style="color: #6c757d; font-style: italic;">N/A</span>'
+                        const tags = extractTagsFromTradesSymbol(symbol)
+                        return tags.map(tag => `<span class="fi-tag">${tag}</span>`).join(' ')
                       }
-                      if (value === 'C') {
-                        return `<span style="color: #6f42c1; font-weight: bold;">CLOSE</span>`
+                    },
+                    {
+                      title: 'Asset Class',
+                      field: 'assetCategory',
+                      width: 120
+                    },
+                    {
+                      title: 'Quantity',
+                      field: 'quantity',
+                      width: 100,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        const row = cell.getRow().getData()
+                        const q = parseFloat(row?.quantity || 0) || 0
+                        const m = parseFloat(row?.multiplier || 1) || 1
+                        return formatNumber(q * m)
                       }
-                      return value
-                    }
-                  },
-                  {
-                    title: 'Symbol',
-                    field: 'symbol',
-                    width: 150,
-                    formatter: (cell: any) => {
-                      const symbol = cell.getValue()
-                      if (!symbol) return '<span style="color: #6c757d; font-style: italic;">N/A</span>'
-                      
-                      const tags = extractTagsFromTradesSymbol(symbol)
-                      const selectedTags = symbolTagFilters.value
-                      
-                      return tags.map(tag => {
-                        const isSelected = selectedTags.includes(tag)
-                        return `<span class="fi-tag" data-tag="${tag}">${tag}</span>`
-                      }).join(' ')
-                    }
-                  },
-                  {
-                    title: 'Asset Class',
-                    field: 'assetCategory',
-                    width: 120
-                  },
-                  {
-                    title: 'Quantity',
-                    field: 'quantity',
-                    width: 100,
-                    hozAlign: 'right',
-                    formatter: (cell: any) => {
-                      const row = cell.getRow().getData()
-                      const q = parseFloat(row?.quantity || 0) || 0
-                      const m = parseFloat(row?.multiplier || 1) || 1
-                      const effective = q * m
-                      return formatNumber(effective)
-                    }
-                  },
-                  {
-                    title: 'Price',
-                    field: 'tradePrice',
-                    width: 100,
-                    hozAlign: 'right',
-                    formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue()))
-                  },
-                  {
-                    title: 'Trade Date',
-                    field: 'tradeDate',
-                    width: 120,
-                    hozAlign: 'center',
-                    formatter: (cell: any) => {
-                      const val = cell.getValue()
-                      if (!val) return ''
-                      const m = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(String(val).trim())
-                      let dt: Date
-                      if (m) {
-                        const day = Number(m[1])
-                        const month = Number(m[2]) - 1
-                        let year = Number(m[3])
-                        if (year < 100) year += 2000
-                        dt = new Date(year, month, day)
-                      } else {
-                        dt = new Date(val)
+                    },
+                    {
+                      title: 'Price',
+                      field: 'tradePrice',
+                      width: 100,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue()))
+                    },
+                    {
+                      title: 'Trade Date',
+                      field: 'tradeDate',
+                      width: 120,
+                      hozAlign: 'center',
+                      formatter: (cell: any) => {
+                        const val = cell.getValue()
+                        if (!val) return ''
+                        const dt = new Date(val)
                         if (isNaN(dt.getTime())) return String(val)
+                        return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                       }
-                      return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    }
-                  },
-                  {
-                    title: 'Settle Date',
-                    field: 'settleDateTarget',
-                    width: 120,
-                    hozAlign: 'center',
-                    formatter: (cell: any) => {
-                      const val = cell.getValue()
-                      if (!val) return ''
-                      const m = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(String(val).trim())
-                      let dt: Date
-                      if (m) {
-                        const day = Number(m[1])
-                        const month = Number(m[2]) - 1
-                        let year = Number(m[3])
-                        if (year < 100) year += 2000
-                        dt = new Date(year, month, day)
-                      } else {
-                        dt = new Date(val)
-                        if (isNaN(dt.getTime())) return String(val)
+                    },
+                    {
+                      title: 'Total Premium',
+                      field: 'tradeMoney',
+                      width: 120,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue() || '0'))
+                    },
+                    {
+                      title: 'Commission',
+                      field: 'ibCommission',
+                      width: 100,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        return `<span style="color: #dc3545; font-weight: 600;">${formatCurrency(parseFloat(cell.getValue() || '0'))}</span>`
                       }
-                      return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    },
+                    {
+                      title: 'Trade ID',
+                      field: 'tradeID',
+                      width: 150,
+                      formatter: (cell: any) => {
+                        return `<span style="font-size: 0.75rem; color: #6c757d;">${cell.getValue()}</span>`
+                      }
                     }
-                  },
-                  {
-                    title: 'Total Premium',
-                    field: 'tradeMoney',
-                    width: 120,
-                    hozAlign: 'right',
-                    formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue() || '0'))
-                  },
-                  {
-                    title: 'Net Cash',
-                    field: 'netCash',
-                    width: 120,
-                    hozAlign: 'right',
-                    formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue() || '0'))
-                  },
-                  {
-                    title: 'Commission',
-                    field: 'ibCommission',
-                    width: 100,
-                    hozAlign: 'right',
-                    formatter: (cell: any) => {
-                      return `<span style="color: #dc3545; font-weight: 600;">${formatCurrency(parseFloat(cell.getValue() || '0'))}</span>`
+                  ]
+                })
+              }
+            }
+
+            // Create positions table if there are attached positions
+            if (attachedPositionKeys && attachedPositionKeys.size > 0) {
+              const attachedPositions = sourcePositions.value.filter(pos => 
+                attachedPositionKeys.has(getPositionKey(pos))
+              )
+              
+              if (attachedPositions.length > 0) {
+                const positionsSection = document.createElement('div')
+                const positionsHeader = document.createElement('div')
+                positionsHeader.style.fontWeight = '600'
+                positionsHeader.style.marginBottom = '8px'
+                positionsHeader.style.color = '#495057'
+                positionsHeader.textContent = `Attached Positions (${attachedPositions.length})`
+                positionsSection.appendChild(positionsHeader)
+
+                const positionsTableEl = document.createElement('div')
+                positionsSection.appendChild(positionsTableEl)
+                holderEl.appendChild(positionsSection)
+
+                // Initialize positions Tabulator with all parent columns
+                new Tabulator(positionsTableEl, {
+                  data: attachedPositions,
+                  layout: 'fitDataStretch',
+                  columns: [
+                    {
+                      title: 'Status',
+                      field: '_status',
+                      width: 80,
+                      formatter: (cell: any) => {
+                        const pos = cell.getRow().getData()
+                        const expired = isPositionExpired(pos)
+                        return expired 
+                          ? '<span style="color: #6c757d; font-weight: bold;">EXPIRED</span>'
+                          : '<span style="color: #28a745; font-weight: bold;">ACTIVE</span>'
+                      }
+                    },
+                    {
+                      title: 'Account',
+                      field: 'legal_entity',
+                      width: 120,
+                      formatter: (cell: any) => {
+                        const value = cell.getValue()
+                        return typeof value === 'object' && value !== null 
+                          ? (value.name || value.id) 
+                          : value
+                      }
+                    },
+                    {
+                      title: 'Thesis',
+                      field: 'thesis',
+                      width: 100,
+                      formatter: (cell: any) => {
+                        const thesis = cell.getValue()
+                        if (!thesis) return '<span style="color: #6c757d; font-style: italic;">No thesis</span>'
+                        return `<span class="thesis-tag">${thesis.title}</span>`
+                      }
+                    },
+                    {
+                      title: 'Financial Instrument',
+                      field: 'symbol',
+                      width: 200,
+                      formatter: (cell: any) => {
+                        const symbol = cell.getValue()
+                        if (!symbol) return ''
+                        const tags = extractTagsFromSymbol(symbol)
+                        return tags.map(tag => `<span class="fi-tag">${tag}</span>`).join(' ')
+                      }
+                    },
+                    {
+                      title: 'Comment',
+                      field: 'symbol_comment',
+                      width: 120,
+                      formatter: (cell: any) => cell.getValue() || ''
+                    },
+                    {
+                      title: 'Expiry date',
+                      field: 'expiry_date',
+                      width: 110,
+                      hozAlign: 'center',
+                      formatter: (cell: any) => {
+                        const row = cell.getRow().getData()
+                        if (row.asset_class === 'OPT') {
+                          const tags = extractTagsFromSymbol(row.symbol)
+                          const expiry = tags[1] || ''
+                          return expiry ? expiry : '<span style="color:#aaa;font-style:italic;">Unknown</span>'
+                        }
+                        return '<span style="color:#aaa;font-style:italic;">Not applicable</span>'
+                      }
+                    },
+                    {
+                      title: 'Asset Class',
+                      field: 'asset_class',
+                      width: 100,
+                      formatter: (cell: any) => cell.getValue() || ''
+                    },
+                    {
+                      title: 'Conid',
+                      field: 'conid',
+                      width: 80,
+                      formatter: (cell: any) => cell.getValue() || ''
+                    },
+                    {
+                      title: 'Underlying Conid',
+                      field: 'undConid',
+                      width: 80,
+                      formatter: (cell: any) => cell.getValue() || ''
+                    },
+                    {
+                      title: 'Multiplier',
+                      field: 'multiplier',
+                      width: 80,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatNumber(cell.getValue())
+                    },
+                    {
+                      title: 'Contract Qty',
+                      field: 'contract_quantity',
+                      width: 100,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatNumber(cell.getValue())
+                    },
+                    {
+                      title: 'Accounting Qty',
+                      field: 'accounting_quantity',
+                      width: 110,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatNumber(cell.getValue())
+                    },
+                    {
+                      title: 'Avg cost price per a/cing unit',
+                      field: 'avgPrice',
+                      width: 100,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatCurrency(cell.getValue())
+                    },
+                    {
+                      title: 'Weighted avg price',
+                      field: 'weighted_avg_price',
+                      width: 180,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        const data = cell.getRow().getData()
+                        const value = weightedAveragePrices.value.get(data.symbol)
+                        return value === null || value === undefined ? '-' : formatCurrency(value)
+                      }
+                    },
+                    {
+                      title: 'Market Price',
+                      field: 'price',
+                      width: 100,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatCurrency(cell.getValue())
+                    },
+                    {
+                      title: 'Ul CM Price',
+                      field: 'market_price',
+                      width: 100,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        const row = cell.getRow().getData()
+                        if (row.asset_class === 'STK') {
+                          return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
+                        }
+                        const value = cell.getValue()
+                        return value === null || value === undefined ? '-' : formatCurrency(value)
+                      }
+                    },
+                    {
+                      title: 'Instrument current market price',
+                      field: 'instrument_market_price',
+                      width: 100,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        const row = cell.getRow().getData()
+                        let value = null
+                        if (row.asset_class === 'OPT') {
+                          value = row.option_market_price
+                        } else if (row.asset_class === 'STK' || row.asset_class === 'FUND') {
+                          value = row.market_price
+                        }
+                        return value === null || value === undefined ? '-' : formatCurrency(value)
+                      }
+                    },
+                    {
+                      title: 'Market Value',
+                      field: 'market_value',
+                      width: 120,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatCurrency(cell.getValue())
+                    },
+                    {
+                      title: 'P&L Unrealized',
+                      field: 'unrealized_pnl',
+                      width: 120,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        const value = cell.getValue()
+                        let className = ''
+                        if (value > 0) className = 'pnl-positive'
+                        else if (value < 0) className = 'pnl-negative'
+                        else className = 'pnl-zero'
+                        return `<span class="${className}">${formatCurrency(value)}</span>`
+                      }
+                    },
+                    {
+                      title: 'Break even price P&L',
+                      field: 'be_price_pnl',
+                      width: 120,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        const row = cell.getRow().getData()
+                        if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
+                          const ulCmPrice = row.market_price
+                          const bePrice = row.computed_be_price
+                          let qty = row.contract_quantity
+                          const multiplier = row.multiplier
+                          const tags = extractTagsFromSymbol(row.symbol)
+                          const strikeTag = tags[2]
+                          const strikePrice = strikeTag ? parseFloat(strikeTag) : null
+                          qty = Math.abs(qty)
+                          
+                          if (
+                            ulCmPrice !== null && ulCmPrice !== undefined &&
+                            bePrice !== null && bePrice !== undefined &&
+                            qty !== null && qty !== undefined &&
+                            multiplier !== null && multiplier !== undefined &&
+                            strikePrice !== null && !isNaN(strikePrice)
+                          ) {
+                            const minPrice = Math.min(ulCmPrice, strikePrice)
+                            const pnl = (minPrice - bePrice) * qty * multiplier
+                            const absPnl = Math.abs(pnl)
+                            const decimalPart = Math.abs(pnl % 1)
+                            let formatted
+                            if (absPnl === 0 || decimalPart < absPnl * 0.01) {
+                              formatted = formatCurrency(Math.trunc(pnl))
+                            } else {
+                              formatted = formatCurrency(pnl)
+                            }
+                            let className = ''
+                            if (pnl > 0) className = 'pnl-positive'
+                            else if (pnl < 0) className = 'pnl-negative'
+                            else className = 'pnl-zero'
+                            return `<span class="${className}">${formatted}</span>`
+                          }
+                        }
+                        return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
+                      }
+                    },
+                    {
+                      title: 'Entry cash flow',
+                      field: 'computed_cash_flow_on_entry',
+                      width: 120,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        const value = cell.getValue()
+                        let className = ''
+                        if (value > 0) className = 'pnl-positive'
+                        else if (value < 0) className = 'pnl-negative'
+                        else className = 'pnl-zero'
+                        return `<span class="${className}">${formatCurrency(value)}</span>`
+                      }
+                    },
+                    {
+                      title: 'If exercised cash flow',
+                      field: 'computed_cash_flow_on_exercise',
+                      width: 130,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        const value = cell.getValue()
+                        let className = ''
+                        if (value > 0) className = 'pnl-positive'
+                        else if (value < 0) className = 'pnl-negative'
+                        else className = 'pnl-zero'
+                        return `<span class="${className}">${formatCurrency(value)}</span>`
+                      }
+                    },
+                    {
+                      title: '(Entry / If exercised) cash flow',
+                      field: 'entry_exercise_cash_flow_pct',
+                      width: 120,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        const row = cell.getRow().getData()
+                        if (row.asset_class === 'OPT' && row.computed_cash_flow_on_entry != null && row.computed_cash_flow_on_exercise != null && row.computed_cash_flow_on_exercise !== 0) {
+                          const pct = (row.computed_cash_flow_on_entry / row.computed_cash_flow_on_exercise) * 100
+                          const formatted = Math.abs(pct.toFixed(2)) + '%'
+                          return `<span>${formatted}</span>`
+                        }
+                        return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
+                      }
+                    },
+                    {
+                      title: 'BE Price',
+                      field: 'computed_be_price',
+                      width: 100,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        const value = cell.getValue()
+                        return value === null || value === undefined ? '-' : formatNumber(value)
+                      }
+                    },
+                    {
+                      title: 'Maintenance Margin Change',
+                      field: 'maintenance_margin_change',
+                      width: 180,
+                      hozAlign: 'right',
+                      formatter: (cell: any) => {
+                        const value = cell.getValue()
+                        if (value === null || value === undefined || value === '') return '-'
+                        const numValue = parseFloat(value.replace(/,/g, ''))
+                        return formatCurrency(numValue)
+                      }
                     }
-                  },
-                  {
-                    title: 'FIFO Realized',
-                    field: 'fifoPnlRealized',
-                    width: 120,
-                    hozAlign: 'right',
-                    formatter: (cell: any) => {
-                      const value = parseFloat(cell.getValue() || '0')
-                      let className = ''
-                      if (value > 0) className = 'pnl-positive'
-                      else if (value < 0) className = 'pnl-negative'
-                      else className = 'pnl-zero'
-                      return `<span class="${className}" style="font-weight: 600;">${formatCurrency(value)}</span>`
-                    }
-                  },
-                  {
-                    title: 'MTM PnL',
-                    field: 'mtmPnl',
-                    width: 100,
-                    hozAlign: 'right',
-                    formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue() || '0'))
-                  },
-                  {
-                    title: 'Close Price',
-                    field: 'closePrice',
-                    width: 100,
-                    hozAlign: 'right',
-                    formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue() || '0'))
-                  },
-                  {
-                    title: 'Trade ID',
-                    field: 'tradeID',
-                    width: 150,
-                    formatter: (cell: any) => {
-                      return `<span style="font-size: 0.75rem; color: #6c757d;">${cell.getValue()}</span>`
+                  ],
+                  rowFormatter: (row: any) => {
+                    const pos = row.getData()
+                    if (isPositionExpired(pos)) {
+                      row.getElement().style.backgroundColor = '#f8f9fa'
+                      row.getElement().style.opacity = '0.7'
                     }
                   }
-                ]
-              })
+                })
+              }
             }
+
+            element.appendChild(holderEl)
           }
         }
       } catch (error) {
@@ -3217,6 +3492,12 @@ const selectedPositionForTrades = ref<Position | null>(null)
 const tradeSearchQuery = ref('')
 const selectedTradeIds = ref<Set<string>>(new Set())
 
+const showPositionAttachModal = ref(false)
+const selectedPositionForPositions = ref<Position | null>(null)
+const positionSearchQuery = ref('')
+const selectedPositionKeys = ref<Set<string>>(new Set())
+const attachmentTab = ref<'trades' | 'positions'>('trades')
+
 // Query trades
 const tradesQuery = useTradesQuery(props.accountId, props.userId)
 
@@ -3252,6 +3533,123 @@ const tradesQuery = useTradesQuery(props.accountId, props.userId)
     })
   })
 })*/
+
+// Query position-position mappings
+const positionPositionMappingsQuery = usePositionPositionMappingsQuery(props.userId)
+
+// Create computed ref for the position mappings
+const positionPositionsMap = computed(() => {
+  return positionPositionMappingsQuery.data.value || new Map<string, Set<string>>()
+})
+
+const filteredPositionsForAttach = computed(() => {
+  if (!sourcePositions.value || !selectedPositionForPositions.value) return []
+  
+  // Get symbol root of the selected position
+  const selectedRoot = extractSymbolRoot(selectedPositionForPositions.value.symbol)
+  if (!selectedRoot) return []
+  
+  const query = positionSearchQuery.value.toLowerCase().trim()
+  
+  // Filter positions by matching symbol root
+  let positions = sourcePositions.value.filter(pos => {
+    const posRoot = extractSymbolRoot(pos.symbol)
+    return posRoot === selectedRoot
+  })
+  
+  // Apply search filter if present
+  if (query) {
+    const searchTerms = query.split(',').map(term => term.trim()).filter(Boolean)
+    positions = positions.filter(pos => {
+      const symbolTags = extractTagsFromSymbol(pos.symbol).map(tag => tag.toLowerCase())
+      
+      return searchTerms.every(term => {
+        return (
+          symbolTags.some(tag => tag.includes(term)) ||
+          pos.asset_class.toLowerCase().includes(term) ||
+          (pos.legal_entity && String(pos.legal_entity).toLowerCase().includes(term))
+        )
+      })
+    })
+  }
+  
+  return positions
+})
+
+// Check if position is expired
+function isPositionExpired(position: Position): boolean {
+  if (position.asset_class !== 'OPT') return false
+  
+  const tags = extractTagsFromSymbol(position.symbol)
+  const expiryStr = tags[1] // Date is second tag
+  if (!expiryStr) return false
+  
+  const expiryDate = new Date(expiryStr)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  
+  return expiryDate < today
+}
+
+// Open position attach modal
+function openPositionAttachModal(position: Position) {
+  selectedPositionForPositions.value = position
+  positionSearchQuery.value = ''
+  attachmentTab.value = 'trades' // Start with trades tab
+  
+  // Load currently attached positions
+  const posKey = getPositionKey(position)
+  selectedPositionKeys.value = new Set(positionPositionsMap.value.get(posKey) || [])
+  
+  showPositionAttachModal.value = true
+}
+
+// Toggle position selection
+function togglePositionSelection(positionKey: string) {
+  if (selectedPositionKeys.value.has(positionKey)) {
+    selectedPositionKeys.value.delete(positionKey)
+  } else {
+    selectedPositionKeys.value.add(positionKey)
+  }
+}
+
+const isSavingPositions = ref(false)
+
+// Save attached positions
+async function saveAttachedPositions() {
+  if (!selectedPositionForPositions.value || !props.userId) return
+  
+  if (isSavingPositions.value) {
+    console.log('⚠️ Save already in progress, skipping...')
+    return
+  }
+
+  const posKey = getPositionKey(selectedPositionForPositions.value)
+  isSavingPositions.value = true
+  
+  try {
+    await savePositionPositionMappings(
+      supabase,
+      props.userId,
+      posKey,
+      selectedPositionKeys.value
+    )
+    
+    await queryClient.invalidateQueries({ queryKey: ['positionPositionMappings'] })
+    await positionPositionMappingsQuery.refetch()
+    
+    showPositionAttachModal.value = false
+    initializeTabulator()
+    
+    showToast('success', 'Positions Attached', `${selectedPositionKeys.value.size} position(s) attached`)
+  } catch (error: any) {
+    console.error('Error saving position mappings:', error)
+    showToast('error', 'Failed to Save', error.message)
+  } finally {
+    isSavingPositions.value = false
+  }
+}
+
 const filteredTrades = computed(() => {
   if (!tradesQuery.data.value) return []
   
@@ -3310,13 +3708,24 @@ function getPositionKey(position: Position): string {
 // Open trade attach modal
 function openTradeAttachModal(position: Position) {
   selectedPositionForTrades.value = position
+  selectedPositionForPositions.value = position
   tradeSearchQuery.value = ''
+  positionSearchQuery.value = ''
+  attachmentTab.value = 'trades'
   
-  // Load currently attached trades
   const posKey = getPositionKey(position)
   selectedTradeIds.value = new Set(positionTradesMap.value.get(posKey) || [])
+  selectedPositionKeys.value = new Set(positionPositionsMap.value.get(posKey) || [])
   
-  showTradeAttachModal.value = true
+  showPositionAttachModal.value = true
+}
+
+async function saveAttachments() {
+  if (attachmentTab.value === 'trades') {
+    await saveAttachedTrades()
+  } else {
+    await saveAttachedPositions()
+  }
 }
 
 // Toggle trade selection
@@ -4422,77 +4831,157 @@ watch(expandedPositions, () => {
   </div>
 
   <!-- Trade Attachment Modal -->
-  <div v-if="showTradeAttachModal" class="modal-overlay" @click="showTradeAttachModal = false">
+  <div v-if="showPositionAttachModal" class="modal-overlay" @click="showPositionAttachModal = false">
     <div class="modal-content trade-attach-modal" @click.stop>
       <div class="modal-header">
-        <h3>Attach Trades to Position</h3>
-        <button class="modal-close" @click="showTradeAttachModal = false">&times;</button>
+        <h3>Attach to Position</h3>
+        <button class="modal-close" @click="showPositionAttachModal = false">&times;</button>
       </div>
       
       <div class="modal-body">
-        <div v-if="selectedPositionForTrades" class="position-info">
+        <div v-if="selectedPositionForPositions" class="position-info">
           <strong>Position: </strong> 
-          <span v-for="tag in extractTagsFromSymbol(selectedPositionForTrades.symbol)" :key="tag" class="fi-tag position-tag">
+          <span v-for="tag in extractTagsFromSymbol(selectedPositionForPositions.symbol)" :key="tag" class="fi-tag position-tag">
             {{ tag }}
           </span>
            •
-          (Contract Qty: {{ selectedPositionForTrades.contract_quantity }} . Avg price: {{ formatCurrency(selectedPositionForTrades.avgPrice) }})
+          (Contract Qty: {{ selectedPositionForPositions.contract_quantity }} . Avg price: {{ formatCurrency(selectedPositionForPositions.avgPrice) }})
         </div>
-        
-        <div class="trade-search">
-          <input 
-            v-model="tradeSearchQuery" 
-            type="text" 
-            placeholder="Search trades (e.g., 'META, BUY' or 'OPT, 31-OCT-2025')..."
-            class="search-input"
-          />
-          <div class="search-hint">
-            💡 Use commas to search multiple terms. All terms must match.
+
+        <!-- Tabs -->
+        <div class="attachment-tabs">
+          <button 
+            class="tab-button" 
+            :class="{ active: attachmentTab === 'trades' }"
+            @click="attachmentTab = 'trades'"
+          >
+            Trades
+          </button>
+          <button 
+            class="tab-button" 
+            :class="{ active: attachmentTab === 'positions' }"
+            @click="attachmentTab = 'positions'"
+          >
+            Positions
+          </button>
+        </div>
+
+        <!-- Trades Tab -->
+        <div v-if="attachmentTab === 'trades'">
+          <div class="trade-search">
+            <input 
+              v-model="tradeSearchQuery" 
+              type="text" 
+              placeholder="Search trades (e.g., 'META, BUY' or 'OPT, 31-OCT-2025')..."
+              class="search-input"
+            />
+            <div class="search-hint">
+              💡 Use commas to search multiple terms. All terms must match.
+            </div>
+          </div>
+          
+          <div v-if="tradesQuery.isLoading.value" class="loading-state">
+            <div class="loading-spinner"></div>
+            Loading trades...
+          </div>
+          
+          <div v-else-if="tradesQuery.isError.value" class="error-state">
+            Error loading trades
+          </div>
+          
+          <div v-else class="trades-list">
+            <div 
+              v-for="trade in filteredTrades" 
+              :key="trade.tradeID || trade.id"
+              class="trade-item"
+              :class="{ selected: trade.tradeID && selectedTradeIds.has(trade.tradeID) }"
+              @click="trade.tradeID && toggleTradeSelection(trade.tradeID)"
+            >
+              <input 
+                v-if="trade.tradeID"
+                type="checkbox" 
+                :checked="selectedTradeIds.has(trade.tradeID)"
+                @click.stop="toggleTradeSelection(trade.tradeID)"
+              />
+              <span v-else style="color: #dc3545; font-size: 0.75rem;">⚠️</span>
+              <div class="trade-details">
+                <div class="trade-primary">
+                  <strong>
+                    <span v-for="tag in extractTagsFromTradesSymbol(trade.symbol)" :key="tag" class="fi-tag position-tag">
+                      {{ tag }}
+                    </span>
+                  </strong>
+                  <span class="trade-side" :class="trade.buySell.toLowerCase()">
+                    {{ trade.buySell }}
+                  </span>
+                  <span>Qty: {{ trade.quantity }} . Avg price: {{ formatCurrency(parseFloat(trade.tradePrice)) }}</span>
+                  <span v-if="trade.tradeID" style="color: #6c757d; font-size: 0.75rem; margin-left: 0.5rem;">
+                    ID: {{ trade.tradeID }}
+                  </span>
+                </div>
+                <div class="trade-secondary">
+                  {{ trade.assetCategory }} • Trade date: {{ formatTradeDate(trade.tradeDate) }} • 
+                  Commission: {{ formatCurrency(parseFloat(trade.ibCommission)) }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        
-        <div v-if="tradesQuery.isLoading.value" class="loading-state">
-          <div class="loading-spinner"></div>
-          Loading trades...
-        </div>
-        
-        <div v-else-if="tradesQuery.isError.value" class="error-state">
-          Error loading trades
-        </div>
-        
-        <div v-else class="trades-list">
-          <div 
-            v-for="trade in filteredTrades" 
-            :key="trade.tradeID || trade.id"
-            class="trade-item"
-            :class="{ selected: trade.tradeID && selectedTradeIds.has(trade.tradeID) }"
-            @click="trade.tradeID && toggleTradeSelection(trade.tradeID)"
-          >
+
+        <!-- Positions Tab -->
+        <div v-else-if="attachmentTab === 'positions'">
+          <div class="trade-search">
             <input 
-              v-if="trade.tradeID"
-              type="checkbox" 
-              :checked="selectedTradeIds.has(trade.tradeID)"
-              @click.stop="toggleTradeSelection(trade.tradeID)"
+              v-model="positionSearchQuery" 
+              type="text" 
+              placeholder="Search positions (e.g., 'Put' or 'Call, 250')..."
+              class="search-input"
             />
-            <span v-else style="color: #dc3545; font-size: 0.75rem;">⚠️</span>
-            <div class="trade-details">
-              <div class="trade-primary">
-                <strong>
-                  <span v-for="tag in extractTagsFromTradesSymbol(trade.symbol)" :key="tag" class="fi-tag position-tag">
-                    {{ tag }}
-                  </span>
-                </strong>
-                <span class="trade-side" :class="trade.buySell.toLowerCase()">
-                  {{ trade.buySell }}
-                </span>
-                <span>Qty: {{ trade.quantity }} . Avg price: {{ formatCurrency(parseFloat(trade.tradePrice)) }}</span>
-                <span v-if="trade.tradeID" style="color: #6c757d; font-size: 0.75rem; margin-left: 0.5rem;">
-                  ID: {{ trade.tradeID }}
-                </span>
-              </div>
-              <div class="trade-secondary">
-                {{ trade.assetCategory }} • Trade date: {{ formatTradeDate(trade.tradeDate) }} • 
-                Commission: {{ formatCurrency(parseFloat(trade.ibCommission)) }}
+            <div class="search-hint">
+              💡 Showing positions with same underlying symbol. Use commas to search multiple terms.
+            </div>
+          </div>
+          
+          <div v-if="q.isLoading.value" class="loading-state">
+            <div class="loading-spinner"></div>
+            Loading positions...
+          </div>
+          
+          <div v-else class="trades-list">
+            <div 
+              v-for="position in filteredPositionsForAttach" 
+              :key="getPositionKey(position)"
+              class="trade-item position-item"
+              :class="{ 
+                selected: selectedPositionKeys.has(getPositionKey(position)),
+                expired: isPositionExpired(position)
+              }"
+              @click="togglePositionSelection(getPositionKey(position))"
+            >
+              <input 
+                type="checkbox" 
+                :checked="selectedPositionKeys.has(getPositionKey(position))"
+                @click.stop="togglePositionSelection(getPositionKey(position))"
+              />
+              <div class="trade-details">
+                <div class="trade-primary">
+                  <strong>
+                    <span v-for="tag in extractTagsFromSymbol(position.symbol)" :key="tag" class="fi-tag position-tag">
+                      {{ tag }}
+                    </span>
+                  </strong>
+                  <span v-if="isPositionExpired(position)" class="expired-badge">EXPIRED</span>
+                  <span>Qty: {{ position.contract_quantity }} . Avg price: {{ formatCurrency(position.avgPrice) }}</span>
+                </div>
+                <div class="trade-secondary">
+                  {{ position.asset_class }} • 
+                  Account: {{ typeof position.legal_entity === 'object' ? position.legal_entity.name : position.legal_entity }} • 
+                  Market Value: {{ formatCurrency(position.market_value) }} •
+                  P&L: <span :class="{
+                    'pnl-positive': position.unrealized_pnl > 0,
+                    'pnl-negative': position.unrealized_pnl < 0
+                  }">{{ formatCurrency(position.unrealized_pnl) }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -4500,14 +4989,15 @@ watch(expandedPositions, () => {
       </div>
       
       <div class="modal-footer">
-        <button class="btn btn-secondary" @click="showTradeAttachModal = false">Cancel</button>
+        <button class="btn btn-secondary" @click="showPositionAttachModal = false">Cancel</button>
         <button 
           class="btn btn-primary" 
-          @click="saveAttachedTrades"
-          :disabled="isSavingTrades"
+          @click="saveAttachments"
+          :disabled="isSavingTrades || isSavingPositions"
         >
-          <span v-if="isSavingTrades">Saving...</span>
-          <span v-else>Attach {{ selectedTradeIds.size }} Trade(s)</span>
+          <span v-if="isSavingTrades || isSavingPositions">Saving...</span>
+          <span v-else-if="attachmentTab === 'trades'">Attach {{ selectedTradeIds.size }} Trade(s)</span>
+          <span v-else>Attach {{ selectedPositionKeys.size }} Position(s)</span>
         </button>
       </div>
     </div>
@@ -5945,5 +6435,52 @@ h1 {
   color: #6c757d;
   margin-top: 0.5rem;
   font-style: italic;
+}
+.attachment-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.tab-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab-button:hover {
+  color: #495057;
+  background: #f8f9fa;
+}
+
+.tab-button.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+
+.position-item.expired {
+  opacity: 0.7;
+  background: #f8f9fa;
+}
+
+.position-item.expired:hover {
+  background: #e9ecef;
+}
+
+.expired-badge {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #6c757d;
+  color: white;
+  margin-left: 0.5rem;
 }
 </style>
