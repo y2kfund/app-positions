@@ -1,0 +1,231 @@
+/* Tree expand/collapse icons - make them more visible */
+.tabulator .tabulator-row .tabulator-data-tree-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background: #fff;
+  margin-right: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabulator .tabulator-row .tabulator-data-tree-control:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.tabulator .tabulator-row .tabulator-data-tree-control .tabulator-data-tree-control-collapse:after {
+  content: "−";
+  font-size: 16px;
+  font-weight: bold;
+  color: #495057;
+  line-height: 1;
+}
+
+.tabulator .tabulator-row .tabulator-data-tree-control .tabulator-data-tree-control-expand:after {
+  content: "+";
+  font-size: 16px;
+  font-weight: bold;
+  color: #495057;
+  line-height: 1;
+}
+
+/* Style for thesis group rows */
+.tabulator .tabulator-row.tabulator-tree-level-0, 
+.tabulator-row.tabulator-tree-level-0 .tabulator-cell {
+  background-color: #1e3a8a !important; /* Dark blue */
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+}
+
+/* Style for child thesis rows (level 1) */
+.tabulator .tabulator-row.tabulator-tree-level-1,
+.tabulator-row.tabulator-tree-level-1 .tabulator-cell {
+  background-color: #7c3aed !important; /* Purple */
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+/* Style for position rows (level 2+) */
+.tabulator .tabulator-row.tabulator-tree-level-2 {
+  background-color: #fff !important;
+  border-left: 3px solid #e9ecef !important;
+}
+
+/* Add subtle indentation visual guide */
+.tabulator .tabulator-row.tabulator-tree-level-1 .tabulator-cell:first-child,
+.tabulator .tabulator-row.tabulator-tree-level-2 .tabulator-cell:first-child {
+  border-left: 2px solid #e9ecef;
+}
+
+.tabulator .tabulator-row.tabulator-tree-level-0 .pnl-negative,
+.tabulator .tabulator-row.tabulator-tree-level-1 .pnl-negative,
+.tabulator .tabulator-row.tabulator-tree-level-0 .pnl-positive,
+.tabulator .tabulator-row.tabulator-tree-level-1 .pnl-positive {
+  color: #fff !important; 
+}
+
+
+/* Make the tree branch lines more visible */
+.tabulator .tabulator-row .tabulator-data-tree-branch {
+  border-left: 2px solid #dee2e6;
+  border-bottom: 2px solid #dee2e6;
+}
+
+/* Clear column borders - make them visible like the demo */
+.tabulator .tabulator-col {
+  border-right: 1px solid #dee2e6 !important;
+}
+
+.tabulator .tabulator-cell {
+  border-right: 1px solid #dee2e6 !important;
+}
+
+/* Make sure the last column also has a border */
+.tabulator .tabulator-col:last-child,
+.tabulator .tabulator-cell:last-child {
+  border-right: 1px solid #dee2e6 !important;
+}
+.screenshots-list-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.screenshot-list-item {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.7rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.screenshot-list-item:hover {
+  background: #e3f2fd;
+}
+.screenshot-thumb {
+  width: 110px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 0.4rem;
+  border: 1px solid #ccc;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.screenshot-list-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 15px;
+  color: #555;
+}
+.screenshot-download-link {
+  color: #1976d2;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 1.05em;
+  margin-top: 2px;
+  transition: color 0.18s;
+}
+.screenshot-download-link:hover {
+  color: #0d47a1;
+  text-decoration: underline;
+}
+
+/* Preview modal */
+.screenshot-preview-modal {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45); z-index: 100000;
+  display: flex; align-items: center; justify-content: center;
+}
+.screenshot-preview-content {
+  background: #fff;
+  border-radius: 1.2rem;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+.screenshot-full-img {
+  max-width: 80vw;
+  max-height: 60vh;
+  border-radius: 0.7rem;
+  border: 1.5px solid #e9ecef;
+  margin-bottom: 1.2rem;
+  background: #f8f9fa;
+}
+.screenshot-preview-meta {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+  font-size: 1.1em;
+  color: #444;
+}
+.screenshot-preview-close {
+  margin-left: 1.5rem;
+  padding: 0.4rem 1.2rem;
+  border-radius: 7px;
+  border: 1.5px solid #007bff;
+  background: #007bff;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+}
+.screenshot-preview-close:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+button.screenshot-btn {
+    background: transparent;
+    padding: 2px 2px;
+    border: 1px solid #dee2e6;
+}
+.screenshot-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.screenshot-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #e3e3e3;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  animation: screenshot-spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+@keyframes screenshot-spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+button.attach-trades-btn {
+    border-radius: 50%;
+    padding: 0 !important;
+    height: 18px;
+    width: 18px !important;
+    border: 2px solid #28a745;
+    color: #28a745;
+    cursor: pointer;
+}
+.ag-simple-filter-body-wrapper {
+  background-color: #fff;
+}
+.ag-input-wrapper:before {
+  content: none;
+}
