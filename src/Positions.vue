@@ -29,6 +29,7 @@ import flatpickr from 'flatpickr'
 import 'flatpickr/dist/flatpickr.min.css'
 import PositionsPieChart from './components/PositionsPieChart.vue'
 import PositionScreenshots from './components/PositionScreenshots.vue'
+import PositionSettings from './components/PositionSettings.vue'
 
 const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
@@ -212,31 +213,6 @@ function writeColumnRenamesToUrl(renames: ColumnRenames) {
     url.searchParams.delete(`${windowId}_position_col_renames`)
   }
   window.history.replaceState({}, '', url.toString())
-}
-
-// --- Dialog state for renaming columns ---
-const showColRenameDialog = ref(false)
-const colRenameField = ref<ColumnField | null>(null)
-const colRenameValue = ref('')
-
-function openColRenameDialog(field: ColumnField, current: string) {
-  colRenameField.value = field
-  colRenameValue.value = current
-  showColRenameDialog.value = true
-}
-function saveColRename() {
-  if (colRenameField.value) {
-    columnRenames.value = {
-      ...columnRenames.value,
-      [colRenameField.value]: colRenameValue.value.trim()
-    }
-    writeColumnRenamesToUrl(columnRenames.value)
-    showColRenameDialog.value = false
-    nextTick(() => initializeTabulator())
-  }
-}
-function cancelColRename() {
-  showColRenameDialog.value = false
 }
 
 function parseVisibleColsFromUrl(): ColumnField[] {
@@ -3046,18 +3022,6 @@ function initializeTabulator() {
         tabulator.redraw(true)
       }
 
-      const renameBtns = tableDiv.value?.querySelectorAll('.header-rename-btn')
-      renameBtns?.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation()
-          const field = (e.target as HTMLElement).getAttribute('data-field') as ColumnField
-          if (field) {
-            const opt = allColumnOptions.find(c => c.field === field)
-            openColRenameDialog(field, columnRenames.value[field] || (opt?.label ?? field))
-          }
-        })
-      })
-
       const headersCell = tableDiv.value?.querySelectorAll('.tabulator-col');
       headersCell?.forEach(header => {
         header.addEventListener('click', (e: any) => {
@@ -3402,6 +3366,23 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'
   updateFilters()
 }
 
+function handleAppNameUpdate(newName: string) {
+  appName.value = newName
+  writeAppNameToUrl(newName)
+}
+
+function handleVisibleColsUpdate(newCols: ColumnField[]) {
+  visibleCols.value = newCols
+  writeVisibleColsToUrl(newCols)
+  nextTick(() => initializeTabulator())
+}
+
+function handleColumnRenamesUpdate(newRenames: ColumnRenames) {
+  columnRenames.value = newRenames
+  writeColumnRenamesToUrl(newRenames)
+  nextTick(() => initializeTabulator())
+}
+
 function clearAllFilters() {
   symbolTagFilters.value = []
   thesisTagFilters.value = []
@@ -3427,9 +3408,6 @@ function clearAllFilters() {
 }
 
 // Column visibility popup
-const showColumnsPopup = ref(false)
-const columnsBtnRef = ref<HTMLElement | null>(null)
-const columnsPopupRef = ref<HTMLElement | null>(null)
 
 // Margin Impact Modal
 const showMarginImpactModal = ref(false)
@@ -3478,29 +3456,13 @@ async function openMarginImpactModal(rowData: any) {
   } finally {
     marginImpactLoading.value = false
   }
-}function closeMarginImpactModal() {
+}
+
+function closeMarginImpactModal() {
   showMarginImpactModal.value = false
   marginImpactRowData.value = null
   marginImpactData.value = null
   marginImpactError.value = null
-}
-
-function toggleColumnsPopup() {
-  showColumnsPopup.value = !showColumnsPopup.value
-}
-
-function closeColumnsPopup() {
-  showColumnsPopup.value = false
-}
-
-function handleClickOutside(event: Event) {
-  if (showColumnsPopup.value && 
-      columnsPopupRef.value && 
-      columnsBtnRef.value &&
-      !columnsPopupRef.value.contains(event.target as Node) && 
-      !columnsBtnRef.value.contains(event.target as Node)) {
-    closeColumnsPopup()
-  }
 }
 
 // Add state for trade attachment
@@ -3517,39 +3479,6 @@ const attachmentTab = ref<'trades' | 'positions'>('trades')
 
 // Query trades
 const tradesQuery = useTradeQuery(props.accountId, props.userId)
-
-// Computed filtered trades for modal
-/*const filteredTrades = computed(() => {
-  if (!tradesQuery.data.value) return []
-  
-  const query = tradeSearchQuery.value.toLowerCase().trim()
-  if (!query) return tradesQuery.data.value
-  
-  // Split by comma and clean up each term
-  const searchTerms = query.split(',').map(term => term.trim()).filter(Boolean)
-  
-  return tradesQuery.data.value.filter(trade => {
-    const symbolTags = extractTagsFromTradesSymbol(trade.symbol).map(tag => tag.toLowerCase())
-    
-    // Check if ALL search terms match (AND logic)
-    return searchTerms.every(term => {
-      // First, try exact match against symbol tags
-      if (symbolTags.some(tag => tag === term)) {
-        return true
-      }
-      
-      // Then try exact match against other fields (not partial matching)
-      // This prevents "p" from matching "OPT"
-      return (
-        trade.assetCategory.toLowerCase() === term ||
-        trade.buySell.toLowerCase() === term ||
-        trade.tradeDate === term ||
-        (trade.description && trade.description.toLowerCase() === term) ||
-        (trade.tradeID && trade.tradeID.toLowerCase() === term)
-      )
-    })
-  })
-})*/
 
 // Query position-position mappings
 const positionPositionMappingsQuery = usePositionPositionMappingsQuery(props.userId)
@@ -4060,8 +3989,6 @@ function writeGroupByThesisToUrl(isGrouped: boolean) {
 // Lifecycle
 const eventBus = inject<any>('eventBus')
 const appName = ref('Positions')
-const showAppNameDialog = ref(false)
-const appNameInput = ref('')
 
 function parseAppNameFromUrl(): string {
   const url = new URL(window.location.href)
@@ -4078,17 +4005,6 @@ function writeAppNameToUrl(name: string) {
   window.history.replaceState({}, '', url.toString())
 }
 
-function openAppNameDialog() {
-  appNameInput.value = appName.value
-  showAppNameDialog.value = true
-}
-
-function saveAppName() {
-  appName.value = appNameInput.value.trim() || 'Positions'
-  writeAppNameToUrl(appName.value)
-  showAppNameDialog.value = false
-}
-
 function handleEscKey(event: KeyboardEvent) {
   if (event.key === 'Escape') {
     if (showTradeAttachModal.value) {
@@ -4098,7 +4014,6 @@ function handleEscKey(event: KeyboardEvent) {
 }
 
 onMounted(async () => {
-  document.addEventListener('click', handleClickOutside)
   document.addEventListener('keydown', handleEscKey)
   appName.value = parseAppNameFromUrl()
 
@@ -4138,7 +4053,6 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
   document.removeEventListener('keydown', handleEscKey)
   if (tabulator) {
     tabulator.destroy()
@@ -4183,9 +4097,6 @@ function handleExternalSymbolFilter(payload: { symbolTags: string[], source: str
 
 function handleHeaderClick() {
   // Try to navigate if router is available
-
-
-
   if (typeof window !== 'undefined' && (window as any).$router) {
     (window as any).$router.push('/positions')
   } else {
@@ -4259,40 +4170,6 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
   }
 }
 
-const dragIndex = ref<number | null>(null)
-
-function handleDragStart(index: number) {
-  dragIndex.value = index
-}
-
-function handleDragOver(event: DragEvent) {
-  event.preventDefault()
-}
-
-function handleDrop(index: number) {
-  if (dragIndex.value === null || dragIndex.value === index) return
-  const cols = [...visibleCols.value]
-  const [moved] = cols.splice(dragIndex.value, 1)
-  cols.splice(index, 0, moved)
-  visibleCols.value = cols
-  dragIndex.value = null
-}
-function moveColumnUp(idx: number) {
-  if (idx <= 0) return
-  const cols = [...visibleCols.value]
-  ;[cols[idx - 1], cols[idx]] = [cols[idx], cols[idx - 1]]
-  visibleCols.value = cols
-}
-function moveColumnDown(idx: number) {
-  if (idx >= visibleCols.value.length - 1) return
-  const cols = [...visibleCols.value]
-  ;[cols[idx], cols[idx + 1]] = [cols[idx + 1], cols[idx]]
-  visibleCols.value = cols
-}
-
-//const accountFilter = ref<string | null>(null)
-//const assetClassFilter = ref<string | null>(null)
-
 // Watch for BOTH data ready AND DOM ready
 watch(
   [() => q.isSuccess.value, accountFilter, symbolTagFilters, thesisTagFilters, groupByThesis],
@@ -4331,42 +4208,6 @@ window.addEventListener('popstate', () => {
 function getColLabel(field: ColumnField) {
   const opt = allColumnOptions.find(c => c.field === field)
   return columnRenames.value[field] || (opt?.label ?? field)
-}
-
-const showRenameDialog = ref(false)
-const renameAccountId = ref<string | null>(null)
-const renameAccountCurrent = ref<string>('')
-const renameAccountValue = ref<string>('')
-
-function openRenameAccountDialog(accountId: string, currentName: string) {
-  renameAccountId.value = accountId
-  renameAccountCurrent.value = currentName
-  renameAccountValue.value = currentName
-  showRenameDialog.value = true
-
-  console.log('Opening rename dialog for account:', accountId, 'current name:', currentName)
-}
-
-async function saveAccountAlias() {
-  console.log('Saving account alias:', props.userId, 'for account ID:', renameAccountId.value)
-  if (!props.userId || !renameAccountId.value) return
-  try {
-    const { error } = await supabase
-      .schema('hf')
-      .from('user_account_alias')
-      .upsert({
-        user_id: props.userId,
-        internal_account_id: renameAccountId.value,
-        alias: renameAccountValue.value,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,internal_account_id' })
-    if (error) throw error
-    showRenameDialog.value = false
-    await queryClient.invalidateQueries({ queryKey: ['positions'] })
-    showToast('success', 'Account renamed', `Account name updated to "${renameAccountValue.value}"`)
-  } catch (err: any) {
-    showToast('error', 'Rename failed', err.message)
-  }
 }
 
 const filteredPositionsCount = ref(0)
@@ -4460,12 +4301,6 @@ watch([positionPositionsMap, positionTradesMap], () => {
         <h2>
           <span v-if="showHeaderLink" class="positions-link" @click="handleHeaderClick">{{ appName }}</span>
           <span v-else>{{ appName }}</span>
-          <button
-            class="appname-rename-btn"
-            @click="openAppNameDialog"
-            title="Rename app"
-            style="width:auto;padding: 2px 7px; font-size: 13px; background: none; border: none; color: #888; cursor: pointer;"
-          >✎</button>
         </h2>
         <div class="positions-date-picker">
           <label for="asOfDate">As of:</label>
@@ -4512,11 +4347,15 @@ watch([positionPositionsMap, positionTradesMap], () => {
             {{ groupByThesis ? 'Ungroup' : 'Group by Thesis' }}
           </button>
           
-          <button ref="columnsBtnRef" class="columns-btn" @click.stop="toggleColumnsPopup">
-            <svg class="icon" viewBox="0 0 24 24" width="18" height="18">
-              <path fill="currentColor" d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.21-.37-.3-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.03-.22-.22-.39-.44-.39h-3.84c-.22 0-.41.16-.44.39l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.09-.47 0-.59.22l-1.92 3.32c-.12.21-.07.47.12.61l2.03 1.58c.04.31.06.63.06.94s-.02.63-.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.21.37.3.59.22l2.39.96c.5.38 1.03.7 1.62.94l.36 2.54c.03.22.22.39.44.39h3.84c.22 0 .41-.16.44-.39l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.09.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.03-1.58ZM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5Z"/>
-            </svg>
-          </button>
+          <PositionSettings
+            :app-name="appName"
+            :visible-cols="visibleCols"
+            :all-column-options="allColumnOptions"
+            :column-renames="columnRenames"
+            @update:app-name="handleAppNameUpdate"
+            @update:visible-cols="handleVisibleColsUpdate"
+            @update:column-renames="handleColumnRenamesUpdate"
+          />
           
           <button
               @click="emit('maximize')"
@@ -4528,70 +4367,6 @@ watch([positionPositionsMap, positionTradesMap], () => {
           <button @click="emit('minimize')" class="minimize-button" title="Close">
             X
           </button>
-          
-          <div v-if="showColumnsPopup" ref="columnsPopupRef" class="columns-popup" @click.stop>
-            <div class="popup-header">Columns</div>
-            <div class="popup-list">
-              <label
-                v-for="(opt, idx) in visibleCols.map(f => allColumnOptions.find(c => c.field === f)).filter(Boolean)"
-                :key="opt.field"
-                class="popup-item"
-                draggable="true"
-                @dragstart="handleDragStart(idx)"
-                @dragover="handleDragOver"
-                @drop="handleDrop(idx)"
-                style="align-items: center;"
-              >
-                <input type="checkbox" :value="opt.field" v-model="visibleCols" />
-                <span>
-                  {{ columnRenames[opt.field] || opt.label }}
-                  <span v-if="columnRenames[opt.field]" style="font-size: 11px; color: #888; font-style: italic; display: inline-block;">
-                    ({{ opt.label }})
-                  </span>
-                </span>
-                <button
-                  class="col-rename-btn"
-                  type="button"
-                  @click.stop="openColRenameDialog(opt.field, columnRenames[opt.field] || opt.label)"
-                  title="Rename column"
-                  style="margin-left: 6px; font-size: 13px; background: none; border: none; color: #888; cursor: pointer;"
-                >✎</button>
-                <span class="move-icons" style="display: flex; flex-direction: column; margin-left: 8px;">
-                  <button
-                    type="button"
-                    @click.stop="moveColumnUp(idx)"
-                    :disabled="idx === 0"
-                    title="Move up"
-                    style="background: none; border: none; cursor: pointer; padding: 0; margin-bottom: 2px;"
-                  >
-                    ▲
-                  </button>
-                  <button
-                    type="button"
-                    @click.stop="moveColumnDown(idx)"
-                    :disabled="idx === visibleCols.length - 1"
-                    title="Move down"
-                    style="background: none; border: none; cursor: pointer; padding: 0;"
-                  >
-                    ▼
-                  </button>
-                </span>
-              </label>
-              <!-- Show unchecked columns at the end -->
-              <label
-                v-for="opt in allColumnOptions.filter(c => !visibleCols.includes(c.field))"
-                :key="opt.field"
-                class="popup-item"
-              >
-                <input type="checkbox" :value="opt.field" v-model="visibleCols" />
-                <span>{{ opt.label }}</span>
-              </label>
-            </div>
-            <div class="popup-actions">
-              <button class="btn btn-clear" @click="visibleCols = allColumnOptions.map(c=>c.field)">Show All</button>
-              <button class="btn" @click="closeColumnsPopup">Done</button>
-            </div>
-          </div>
         </div>
       </div>
       
@@ -4635,28 +4410,6 @@ watch([positionPositionsMap, positionTradesMap], () => {
           <button class="toast-close" @click.stop="removeToast(toast.id)">×</button>
         </div>
       </TransitionGroup>
-    </div>
-
-    <div v-if="showRenameDialog" class="rename-dialog-backdrop">
-      <div class="rename-dialog">
-        <h3>Rename Account</h3>
-        <input v-model="renameAccountValue" :placeholder="renameAccountCurrent" />
-        <div class="dialog-actions">
-          <button @click="saveAccountAlias">Save</button>
-          <button @click="showRenameDialog = false">Cancel</button>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="showColRenameDialog" class="rename-dialog-backdrop">
-      <div class="rename-dialog">
-        <h3>Rename Column</h3>
-        <input v-model="colRenameValue" placeholder="Column name" />
-        <div class="dialog-actions">
-          <button @click="saveColRename">Save</button>
-          <button @click="cancelColRename">Cancel</button>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -4714,47 +4467,11 @@ watch([positionPositionsMap, positionTradesMap], () => {
               </tr>
             </tbody>
           </table>
-          
-          <!-- <div v-if="marginImpactData.cost_info" class="cost-info-section">
-            <h4>Cost Information</h4>
-            <div class="cost-details">
-              <div class="cost-item">
-                <span class="cost-label">Amount:</span>
-                <span class="cost-value">{{ marginImpactData.cost_info.amount }}</span>
-              </div>
-              <div class="cost-item">
-                <span class="cost-label">Commission:</span>
-                <span class="cost-value">{{ marginImpactData.cost_info.commission }}</span>
-              </div>
-              <div class="cost-item">
-                <span class="cost-label">Total:</span>
-                <span class="cost-value">{{ marginImpactData.cost_info.total }}</span>
-              </div>
-            </div>
-          </div> -->
-          
-          <!-- div v-if="marginImpactData.warnings && marginImpactData.warnings.length" class="warnings-section">
-            <h4>Warnings</h4>
-            <ul class="warnings-list">
-              <li v-for="warning in marginImpactData.warnings" :key="warning" class="warning-item">
-                {{ warning }}
-              </li>
-            </ul>
-          </div -->
         </div>
       </div>
     </div>
   </div>
-  <div v-if="showAppNameDialog" class="rename-dialog-backdrop">
-    <div class="rename-dialog">
-      <h3>Rename App</h3>
-      <input v-model="appNameInput" placeholder="App name" />
-      <div class="dialog-actions">
-        <button @click="saveAppName">Save</button>
-        <button @click="showAppNameDialog = false">Cancel</button>
-      </div>
-    </div>
-  </div>
+  
 
   <!-- Trade Attachment Modal -->
   <div v-if="showPositionAttachModal" class="modal-overlay" @click="showPositionAttachModal = false">
