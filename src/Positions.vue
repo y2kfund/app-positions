@@ -54,6 +54,7 @@ const windowId = props.window || inject<string | null>('positions', null)
 const today = new Date().toISOString().slice(0, 10)
 const asOfDate = ref<string | null>(null)
 function clearAsOfDate() { asOfDate.value = null }
+const processingPositions = ref<Set<string>>(new Set())
 
 const symbolCommentsQuery = props.userId ? useSymbolCommentsQuery(props.userId) : null
 
@@ -153,6 +154,9 @@ const expandedPositions = ref<Set<string>>(new Set())
 
 // Function to toggle position expansion
 function togglePositionExpansion(positionKey: string) {
+  // Clear any pending processing
+  processingPositions.value.delete(positionKey)
+  
   if (expandedPositions.value.has(positionKey)) {
     expandedPositions.value.delete(positionKey)
   } else {
@@ -167,7 +171,7 @@ function togglePositionExpansion(positionKey: string) {
       if (data && !data._isThesisGroup) {
         const rowPosKey = getPositionKey(data)
         if (rowPosKey === positionKey) {
-          // Force the row to reformat by temporarily updating data
+          // Force the row to reformat
           row.reformat()
           break
         }
@@ -2446,7 +2450,7 @@ function initializeTabulator() {
     pagination: false,
     paginationSize: 100,
     paginationSizeSelector: [100, 200, 500],
-    rowFormatter: (row: any) => {
+    rowFormatter: async (row: any) => {
       try {
         const data = row.getData()
         const element = row.getElement()
@@ -2466,482 +2470,493 @@ function initializeTabulator() {
           const attachedPositionKeys = positionPositionsMap.value.get(posKey)
           const isExpanded = expandedPositions.value.has(posKey)
           
+          // ALWAYS remove existing nested tables first, regardless of expanded state
+          const existingNested = element.querySelector('.nested-tables-container')
+          if (existingNested) {
+            existingNested.remove()
+          }
+
+          // Check if we're already processing this position
+          if (processingPositions.value.has(posKey)) {
+            console.log(`⚠️ Already processing position: ${posKey}, skipping...`)
+            return
+          }
+
+          // Only create NEW nested tables when expanded AND has attachments
           if (isExpanded && (
             (attachedTradeIds && attachedTradeIds.size > 0) || 
             (attachedPositionKeys && attachedPositionKeys.size > 0)
           )) {
-            // Create container for both tables
-            const holderEl = document.createElement('div')
-            holderEl.style.boxSizing = 'border-box'
-            holderEl.style.padding = '10px 30px'
-            holderEl.style.borderTop = '1px solid #dee2e6'
-            holderEl.style.borderBottom = '1px solid #dee2e6'
-            holderEl.style.background = '#f8f9fa'
-            holderEl.style.display = 'flex'
-            holderEl.style.flexDirection = 'column'
-            holderEl.style.gap = '20px'
+            // Mark as processing
+            processingPositions.value.add(posKey)
+            console.log(`📊 Creating nested tables for position: ${posKey}`)
+            
+            try {
+              const container = document.createElement('div')
+              container.className = 'nested-tables-container'
+              container.style.cssText = 'padding: 1rem; background: #f8f9fa; border-top: 1px solid #dee2e6;'
 
-            // Create trades table if there are attached trades
-            if (attachedTradeIds && attachedTradeIds.size > 0) {
-              const attachedTrades = (tradesQuery.data.value || [])
-                .filter(trade => trade.tradeID && attachedTradeIds.has(trade.tradeID))
-              
-              if (attachedTrades.length > 0) {
-                const tradesSection = document.createElement('div')
-                const tradesHeader = document.createElement('div')
-                tradesHeader.style.fontWeight = '600'
-                tradesHeader.style.marginBottom = '8px'
-                tradesHeader.style.color = '#495057'
-                tradesHeader.textContent = `Attached Trades (${attachedTrades.length})`
-                tradesSection.appendChild(tradesHeader)
+              // Add Trades section
+              if (attachedTradeIds && attachedTradeIds.size > 0) {
+                const tradesTitle = document.createElement('h4')
+                tradesTitle.textContent = `Attached Trades (${attachedTradeIds.size})`
+                tradesTitle.style.cssText = 'margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #495057;'
+                container.appendChild(tradesTitle)
 
-                const tradesTableEl = document.createElement('div')
-                tradesSection.appendChild(tradesTableEl)
-                holderEl.appendChild(tradesSection)
+                const tradesTableDiv = document.createElement('div')
+                tradesTableDiv.className = 'nested-trades-table'
+                tradesTableDiv.style.cssText = 'margin-bottom: 1rem;'
+                container.appendChild(tradesTableDiv)
 
-                // Initialize trades Tabulator
-                new Tabulator(tradesTableEl, {
-                  data: attachedTrades,
-                  layout: 'fitDataStretch',
-                  initialSort: [{ column: 'tradeDate', dir: 'desc' }],
+                const tradesData = tradesQuery.data.value?.filter((t: Trade) => 
+                  attachedTradeIds.has(t.tradeID || '')
+                ) || []
+
+                console.log(`📊 Creating trades table with ${tradesData.length} trades for key: ${posKey}`)
+
+                // Create trades table with ALL columns from Trades.vue
+                new Tabulator(tradesTableDiv, {
+                  data: tradesData,
+                  layout: 'fitColumns',
                   columns: [
-                    {
-                      title: 'Side',
-                      field: 'buySell',
-                      width: 80,
+                    { 
+                      title: 'Account', 
+                      field: 'legal_entity', 
+                      width: 120,
                       formatter: (cell: any) => {
                         const value = cell.getValue()
-                        if (value === 'BUY') {
-                          return `<span style="color: #28a745; font-weight: bold;">BUY</span>`
+                        if (typeof value === 'object' && value !== null) {
+                          return value.name || value.id || ''
                         }
-                        if (value === 'SELL') {
-                          return `<span style="color: #dc3545; font-weight: bold;">SELL</span>`
-                        }
-                        return value
+                        return value || ''
                       }
                     },
-                    {
-                      title: 'Open/Close',
-                      field: 'openCloseIndicator',
-                      width: 100,
-                      formatter: (cell: any) => {
-                        const value = cell.getValue()
-                        if (value === 'O') {
-                          return `<span style="color: #17a2b8; font-weight: bold;">OPEN</span>`
-                        }
-                        if (value === 'C') {
-                          return `<span style="color: #6f42c1; font-weight: bold;">CLOSE</span>`
-                        }
-                        return value
-                      }
-                    },
-                    {
-                      title: 'Symbol',
-                      field: 'symbol',
-                      width: 150,
+                    { 
+                      title: 'Symbol', 
+                      field: 'symbol', 
+                      width: 200,
                       formatter: (cell: any) => {
                         const symbol = cell.getValue()
                         if (!symbol) return '<span style="color: #6c757d; font-style: italic;">N/A</span>'
+                        
                         const tags = extractTagsFromTradesSymbol(symbol)
-                        return tags.map(tag => `<span class="fi-tag">${tag}</span>`).join(' ')
+                        const selectedTags = new Set(symbolTagFilters.value)
+                        
+                        return tags.map(tag => {
+                          const isSelected = selectedTags.has(tag)
+                          const className = isSelected ? 'fi-tag fi-tag-selected' : 'fi-tag'
+                          return `<span class="${className}" data-tag="${tag}">${tag}</span>`
+                        }).join(' ')
                       }
                     },
-                    {
-                      title: 'Asset Class',
-                      field: 'assetCategory',
-                      width: 120
+                    { 
+                      title: 'Side', 
+                      field: 'buySell', 
+                      width: 80, 
+                      formatter: (cell: any) => {
+                        const side = cell.getValue()
+                        const className = side === 'BUY' ? 'trade-buy' : 'trade-sell'
+                        return `<span class="trade-side-badge ${className}">${side}</span>`
+                      }
                     },
-                    {
-                      title: 'Quantity',
-                      field: 'quantity',
+                    { 
+                      title: 'Open/Close', 
+                      field: 'openCloseIndicator', 
                       width: 100,
+                      formatter: (cell: any) => {
+                        const value = cell.getValue()
+                        if (value === 'O') return '<span style="color: #17a2b8; font-weight: bold;">OPEN</span>'
+                        if (value === 'C') return '<span style="color: #6f42c1; font-weight: bold;">CLOSE</span>'
+                        return value
+                      }
+                    },
+                    { 
+                      title: 'Asset Class', 
+                      field: 'assetCategory', 
+                      width: 120 
+                    },
+                    { 
+                      title: 'Trade Date', 
+                      field: 'tradeDate', 
+                      width: 120,
+                      formatter: (cell: any) => formatTradeDate(cell.getValue())
+                    },
+                    { 
+                      title: 'Settlement Date', 
+                      field: 'settleDateTarget', 
+                      width: 140,
+                      formatter: (cell: any) => formatTradeDate(cell.getValue())
+                    },
+                    { 
+                      title: 'Quantity', 
+                      field: 'quantity', 
+                      width: 100, 
                       hozAlign: 'right',
                       formatter: (cell: any) => {
                         const row = cell.getRow().getData()
                         const q = parseFloat(row?.quantity || 0) || 0
                         const m = parseFloat(row?.multiplier || 1) || 1
-                        return formatNumber(q * m)
+                        const effective = q * m
+                        return formatNumber(effective)
                       }
                     },
-                    {
-                      title: 'Price',
-                      field: 'tradePrice',
-                      width: 100,
+                    { 
+                      title: 'Price', 
+                      field: 'tradePrice', 
+                      width: 100, 
                       hozAlign: 'right',
-                      formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue()))
+                      formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue()) || 0)
                     },
-                    {
-                      title: 'Trade Date',
-                      field: 'tradeDate',
-                      width: 120,
-                      hozAlign: 'center',
-                      formatter: (cell: any) => {
-                        const val = cell.getValue()
-                        if (!val) return ''
-                        const dt = new Date(val)
-                        if (isNaN(dt.getTime())) return String(val)
-                        return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                      }
-                    },
-                    {
-                      title: 'Total Premium',
-                      field: 'tradeMoney',
-                      width: 120,
+                    { 
+                      title: 'Total Premium', 
+                      field: 'tradeMoney', 
+                      width: 120, 
                       hozAlign: 'right',
-                      formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue() || '0'))
+                      formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue()) || 0)
                     },
-                    {
-                      title: 'Commission',
-                      field: 'ibCommission',
-                      width: 100,
+                    { 
+                      title: 'Net Cash', 
+                      field: 'netCash', 
+                      width: 120, 
                       hozAlign: 'right',
-                      formatter: (cell: any) => {
-                        return `<span style="color: #dc3545; font-weight: 600;">${formatCurrency(parseFloat(cell.getValue() || '0'))}</span>`
-                      }
+                      formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue()) || 0)
                     },
-                    {
-                      title: 'Trade ID',
-                      field: 'tradeID',
-                      width: 150,
-                      formatter: (cell: any) => {
-                        return `<span style="font-size: 0.75rem; color: #6c757d;">${cell.getValue()}</span>`
-                      }
+                    { 
+                      title: 'MTM PnL', 
+                      field: 'mtmPnl', 
+                      width: 100, 
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue()) || 0)
+                    },
+                    { 
+                      title: 'FIFO Realized', 
+                      field: 'fifoPnlRealized', 
+                      width: 120, 
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue()) || 0)
+                    },
+                    { 
+                      title: 'Commission', 
+                      field: 'ibCommission', 
+                      width: 100, 
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue()) || 0)
+                    },
+                    { 
+                      title: 'Close Price', 
+                      field: 'closePrice', 
+                      width: 100, 
+                      hozAlign: 'right',
+                      formatter: (cell: any) => formatCurrency(parseFloat(cell.getValue()) || 0)
                     }
                   ]
                 })
               }
-            }
 
-            // Create positions table if there are attached positions
-            if (attachedPositionKeys && attachedPositionKeys.size > 0) {
-              const attachedPositions = sourcePositions.value.filter(pos => 
-                attachedPositionKeys.has(getPositionKey(pos))
-              )
-              
-              if (attachedPositions.length > 0) {
-                const positionsSection = document.createElement('div')
-                const positionsHeader = document.createElement('div')
-                positionsHeader.style.fontWeight = '600'
-                positionsHeader.style.marginBottom = '8px'
-                positionsHeader.style.color = '#495057'
-                positionsHeader.textContent = `Attached Positions (${attachedPositions.length})`
-                positionsSection.appendChild(positionsHeader)
+              // Add Positions section
+              if (attachedPositionKeys && attachedPositionKeys.size > 0) {
+                const positionsTitle = document.createElement('h4')
+                positionsTitle.textContent = `Attached Positions (${attachedPositionKeys.size})`
+                positionsTitle.style.cssText = 'margin: 1rem 0 0.5rem 0; font-size: 0.9rem; color: #495057;'
+                container.appendChild(positionsTitle)
 
-                const positionsTableEl = document.createElement('div')
-                positionsSection.appendChild(positionsTableEl)
-                holderEl.appendChild(positionsSection)
+                const positionsTableDiv = document.createElement('div')
+                positionsTableDiv.className = 'nested-positions-table'
+                container.appendChild(positionsTableDiv)
 
-                // Initialize positions Tabulator with all parent columns
-                new Tabulator(positionsTableEl, {
-                  data: attachedPositions,
-                  layout: 'fitDataStretch',
-                  columns: [
-                    {
-                      title: 'Status',
-                      field: '_status',
-                      width: 80,
-                      formatter: (cell: any) => {
-                        const pos = cell.getRow().getData()
-                        const expired = isPositionExpired(pos)
-                        return expired 
-                          ? '<span style="color: #6c757d; font-weight: bold;">EXPIRED</span>'
-                          : '<span style="color: #28a745; font-weight: bold;">ACTIVE</span>'
-                      }
-                    },
-                    {
-                      title: 'Account',
-                      field: 'legal_entity',
-                      width: 120,
-                      formatter: (cell: any) => {
-                        const value = cell.getValue()
-                        return typeof value === 'object' && value !== null 
-                          ? (value.name || value.id) 
-                          : value
-                      }
-                    },
-                    {
-                      title: 'Thesis',
-                      field: 'thesis',
-                      width: 100,
-                      formatter: (cell: any) => {
-                        const thesis = cell.getValue()
-                        if (!thesis) return '<span style="color: #6c757d; font-style: italic;">No thesis</span>'
-                        return `<span class="thesis-tag">${thesis.title}</span>`
-                      }
-                    },
-                    {
-                      title: 'Financial Instrument',
-                      field: 'symbol',
-                      width: 200,
-                      formatter: (cell: any) => {
-                        const symbol = cell.getValue()
-                        if (!symbol) return ''
-                        const tags = extractTagsFromSymbol(symbol)
-                        return tags.map(tag => `<span class="fi-tag">${tag}</span>`).join(' ')
-                      }
-                    },
-                    {
-                      title: 'Comment',
-                      field: 'symbol_comment',
-                      width: 120,
-                      formatter: (cell: any) => cell.getValue() || ''
-                    },
-                    {
-                      title: 'Expiry date',
-                      field: 'expiry_date',
-                      width: 110,
-                      hozAlign: 'center',
-                      formatter: (cell: any) => {
-                        const row = cell.getRow().getData()
-                        if (row.asset_class === 'OPT') {
-                          const tags = extractTagsFromSymbol(row.symbol)
-                          const expiry = tags[1] || ''
-                          return expiry ? expiry : '<span style="color:#aaa;font-style:italic;">Unknown</span>'
+                console.log(`📊 Fetching ${attachedPositionKeys.size} attached positions for key: ${posKey}`)
+
+                // Fetch attached positions
+                const attachedPositionsData = await fetchAttachedPositionsForDisplay(posKey, attachedPositionKeys)
+
+                console.log(`📊 Got ${attachedPositionsData.length} positions to display for key: ${posKey}`)
+
+                if (attachedPositionsData.length === 0) {
+                  positionsTableDiv.innerHTML = '<div style="padding: 1rem; text-align: center; color: #6c757d;">No positions found</div>'
+                } else {
+                  // Create positions table with ALL columns from parent Positions component
+                  new Tabulator(positionsTableDiv, {
+                    data: attachedPositionsData,
+                    layout: 'fitColumns',
+                    columns: [
+                      {
+                        title: 'Status',
+                        field: '_status',
+                        width: 80,
+                        formatter: (cell: any) => {
+                          const pos = cell.getRow().getData()
+                          const expired = isPositionExpired(pos)
+                          return expired 
+                            ? '<span style="color: #6c757d; font-weight: bold;">EXPIRED</span>'
+                            : '<span style="color: #28a745; font-weight: bold;">ACTIVE</span>'
                         }
-                        return '<span style="color:#aaa;font-style:italic;">Not applicable</span>'
-                      }
-                    },
-                    {
-                      title: 'Asset Class',
-                      field: 'asset_class',
-                      width: 100,
-                      formatter: (cell: any) => cell.getValue() || ''
-                    },
-                    {
-                      title: 'Conid',
-                      field: 'conid',
-                      width: 80,
-                      formatter: (cell: any) => cell.getValue() || ''
-                    },
-                    {
-                      title: 'Underlying Conid',
-                      field: 'undConid',
-                      width: 80,
-                      formatter: (cell: any) => cell.getValue() || ''
-                    },
-                    {
-                      title: 'Multiplier',
-                      field: 'multiplier',
-                      width: 80,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => formatNumber(cell.getValue())
-                    },
-                    {
-                      title: 'Contract Qty',
-                      field: 'contract_quantity',
-                      width: 100,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => formatNumber(cell.getValue())
-                    },
-                    {
-                      title: 'Accounting Qty',
-                      field: 'accounting_quantity',
-                      width: 110,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => formatNumber(cell.getValue())
-                    },
-                    {
-                      title: 'Avg cost price per a/cing unit',
-                      field: 'avgPrice',
-                      width: 100,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => formatCurrency(cell.getValue())
-                    },
-                    {
-                      title: 'Weighted avg price',
-                      field: 'weighted_avg_price',
-                      width: 180,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => {
-                        const data = cell.getRow().getData()
-                        const value = weightedAveragePrices.value.get(data.symbol)
-                        return value === null || value === undefined ? '-' : formatCurrency(value)
-                      }
-                    },
-                    {
-                      title: 'Market Price',
-                      field: 'price',
-                      width: 100,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => formatCurrency(cell.getValue())
-                    },
-                    {
-                      title: 'Ul CM Price',
-                      field: 'market_price',
-                      width: 100,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => {
-                        const row = cell.getRow().getData()
-                        if (row.asset_class === 'STK') {
+                      },
+                      { 
+                        title: 'Account', 
+                        field: 'legal_entity', 
+                        width: 150, 
+                        formatter: (cell: any) => {
+                          const value = cell.getValue()
+                          return typeof value === 'object' && value !== null 
+                            ? (value.name || value.id) 
+                            : value
+                        }
+                      },
+                      { 
+                        title: 'Symbol', 
+                        field: 'symbol', 
+                        width: 200,
+                        formatter: (cell: any) => {
+                          const symbol = cell.getValue()
+                          if (!symbol) return '<span style="color: #6c757d; font-style: italic;">N/A</span>'
+                          
+                          const tags = extractTagsFromSymbol(symbol)
+                          const selectedTags = new Set(symbolTagFilters.value)
+                          
+                          return tags.map(tag => {
+                            const isSelected = selectedTags.has(tag)
+                            const className = isSelected ? 'fi-tag fi-tag-selected' : 'fi-tag'
+                            return `<span class="${className}" data-tag="${tag}">${tag}</span>`
+                          }).join(' ')
+                        }
+                      },
+                      { 
+                        title: 'Expiry Date', 
+                        field: 'expiry_date', 
+                        width: 110,
+                        hozAlign: 'center',
+                        formatter: (cell: any) => {
+                          const row = cell.getRow().getData()
+                          if (row.asset_class === 'OPT') {
+                            const tags = extractTagsFromSymbol(row.symbol)
+                            const expiry = tags[1] || ''
+                            return expiry ? expiry : '<span style="color:#aaa;font-style:italic;">Unknown</span>'
+                          }
+                          return '<span style="color:#aaa;font-style:italic;">Not applicable</span>'
+                        }
+                      },
+                      { 
+                        title: 'Asset Class', 
+                        field: 'asset_class', 
+                        width: 100 
+                      },
+                      { 
+                        title: 'Conid', 
+                        field: 'conid', 
+                        width: 100 
+                      },
+                      { 
+                        title: 'Underlying Conid', 
+                        field: 'undConid', 
+                        width: 120 
+                      },
+                      { 
+                        title: 'Multiplier', 
+                        field: 'multiplier', 
+                        width: 100, 
+                        hozAlign: 'right', 
+                        formatter: (cell: any) => formatNumber(cell.getValue()) 
+                      },
+                      { 
+                        title: 'Contract Quantity', 
+                        field: 'contract_quantity', 
+                        width: 120, 
+                        hozAlign: 'right', 
+                        formatter: (cell: any) => formatNumber(cell.getValue()) 
+                      },
+                      { 
+                        title: 'Accounting Quantity', 
+                        field: 'accounting_quantity', 
+                        width: 140, 
+                        hozAlign: 'right', 
+                        formatter: (cell: any) => formatNumber(cell.getValue()) 
+                      },
+                      { 
+                        title: 'Avg Price', 
+                        field: 'avgPrice', 
+                        width: 100, 
+                        hozAlign: 'right', 
+                        formatter: (cell: any) => formatCurrency(cell.getValue()) 
+                      },
+                      { 
+                        title: 'Market Price', 
+                        field: 'price', 
+                        width: 100, 
+                        hozAlign: 'right', 
+                        formatter: (cell: any) => formatCurrency(cell.getValue()) 
+                      },
+                      { 
+                        title: 'Ul CM Price', 
+                        field: 'market_price', 
+                        width: 100, 
+                        hozAlign: 'right',
+                        formatter: (cell: any) => {
+                          const row = cell.getRow().getData()
+                          if (row.asset_class === 'STK') {
+                            return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
+                          }
+                          const value = cell.getValue()
+                          return value === null || value === undefined ? '-' : formatCurrency(value)
+                        }
+                      },
+                      { 
+                        title: 'Instrument Market Price', 
+                        field: 'instrument_market_price', 
+                        width: 160, 
+                        hozAlign: 'right',
+                        formatter: (cell: any) => {
+                          const row = cell.getRow().getData()
+                          let value = null
+                          if (row.asset_class === 'OPT') {
+                            value = row.option_market_price
+                          } else if (row.asset_class === 'STK' || row.asset_class === 'FUND') {
+                            value = row.market_price
+                          }
+                          return value === null || value === undefined ? '-' : formatCurrency(value)
+                        }
+                      },
+                      { 
+                        title: 'Market Value', 
+                        field: 'market_value', 
+                        width: 120, 
+                        hozAlign: 'right', 
+                        formatter: (cell: any) => formatCurrency(cell.getValue()) 
+                      },
+                      { 
+                        title: 'P&L Unrealized', 
+                        field: 'unrealized_pnl', 
+                        width: 120, 
+                        hozAlign: 'right',
+                        formatter: (cell: any) => {
+                          const value = cell.getValue()
+                          let className = ''
+                          if (value > 0) className = 'pnl-positive'
+                          else if (value < 0) className = 'pnl-negative'
+                          else className = 'pnl-zero'
+                          return `<span class="${className}">${formatCurrency(value)}</span>`
+                        }
+                      },
+                      { 
+                        title: 'BE Price P&L', 
+                        field: 'be_price_pnl', 
+                        width: 120, 
+                        hozAlign: 'right',
+                        formatter: (cell: any) => {
+                          const row = cell.getRow().getData()
+                          if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
+                            const ulCmPrice = row.market_price
+                            const bePrice = row.computed_be_price
+                            let qty = row.contract_quantity
+                            const multiplier = row.multiplier
+                            const tags = extractTagsFromSymbol(row.symbol)
+                            const strikeTag = tags[2]
+                            const strikePrice = strikeTag ? parseFloat(strikeTag) : null
+                            qty = Math.abs(qty)
+                            if (ulCmPrice != null && bePrice != null && qty != null && multiplier != null && strikePrice != null && !isNaN(strikePrice)) {
+                              const minPrice = Math.min(ulCmPrice, strikePrice)
+                              const pnl = (minPrice - bePrice) * qty * multiplier
+                              const absPnl = Math.abs(pnl)
+                              const decimalPart = Math.abs(pnl % 1)
+                              let formatted
+                              if (absPnl === 0 || decimalPart < absPnl * 0.01) {
+                                formatted = formatCurrency(Math.trunc(pnl))
+                              } else {
+                                formatted = formatCurrency(pnl)
+                              }
+                              let className = ''
+                              if (pnl > 0) className = 'pnl-positive'
+                              else if (pnl < 0) className = 'pnl-negative'
+                              else className = 'pnl-zero'
+                              return `<span class="${className}">${formatted}</span>`
+                            }
+                          }
                           return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
                         }
-                        const value = cell.getValue()
-                        return value === null || value === undefined ? '-' : formatCurrency(value)
-                      }
-                    },
-                    {
-                      title: 'Instrument current market price',
-                      field: 'instrument_market_price',
-                      width: 100,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => {
-                        const row = cell.getRow().getData()
-                        let value = null
-                        if (row.asset_class === 'OPT') {
-                          value = row.option_market_price
-                        } else if (row.asset_class === 'STK' || row.asset_class === 'FUND') {
-                          value = row.market_price
+                      },
+                      { 
+                        title: 'Entry Cash Flow', 
+                        field: 'computed_cash_flow_on_entry', 
+                        width: 140, 
+                        hozAlign: 'right',
+                        formatter: (cell: any) => {
+                          const value = cell.getValue()
+                          let className = ''
+                          if (value > 0) className = 'pnl-positive'
+                          else if (value < 0) className = 'pnl-negative'
+                          else className = 'pnl-zero'
+                          return `<span class="${className}">${formatCurrency(value)}</span>`
                         }
-                        return value === null || value === undefined ? '-' : formatCurrency(value)
-                      }
-                    },
-                    {
-                      title: 'Market Value',
-                      field: 'market_value',
-                      width: 120,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => formatCurrency(cell.getValue())
-                    },
-                    {
-                      title: 'P&L Unrealized',
-                      field: 'unrealized_pnl',
-                      width: 120,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => {
-                        const value = cell.getValue()
-                        let className = ''
-                        if (value > 0) className = 'pnl-positive'
-                        else if (value < 0) className = 'pnl-negative'
-                        else className = 'pnl-zero'
-                        return `<span class="${className}">${formatCurrency(value)}</span>`
-                      }
-                    },
-                    {
-                      title: 'Break even price P&L',
-                      field: 'be_price_pnl',
-                      width: 120,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => {
-                        const row = cell.getRow().getData()
-                        if (row.asset_class === 'OPT' && row.symbol && row.symbol.includes('P')) {
-                          const ulCmPrice = row.market_price
-                          const bePrice = row.computed_be_price
-                          let qty = row.contract_quantity
-                          const multiplier = row.multiplier
-                          const tags = extractTagsFromSymbol(row.symbol)
-                          const strikeTag = tags[2]
-                          const strikePrice = strikeTag ? parseFloat(strikeTag) : null
-                          qty = Math.abs(qty)
-                          
-                          if (
-                            ulCmPrice !== null && ulCmPrice !== undefined &&
-                            bePrice !== null && bePrice !== undefined &&
-                            qty !== null && qty !== undefined &&
-                            multiplier !== null && multiplier !== undefined &&
-                            strikePrice !== null && !isNaN(strikePrice)
-                          ) {
-                            const minPrice = Math.min(ulCmPrice, strikePrice)
-                            const pnl = (minPrice - bePrice) * qty * multiplier
-                            const absPnl = Math.abs(pnl)
-                            const decimalPart = Math.abs(pnl % 1)
-                            let formatted
-                            if (absPnl === 0 || decimalPart < absPnl * 0.01) {
-                              formatted = formatCurrency(Math.trunc(pnl))
-                            } else {
-                              formatted = formatCurrency(pnl)
-                            }
-                            let className = ''
-                            if (pnl > 0) className = 'pnl-positive'
-                            else if (pnl < 0) className = 'pnl-negative'
-                            else className = 'pnl-zero'
-                            return `<span class="${className}">${formatted}</span>`
+                      },
+                      { 
+                        title: 'If Exercised Cash Flow', 
+                        field: 'computed_cash_flow_on_exercise', 
+                        width: 160, 
+                        hozAlign: 'right',
+                        formatter: (cell: any) => {
+                          const value = cell.getValue()
+                          let className = ''
+                          if (value > 0) className = 'pnl-positive'
+                          else if (value < 0) className = 'pnl-negative'
+                          else className = 'pnl-zero'
+                          return `<span class="${className}">${formatCurrency(value)}</span>`
+                        }
+                      },
+                      { 
+                        title: 'Entry/Exercise %', 
+                        field: 'entry_exercise_cash_flow_pct', 
+                        width: 130, 
+                        hozAlign: 'right',
+                        formatter: (cell: any) => {
+                          const row = cell.getRow().getData()
+                          if (row.asset_class === 'OPT' && row.computed_cash_flow_on_entry != null && row.computed_cash_flow_on_exercise != null && row.computed_cash_flow_on_exercise !== 0) {
+                            const pct = (row.computed_cash_flow_on_entry / row.computed_cash_flow_on_exercise) * 100
+                            const formatted = Math.abs(pct.toFixed(2)) + '%'
+                            return `<span>${formatted}</span>`
                           }
+                          return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
                         }
-                        return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
-                      }
-                    },
-                    {
-                      title: 'Entry cash flow',
-                      field: 'computed_cash_flow_on_entry',
-                      width: 120,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => {
-                        const value = cell.getValue()
-                        let className = ''
-                        if (value > 0) className = 'pnl-positive'
-                        else if (value < 0) className = 'pnl-negative'
-                        else className = 'pnl-zero'
-                        return `<span class="${className}">${formatCurrency(value)}</span>`
-                      }
-                    },
-                    {
-                      title: 'If exercised cash flow',
-                      field: 'computed_cash_flow_on_exercise',
-                      width: 130,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => {
-                        const value = cell.getValue()
-                        let className = ''
-                        if (value > 0) className = 'pnl-positive'
-                        else if (value < 0) className = 'pnl-negative'
-                        else className = 'pnl-zero'
-                        return `<span class="${className}">${formatCurrency(value)}</span>`
-                      }
-                    },
-                    {
-                      title: '(Entry / If exercised) cash flow',
-                      field: 'entry_exercise_cash_flow_pct',
-                      width: 120,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => {
-                        const row = cell.getRow().getData()
-                        if (row.asset_class === 'OPT' && row.computed_cash_flow_on_entry != null && row.computed_cash_flow_on_exercise != null && row.computed_cash_flow_on_exercise !== 0) {
-                          const pct = (row.computed_cash_flow_on_entry / row.computed_cash_flow_on_exercise) * 100
-                          const formatted = Math.abs(pct.toFixed(2)) + '%'
-                          return `<span>${formatted}</span>`
+                      },
+                      { 
+                        title: 'BE Price', 
+                        field: 'computed_be_price', 
+                        width: 100, 
+                        hozAlign: 'right',
+                        formatter: (cell: any) => {
+                          const value = cell.getValue()
+                          return value === null || value === undefined ? '-' : formatNumber(value)
                         }
-                        return `<span style="color:#aaa;font-style:italic;">Not applicable</span>`
+                      },
+                      { 
+                        title: 'Maintenance Margin Change', 
+                        field: 'maintenance_margin_change', 
+                        width: 180, 
+                        hozAlign: 'right',
+                        formatter: (cell: any) => {
+                          const value = cell.getValue()
+                          if (value === null || value === undefined || value === '') return '-'
+                          const numValue = parseFloat(value.replace(/,/g, ''))
+                          return formatCurrency(numValue)
+                        }
                       }
-                    },
-                    {
-                      title: 'BE Price',
-                      field: 'computed_be_price',
-                      width: 100,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => {
-                        const value = cell.getValue()
-                        return value === null || value === undefined ? '-' : formatNumber(value)
-                      }
-                    },
-                    {
-                      title: 'Maintenance Margin Change',
-                      field: 'maintenance_margin_change',
-                      width: 180,
-                      hozAlign: 'right',
-                      formatter: (cell: any) => {
-                        const value = cell.getValue()
-                        if (value === null || value === undefined || value === '') return '-'
-                        const numValue = parseFloat(value.replace(/,/g, ''))
-                        return formatCurrency(numValue)
-                      }
-                    }
-                  ],
-                  rowFormatter: (row: any) => {
-                    const pos = row.getData()
-                    if (isPositionExpired(pos)) {
-                      row.getElement().style.backgroundColor = '#f8f9fa'
-                      row.getElement().style.opacity = '0.7'
-                    }
-                  }
-                })
+                    ]
+                  })
+                }
               }
-            }
 
-            element.appendChild(holderEl)
+              // Append the container to the row element
+              element.appendChild(container)
+              console.log(`✅ Nested tables appended to row for key: ${posKey}`)
+            } finally {
+              // Always remove from processing set, even if there's an error
+              setTimeout(() => {
+                processingPositions.value.delete(posKey)
+                console.log(`🔓 Finished processing position: ${posKey}`)
+              }, 100)
+            }
           }
         }
       } catch (error) {
-        console.warn('Row formatter error:', error)
+        console.error('❌ Row formatter error:', error)
       }
     },
     rowClick: (e: any, row: any) => {
@@ -3594,6 +3609,78 @@ async function loadAttachablePositions() {
     filteredPositionsForAttach.value = []
   } finally {
     loadingAttachablePositions.value = false
+  }
+}
+
+// Add a new ref to store positions for display in nested tables
+const attachedPositionsCache = ref<Map<string, Position[]>>(new Map())
+
+// Add a function to fetch attached positions for display
+async function fetchAttachedPositionsForDisplay(positionKey: string, attachedKeys: Set<string>) {
+  try {
+    // Check cache first
+    if (attachedPositionsCache.value.has(positionKey)) {
+      const cached = attachedPositionsCache.value.get(positionKey) || []
+      console.log('📦 Using cached positions:', cached.length)
+      return cached
+    }
+
+    console.log('🔍 Fetching attached positions for key:', positionKey)
+    console.log('🔍 Attached keys:', Array.from(attachedKeys))
+
+    // Parse the position key to get symbol root
+    const parts = positionKey.split('|')
+    if (parts.length < 2) {
+      console.error('❌ Invalid position key format:', positionKey)
+      return []
+    }
+
+    const accountId = parts[0]
+    const symbol = parts[1]
+    const symbolRoot = extractSymbolRoot(symbol)
+    
+    if (!symbolRoot || !accountId) {
+      console.error('❌ Could not extract symbol root or account from key:', positionKey)
+      return []
+    }
+
+    console.log('📊 Extracted - Account:', accountId, 'Symbol Root:', symbolRoot)
+
+    // Fetch all positions with same symbol root from the SAME account
+    const allPositions = await fetchPositionsBySymbolRoot(
+      supabase,
+      symbolRoot,
+      props.userId,
+      accountId  // Pass the account ID to filter by same account
+    )
+    
+    console.log('📊 Fetched positions for symbol root:', symbolRoot, 'count:', allPositions.length)
+
+    // Filter to only include positions that match the attached keys
+    const attachedPositions = allPositions.filter(pos => {
+      const key = getPositionKey(pos)
+      const isIncluded = attachedKeys.has(key)
+      console.log(`${isIncluded ? '✅' : '❌'} Position key: ${key}`)
+      return isIncluded
+    })
+
+    console.log('✅ Filtered to attached positions:', attachedPositions.length)
+    console.log('📋 Attached position details:', attachedPositions.map(p => ({
+      symbol: p.symbol,
+      qty: p.contract_quantity,
+      account: p.legal_entity,
+      key: getPositionKey(p)
+    })))
+
+    // Cache the result
+    if (attachedPositions.length > 0) {
+      attachedPositionsCache.value.set(positionKey, attachedPositions)
+    }
+    
+    return attachedPositions
+  } catch (error) {
+    console.error('❌ Error fetching attached positions:', error)
+    return []
   }
 }
 
@@ -4458,10 +4545,22 @@ watch(asOfDate, () => {
   if (q.refetch) q.refetch()
 })
 
-watch(expandedPositions, () => {
-  if (tabulator) {
-    tabulator.redraw(true)
+watch(expandedPositions, (newVal, oldVal) => {
+  // If position was collapsed, remove it from processing
+  if (oldVal) {
+    oldVal.forEach(key => {
+      if (!newVal.has(key)) {
+        processingPositions.value.delete(key)
+      }
+    })
   }
+}, { deep: true })
+
+// Clear cache when mappings change
+watch([positionPositionsMap, positionTradesMap], () => {
+  console.log('🔄 Clearing attached positions cache and processing flags due to mapping changes')
+  attachedPositionsCache.value.clear()
+  processingPositions.value.clear()
 }, { deep: true })
 </script>
 
@@ -4879,8 +4978,8 @@ watch(expandedPositions, () => {
       <div class="modal-body">
         <div v-if="selectedPositionForPositions" class="position-info">
           <strong>Position:</strong> 
-          <span style="background: #e3f2fd; padding: 2px 8px; border-radius: 4px; margin-left: 8px;">
-            {{ selectedPositionForPositions.symbol }}
+          <span v-for="tag in extractTagsFromSymbol(selectedPositionForPositions.symbol)" :key="tag" class="fi-tag position-tag">
+            {{ tag }}
           </span>
           • (Contract Qty: {{ selectedPositionForPositions.contract_quantity }} . Avg price: ${{ selectedPositionForPositions.avgPrice }})
         </div>
@@ -4935,12 +5034,16 @@ watch(expandedPositions, () => {
                   <span class="trade-side" :class="trade.buySell.toLowerCase()">
                     {{ trade.buySell }}
                   </span>
-                  <strong>{{ trade.symbol }}</strong>
-                  <span style="color: #6c757d;">×{{ trade.quantity }}</span>
-                  <span style="color: #6c757d;">@${{ trade.tradePrice }}</span>
+                  <strong>
+                    <span v-for="tag in extractTagsFromTradesSymbol(trade.symbol)" :key="tag" class="fi-tag position-tag">
+                      {{ tag }}
+                    </span>
+                  </strong>
+                  <span style="color: #6c757d;">Qty: {{ trade.quantity }}</span>
+                  <span style="color: #6c757d;">. Avg price: {{ trade.tradePrice }}</span>
                 </div>
                 <div class="trade-secondary">
-                  <span>{{ formatTradeDate(trade.tradeDate) }}</span>
+                  <span>Trade date: {{ formatTradeDate(trade.tradeDate) }}</span>
                   <span>•</span>
                   <span>{{ trade.assetCategory }}</span>
                   <span v-if="trade.description">• {{ trade.description }}</span>
