@@ -28,6 +28,7 @@ import { useTradeQuery, type Trade } from '@y2kfund/core/trades'
 import flatpickr from 'flatpickr'
 import 'flatpickr/dist/flatpickr.min.css'
 import PositionsPieChart from './components/PositionsPieChart.vue'
+import PositionScreenshots from './components/PositionScreenshots.vue'
 
 const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
@@ -4390,124 +4391,6 @@ const filteredPositions = computed(() => {
     .map((row: any) => row.getData())
 })
 
-// Screenshot functionality
-const showScreenshotsModal = ref(false)
-const screenshots = ref<any[]>([])
-const previewScreenshot = ref<any | null>(null)
-const screenshotsLoading = ref(false)
-const takingScreenshot = ref(false)
-const showScreenshotNameModal = ref(false)
-const screenshotName = ref('')
-const showScreenshotRenameModal = ref(false)
-const screenshotRenameValue = ref('')
-const screenshotRenameId = ref<number | null>(null)
-
-// Open name modal
-function promptScreenshotName() {
-  screenshotName.value = ''
-  showScreenshotNameModal.value = true
-}
-
-// Actual screenshot save (called after user confirms name)
-async function takeScreenshotConfirmed() {
-  if (!tableDiv.value) {
-    showScreenshotNameModal.value = false
-    return
-  }
-  showScreenshotNameModal.value = false
-  takingScreenshot.value = true
-  try {
-    const canvas = await html2canvas(tableDiv.value)
-    const base64 = canvas.toDataURL('image/png')
-
-    const { error } = await supabase
-      .schema('hf')
-      .from('position_screenshots')
-      .insert([{
-        user_id: props.userId,
-        created_at: new Date().toISOString(),
-        image_data: base64.replace(/^data:image\/png;base64,/, ''),
-        name: screenshotName.value ? screenshotName.value.trim() : null,
-        archived: false,
-        meta: {
-          filters: {
-            account: accountFilter.value,
-            assetClass: assetClassFilter.value,
-            symbolTags: symbolTagFilters.value,
-            thesisTags: thesisTagFilters.value,
-            columns: visibleCols.value
-          }
-        }
-      }])
-    if (error) throw error
-
-    showToast('success', 'Screenshot saved!')
-    fetchScreenshots()
-  } catch (err: any) {
-    showToast('error', 'Screenshot failed', err.message)
-  } finally {
-    takingScreenshot.value = false
-  }
-}
-
-// Mark screenshot archived (soft-delete)
-async function archiveScreenshot(id: number) {
-  try {
-    const { error } = await supabase
-      .schema('hf')
-      .from('position_screenshots')
-      .update({ archived: true })
-      .eq('id', id)
-    if (error) throw error
-    showToast('success', 'Screenshot archived')
-    fetchScreenshots()
-  } catch (err: any) {
-    showToast('error', 'Archive failed', err.message)
-  }
-}
-
-// Update fetchScreenshots to ignore archived items
-async function fetchScreenshots() {
-  if (!props.userId) {
-    screenshots.value = []
-    return
-  }
-  screenshotsLoading.value = true
-  const { data, error } = await supabase
-    .schema('hf')
-    .from('position_screenshots')
-    .select('*')
-    .eq('user_id', props.userId)
-    .eq('archived', false)             // <-- only non-archived
-    .order('created_at', { ascending: false })
-    .limit(20)
-  if (!error) screenshots.value = data || []
-  screenshotsLoading.value = false
-}
-
-function openScreenshotRenameModal(shot: any) {
-  screenshotRenameId.value = shot.id
-  screenshotRenameValue.value = shot.name || ''
-  showScreenshotRenameModal.value = true
-}
-
-async function saveScreenshotRename() {
-  if (!screenshotRenameId.value) return
-  try {
-    const { error } = await supabase
-      .schema('hf')
-      .from('position_screenshots')
-      .update({ name: screenshotRenameValue.value })
-      .eq('id', screenshotRenameId.value)
-    if (error) throw error
-    showScreenshotRenameModal.value = false
-    showToast('success', 'Screenshot renamed')
-    fetchScreenshots()
-  } catch (err: any) {
-    showToast('error', 'Rename failed', err.message)
-  }
-}
-
 function formatTradeDate(dateStr: string): string {
   if (!dateStr) return ''
   
@@ -4536,10 +4419,6 @@ function formatTradeDate(dateStr: string): string {
   
   return `${year}-${month}-${day}`
 }
-
-watch(showScreenshotsModal, (open) => {
-  if (open) fetchScreenshots()
-})
 
 watch(asOfDate, () => {
   if (q.refetch) q.refetch()
@@ -4607,11 +4486,21 @@ watch([positionPositionsMap, positionTradesMap], () => {
             📊
           </button>
           
-          <button @click="promptScreenshotName" class="screenshot-btn" title="Take Screenshot" :disabled="takingScreenshot">
-            <span v-if="takingScreenshot" class="screenshot-spinner"></span>
-            <span v-else>📸</span>
-          </button>
-          <button @click="showScreenshotsModal = true" class="screenshot-btn" title="See Old Screenshots">🖼️</button>
+          <PositionScreenshots
+            :user-id="userId"
+            :supabase="supabase"
+            :capture-element="tableDiv"
+            :metadata="{
+              filters: {
+                account: accountFilter,
+                assetClass: assetClassFilter,
+                symbolTags: symbolTagFilters,
+                thesisTags: thesisTagFilters,
+                columns: visibleCols
+              }
+            }"
+            @toast="showToast"
+          />
           
           <button 
             class="thesis-group-btn" 
@@ -4766,106 +4655,6 @@ watch([positionPositionsMap, positionTradesMap], () => {
         <div class="dialog-actions">
           <button @click="saveColRename">Save</button>
           <button @click="cancelColRename">Cancel</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal for old screenshots -->
-    <div v-if="showScreenshotsModal" class="screenshots-modal">
-      <div class="modal-content">
-        <h3 class="screenshots-title">Past Screenshots</h3>
-        <div v-if="screenshotsLoading" class="screenshots-loading">Loading screenshots...</div>
-        <div v-else-if="screenshots.length === 0" class="screenshots-empty">No screenshots yet.</div>
-        <div v-else class="screenshots-list-vertical">
-          <div
-            v-for="shot in screenshots"
-            :key="shot.id"
-            class="screenshot-list-item"
-            @click="previewScreenshot = shot"
-          >
-            <img
-              :src="`data:image/png;base64,${shot.image_data}`"
-              class="screenshot-thumb"
-              :alt="`Screenshot taken at ${new Date(shot.created_at).toLocaleString()}`"
-            />
-            <div class="screenshot-list-meta">
-              <strong v-if="shot.name">{{ shot.name }}</strong>
-              <span v-else style="color:#666; font-style:italic; display:block;">(Unnamed)</span>
-              <span>
-                {{
-                  new Date(shot.created_at).toLocaleString('en-US', {
-                    timeZone: 'America/Los_Angeles',
-                    dateStyle: 'medium',
-                    timeStyle: 'short'
-                  })
-                }}
-                <span style="color:#888; font-size:12px;">PST</span>
-              </span>
-              <div style="display:flex; gap:8px; margin-top:6px;">
-                <a
-                  :href="`data:image/png;base64,${shot.image_data}`"
-                  :download="`positions-screenshot-${shot.id}.png`"
-                  class="screenshot-download-link"
-                  @click.stop
-                >⬇️</a>
-                <button class="screenshot-archive-btn" @click.stop="archiveScreenshot(shot.id)" title="Archive screenshot" style="background:none;border:1px solid #e9ecef;padding:4px 8px;border-radius:6px;cursor:pointer;">
-                  🗄️
-                </button>
-                <button class="screenshot-rename-btn" @click.stop="openScreenshotRenameModal(shot)" title="Rename screenshot" style="background:none;border:1px solid #e9ecef;padding:4px 8px;border-radius:6px;cursor:pointer;">
-                  ✏️
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="dialog-actions">
-          <button @click="showScreenshotsModal = false" class="screenshots-close">Close</button>
-        </div>
-      </div>
-      <!-- Image preview modal -->
-      <div v-if="previewScreenshot" class="screenshot-preview-modal" @click.self="previewScreenshot = null">
-        <div class="screenshot-preview-content">
-          <img :src="`data:image/png;base64,${previewScreenshot.image_data}`" class="screenshot-full-img" />
-          <div class="screenshot-preview-meta">
-            <span>
-              {{
-                new Date(previewScreenshot.created_at).toLocaleString('en-US', {
-                  timeZone: 'America/Los_Angeles',
-                  dateStyle: 'medium',
-                  timeStyle: 'short'
-                })
-              }}
-              <span style="color:#888; font-size:12px;">PST</span>
-            </span>
-            <a
-              :href="`data:image/png;base64,${previewScreenshot.image_data}`"
-              :download="`positions-screenshot-${previewScreenshot.id}.png`"
-              class="screenshot-download-link"
-            >⬇️ Download</a>
-            <button @click="previewScreenshot = null" class="screenshot-preview-close">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="showScreenshotNameModal" class="rename-dialog-backdrop">
-      <div class="rename-dialog">
-        <h3>Name screenshot</h3>
-        <input v-model="screenshotName" placeholder="Enter a name (optional)" />
-        <div class="dialog-actions" style="justify-content:flex-start;">
-          <button @click="takeScreenshotConfirmed">Save & Capture</button>
-          <button @click="showScreenshotNameModal = false">Cancel</button>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="showScreenshotRenameModal" class="rename-dialog-backdrop">
-      <div class="rename-dialog">
-        <h3>Rename Screenshot</h3>
-        <input v-model="screenshotRenameValue" placeholder="Enter new name" />
-        <div class="dialog-actions">
-          <button @click="saveScreenshotRename">Save</button>
-          <button @click="showScreenshotRenameModal = false">Cancel</button>
         </div>
       </div>
     </div>
