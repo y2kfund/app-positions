@@ -939,7 +939,40 @@ function initializeTabulator() {
           if (clickedTag) handleCellFilterClick('symbol', clickedTag)
         }
       },
-      contextMenu: createFetchedAtContextMenu()
+      contextMenu: [
+        {
+          label: (component: any) => {
+            const row = component.getData()
+            if (row?._isThesisGroup) {
+              return 'Not applicable for thesis groups'
+            }
+            const symbolRoot = extractSymbolRoot(row.symbol)
+            return symbolRoot ? `📊 View Details for ${symbolRoot}` : 'View Details'
+          },
+          action: (e: any, cell: any) => {
+            const data = cell.getRow().getData()
+            if (data?._isThesisGroup) return
+            
+            const symbolRoot = extractSymbolRoot(data.symbol)
+            if (symbolRoot) {
+              // Use Vue Router if available, otherwise use window.location
+              if (typeof window !== 'undefined' && (window as any).$router) {
+                (window as any).$router.push(`/instrument-details/${symbolRoot}`)
+              } else {
+                window.location.href = `/instrument-details/${symbolRoot}`
+              }
+            }
+          },
+          disabled: (component: any) => {
+            const row = component.getData()
+            return row?._isThesisGroup || !extractSymbolRoot(row.symbol)
+          }
+        },
+        {
+          separator: true
+        },
+        ...createFetchedAtContextMenu()
+      ]
     },
     {
       title: 'Expiry date',

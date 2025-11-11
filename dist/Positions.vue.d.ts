@@ -9,14 +9,12 @@ declare const _default: import('vue').DefineComponent<PositionsProps, {}, {}, {}
     onMinimize?: (() => any) | undefined;
     onMaximize?: (() => any) | undefined;
 }>, {
+    userId: string | null;
     accountId: string;
     highlightPnL: boolean;
     showHeaderLink: boolean;
-    userId: string | null;
     window: string | null;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, false, {
-    columnsBtnRef: HTMLButtonElement;
-    columnsPopupRef: HTMLDivElement;
     tableDiv: HTMLDivElement;
 }, any>;
 export default _default;
