@@ -380,6 +380,11 @@ defineExpose({
   overflow: hidden;
 }
 
+.settings-popup input,
+.settings-popup button {
+  width: auto;
+}
+
 .settings-section {
   padding: 1rem;
 }

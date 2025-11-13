@@ -18210,7 +18210,7 @@ const zw = { class: "screenshot-controls" }, Gw = ["disabled"], Ww = {
       ])) : xe("", !0)
     ]));
   }
-}), Vb = /* @__PURE__ */ $s(Nb, [["__scopeId", "data-v-1c8c0a26"]]), zb = { class: "positions-card" }, Gb = {
+}), Vb = /* @__PURE__ */ $s(Nb, [["__scopeId", "data-v-fe5891df"]]), zb = { class: "positions-card" }, Gb = {
   key: 0,
   class: "loading"
 }, Wb = {
