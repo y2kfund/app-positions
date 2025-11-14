@@ -3739,15 +3739,27 @@ async function saveAttachedPositions() {
 }
 
 const filteredTrades = computed(() => {
-  if (!tradesQuery.data.value) return []
+  if (!tradesQuery.data.value || !selectedPositionForTrades.value) return []
   
+  // Get the root symbol from the selected position
+  const positionRootSymbol = extractSymbolRoot(selectedPositionForTrades.value.symbol)
+  if (!positionRootSymbol) return []
+  
+  // Filter trades by root symbol first
+  let trades = tradesQuery.data.value.filter(trade => {
+    const tradeRootSymbol = extractSymbolRoot(trade.symbol)
+    return tradeRootSymbol === positionRootSymbol
+  })
+
+  console.log(`Filtered trades by root symbol (${positionRootSymbol}):`, trades.length, 'trades found')
+
   const query = tradeSearchQuery.value.toLowerCase().trim()
-  if (!query) return tradesQuery.data.value
+  if (!query) return trades  // ✅ Return filtered trades, not tradesQuery.data.value
   
   // Split by comma and clean up each term
   const searchTerms = query.split(',').map(term => term.trim()).filter(Boolean)
   
-  return tradesQuery.data.value.filter(trade => {
+  return trades.filter(trade => {  // ✅ Filter from trades, not tradesQuery.data.value
     const symbolTags = extractTagsFromTradesSymbol(trade.symbol).map(tag => tag.toLowerCase())
     
     // Check if ALL search terms match (AND logic)
