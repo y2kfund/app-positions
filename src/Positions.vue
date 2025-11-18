@@ -4330,7 +4330,7 @@ watch([positionPositionsMap, positionTradesMap], () => {
 </script>
 
 <template>
-  <div class="positions-card">
+  <div class="positions-card dashboard-container">
     <div v-if="q.isLoading.value" class="loading">
       <div class="loading-spinner"></div>
       Loading positions...
