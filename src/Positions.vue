@@ -2385,7 +2385,26 @@ function initializeTabulator() {
       },
       formatter: (cell: any) => {
         const value = cell.getValue()
-        return value === null || value === undefined ? '-' : formatNumber(value)
+        if (value === null || value === undefined) return '-'
+        
+        const row = cell.getRow().getData()
+        const symbol = row.symbol
+        const qty = row.qty
+        
+        // Add directional symbol based on option type and position (sold options only)
+        let prefix = ''
+        if (symbol && qty < 0) { // Only for sold options (negative qty)
+          const tags = extractTagsFromSymbol(symbol)
+          const right = tags[3] // Fourth tag is the right (P or C)
+          
+          if (right === 'P') {
+            prefix = '> ' // PUT sold - stock must stay above BE price for profit
+          } else if (right === 'C') {
+            prefix = '< ' // CALL sold - stock must stay below BE price for profit
+          }
+        }
+        
+        return prefix + formatNumber(value)
       },
       contextMenu: createFetchedAtContextMenu()
     },
