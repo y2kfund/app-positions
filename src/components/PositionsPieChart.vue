@@ -35,6 +35,10 @@ const totalMarketValue = computed(() =>
   chartData.value.reduce((sum, item) => sum + Math.abs(item.value), 0)
 )
 
+const totalCalculatedMarketValue = computed(() => 
+  chartData.value.reduce((sum, item) => sum + item.value, 0)
+)
+
 // Generate colors for each slice
 const colors = [
   '#007bff', '#28a745', '#dc3545', '#ffc107', '#17a2b8',
@@ -217,7 +221,7 @@ function handleMouseLeave() {
               text-anchor="middle"
               class="total-value"
             >
-              {{ formatCurrency(totalMarketValue) }}
+              {{ formatCurrency(totalCalculatedMarketValue) }}
             </text>
           </svg>
         </div>
@@ -237,7 +241,7 @@ function handleMouseLeave() {
                     <span v-for="tag in extractTagsFromSymbol(item.symbol)" :key="tag" class="tag fi-tag">{{ tag }}</span>
                 </div>
                 <div class="legend-value">
-                    {{ formatCurrency(Math.abs(item.value)) }}
+                    {{ formatCurrency(item.value) }}
                     <span class="legend-percentage">({{ getPercentage(item.value) }})</span>
                 </div>
             </div>
