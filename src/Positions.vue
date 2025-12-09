@@ -30,7 +30,7 @@ import 'flatpickr/dist/flatpickr.min.css'
 import PositionsPieChart from './components/PositionsPieChart.vue'
 import PositionScreenshots from './components/PositionScreenshots.vue'
 import PositionSettings from './components/PositionSettings.vue'
-import { useUrlState, type ColumnField, type ColumnRenames } from './composables'
+import { useUrlState, useThesisConnection, type ColumnField, type ColumnRenames } from './composables'
 
 const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
@@ -304,44 +304,7 @@ function formatExpiryFromYyMmDd(code: string): string {
 const supabase = useSupabase()
 const queryClient = useQueryClient()
 
-async function updateThesisConnection(symbolRoot: string, thesisId: string | null) {
-  try {
-    if (thesisId) {
-      const { error } = await supabase
-        .schema('hf')
-        .from('positionsAndThesisConnection')
-        .upsert({
-          symbol_root: symbolRoot,
-          thesis_id: thesisId,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'symbol_root,thesis_id'
-        })
-      if (error) throw error
-    } else {
-      const { error } = await supabase
-        .schema('hf')
-        .from('positionsAndThesisConnection')
-        .delete()
-        .eq('symbol_root', symbolRoot)
-      if (error) throw error
-    }
-    
-    // Invalidate queries and wait for them to complete
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ['positions'] }),
-      queryClient.invalidateQueries({ queryKey: ['thesisConnections'] })
-    ])
-    
-    showToast('success', 'Thesis Updated', `All ${symbolRoot} positions have been updated`)
-  } catch (error: any) {
-    console.error('Error updating thesis connection:', error)
-    showToast('error', 'Error', `Failed to update thesis: ${error.message}`)
-    throw error
-  }
-}
-
-// Toast system
+// Toast system (defined early so it can be passed to thesis connection)
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 interface Toast {
   id: number
@@ -363,6 +326,16 @@ function removeToast(id: number) {
   const index = toasts.value.findIndex(t => t.id === id)
   if (index !== -1) toasts.value.splice(index, 1)
 }
+
+// Initialize thesis connection composable
+const thesisConnection = useThesisConnection({
+  supabase,
+  queryClient,
+  numericFields,
+  showToast
+})
+
+const { updateThesisConnection } = thesisConnection
 
 // Fetch latest price for a specific conid and undConid
 async function fetchLatestPriceForConid(rowData: any) {
@@ -3041,205 +3014,15 @@ const groupedHierarchicalData = computed(() => {
     return sourcePositions.value || []
   }
 
-  // --- ADD THIS BLOCK ---
-  let positionsWithThesis = sourcePositions.value.filter(pos => pos.thesis && pos.thesis.id)
-
-  // Apply account filter
-  if (accountFilter.value) {
-    positionsWithThesis = positionsWithThesis.filter(position => {
-      const accountVal = typeof position.legal_entity === 'object' && position.legal_entity !== null
-        ? (position.legal_entity.name || position.legal_entity.id)
-        : position.legal_entity
-      return accountVal === accountFilter.value
-    })
-  }
-  // --- END ---
-
-  // Apply symbol and thesis filters
-  positionsWithThesis = positionsWithThesis.filter(position => {
-    if (symbolTagFilters.value.length > 0) {
-      const symbolText = position.symbol
-      if (!symbolText) return false
-      const tags = extractTagsFromSymbol(symbolText)
-      const symbolPass = symbolTagFilters.value.every(selectedTag => tags.includes(selectedTag))
-      if (!symbolPass) return false
-    }
-
-    if (thesisTagFilters.value.length > 0) {
-      const thesis = position.thesis
-      if (!thesis || !thesis.title) return false
-      const thesisPass = thesisTagFilters.value.includes(thesis.title)
-      if (!thesisPass) return false
-    }
-
-    return true
+  return thesisConnection.createGroupedHierarchicalData({
+    sourcePositions: sourcePositions.value,
+    thesisData: thesisQuery.data.value,
+    groupByThesis: groupByThesis.value,
+    accountFilter: accountFilter.value,
+    symbolTagFilters: symbolTagFilters.value,
+    thesisTagFilters: thesisTagFilters.value,
+    extractTagsFromSymbol
   })
-  
-  // Build thesis hierarchy map
-  const thesisMap = new Map<string, any>()
-  ;(thesisQuery.data.value || []).forEach((t: Thesis) => {
-    thesisMap.set(t.id, { ...t })
-  })
-  
-  // Group positions by thesis
-  const positionsByThesis = new Map<string, Position[]>()
-  positionsWithThesis.forEach(position => {
-    const thesisId = position.thesis.id
-    if (!positionsByThesis.has(thesisId)) {
-      positionsByThesis.set(thesisId, [])
-    }
-    positionsByThesis.get(thesisId)!.push(position)
-  })
-  
-  // Build all thesis groups (including parents without direct positions)
-  const allThesisGroups = new Map<string, any>()
-  
-  // Helper function to create a thesis group
-  function createThesisGroup(thesisId: string, positions: Position[] = []) {
-    const thesis = thesisMap.get(thesisId)
-    if (!thesis) return null
-    
-    const thesisGroup = {
-      id: `thesis-${thesisId}`,
-      _isThesisGroup: true,
-      _isParentThesis: !thesis.parent_thesis_id,
-      thesis,
-      symbol: thesis.parent_thesis_id 
-        ? `  ├─ 📁 ${thesis.title}` 
-        : `📊 PARENT: ${thesis.title}`,
-      legal_entity: `${positions.length} position${positions.length !== 1 ? 's' : ''}`,
-      _children: positions.map(p => ({
-        ...p,
-        id: `pos-${p.conid}-${p.internal_account_id}`
-      }))
-    }
-    
-    // Calculate totals for the thesis group from direct positions
-    for (const field of numericFields) {
-      ;(thesisGroup as any)[field] = positions.reduce((sum: number, pos: any) => {
-        const value = pos[field]
-        return sum + (typeof value === 'number' && Number.isFinite(value) ? value : 0)
-      }, 0)
-    }
-    
-    return thesisGroup
-  }
-  
-  // Helper function to aggregate child values into parent
-  function aggregateChildValues(parentGroup: any, childGroup: any) {
-    for (const field of numericFields) {
-      const parentValue = (parentGroup as any)[field] || 0
-      const childValue = (childGroup as any)[field] || 0
-      ;(parentGroup as any)[field] = parentValue + childValue
-    }
-  }
-  
-  // First pass: Create groups for all theses that have positions OR have children with positions
-  positionsByThesis.forEach((positions, thesisId) => {
-    const group = createThesisGroup(thesisId, positions)
-    if (group) {
-      allThesisGroups.set(thesisId, group)
-    }
-  })
-  
-  // Second pass: Ensure parent thesis exist (even without direct positions)
-  const thesisIdsWithData = new Set(allThesisGroups.keys())
-  
-  function ensureParentExists(thesisId: string): void {
-    const thesis = thesisMap.get(thesisId)
-    if (!thesis || !thesis.parent_thesis_id) return
-    
-    const parentId = thesis.parent_thesis_id
-    
-    // If parent doesn't exist, create it
-    if (!allThesisGroups.has(parentId)) {
-      const parentGroup = createThesisGroup(parentId, [])
-      if (parentGroup) {
-        allThesisGroups.set(parentId, parentGroup)
-      }
-    }
-    
-    // Recursively ensure grandparents exist
-    ensureParentExists(parentId)
-  }
-  
-  // Ensure all parent theses exist
-  thesisIdsWithData.forEach(thesisId => {
-    ensureParentExists(thesisId)
-  })
-  
-  // Third pass: Build the hierarchy and aggregate values
-  const childThesisMap = new Map<string, any[]>()
-  
-  allThesisGroups.forEach((group, thesisId) => {
-    const thesis = thesisMap.get(thesisId)
-    if (!thesis) return
-    
-    if (thesis.parent_thesis_id && allThesisGroups.has(thesis.parent_thesis_id)) {
-      // This is a child thesis with an existing parent
-      if (!childThesisMap.has(thesis.parent_thesis_id)) {
-        childThesisMap.set(thesis.parent_thesis_id, [])
-      }
-      childThesisMap.get(thesis.parent_thesis_id)!.push(group)
-    }
-  })
-  
-  // Fourth pass: Attach children to parents and aggregate values
-  const processedParents = new Set<string>()
-  
-  function attachChildrenAndAggregate(parentId: string): void {
-    if (processedParents.has(parentId)) return
-    processedParents.add(parentId)
-    
-    const parentGroup = allThesisGroups.get(parentId)
-    if (!parentGroup) return
-    
-    const children = childThesisMap.get(parentId) || []
-    
-    // First, recursively process all children
-    children.forEach(child => {
-      attachChildrenAndAggregate(child.thesis.id)
-    })
-    
-    // Then attach children and aggregate their values
-    if (children.length > 0) {
-      // Update the position count to include child positions
-      const totalPositions = parentGroup._children.length + 
-        children.reduce((sum, child) => {
-          const childPositionCount = child.legal_entity.match(/\d+/)?.[0] || '0'
-          return sum + parseInt(childPositionCount)
-        }, 0)
-      
-      parentGroup.legal_entity = `${totalPositions} position${totalPositions !== 1 ? 's' : ''}`
-      
-      // Aggregate child values into parent
-      children.forEach(child => {
-        aggregateChildValues(parentGroup, child)
-      })
-      
-      // Add children to parent
-      parentGroup._children = [...parentGroup._children, ...children]
-    }
-  }
-  
-  // Process all root theses (and their descendants)
-  allThesisGroups.forEach((group, thesisId) => {
-    const thesis = thesisMap.get(thesisId)
-    if (thesis && !thesis.parent_thesis_id) {
-      attachChildrenAndAggregate(thesisId)
-    }
-  })
-  
-  // Fifth pass: Collect root thesis groups
-  const rootThesisGroups: any[] = []
-  allThesisGroups.forEach((group, thesisId) => {
-    const thesis = thesisMap.get(thesisId)
-    if (thesis && !thesis.parent_thesis_id) {
-      rootThesisGroups.push(group)
-    }
-  })
-  
-  return rootThesisGroups
 })
 
 // Update filters to work with tree structure
