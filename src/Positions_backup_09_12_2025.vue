@@ -30,7 +30,6 @@ import 'flatpickr/dist/flatpickr.min.css'
 import PositionsPieChart from './components/PositionsPieChart.vue'
 import PositionScreenshots from './components/PositionScreenshots.vue'
 import PositionSettings from './components/PositionSettings.vue'
-import { useUrlState, type ColumnField, type ColumnRenames } from './composables'
 
 const props = withDefaults(defineProps<PositionsProps>(), {
   accountId: 'demo',
@@ -111,7 +110,8 @@ const groupByThesis = ref(false)
 type ActiveFilter = { field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'; value: string }
 const activeFilters = ref<ActiveFilter[]>([])
 
-// Column visibility - ColumnField and ColumnRenames types imported from composables
+// Column visibility
+type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' | 'multiplier' | 'contract_quantity' | 'accounting_quantity' | 'avgPrice' | 'price' | 'market_price' | 'instrument_market_price' | 'market_value' | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry' | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct' | 'computed_be_price' | 'thesis' | 'maintenance_margin_change' | 'symbol_comment' | 'weighted_avg_price'
 const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'legal_entity', label: 'Account' },
   { field: 'thesis', label: 'Thesis' },
@@ -139,31 +139,7 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'maintenance_margin_change', label: 'Maintenance Margin Change' }
 ]
 
-// Initialize URL state composable
-const hiddenByDefault: ColumnField[] = ['asset_class', 'conid', 'undConid', 'multiplier', 'contract_quantity', 'accounting_quantity']
-const urlState = useUrlState({ windowId, allColumnOptions, hiddenByDefault })
-
-// Destructure URL state functions
-const {
-  parseColumnRenamesFromUrl,
-  writeColumnRenamesToUrl,
-  parseVisibleColsFromUrl,
-  writeVisibleColsToUrl,
-  parseColumnWidthsFromUrl,
-  writeColumnWidthsToUrl,
-  parseSortFromUrl,
-  writeSortToUrl,
-  clearSortFromUrl,
-  parseFiltersFromUrl,
-  writeFiltersToUrl,
-  writeAccountFilterToUrl,
-  clearFiltersFromUrl,
-  parseGroupByThesisFromUrl,
-  writeGroupByThesisToUrl,
-  parseAppNameFromUrl,
-  writeAppNameToUrl
-} = urlState
-
+type ColumnRenames = Partial<Record<ColumnField, string>>
 const columnRenames = ref<ColumnRenames>({})
 
 const symbolCommentMap = computed(() => {
@@ -206,7 +182,90 @@ function togglePositionExpansion(positionKey: string) {
   }
 }
 
+// --- Helpers for URL sync of column renames ---
+function parseColumnRenamesFromUrl(): ColumnRenames {
+  const url = new URL(window.location.href)
+  const param = url.searchParams.get(`${windowId}_position_col_renames`)
+  if (!param) return {}
+  try {
+    const pairs = param.split('-and-')
+    const renames: ColumnRenames = {}
+    pairs.forEach(pair => {
+      const [field, ...rest] = pair.split(':')
+      if (field && rest.length) {
+        renames[field as ColumnField] = decodeURIComponent(rest.join(':'))
+      }
+    })
+    return renames
+  } catch {
+    return {}
+  }
+}
+function writeColumnRenamesToUrl(renames: ColumnRenames) {
+  const url = new URL(window.location.href)
+  const pairs = Object.entries(renames)
+    .filter(([_, name]) => name && name.trim())
+    .map(([field, name]) => `${field}:${encodeURIComponent(name)}`)
+    .join('-and-')
+  if (pairs) {
+    url.searchParams.set(`${windowId}_position_col_renames`, pairs)
+  } else {
+    url.searchParams.delete(`${windowId}_position_col_renames`)
+  }
+  window.history.replaceState({}, '', url.toString())
+}
+
+function parseVisibleColsFromUrl(): ColumnField[] {
+  const url = new URL(window.location.href)
+  const colsParam = url.searchParams.get(`${windowId}_position_cols`)
+  if (!colsParam) {
+    return allColumnOptions
+      .map(c => c.field)
+      .filter(field => !['asset_class', 'conid', 'undConid', 'multiplier', 'qty', 'contract_quantity', 'accounting_quantity'].includes(field))
+  }
+  const fromUrl = colsParam.split('-and-').map(s => s.trim()).filter(Boolean) as ColumnField[]
+  const valid = new Set(allColumnOptions.map(c => c.field))
+  return fromUrl.filter(c => valid.has(c))
+}
+
 const visibleCols = ref<ColumnField[]>(parseVisibleColsFromUrl())
+
+// Add URL parameter helpers for column widths
+function parseColumnWidthsFromUrl(): Record<string, number> {
+  const url = new URL(window.location.href)
+  const widthsParam = url.searchParams.get(`${windowId}_position_col_widths`)
+  if (!widthsParam) return {}
+  
+  try {
+    const pairs = widthsParam.split('-and-')
+    const widths: Record<string, number> = {}
+    pairs.forEach(pair => {
+      const [field, width] = pair.split(':')
+      if (field && width) {
+        widths[field] = parseInt(width)
+      }
+    })
+    return widths
+  } catch (error) {
+    console.warn('Error parsing column widths from URL:', error)
+    return {}
+  }
+}
+
+function writeColumnWidthsToUrl(widths: Record<string, number>) {
+  const url = new URL(window.location.href)
+  const widthPairs = Object.entries(widths)
+    .filter(([_, width]) => width > 0)
+    .map(([field, width]) => `${field}:${width}`)
+    .join('-and-')
+  
+  if (widthPairs) {
+    url.searchParams.set(`${windowId}_position_col_widths`, widthPairs)
+  } else {
+    url.searchParams.delete(`${windowId}_position_col_widths`)
+  }
+  window.history.replaceState({}, '', url.toString())
+}
 
 // Store column widths
 const columnWidths = ref<Record<string, number>>(parseColumnWidthsFromUrl())
@@ -595,6 +654,23 @@ function hideColumnFromHeader(field: ColumnField) {
       initializeTabulator()
     })
   }
+}
+
+function writeSortToUrl(field: string, dir: 'asc' | 'desc') {
+  const url = new URL(window.location.href)
+  url.searchParams.set(`${windowId}_positions_sort`, `${field}:${dir}`)
+  window.history.replaceState({}, '', url.toString())
+}
+
+function parseSortFromUrl(): { field: string, dir: 'asc' | 'desc' } | null {
+  const url = new URL(window.location.href)
+  const param = url.searchParams.get(`${windowId}_positions_sort`)
+  if (!param) return null
+  const [field, dir] = param.split(':')
+  if (field && (dir === 'asc' || dir === 'desc')) {
+    return { field, dir }
+  }
+  return null
 }
 
 function parseDate(val: any): number | null {
@@ -3876,7 +3952,7 @@ watch(visibleCols, async (cols) => {
 }, { deep: true })
 
 watch(symbolTagFilters, () => {
-  syncFiltersToUrl()
+  writeFiltersToUrl()
   if (tabulator && isTabulatorReady.value) {
     updateFilters()
     tabulator.redraw(true)
@@ -3884,7 +3960,7 @@ watch(symbolTagFilters, () => {
 }, { deep: true })
 
 watch(thesisTagFilters, () => {
-  syncFiltersToUrl()
+  writeFiltersToUrl()
   updateFilters()
   if (tabulator) {
     tabulator.redraw(true)
@@ -3892,7 +3968,7 @@ watch(thesisTagFilters, () => {
 }, { deep: true })
 
 watch(assetClassFilter, () => {
-  syncFiltersToUrl()
+  writeFiltersToUrl()
   updateFilters()
   if (tabulator) tabulator.redraw(true)
 })
@@ -3908,17 +3984,89 @@ watch(groupByThesis, async (value) => {
   // Do NOT call updateFilters() here!
 })
 
+// Add URL synchronization for column visibility
+function writeVisibleColsToUrl(cols: ColumnField[]) {
+  const url = new URL(window.location.href)
+  url.searchParams.set(`${windowId}_position_cols`, cols.join('-and-'))
+  window.history.replaceState({}, '', url.toString())
+}
+
+// Add URL synchronization for filters
+function parseFiltersFromUrl(): { symbol?: string; asset_class?: string; legal_entity?: string; thesis?: string } {
+  const url = new URL(window.location.href)
+  const symbolParam = url.searchParams.get(`${windowId}_all_cts_fi`)
+  const symbol = symbolParam ? symbolParam.split('-and-').join(',') : undefined
+  const asset = url.searchParams.get(`${windowId}_fac`) || undefined
+  const account = url.searchParams.get(`all_cts_clientId`) || undefined
+  const thesisParam = url.searchParams.get(`${windowId}_all_cts_thesis`)
+  const thesis = thesisParam ? thesisParam.split('-and-').join(',') : undefined
+  return { symbol, asset_class: asset, legal_entity: account, thesis }
+}
+
+function writeFiltersToUrl() {
+  const url = new URL(window.location.href)
+  
+  // Handle symbol filters
+  if (symbolTagFilters.value.length > 0) {
+    url.searchParams.set(`${windowId}_all_cts_fi`, symbolTagFilters.value.join('-and-'))
+  } else {
+    url.searchParams.delete(`${windowId}_all_cts_fi`)
+  }
+  
+  // Handle thesis filters
+  if (thesisTagFilters.value.length > 0) {
+    url.searchParams.set(`${windowId}_all_cts_thesis`, thesisTagFilters.value.join('-and-'))
+  } else {
+    url.searchParams.delete(`${windowId}_all_cts_thesis`)
+  }
+
+  // --- ADD THIS BLOCK ---
+  if (assetClassFilter.value) {
+    url.searchParams.set(`${windowId}_fac`, assetClassFilter.value)
+  } else {
+    url.searchParams.delete(`${windowId}_fac`)
+  }
+  // --- END ---
+
+  window.history.replaceState({}, '', url.toString())
+}
+
+// Add URL synchronization for group by thesis
+function parseGroupByThesisFromUrl(): boolean {
+  const url = new URL(window.location.href)
+  return url.searchParams.get(`${windowId}_group_by_thesis`) === 'true'
+}
+
+function writeGroupByThesisToUrl(isGrouped: boolean) {
+  const url = new URL(window.location.href)
+  if (isGrouped) {
+    url.searchParams.set(`${windowId}_group_by_thesis`, 'true')
+  } else {
+    url.searchParams.delete(`${windowId}_group_by_thesis`)
+  }
+  window.history.replaceState({}, '', url.toString())
+}
+
+// Initialize group by thesis from URL
+//const groupByThesis = ref(parseGroupByThesisFromUrl())
+
 // Lifecycle
 const eventBus = inject<any>('eventBus')
 const appName = ref('Positions')
 
-// Helper to sync filters to URL using composable
-function syncFiltersToUrl() {
-  writeFiltersToUrl({
-    symbolTagFilters: symbolTagFilters.value,
-    thesisTagFilters: thesisTagFilters.value,
-    assetClassFilter: assetClassFilter.value
-  })
+function parseAppNameFromUrl(): string {
+  const url = new URL(window.location.href)
+  return url.searchParams.get(`${windowId}_positions_app_name`) || 'Positions'
+}
+
+function writeAppNameToUrl(name: string) {
+  const url = new URL(window.location.href)
+  if (name && name.trim() && name !== 'Positions') {
+    url.searchParams.set(`${windowId}_positions_app_name`, name.trim())
+  } else {
+    url.searchParams.delete(`${windowId}_positions_app_name`)
+  }
+  window.history.replaceState({}, '', url.toString())
 }
 
 function handleEscKey(event: KeyboardEvent) {
