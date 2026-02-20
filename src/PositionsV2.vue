@@ -336,6 +336,7 @@ initializeTabulator = function() {
       contextMenu: createFetchedAtContextMenu()
     },
     { title: 'Name', field: 'symbol', minWidth: 120, width: columnWidths.value['symbol'] || undefined,
+      cssClass: 'col-group-start',
       visible: visibleCols.value.includes('symbol'), headerFilter: 'input', headerFilterPlaceholder: 'Filter symbol',
       titleFormatter: () => `<div class="header-with-close"><span>${getColLabel('symbol')}</span></div>`,
       formatter: (cell: any) => {
@@ -375,6 +376,7 @@ initializeTabulator = function() {
       contextMenu: createFetchedAtContextMenu()
     },
     { title: 'Premium Received', field: 'computed_cash_flow_on_entry', minWidth: 80, width: columnWidths.value['computed_cash_flow_on_entry'] || undefined, hozAlign: 'right',
+      cssClass: 'col-group-end',
       visible: visibleCols.value.includes('computed_cash_flow_on_entry'), headerFilter: 'input', headerFilterPlaceholder: 'e.g. >1000', headerFilterFunc: numericHeaderFilter,
       bottomCalc: 'sum',
       bottomCalcFormatter: (cell: any) => { const v = cell.getValue(); return `<span class="${v > 0 ? 'pnl-positive' : v < 0 ? 'pnl-negative' : 'pnl-zero'}">${formatCurrency(v)}</span>` },
@@ -399,7 +401,13 @@ initializeTabulator = function() {
         return `<span style="${style}">${days}d</span>`
       },
       sorter: (a: any, b: any, aRow: any, bRow: any) => {
-        const getDte = (d: any) => { if (d.asset_class !== 'OPT') return 99999; const t = extractTagsFromSymbol(d.symbol); if (!t[1]) return 99999; const e = new Date(t[1]); return Math.ceil((e.getTime() - Date.now()) / 86400000) }
+        const getDte = (d: any) => {
+          if (d.asset_class !== 'OPT') return Infinity
+          const t = extractTagsFromSymbol(d.symbol)
+          if (!t[1]) return Infinity
+          const days = Math.ceil((new Date(t[1]).getTime() - Date.now()) / 86400000)
+          return days < 0 ? Infinity : days  // expired → always last in ASC
+        }
         return getDte(aRow.getData()) - getDte(bRow.getData())
       },
       contextMenu: createFetchedAtContextMenu()
@@ -422,11 +430,12 @@ initializeTabulator = function() {
     },
     // P&L Close Now
     { title: 'Close Now', field: 'unrealized_pnl', minWidth: 80, width: columnWidths.value['unrealized_pnl'] || undefined, hozAlign: 'right',
+      cssClass: 'col-group-start',
       visible: visibleCols.value.includes('unrealized_pnl'), headerFilter: 'input', headerFilterPlaceholder: 'e.g. >0', headerFilterFunc: numericHeaderFilter,
       bottomCalc: 'sum',
-      bottomCalcFormatter: (cell: any) => { const v = cell.getValue(); return `<span class="${v > 0 ? 'pnl-positive' : v < 0 ? 'pnl-negative' : 'pnl-zero'}">${formatCurrency(v)}</span>` },
+      bottomCalcFormatter: (cell: any) => { const v = cell.getValue(); return `<span class="${v > 0 ? 'pnl-positive' : v < 0 ? 'pnl-negative' : 'pnl-zero'}">${formatCurrency(Math.round(v))}</span>` },
       titleFormatter: () => `<div class="header-with-close"><span>${getColLabel('unrealized_pnl')}</span></div>`,
-      formatter: (cell: any) => { const v = cell.getValue(); return `<span class="${v > 0 ? 'pnl-positive' : v < 0 ? 'pnl-negative' : 'pnl-zero'}">${formatCurrency(v)}</span>` },
+      formatter: (cell: any) => { const v = cell.getValue(); return `<span class="${v > 0 ? 'pnl-positive' : v < 0 ? 'pnl-negative' : 'pnl-zero'}">${formatCurrency(Math.round(v))}</span>` },
       contextMenu: createFetchedAtContextMenu()
     },
     // P&L Wait Till Expiry (BE Price P&L)
@@ -453,12 +462,15 @@ initializeTabulator = function() {
       formatter: (cell: any) => {
         const v = cell.getValue()
         if (v == null) return '<span style="color:#aaa;font-style:italic;">N/A</span>'
-        return `<span class="${v > 0 ? 'pnl-positive' : v < 0 ? 'pnl-negative' : 'pnl-zero'}">${formatCurrency(v)}</span>`
+        return `<span class="${v > 0 ? 'pnl-positive' : v < 0 ? 'pnl-negative' : 'pnl-zero'}">${formatCurrency(Math.round(v))}</span>`
       },
-      bottomCalc: false, contextMenu: createFetchedAtContextMenu()
+      bottomCalc: 'sum',
+      bottomCalcFormatter: (cell: any) => { const v = cell.getValue(); return `<span class="${v > 0 ? 'pnl-positive' : v < 0 ? 'pnl-negative' : 'pnl-zero'}">${formatCurrency(Math.round(v))}</span>` },
+      contextMenu: createFetchedAtContextMenu()
     },
     // Unrealized P&L %
     { title: 'Unrealized %', field: 'unrealized_pnl_pct', minWidth: 80, width: columnWidths.value['unrealized_pnl_pct'] || 100, hozAlign: 'right',
+      cssClass: 'col-group-end',
       visible: visibleCols.value.includes('unrealized_pnl_pct'), headerFilter: 'input', headerFilterPlaceholder: 'e.g. >50', headerFilterFunc: numericHeaderFilter,
       titleFormatter: () => `<div class="header-with-close"><span>${getColLabel('unrealized_pnl_pct')}</span></div>`,
       mutator: (value: any, data: any) => {
@@ -475,8 +487,9 @@ initializeTabulator = function() {
       },
       bottomCalc: false, contextMenu: createFetchedAtContextMenu()
     },
-    // Break Even Price
+    // Break Even Price (first col of Underlying Instrument group)
     { title: 'Break Even Price', field: 'computed_be_price', minWidth: 80, width: columnWidths.value['computed_be_price'] || undefined, hozAlign: 'right',
+      cssClass: 'col-group-start',
       visible: visibleCols.value.includes('computed_be_price'), headerFilter: 'input', headerFilterPlaceholder: 'e.g. >100', headerFilterFunc: numericHeaderFilter,
       titleFormatter: () => `<div class="header-with-close"><span>${getColLabel('computed_be_price')}</span></div>`,
       formatter: (cell: any) => {
@@ -495,8 +508,9 @@ initializeTabulator = function() {
       formatter: (cell: any) => { const v = cell.getValue(); return v != null ? formatCurrency(v) : '<span style="color:#aaa;">-</span>' },
       contextMenu: createFetchedAtContextMenu()
     },
-    // UL Per Unit Price at Entry (N/A)
+    // UL Per Unit Price at Entry (N/A — last col of Underlying Instrument group)
     { title: 'Entry Price', field: 'ul_entry_price', minWidth: 80, width: columnWidths.value['ul_entry_price'] || 100, hozAlign: 'right',
+      cssClass: 'col-group-end',
       visible: visibleCols.value.includes('ul_entry_price'),
       titleFormatter: () => `<div class="header-with-close"><span>${getColLabel('ul_entry_price')}</span></div>`,
       formatter: () => '<span style="color:#aaa;font-style:italic;">N/A</span>', bottomCalc: false
@@ -588,7 +602,7 @@ initializeTabulator = function() {
     movableColumns: true,
     resizableColumns: true,
     headerSortClickElement: 'icon',
-    initialSort: parseSortFromUrl() ? [parseSortFromUrl()!] : [],
+    initialSort: parseSortFromUrl() ? [parseSortFromUrl()!] : [{ column: 'dte', dir: 'asc' }],
     placeholder: 'No positions to display',
   })
 
@@ -938,6 +952,16 @@ function hideColumnFromHeader(field: ColumnField) {
 <style>
 @import 'tabulator-tables/dist/css/tabulator_modern.min.css';
 @import './styles/position-style.css';
+
+/* Column group boundary separators */
+.tabulator .tabulator-cell.col-group-start,
+.tabulator .tabulator-col.col-group-start {
+  border-left: 2px solid #4a90d9 !important;
+}
+.tabulator .tabulator-cell.col-group-end,
+.tabulator .tabulator-col.col-group-end {
+  border-right: 2px solid #4a90d9 !important;
+}
 </style>
 
 <style scoped>
