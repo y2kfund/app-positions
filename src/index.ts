@@ -1,4 +1,4 @@
-import Positions from './Positions.vue'
+import Positions from './PositionsV2.vue'
 
 export { Positions }
 export default Positions

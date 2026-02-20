@@ -12,14 +12,16 @@
  */
 
 // Types
-export type ColumnField = 
-  | 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid' 
-  | 'multiplier' | 'contract_quantity' | 'accounting_quantity' | 'avgPrice' 
-  | 'price' | 'market_price' | 'instrument_market_price' | 'market_value' 
-  | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry' 
-  | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct' 
-  | 'computed_be_price' | 'thesis' | 'maintenance_margin_change' 
+export type ColumnField =
+  | 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 'undConid'
+  | 'multiplier' | 'contract_quantity' | 'accounting_quantity' | 'avgPrice'
+  | 'price' | 'market_price' | 'instrument_market_price' | 'market_value'
+  | 'unrealized_pnl' | 'be_price_pnl' | 'computed_cash_flow_on_entry'
+  | 'computed_cash_flow_on_exercise' | 'entry_exercise_cash_flow_pct'
+  | 'computed_be_price' | 'thesis' | 'maintenance_margin_change'
   | 'symbol_comment' | 'weighted_avg_price' | 'expiry_date'
+  | 'dte' | 'delta' | 'unrealized_pnl_pct'
+  | 'ul_entry_price' | 'ai_recommendation'
 
 export type ColumnRenames = Partial<Record<ColumnField, string>>
 
@@ -109,7 +111,7 @@ export function useUrlState(options: UseUrlStateOptions) {
     const url = new URL(window.location.href)
     const widthsParam = url.searchParams.get(`${windowId}_position_col_widths`)
     if (!widthsParam) return {}
-    
+
     try {
       const pairs = widthsParam.split('-and-')
       const widths: Record<string, number> = {}
@@ -132,7 +134,7 @@ export function useUrlState(options: UseUrlStateOptions) {
       .filter(([_, width]) => width > 0)
       .map(([field, width]) => `${field}:${width}`)
       .join('-and-')
-    
+
     if (widthPairs) {
       url.searchParams.set(`${windowId}_position_col_widths`, widthPairs)
     } else {
@@ -183,14 +185,14 @@ export function useUrlState(options: UseUrlStateOptions) {
     assetClassFilter: string | null
   }) {
     const url = new URL(window.location.href)
-    
+
     // Handle symbol filters
     if (filters.symbolTagFilters.length > 0) {
       url.searchParams.set(`${windowId}_all_cts_fi`, filters.symbolTagFilters.join('-and-'))
     } else {
       url.searchParams.delete(`${windowId}_all_cts_fi`)
     }
-    
+
     // Handle thesis filters
     if (filters.thesisTagFilters.length > 0) {
       url.searchParams.set(`${windowId}_all_cts_thesis`, filters.thesisTagFilters.join('-and-'))
@@ -263,30 +265,30 @@ export function useUrlState(options: UseUrlStateOptions) {
     // Column Renames
     parseColumnRenamesFromUrl,
     writeColumnRenamesToUrl,
-    
+
     // Visible Columns
     parseVisibleColsFromUrl,
     writeVisibleColsToUrl,
-    
+
     // Column Widths
     parseColumnWidthsFromUrl,
     writeColumnWidthsToUrl,
-    
+
     // Sort
     parseSortFromUrl,
     writeSortToUrl,
     clearSortFromUrl,
-    
+
     // Filters
     parseFiltersFromUrl,
     writeFiltersToUrl,
     writeAccountFilterToUrl,
     clearFiltersFromUrl,
-    
+
     // Group By Thesis
     parseGroupByThesisFromUrl,
     writeGroupByThesisToUrl,
-    
+
     // App Name
     parseAppNameFromUrl,
     writeAppNameToUrl

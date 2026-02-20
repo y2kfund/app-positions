@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import Positions from '../src/Positions.vue'
+import Positions from '../src/PositionsV2.vue'
 import { createCore } from '@y2kfund/core'
 
 async function initializeApp() {

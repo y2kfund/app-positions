@@ -1,4 +1,5 @@
-import { default as Positions } from './Positions.vue';
+import { default as Positions } from './PositionsV2.vue';
+
 export { Positions };
 export default Positions;
 export interface PositionsProps {

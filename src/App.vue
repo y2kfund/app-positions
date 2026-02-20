@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Positions from './Positions.vue'
+import Positions from './PositionsV2.vue'
 
 // Demo props - in a real app this would come from route params or store
 const demoAccountId = '1'  // Using account ID that exists in database

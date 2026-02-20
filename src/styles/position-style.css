@@ -35,9 +35,10 @@
 }
 
 /* Style for thesis group rows */
-.tabulator .tabulator-row.tabulator-tree-level-0, 
+.tabulator .tabulator-row.tabulator-tree-level-0,
 .tabulator-row.tabulator-tree-level-0 .tabulator-cell {
-  background-color: #1e3a8a !important; /* Dark blue */
+  background-color: #1e3a8a !important;
+  /* Dark blue */
   color: white !important;
   font-weight: 700 !important;
   font-size: 15px !important;
@@ -46,7 +47,8 @@
 /* Style for child thesis rows (level 1) */
 .tabulator .tabulator-row.tabulator-tree-level-1,
 .tabulator-row.tabulator-tree-level-1 .tabulator-cell {
-  background-color: #7c3aed !important; /* Purple */
+  background-color: #7c3aed !important;
+  /* Purple */
   color: white !important;
   font-weight: 600 !important;
 }
@@ -67,7 +69,7 @@
 .tabulator .tabulator-row.tabulator-tree-level-1 .pnl-negative,
 .tabulator .tabulator-row.tabulator-tree-level-0 .pnl-positive,
 .tabulator .tabulator-row.tabulator-tree-level-1 .pnl-positive {
-  color: #fff !important; 
+  color: #fff !important;
 }
 
 
@@ -91,6 +93,7 @@
 .tabulator .tabulator-cell:last-child {
   border-right: 1px solid #dee2e6 !important;
 }
+
 .screenshots-list-vertical {
   display: flex;
   flex-direction: column;
@@ -100,6 +103,7 @@
   max-height: 50vh;
   overflow-y: auto;
 }
+
 .screenshot-list-item {
   display: flex;
   align-items: center;
@@ -111,9 +115,11 @@
   cursor: pointer;
   transition: background 0.15s;
 }
+
 .screenshot-list-item:hover {
   background: #e3f2fd;
 }
+
 .screenshot-thumb {
   width: 110px;
   height: 60px;
@@ -121,8 +127,9 @@
   border-radius: 0.4rem;
   border: 1px solid #ccc;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
+
 .screenshot-list-meta {
   display: flex;
   flex-direction: column;
@@ -130,6 +137,7 @@
   font-size: 15px;
   color: #555;
 }
+
 .screenshot-download-link {
   color: #1976d2;
   font-weight: 500;
@@ -138,6 +146,7 @@
   margin-top: 2px;
   transition: color 0.18s;
 }
+
 .screenshot-download-link:hover {
   color: #0d47a1;
   text-decoration: underline;
@@ -145,21 +154,30 @@
 
 /* Preview modal */
 .screenshot-preview-modal {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.45); z-index: 100000;
-  display: flex; align-items: center; justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .screenshot-preview-content {
   background: #fff;
   border-radius: 1.2rem;
   padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
   align-items: center;
   max-width: 90vw;
   max-height: 90vh;
 }
+
 .screenshot-full-img {
   max-width: 80vw;
   max-height: 60vh;
@@ -168,6 +186,7 @@
   margin-bottom: 1.2rem;
   background: #f8f9fa;
 }
+
 .screenshot-preview-meta {
   display: flex;
   gap: 1.2rem;
@@ -175,6 +194,7 @@
   font-size: 1.1em;
   color: #444;
 }
+
 .screenshot-preview-close {
   margin-left: 1.5rem;
   padding: 0.4rem 1.2rem;
@@ -187,19 +207,23 @@
   cursor: pointer;
   transition: background 0.18s, color 0.18s, border 0.18s;
 }
+
 .screenshot-preview-close:hover {
   background: #0056b3;
   border-color: #0056b3;
 }
+
 button.screenshot-btn {
-    background: transparent;
-    padding: 2px 2px;
-    border: 1px solid #dee2e6;
+  background: transparent;
+  padding: 2px 2px;
+  border: 1px solid #dee2e6;
 }
+
 .screenshot-btn[disabled] {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 .screenshot-spinner {
   display: inline-block;
   width: 18px;
@@ -210,22 +234,31 @@ button.screenshot-btn {
   animation: screenshot-spin 0.7s linear infinite;
   vertical-align: middle;
 }
+
 @keyframes screenshot-spin {
-  0% { transform: rotate(0deg);}
-  100% { transform: rotate(360deg);}
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
+
 button.attach-trades-btn {
-    border-radius: 50%;
-    padding: 0 !important;
-    height: 18px;
-    width: 18px !important;
-    border: 2px solid #28a745;
-    color: #28a745;
-    cursor: pointer;
+  border-radius: 50%;
+  padding: 0 !important;
+  height: 18px;
+  width: 18px !important;
+  border: 2px solid #28a745;
+  color: #28a745;
+  cursor: pointer;
 }
+
 .ag-simple-filter-body-wrapper {
   background-color: #fff;
 }
+
 .ag-input-wrapper:before {
   content: none;
 }

@@ -1,5 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { QueryClient } from '@tanstack/vue-query';
+
 export interface Thesis {
     id: string;
     title: string;
