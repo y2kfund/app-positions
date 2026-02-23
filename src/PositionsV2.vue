@@ -21,7 +21,7 @@ const emit = defineEmits<{ 'row-click': [row: Position]; 'minimize': []; 'maximi
 const accountFilter = ref<string | null>(null)
 const assetClassFilter = ref<string | null>(null)
 const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'computed_cash_flow_on_entry', 'computed_cash_flow_on_exercise', 'contract_quantity', 'accounting_quantity'] as const
-const windowId = props.window || inject<string | null>('positions', null)
+const windowId = props.window || inject<string | null>('positions', null) || ''
 const today = new Date().toISOString().slice(0, 10)
 const asOfDate = ref<string | null>(null)
 function clearAsOfDate() { asOfDate.value = null }
@@ -614,6 +614,8 @@ initializeTabulator = function() {
     getCol('market_value'), getCol('maintenance_margin_change'),
   ].filter(Boolean)
 
+  const urlSort = parseSortFromUrl()
+
   tabulator = new Tabulator(tableDiv.value, {
     data: gridRowData.value,
     columns,
@@ -624,7 +626,7 @@ initializeTabulator = function() {
     movableColumns: true,
     resizableColumns: true,
     headerSortClickElement: 'icon',
-    initialSort: parseSortFromUrl() ? [parseSortFromUrl()!] : [{ column: 'dte', dir: 'asc' }],
+    initialSort: urlSort ? [{ column: urlSort.field, dir: urlSort.dir }] : [{ column: 'dte', dir: 'asc' }],
     placeholder: 'No positions to display',
   })
 
