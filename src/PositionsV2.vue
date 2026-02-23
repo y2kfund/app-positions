@@ -596,7 +596,7 @@ initializeTabulator = function() {
     data: gridRowData.value,
     columns,
     columnHeaderVertAlign: 'bottom',
-    layout: 'fitData',
+    layout: 'fitDataFill',
     height: '100%',
     renderHorizontal: 'basic',
     movableColumns: true,
@@ -961,6 +961,12 @@ function hideColumnFromHeader(field: ColumnField) {
 .tabulator .tabulator-cell.col-group-end,
 .tabulator .tabulator-col.col-group-end {
   border-right: 2px solid #4a90d9 !important;
+}
+
+/* Hide background on stretched last-column cells (fitDataFill filler) */
+.tabulator .tabulator-row .tabulator-cell:last-child:empty,
+.tabulator .tabulator-row .tabulator-cell[tabulator-field="ai_recommendation"] {
+  background: transparent !important;
 }
 </style>
 

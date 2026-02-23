@@ -12160,7 +12160,7 @@ const Qr = { class: "positions-card dashboard-container" }, Zr = {
         data: Yt.value,
         columns: P,
         columnHeaderVertAlign: "bottom",
-        layout: "fitData",
+        layout: "fitDataFill",
         height: "100%",
         renderHorizontal: "basic",
         movableColumns: !0,
@@ -12458,7 +12458,7 @@ const Qr = { class: "positions-card dashboard-container" }, Zr = {
       ], 64);
     };
   }
-}), No = /* @__PURE__ */ Pi(zo, [["__scopeId", "data-v-8000aaf6"]]);
+}), No = /* @__PURE__ */ Pi(zo, [["__scopeId", "data-v-b7cf4553"]]);
 export {
   No as Positions,
   No as default
