@@ -596,7 +596,7 @@ initializeTabulator = function() {
     data: gridRowData.value,
     columns,
     columnHeaderVertAlign: 'bottom',
-    layout: 'fitColumns',
+    layout: 'fitData',
     height: '100%',
     renderHorizontal: 'basic',
     movableColumns: true,
