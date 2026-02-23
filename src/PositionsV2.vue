@@ -545,15 +545,37 @@ initializeTabulator = function() {
       formatter: (cell: any) => {
         const row = cell.getRow().getData()
         if (row.asset_class !== 'OPT') return ''
-        // Recompute unrealized_pnl_pct (same formula as the mutator)
+        const badges: string[] = []
+
+        // --- Delta-based recommendation ---
+        const delta = row.delta != null ? parseFloat(row.delta) : null
+        if (delta !== null && !isNaN(delta)) {
+          const absDelta = Math.abs(delta)
+          const deltaPct = (absDelta * 100).toFixed(0)
+          const isSold = (row.contract_quantity || 0) < 0
+          if (absDelta >= 0.40) {
+            const action = isSold
+              ? 'For this sold position: BTC (Buy To Close) and STO (Sell To Open) at a safer strike/expiry.'
+              : 'For this long position: STC (Sell To Close) and BTO (Buy To Open) at a better strike/expiry.'
+            const tooltip = `Delta is ${deltaPct}%, breaching the 40% threshold. A delta above 40% means a ~${deltaPct}% probability of expiring ITM, significantly increasing assignment risk. ${action}`
+            badges.push(`<span title="${tooltip}" style="color:#721c24;background:#f8d7da;border:1px solid #f5c6cb;border-radius:4px;padding:2px 6px;font-size:0.8em;font-weight:600;white-space:nowrap;cursor:help;">🔄 ROLL</span>`)
+          } else {
+            const tooltip = `Delta is ${deltaPct}%, below the 40% threshold. Assignment risk is manageable — continue holding the position.`
+            badges.push(`<span title="${tooltip}" style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:4px;padding:2px 6px;font-size:0.8em;font-weight:600;white-space:nowrap;cursor:help;">✅ HOLD</span>`)
+          }
+        }
+
+        // --- Profit-taking recommendation (unrealized P&L >= 60%) ---
         const pnl = parseFloat(row.unrealized_pnl)
         const entry = parseFloat(row.computed_cash_flow_on_entry)
-        if (isNaN(pnl) || isNaN(entry) || entry === 0) return ''
-        const pct = (pnl / Math.abs(entry)) * 100
-        if (pct >= 60) {
-          return `<span title="Unrealized P&L is >= 60% of premium collected. Consider closing (BTC) to lock in gains and rolling to a new position (STO)." style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:4px;padding:2px 6px;font-size:0.8em;font-weight:600;white-space:nowrap;cursor:help;">📈 Unrealized P&amp;L ≥ 60%. Claim the profit &amp; roll</span>`
+        if (!isNaN(pnl) && !isNaN(entry) && entry !== 0) {
+          const pct = (pnl / Math.abs(entry)) * 100
+          if (pct >= 60) {
+            badges.push(`<span title="Unrealized P&L is ${pct.toFixed(0)}% of premium collected (>= 60%). Consider closing (BTC) to lock in gains and rolling to a new position (STO)." style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:4px;padding:2px 6px;font-size:0.8em;font-weight:600;white-space:nowrap;cursor:help;">📈 TAKE PROFIT</span>`)
+          }
         }
-        return ''
+
+        return badges.join('<br>')
       }, bottomCalc: false
     },
     // Legacy columns (hidden by default)
