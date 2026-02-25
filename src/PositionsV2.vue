@@ -443,21 +443,43 @@ initializeTabulator = function() {
       visible: visibleCols.value.includes('be_price_pnl'), headerFilter: 'input', headerFilterPlaceholder: 'e.g. >0', headerFilterFunc: numericHeaderFilter,
       titleFormatter: () => `<div class="header-with-close"><span>${getColLabel('be_price_pnl')}</span></div>`,
       mutator: (value: any, data: any) => {
-        // Only for put options (matches Positions.vue logic)
+        // Only for options with required data
         if (data.asset_class !== 'OPT' || !data.computed_be_price || !data.market_price) return null
-        if (!data.symbol || !data.symbol.includes('P')) return null
+        if (!data.symbol) return null
+        const contractQty = data.contract_quantity || data.qty || 0
+        if (contractQty === 0) return null
         const bePrice = parseFloat(data.computed_be_price)
         const marketPrice = parseFloat(data.market_price)
         if (isNaN(bePrice) || isNaN(marketPrice)) return null
-        // Extract strike price from symbol tags (3rd tag)
+        // Extract strike and option type from symbol tags
         const tags = extractTagsFromSymbol(data.symbol)
         const strikePrice = tags[2] ? parseFloat(tags[2]) : null
+        const optionType = tags[3] // 'P' or 'C'
         if (strikePrice === null || isNaN(strikePrice)) return null
-        const qty = Math.abs(data.contract_quantity || data.qty || 0)
+        if (optionType !== 'P' && optionType !== 'C') return null
+        const qty = Math.abs(contractQty)
         const mult = data.multiplier || 100
-        // min(underlyingCurrentPrice, strikePrice) — caps payout at strike
-        const effectivePrice = Math.min(marketPrice, strikePrice)
-        return (effectivePrice - bePrice) * qty * mult
+        if (optionType === 'P') {
+          // Puts: use min(UL, Strike)
+          const effectivePrice = Math.min(marketPrice, strikePrice)
+          if (contractQty < 0) {
+            // Sold put: P&L = (min(UL, Strike) - BE) × |Qty| × Mult
+            return (effectivePrice - bePrice) * qty * mult
+          } else {
+            // Bought put: P&L = (BE - min(UL, Strike)) × |Qty| × Mult
+            return (bePrice - effectivePrice) * qty * mult
+          }
+        } else {
+          // Calls: use max(UL, Strike)
+          const effectivePrice = Math.max(marketPrice, strikePrice)
+          if (contractQty < 0) {
+            // Sold call: P&L = (BE - max(UL, Strike)) × |Qty| × Mult
+            return (bePrice - effectivePrice) * qty * mult
+          } else {
+            // Bought call: P&L = (max(UL, Strike) - BE) × |Qty| × Mult
+            return (effectivePrice - bePrice) * qty * mult
+          }
+        }
       },
       formatter: (cell: any) => {
         const v = cell.getValue()
