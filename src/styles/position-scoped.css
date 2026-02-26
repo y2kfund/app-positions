@@ -1,11 +1,21 @@
 .positions-card {
   border-radius: 0.75rem;
   background: white;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-h1 { 
-  margin: 0 0 1.5rem 0; 
-  font-size: 1.75rem; 
+.positions-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+h1 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.75rem;
   font-weight: 600;
   color: var(--positions-header-color, #2c3e50);
 }
@@ -91,14 +101,20 @@ h1 {
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius:  6px;
+  border-radius: 6px;
   border: 1px solid #dee2e6;
   background: #fff;
   color: #495057;
   cursor: pointer;
 }
-.columns-btn:hover { background: #f8f9fa; }
-.columns-btn .icon { pointer-events: none; }
+
+.columns-btn:hover {
+  background: #f8f9fa;
+}
+
+.columns-btn .icon {
+  pointer-events: none;
+}
 
 .minimize-button {
   display: inline-flex;
@@ -132,10 +148,11 @@ h1 {
   width: 260px;
   background: #fff;
   border: 1px solid #dee2e6;
-  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
   border-radius: 8px;
   z-index: 10;
-  overflow: hidden; /* ADD THIS */
+  overflow: hidden;
+  /* ADD THIS */
 }
 
 .columns-popup .popup-header {
@@ -146,36 +163,47 @@ h1 {
 
 .columns-popup .popup-list {
   max-height: 260px;
-  overflow-y: auto; /* ADD THIS */
-  padding: 0.5rem 0.75rem; /* ADD THIS */
+  overflow-y: auto;
+  /* ADD THIS */
+  padding: 0.5rem 0.75rem;
+  /* ADD THIS */
 }
 
 .columns-popup .popup-item {
-  display: flex; /* CHANGE from inline-flex to flex */
+  display: flex;
+  /* CHANGE from inline-flex to flex */
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
   color: #495057;
-  padding: 0.4rem 0; /* ADD THIS for better spacing */
-  cursor: pointer; /* ADD THIS */
+  padding: 0.4rem 0;
+  /* ADD THIS for better spacing */
+  cursor: pointer;
+  /* ADD THIS */
 }
 
 .columns-popup .popup-item:hover {
-  background: #f8f9fa; /* ADD THIS */
+  background: #f8f9fa;
+  /* ADD THIS */
 }
 
 .columns-popup .popup-item input[type="checkbox"] {
-  flex-shrink: 0; /* ADD THIS to prevent checkbox from shrinking */
-  cursor: pointer; /* ADD THIS */
+  flex-shrink: 0;
+  /* ADD THIS to prevent checkbox from shrinking */
+  cursor: pointer;
+  /* ADD THIS */
 }
 
 .columns-popup .popup-item span {
-  flex: 1; /* ADD THIS to allow text to take remaining space */
-  cursor: pointer; /* ADD THIS */
+  flex: 1;
+  /* ADD THIS to allow text to take remaining space */
+  cursor: pointer;
+  /* ADD THIS */
 }
 
 /* Loading and error states */
-.loading, .error {
+.loading,
+.error {
   padding: 2rem;
   text-align: center;
   border-radius: 0.5rem;
@@ -201,8 +229,13 @@ h1 {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error {
@@ -224,8 +257,9 @@ h1 {
 
 .positions-grid {
   margin-top: 0.5rem;
-  height: 600px;
-  min-height: 200px;
+  flex: 1;
+  min-height: 300px;
+  overflow: hidden;
 }
 
 /* Financial Instrument tags */
@@ -292,16 +326,19 @@ h1 {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
+
 .filters-label {
   font-size: 0.875rem;
   color: #495057;
   font-weight: 600;
 }
+
 .filters-tags {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+
 .filter-tag {
   display: inline-flex;
   align-items: center;
@@ -313,6 +350,7 @@ h1 {
   border: 1px solid #e9ecef;
   font-size: 0.8125rem;
 }
+
 .filter-tag .tag-clear {
   appearance: none;
   border: none;
@@ -320,6 +358,7 @@ h1 {
   cursor: pointer;
   color: #6c757d;
 }
+
 .btn-clear-all {
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
@@ -511,22 +550,23 @@ h1 {
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .positions-grid {
-    height: 400px;
+    min-height: 250px;
   }
-  
+
   .toast-container {
     left: 10px;
     right: 10px;
     top: 10px;
     max-width: none;
   }
-  
+
   .toast {
     min-width: auto;
   }
 }
+
 /* Header close button styles */
 :deep(.header-with-close) {
   display: flex;
@@ -599,32 +639,40 @@ h1 {
   color: #0056b3;
   border-color: #0056b3;
 }
+
 .rename-dialog-backdrop {
   position: fixed !important;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
   z-index: 99999 !important;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .rename-dialog {
   background: white;
   padding: 2rem;
   border-radius: 1rem;
   z-index: 100000 !important;
   min-width: 320px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
+
 .dialog-actions button {
-    width: auto;
-    margin: 5px 4px;
-    padding: 8px 10px;
+  width: auto;
+  margin: 5px 4px;
+  padding: 8px 10px;
 }
+
 .columns-popup .move-icons button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
+
 :deep(.header-rename-btn) {
   display: inline-flex;
   align-items: center;
@@ -642,23 +690,30 @@ h1 {
   transition: background 0.2s, opacity 0.2s;
   outline: none;
 }
+
 :deep(.header-rename-btn svg) {
   display: block;
 }
+
 :deep(.header-with-close:hover .header-rename-btn),
 :deep(.header-rename-btn:focus) {
   opacity: 1;
   background: #f1f3f5;
 }
+
 :deep(.header-rename-btn:hover) {
   background: #e3e8ef;
   color: #007bff;
   opacity: 1;
 }
+
 .rename-dialog-backdrop {
   position: fixed !important;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.18);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.18);
   z-index: 99999 !important;
   display: flex;
   align-items: center;
@@ -671,7 +726,7 @@ h1 {
   border-radius: 1.25rem;
   min-width: 320px;
   max-width: 90vw;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -679,8 +734,15 @@ h1 {
 }
 
 @keyframes popup-fade-in {
-  from { opacity: 0; transform: scale(0.98);}
-  to   { opacity: 1; transform: scale(1);}
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .rename-dialog h3 {
@@ -728,7 +790,7 @@ h1 {
   font-weight: 500;
   cursor: pointer;
   transition: background 0.18s, color 0.18s, border 0.18s;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .dialog-actions button:last-child {
@@ -748,17 +810,44 @@ h1 {
   color: #0056b3;
   border-color: #0056b3;
 }
+
 .screenshots-modal {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.25); z-index: 99999;
-  display: flex; align-items: center; justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .screenshots-modal .modal-content {
-  background: #fff; padding: 1rem; border-radius: 1rem; min-width: 350px; max-width: 90vw;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 1rem;
+  min-width: 350px;
+  max-width: 90vw;
 }
-.screenshots-list { display: flex; flex-wrap: wrap; gap: 1rem; }
-.screenshot-item { max-width: 220px; }
-.screenshot-meta { font-size: 12px; color: #888; margin-top: 4px; }
+
+.screenshots-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.screenshot-item {
+  max-width: 220px;
+}
+
+.screenshot-meta {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
 /* Margin Impact Modal Styles */
 .modal-overlay {
   position: fixed;
@@ -859,7 +948,9 @@ h1 {
   border-bottom: none;
 }
 
-.loading-state, .error-state, .no-data-state {
+.loading-state,
+.error-state,
+.no-data-state {
   text-align: center;
   padding: 2rem;
   color: #6c757d;
@@ -872,11 +963,13 @@ h1 {
   border-radius: 4px;
 }
 
-.cost-info-section, .warnings-section {
+.cost-info-section,
+.warnings-section {
   margin-top: 1.5rem;
 }
 
-.cost-info-section h4, .warnings-section h4 {
+.cost-info-section h4,
+.warnings-section h4 {
   margin: 0 0 0.75rem 0;
   font-size: 1rem;
   font-weight: 600;
@@ -1097,15 +1190,17 @@ h1 {
 :deep(.tabulator-row[data-_isTrade="true"]:hover) {
   background-color: #e9ecef !important;
 }
+
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 :deep(.tabulator-row .tabulator) {
   border: 1px solid #dee2e6;
   border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 :deep(.tabulator-row .tabulator .tabulator-header) {
@@ -1142,6 +1237,7 @@ h1 {
   color: #721c24;
   border: 1px solid #f5c6cb;
 }
+
 :deep(.expand-arrow) {
   display: inline-flex;
   align-items: center;
@@ -1171,12 +1267,14 @@ h1 {
   font-weight: 500;
   margin-left: 4px;
 }
+
 .search-hint {
   font-size: 0.75rem;
   color: #6c757d;
   margin-top: 0.5rem;
   font-style: italic;
 }
+
 .attachment-tabs {
   display: flex;
   gap: 0.5rem;
