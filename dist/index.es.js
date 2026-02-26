@@ -12184,7 +12184,6 @@ const Zr = { class: "positions-card dashboard-container" }, eo = {
         columns: P,
         columnHeaderVertAlign: "bottom",
         layout: "fitDataFill",
-        height: "100%",
         renderHorizontal: "basic",
         movableColumns: !0,
         resizableColumns: !0,
@@ -12481,7 +12480,7 @@ const Zr = { class: "positions-card dashboard-container" }, eo = {
       ], 64);
     };
   }
-}), No = /* @__PURE__ */ Ai(Ho, [["__scopeId", "data-v-283e9308"]]);
+}), No = /* @__PURE__ */ Ai(Ho, [["__scopeId", "data-v-9d274137"]]);
 export {
   No as Positions,
   No as default

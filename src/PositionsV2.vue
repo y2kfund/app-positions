@@ -643,7 +643,6 @@ initializeTabulator = function() {
     columns,
     columnHeaderVertAlign: 'bottom',
     layout: 'fitDataFill',
-    height: '100%',
     renderHorizontal: 'basic',
     movableColumns: true,
     resizableColumns: true,
