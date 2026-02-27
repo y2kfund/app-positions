@@ -715,6 +715,15 @@ function handleExternalSymbolFilter(payload: { symbolTags: string[], source: str
   updateFilters()
 }
 
+function handleExternalThesisFilter(payload: { thesisTitles: string[], source: string }) {
+  thesisTagFilters.value = payload.thesisTitles
+  const url = new URL(window.location.href)
+  if (payload.thesisTitles.length > 0) url.searchParams.set(`${windowId}_all_cts_thesis`, payload.thesisTitles.join(','))
+  else url.searchParams.delete(`${windowId}_all_cts_thesis`)
+  window.history.replaceState({}, '', url.toString())
+  updateFilters()
+}
+
 onMounted(async () => {
   appName.value = parseAppNameFromUrl()
   const filters = parseFiltersFromUrl()
@@ -731,6 +740,7 @@ onMounted(async () => {
   if (eventBus) {
     eventBus.on('account-filter-changed', handleExternalAccountFilter)
     eventBus.on('symbol-filter-changed', handleExternalSymbolFilter)
+    eventBus.on('thesis-filter-changed', handleExternalThesisFilter)
   }
   nextTick(() => updateFilteredPositionsCount())
 })
@@ -740,6 +750,7 @@ onBeforeUnmount(() => {
   if (eventBus) {
     eventBus.off('account-filter-changed', handleExternalAccountFilter)
     eventBus.off('symbol-filter-changed', handleExternalSymbolFilter)
+    eventBus.off('thesis-filter-changed', handleExternalThesisFilter)
   }
 })
 
