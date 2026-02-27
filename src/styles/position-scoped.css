@@ -1,16 +1,6 @@
 .positions-card {
   border-radius: 0.75rem;
   background: white;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.positions-container {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
 }
 
 h1 {
@@ -257,8 +247,6 @@ h1 {
 
 .positions-grid {
   margin-top: 0.5rem;
-  flex: 1;
-  min-height: 300px;
   margin-bottom: 20px;
 }
 
