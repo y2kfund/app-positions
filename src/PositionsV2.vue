@@ -561,7 +561,7 @@ initializeTabulator = function() {
       bottomCalc: false, contextMenu: createFetchedAtContextMenu()
     },
     // AI Recommendation
-    { title: 'AI Recommendation', field: 'ai_recommendation', minWidth: 100, width: columnWidths.value['ai_recommendation'] || 140, hozAlign: 'center',
+    { title: 'AI Recommendation', field: 'ai_recommendation', minWidth: 120, width: columnWidths.value['ai_recommendation'] || 160, hozAlign: 'center',
       visible: visibleCols.value.includes('ai_recommendation'),
       titleFormatter: () => `<div class="header-with-close"><span>${getColLabel('ai_recommendation')}</span></div>`,
       formatter: (cell: any) => {
@@ -580,10 +580,10 @@ initializeTabulator = function() {
               ? 'For this sold position: BTC (Buy To Close) and STO (Sell To Open) at a safer strike/expiry.'
               : 'For this long position: STC (Sell To Close) and BTO (Buy To Open) at a better strike/expiry.'
             const tooltip = `Delta is ${deltaPct}%, breaching the 40% threshold. A delta above 40% means a ~${deltaPct}% probability of expiring ITM, significantly increasing assignment risk. ${action}`
-            badges.push(`<span title="${tooltip}" style="color:#721c24;background:#f8d7da;border:1px solid #f5c6cb;border-radius:4px;padding:2px 6px;font-size:0.8em;font-weight:600;white-space:nowrap;cursor:help;">🔄 ROLL</span>`)
+            badges.push(`<span title="${tooltip}" style="color:#721c24;background:#f8d7da;border:1px solid #f5c6cb;border-radius:999px;padding:0px 6px;font-size:0.65em;font-weight:600;white-space:nowrap;cursor:help;line-height:1.6;">🔄 ROLL</span>`)
           } else {
             const tooltip = `Delta is ${deltaPct}%, below the 40% threshold. Assignment risk is manageable — continue holding the position.`
-            badges.push(`<span title="${tooltip}" style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:4px;padding:2px 6px;font-size:0.8em;font-weight:600;white-space:nowrap;cursor:help;">✅ HOLD</span>`)
+            badges.push(`<span title="${tooltip}" style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:999px;padding:0px 6px;font-size:0.65em;font-weight:600;white-space:nowrap;cursor:help;line-height:1.6;">✅ HOLD</span>`)
           }
         }
 
@@ -593,11 +593,11 @@ initializeTabulator = function() {
         if (!isNaN(pnl) && !isNaN(entry) && entry !== 0) {
           const pct = (pnl / Math.abs(entry)) * 100
           if (pct >= 60) {
-            badges.push(`<span title="Unrealized P&L is ${pct.toFixed(0)}% of premium collected (>= 60%). Consider closing (BTC) to lock in gains and rolling to a new position (STO)." style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:4px;padding:2px 6px;font-size:0.8em;font-weight:600;white-space:nowrap;cursor:help;">📈 TAKE PROFIT</span>`)
+            badges.push(`<span title="Unrealized P&L is ${pct.toFixed(0)}% of premium collected (>= 60%). Consider closing (BTC) to lock in gains and rolling to a new position (STO)." style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:999px;padding:0px 6px;font-size:0.65em;font-weight:600;white-space:nowrap;cursor:help;line-height:1.6;">📈 TAKE PROFIT</span>`)
           }
         }
 
-        return badges.join('<br>')
+        return `<div style="display:flex;gap:4px;justify-content:center;flex-wrap:nowrap;">${badges.join('')}</div>`
       }, bottomCalc: false
     },
     // Legacy columns (hidden by default)

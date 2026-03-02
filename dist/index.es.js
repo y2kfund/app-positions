@@ -12099,8 +12099,8 @@ const eo = { class: "positions-card dashboard-container" }, to = {
         {
           title: "AI Recommendation",
           field: "ai_recommendation",
-          minWidth: 100,
-          width: $.value.ai_recommendation || 140,
+          minWidth: 120,
+          width: $.value.ai_recommendation || 160,
           hozAlign: "center",
           visible: D.value.includes("ai_recommendation"),
           titleFormatter: () => `<div class="header-with-close"><span>${Z("ai_recommendation")}</span></div>`,
@@ -12112,18 +12112,18 @@ const eo = { class: "positions-card dashboard-container" }, to = {
               const Y = Math.abs(H), le = (Y * 100).toFixed(0), me = (p.contract_quantity || 0) < 0;
               if (Y >= 0.4) {
                 const Ce = `Delta is ${le}%, breaching the 40% threshold. A delta above 40% means a ~${le}% probability of expiring ITM, significantly increasing assignment risk. ${me ? "For this sold position: BTC (Buy To Close) and STO (Sell To Open) at a safer strike/expiry." : "For this long position: STC (Sell To Close) and BTO (Buy To Open) at a better strike/expiry."}`;
-                M.push(`<span title="${Ce}" style="color:#721c24;background:#f8d7da;border:1px solid #f5c6cb;border-radius:4px;padding:2px 6px;font-size:0.8em;font-weight:600;white-space:nowrap;cursor:help;">🔄 ROLL</span>`);
+                M.push(`<span title="${Ce}" style="color:#721c24;background:#f8d7da;border:1px solid #f5c6cb;border-radius:999px;padding:0px 6px;font-size:0.65em;font-weight:600;white-space:nowrap;cursor:help;line-height:1.6;">🔄 ROLL</span>`);
               } else {
                 const he = `Delta is ${le}%, below the 40% threshold. Assignment risk is manageable — continue holding the position.`;
-                M.push(`<span title="${he}" style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:4px;padding:2px 6px;font-size:0.8em;font-weight:600;white-space:nowrap;cursor:help;">✅ HOLD</span>`);
+                M.push(`<span title="${he}" style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:999px;padding:0px 6px;font-size:0.65em;font-weight:600;white-space:nowrap;cursor:help;line-height:1.6;">✅ HOLD</span>`);
               }
             }
             const U = parseFloat(p.unrealized_pnl), K = parseFloat(p.computed_cash_flow_on_entry);
             if (!isNaN(U) && !isNaN(K) && K !== 0) {
               const Y = U / Math.abs(K) * 100;
-              Y >= 60 && M.push(`<span title="Unrealized P&L is ${Y.toFixed(0)}% of premium collected (>= 60%). Consider closing (BTC) to lock in gains and rolling to a new position (STO)." style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:4px;padding:2px 6px;font-size:0.8em;font-weight:600;white-space:nowrap;cursor:help;">📈 TAKE PROFIT</span>`);
+              Y >= 60 && M.push(`<span title="Unrealized P&L is ${Y.toFixed(0)}% of premium collected (>= 60%). Consider closing (BTC) to lock in gains and rolling to a new position (STO)." style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:999px;padding:0px 6px;font-size:0.65em;font-weight:600;white-space:nowrap;cursor:help;line-height:1.6;">📈 TAKE PROFIT</span>`);
             }
-            return M.join("<br>");
+            return `<div style="display:flex;gap:4px;justify-content:center;flex-wrap:nowrap;">${M.join("")}</div>`;
           },
           bottomCalc: !1
         },
@@ -12485,7 +12485,7 @@ const eo = { class: "positions-card dashboard-container" }, to = {
       ], 64);
     };
   }
-}), Io = /* @__PURE__ */ Oi(Po, [["__scopeId", "data-v-37daa630"]]);
+}), Io = /* @__PURE__ */ Oi(Po, [["__scopeId", "data-v-5ced381b"]]);
 export {
   Io as Positions,
   Io as default
