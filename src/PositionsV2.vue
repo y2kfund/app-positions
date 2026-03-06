@@ -846,6 +846,7 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
   } else if (field === 'asset_class') {
     assetClassFilter.value = String(value)
     updateFilters()
+    syncFiltersToUrl()
   } else if (field === 'thesis') {
     const title = value?.title || String(value)
     const idx = thesisTagFilters.value.indexOf(title)
@@ -862,7 +863,7 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'
     accountFilter.value = null
     const url = new URL(window.location.href); url.searchParams.delete('all_cts_clientId'); window.history.replaceState({}, '', url.toString())
     if (eventBus) eventBus.emit('account-filter-changed', { accountId: null, source: 'positions' })
-  } else if (field === 'asset_class') assetClassFilter.value = null
+  } else if (field === 'asset_class') { assetClassFilter.value = null; syncFiltersToUrl() }
   updateFilters()
 }
 
