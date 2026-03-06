@@ -696,6 +696,18 @@ watch([accountFilter, symbolTagFilters, thesisTagFilters], () => {
 
 watch(asOfDate, () => { if (q.refetch) q.refetch() })
 
+// When query data changes (e.g. after asOfDate refetch), push new data into the table
+watch(gridRowData, (newData) => {
+  if (!tabulator || !isTabulatorReady.value || !newData) return
+  try {
+    tabulator.replaceData(newData)
+    if (updateFilters) updateFilters()
+    nextTick(() => updateFilteredPositionsCount())
+  } catch (error) {
+    console.warn('Error updating table data:', error)
+  }
+})
+
 function handleExternalAccountFilter(payload: { accountId: string | null, source: string }) {
   accountFilter.value = payload.accountId
   const url = new URL(window.location.href)
