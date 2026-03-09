@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<PositionsProps>(), {
 const emit = defineEmits<{ 'row-click': [row: Position]; 'minimize': []; 'maximize': [] }>()
 
 const accountFilter = ref<string | null>(null)
-const assetClassFilter = ref<string | null>(null)
+const assetClassFilter = ref<string[]>([])
 const numericFields = ['qty', 'avgPrice', 'price', 'market_value', 'unrealized_pnl', 'computed_cash_flow_on_entry', 'computed_cash_flow_on_exercise', 'contract_quantity', 'accounting_quantity'] as const
 const windowId = props.window || inject<string | null>('positions', null) || ''
 const today = new Date().toISOString().slice(0, 10)
@@ -47,6 +47,13 @@ const sourcePositions = computed(() => {
     }
     return newP
   })
+})
+
+// Unique asset classes from unfiltered data (for the header filter dropdown)
+const uniqueAssetClasses = computed(() => {
+  const classes = new Set<string>()
+  sourcePositions.value.forEach(p => { if ((p as any).asset_class) classes.add((p as any).asset_class) })
+  return Array.from(classes).sort()
 })
 
 // Tabulator
@@ -316,6 +323,104 @@ const gridRowData = computed(() => sourcePositions.value)
 
 // ─── Forward declarations ───
 let updateFilters: () => void
+let syncFiltersToUrl: () => void
+
+// ─── Asset Class Header Filter (custom Tabulator headerFilter) ───
+function assetClassHeaderFilter(cell: any, onRendered: any, success: any, cancel: any) {
+  const container = document.createElement('div')
+  container.style.position = 'relative'
+  container.style.display = 'inline-block'
+  container.style.width = '100%'
+
+  // Button that shows current state
+  const btn = document.createElement('button')
+  btn.type = 'button'
+  btn.style.cssText = 'width:100%;padding:2px 4px;font-size:11px;cursor:pointer;border:1px solid #ccc;border-radius:3px;background:#fff;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'
+  const updateBtnLabel = () => {
+    if (assetClassFilter.value.length === 0) btn.textContent = 'All ▾'
+    else btn.textContent = assetClassFilter.value.join(', ') + ' ▾'
+  }
+  updateBtnLabel()
+
+  // Dropdown panel — appended to body to avoid overflow:hidden clipping
+  const dropdown = document.createElement('div')
+  dropdown.style.cssText = 'display:none;position:fixed;z-index:99999;background:#fff;border:1px solid #ccc;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.15);padding:4px 0;min-width:120px;max-height:200px;overflow-y:auto;'
+  document.body.appendChild(dropdown)
+
+  function positionDropdown() {
+    const rect = btn.getBoundingClientRect()
+    dropdown.style.top = rect.bottom + 2 + 'px'
+    dropdown.style.left = rect.left + 'px'
+  }
+
+  function renderOptions() {
+    dropdown.innerHTML = ''
+    const classes = uniqueAssetClasses.value
+    if (classes.length === 0) {
+      const empty = document.createElement('div')
+      empty.textContent = 'No data'
+      empty.style.cssText = 'padding:4px 8px;color:#999;font-size:11px;'
+      dropdown.appendChild(empty)
+      return
+    }
+    classes.forEach(cls => {
+      const label = document.createElement('label')
+      label.style.cssText = 'display:flex;align-items:center;gap:6px;padding:3px 8px;cursor:pointer;font-size:11px;white-space:nowrap;'
+      label.addEventListener('mouseenter', () => { label.style.background = '#f0f0f0' })
+      label.addEventListener('mouseleave', () => { label.style.background = 'transparent' })
+
+      const cb = document.createElement('input')
+      cb.type = 'checkbox'
+      cb.checked = assetClassFilter.value.includes(cls)
+      cb.style.cssText = 'margin:0;cursor:pointer;'
+
+      cb.addEventListener('change', () => {
+        const idx = assetClassFilter.value.indexOf(cls)
+        if (cb.checked && idx < 0) assetClassFilter.value.push(cls)
+        else if (!cb.checked && idx >= 0) assetClassFilter.value.splice(idx, 1)
+        updateBtnLabel()
+        if (updateFilters) updateFilters()
+        if (syncFiltersToUrl) syncFiltersToUrl()
+      })
+
+      const span = document.createElement('span')
+      span.textContent = cls
+
+      label.appendChild(cb)
+      label.appendChild(span)
+      dropdown.appendChild(label)
+    })
+  }
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation()
+    const isOpen = dropdown.style.display !== 'none'
+    if (isOpen) {
+      dropdown.style.display = 'none'
+    } else {
+      renderOptions()
+      positionDropdown()
+      dropdown.style.display = 'block'
+    }
+  })
+
+  // Close dropdown when clicking outside
+  const closeHandler = (e: MouseEvent) => {
+    if (!container.contains(e.target as Node) && !dropdown.contains(e.target as Node)) {
+      dropdown.style.display = 'none'
+    }
+  }
+  document.addEventListener('click', closeHandler)
+
+  // Clean up when header filter is destroyed
+  onRendered(() => {
+    updateBtnLabel()
+  })
+
+  container.appendChild(btn)
+  return container
+}
+
 let initializeTabulator: () => void
 
 // ─── initializeTabulator ───
@@ -603,7 +708,14 @@ initializeTabulator = function() {
     // Legacy columns (hidden by default)
     { title: 'Thesis', field: 'thesis', visible: visibleCols.value.includes('thesis'), formatter: (cell: any) => cell.getValue()?.title || '', contextMenu: createFetchedAtContextMenu() },
     { title: 'Expiry', field: 'expiry_date', visible: visibleCols.value.includes('expiry_date'), formatter: (cell: any) => { const tags = extractTagsFromSymbol(cell.getRow().getData().symbol); return tags[1] || '-' }, contextMenu: createFetchedAtContextMenu() },
-    { title: 'Asset Class', field: 'asset_class', visible: visibleCols.value.includes('asset_class'), cellClick: (e: any, cell: any) => handleCellFilterClick('asset_class', cell.getValue()), contextMenu: createFetchedAtContextMenu() },
+    { title: 'Asset Class', field: 'asset_class', visible: visibleCols.value.includes('asset_class'),
+      headerFilter: assetClassHeaderFilter,
+      headerFilterFunc: (headerValue: any, rowValue: any) => {
+        // Filtering is handled by our custom setFilter, so always return true here
+        return true
+      },
+      cellClick: (e: any, cell: any) => handleCellFilterClick('asset_class', cell.getValue()),
+      contextMenu: createFetchedAtContextMenu() },
     { title: 'Conid', field: 'conid', visible: visibleCols.value.includes('conid') },
     { title: 'UndConid', field: 'undConid', visible: visibleCols.value.includes('undConid') },
     { title: 'Multiplier', field: 'multiplier', visible: visibleCols.value.includes('multiplier') },
@@ -742,7 +854,7 @@ onMounted(async () => {
   if (filters.symbol) symbolTagFilters.value = filters.symbol.split(',').map(s => s.trim())
   if (filters.thesis) thesisTagFilters.value = filters.thesis.split(',').map(s => s.trim())
   if (filters.legal_entity) accountFilter.value = filters.legal_entity
-  if (filters.asset_class) assetClassFilter.value = filters.asset_class
+  if (filters.asset_classes && filters.asset_classes.length > 0) assetClassFilter.value = filters.asset_classes
   columnRenames.value = parseColumnRenamesFromUrl()
   if (q.isSuccess.value && tableDiv.value && !isTableInitialized.value) {
     await nextTick()
@@ -771,6 +883,7 @@ window.addEventListener('popstate', () => {
   symbolTagFilters.value = filters.symbol ? filters.symbol.split(',').map(s => s.trim()) : []
   thesisTagFilters.value = filters.thesis ? filters.thesis.split(',').map(s => s.trim()) : []
   accountFilter.value = filters.legal_entity || null
+  assetClassFilter.value = filters.asset_classes || []
   columnRenames.value = parseColumnRenamesFromUrl()
   updateFilters()
   const sortFromUrl = parseSortFromUrl()
@@ -781,7 +894,7 @@ window.addEventListener('popstate', () => {
 function syncActiveFiltersFromTable() {
   const next: ActiveFilter[] = []
   if (accountFilter.value) next.push({ field: 'legal_entity', value: accountFilter.value })
-  if (assetClassFilter.value) next.push({ field: 'asset_class', value: assetClassFilter.value })
+  if (assetClassFilter.value.length > 0) next.push({ field: 'asset_class', value: assetClassFilter.value.join(', ') })
   if (symbolTagFilters.value.length > 0) next.push({ field: 'symbol', value: symbolTagFilters.value.join(', ') })
   if (thesisTagFilters.value.length > 0) next.push({ field: 'thesis', value: thesisTagFilters.value.join(', ') })
   activeFilters.value = next
@@ -798,7 +911,7 @@ updateFilters = function() {
         const accountVal = typeof data.legal_entity === 'object' && data.legal_entity !== null ? (data.legal_entity.name || data.legal_entity.id) : data.legal_entity
         if (accountVal !== accountFilter.value) return false
       }
-      if (assetClassFilter.value && data.asset_class !== assetClassFilter.value) return false
+      if (assetClassFilter.value.length > 0 && !assetClassFilter.value.includes(data.asset_class)) return false
       if (symbolTagFilters.value.length > 0) {
         const tags = extractTagsFromSymbol(data.symbol || '')
         if (!symbolTagFilters.value.every(t => tags.includes(t))) return false
@@ -844,7 +957,10 @@ function handleCellFilterClick(field: 'symbol' | 'asset_class' | 'legal_entity' 
     updateFilters()
     if (eventBus) eventBus.emit('account-filter-changed', { accountId: value, source: 'positions' })
   } else if (field === 'asset_class') {
-    assetClassFilter.value = String(value)
+    const cls = String(value)
+    const idx = assetClassFilter.value.indexOf(cls)
+    if (idx >= 0) assetClassFilter.value.splice(idx, 1)
+    else assetClassFilter.value.push(cls)
     updateFilters()
     syncFiltersToUrl()
   } else if (field === 'thesis') {
@@ -863,12 +979,12 @@ function clearFilter(field: 'symbol' | 'asset_class' | 'legal_entity' | 'thesis'
     accountFilter.value = null
     const url = new URL(window.location.href); url.searchParams.delete('all_cts_clientId'); window.history.replaceState({}, '', url.toString())
     if (eventBus) eventBus.emit('account-filter-changed', { accountId: null, source: 'positions' })
-  } else if (field === 'asset_class') { assetClassFilter.value = null; syncFiltersToUrl() }
+  } else if (field === 'asset_class') { assetClassFilter.value = []; syncFiltersToUrl() }
   updateFilters()
 }
 
 function clearAllFilters() {
-  symbolTagFilters.value = []; thesisTagFilters.value = []; accountFilter.value = null; assetClassFilter.value = null
+  symbolTagFilters.value = []; thesisTagFilters.value = []; accountFilter.value = null; assetClassFilter.value = []
   const url = new URL(window.location.href)
   url.searchParams.delete('all_cts_clientId'); url.searchParams.delete(`${windowId}_all_cts_fi`)
   url.searchParams.delete(`${windowId}_all_cts_thesis`); url.searchParams.delete(`${windowId}_fac`)
@@ -882,8 +998,8 @@ function handleVisibleColsUpdate(newCols: ColumnField[]) { visibleCols.value = n
 function handleColumnRenamesUpdate(newRenames: ColumnRenames) { columnRenames.value = newRenames; writeColumnRenamesToUrl(newRenames); nextTick(() => initializeTabulator()) }
 function handleHeaderClick() { window.location.href = '/positions' }
 
-function syncFiltersToUrl() {
-  writeFiltersToUrl({ symbolTagFilters: symbolTagFilters.value, thesisTagFilters: thesisTagFilters.value, assetClassFilter: assetClassFilter.value })
+syncFiltersToUrl = function() {
+  writeFiltersToUrl({ symbolTagFilters: symbolTagFilters.value, thesisTagFilters: thesisTagFilters.value, assetClassFilters: assetClassFilter.value })
 }
 
 function toggleBottomCalc() {

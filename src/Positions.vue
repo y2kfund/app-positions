@@ -3700,7 +3700,7 @@ function syncFiltersToUrl() {
   writeFiltersToUrl({
     symbolTagFilters: symbolTagFilters.value,
     thesisTagFilters: thesisTagFilters.value,
-    assetClassFilter: assetClassFilter.value
+    assetClassFilters: assetClassFilter.value ? [assetClassFilter.value] : []
   })
 }
 
@@ -3723,9 +3723,7 @@ onMounted(async () => {
   if (filters.thesis) thesisTagFilters.value = filters.thesis.split(',').map(s => s.trim())
   if (filters.legal_entity) accountFilter.value = filters.legal_entity
 
-  // --- ADD THIS LINE ---
-  if (filters.asset_class) assetClassFilter.value = filters.asset_class
-  // --- END ---
+  if (filters.asset_classes && filters.asset_classes.length > 0) assetClassFilter.value = filters.asset_classes[0]
 
   columnRenames.value = parseColumnRenamesFromUrl()
 

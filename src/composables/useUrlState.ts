@@ -27,7 +27,7 @@ export type ColumnRenames = Partial<Record<ColumnField, string>>
 
 export interface UrlFilters {
   symbol?: string
-  asset_class?: string
+  asset_classes?: string[]
   legal_entity?: string
   thesis?: string
 }
@@ -172,17 +172,18 @@ export function useUrlState(options: UseUrlStateOptions) {
     const url = new URL(window.location.href)
     const symbolParam = url.searchParams.get(`${windowId}_all_cts_fi`)
     const symbol = symbolParam ? symbolParam.split('-and-').join(',') : undefined
-    const asset = url.searchParams.get(`${windowId}_fac`) || undefined
+    const assetParam = url.searchParams.get(`${windowId}_fac`)
+    const asset_classes = assetParam ? assetParam.split('-and-').filter(Boolean) : undefined
     const account = url.searchParams.get(`all_cts_clientId`) || undefined
     const thesisParam = url.searchParams.get(`${windowId}_all_cts_thesis`)
     const thesis = thesisParam ? thesisParam.split('-and-').join(',') : undefined
-    return { symbol, asset_class: asset, legal_entity: account, thesis }
+    return { symbol, asset_classes, legal_entity: account, thesis }
   }
 
   function writeFiltersToUrl(filters: {
     symbolTagFilters: string[]
     thesisTagFilters: string[]
-    assetClassFilter: string | null
+    assetClassFilters: string[]
   }) {
     const url = new URL(window.location.href)
 
@@ -200,9 +201,9 @@ export function useUrlState(options: UseUrlStateOptions) {
       url.searchParams.delete(`${windowId}_all_cts_thesis`)
     }
 
-    // Handle asset class filter
-    if (filters.assetClassFilter) {
-      url.searchParams.set(`${windowId}_fac`, filters.assetClassFilter)
+    // Handle asset class filters (multi-select)
+    if (filters.assetClassFilters.length > 0) {
+      url.searchParams.set(`${windowId}_fac`, filters.assetClassFilters.join('-and-'))
     } else {
       url.searchParams.delete(`${windowId}_fac`)
     }

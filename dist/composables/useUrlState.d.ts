@@ -14,7 +14,7 @@ export type ColumnField = 'legal_entity' | 'symbol' | 'asset_class' | 'conid' | 
 export type ColumnRenames = Partial<Record<ColumnField, string>>;
 export interface UrlFilters {
     symbol?: string;
-    asset_class?: string;
+    asset_classes?: string[];
     legal_entity?: string;
     thesis?: string;
 }
@@ -45,7 +45,7 @@ export declare function useUrlState(options: UseUrlStateOptions): {
     writeFiltersToUrl: (filters: {
         symbolTagFilters: string[];
         thesisTagFilters: string[];
-        assetClassFilter: string | null;
+        assetClassFilters: string[];
     }) => void;
     writeAccountFilterToUrl: (accountId: string | null) => void;
     clearFiltersFromUrl: () => void;
