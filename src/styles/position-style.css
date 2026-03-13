@@ -34,9 +34,9 @@
   line-height: 1;
 }
 
-/* Style for thesis group rows */
-.tabulator .tabulator-row.tabulator-tree-level-0,
-.tabulator-row.tabulator-tree-level-0 .tabulator-cell {
+/* Style for thesis group rows — scoped to positions table */
+.positions-grid .tabulator .tabulator-row.tabulator-tree-level-0,
+.positions-grid .tabulator-row.tabulator-tree-level-0 .tabulator-cell {
   background-color: #1e3a8a !important;
   /* Dark blue */
   color: white !important;
@@ -44,31 +44,31 @@
   font-size: 15px !important;
 }
 
-/* Style for child thesis rows (level 1) */
-.tabulator .tabulator-row.tabulator-tree-level-1,
-.tabulator-row.tabulator-tree-level-1 .tabulator-cell {
+/* Style for child thesis rows (level 1) — scoped to positions table */
+.positions-grid .tabulator .tabulator-row.tabulator-tree-level-1,
+.positions-grid .tabulator-row.tabulator-tree-level-1 .tabulator-cell {
   background-color: #7c3aed !important;
   /* Purple */
   color: white !important;
   font-weight: 600 !important;
 }
 
-/* Style for position rows (level 2+) */
-.tabulator .tabulator-row.tabulator-tree-level-2 {
+/* Style for position rows (level 2+) — scoped to positions table */
+.positions-grid .tabulator .tabulator-row.tabulator-tree-level-2 {
   background-color: #fff !important;
   border-left: 3px solid #e9ecef !important;
 }
 
-/* Add subtle indentation visual guide */
-.tabulator .tabulator-row.tabulator-tree-level-1 .tabulator-cell:first-child,
-.tabulator .tabulator-row.tabulator-tree-level-2 .tabulator-cell:first-child {
+/* Add subtle indentation visual guide — scoped to positions table */
+.positions-grid .tabulator .tabulator-row.tabulator-tree-level-1 .tabulator-cell:first-child,
+.positions-grid .tabulator .tabulator-row.tabulator-tree-level-2 .tabulator-cell:first-child {
   border-left: 2px solid #e9ecef;
 }
 
-.tabulator .tabulator-row.tabulator-tree-level-0 .pnl-negative,
-.tabulator .tabulator-row.tabulator-tree-level-1 .pnl-negative,
-.tabulator .tabulator-row.tabulator-tree-level-0 .pnl-positive,
-.tabulator .tabulator-row.tabulator-tree-level-1 .pnl-positive {
+.positions-grid .tabulator .tabulator-row.tabulator-tree-level-0 .pnl-negative,
+.positions-grid .tabulator .tabulator-row.tabulator-tree-level-1 .pnl-negative,
+.positions-grid .tabulator .tabulator-row.tabulator-tree-level-0 .pnl-positive,
+.positions-grid .tabulator .tabulator-row.tabulator-tree-level-1 .pnl-positive {
   color: #fff !important;
 }
 

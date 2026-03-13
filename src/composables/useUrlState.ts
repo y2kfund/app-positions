@@ -21,7 +21,7 @@ export type ColumnField =
   | 'computed_be_price' | 'thesis' | 'maintenance_margin_change'
   | 'symbol_comment' | 'weighted_avg_price' | 'expiry_date'
   | 'dte' | 'delta' | 'unrealized_pnl_pct'
-  | 'ul_entry_price' | 'ai_recommendation'
+  | 'ul_entry_price' | 'ai_recommendation' | 'current_exposure'
 
 export type ColumnRenames = Partial<Record<ColumnField, string>>
 

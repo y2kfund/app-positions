@@ -74,6 +74,7 @@ const allColumnOptions: Array<{ field: ColumnField; label: string }> = [
   { field: 'symbol', label: 'Name' },
   { field: 'avgPrice', label: 'Per Unit Price at Entry' },
   { field: 'instrument_market_price', label: 'Current Market Price' },
+  { field: 'current_exposure', label: 'Current Exposure' },
   { field: 'contract_quantity', label: 'Contract Qty' },
   { field: 'computed_cash_flow_on_entry', label: 'Premium Received' },
   { field: 'dte', label: 'DTE' },
@@ -473,6 +474,53 @@ initializeTabulator = function() {
       formatter: (cell: any) => { const v = cell.getValue(); return v != null ? formatCurrency(v) : '<span style="color:#aaa;">-</span>' },
       contextMenu: createFetchedAtContextMenu()
     },
+    // Current Exposure = underlying market_price × accounting_quantity (accounting_quantity already = contract_qty × multiplier)
+    { title: 'Current Exposure', field: 'current_exposure', minWidth: 110, width: columnWidths.value['current_exposure'] || undefined, hozAlign: 'right',
+      visible: visibleCols.value.includes('current_exposure'),
+      headerFilter: 'input', headerFilterPlaceholder: 'e.g. >10000', headerFilterFunc: numericHeaderFilter,
+      titleFormatter: () => `<div class="header-with-close"><span>${getColLabel('current_exposure')}</span></div>`,
+      mutator: (_value: any, data: any) => {
+        // Always use underlying market_price (for OPT this is the underlying stock price, not the premium)
+        // accounting_quantity already = contract_qty × multiplier, so no need to multiply by multiplier again
+        const price = data.market_price ?? null
+        const qty   = data.accounting_quantity ?? null
+        if (price == null || qty == null) return null
+        return price * qty  // signed; keep full precision here, round only at display
+      },
+      formatter: (cell: any) => {
+        const v = cell.getValue()
+        if (v == null) return '<span style="color:#aaa;">-</span>'
+        return formatCurrency(Math.abs(Math.round(v)))
+      },
+      bottomCalc: 'sum',
+      bottomCalcFormatter: (cell: any) => {
+        const v = cell.getValue()
+        if (v == null || !Number.isFinite(v)) return ''
+        return formatCurrency(Math.abs(Math.round(v)))
+      },
+      contextMenu: (_e: any, component: any) => {
+        const d = component.getRow().getData()
+        const price  = d.market_price ?? null
+        const qty    = d.accounting_quantity ?? null
+        const mult   = d.multiplier ?? 1
+        const isOpt  = d.asset_class === 'OPT'
+        const result = (price != null && qty != null) ? Math.round(price * qty) : null
+        const label =
+          `<div style="padding:6px 10px;font-size:12px;line-height:1.8;max-width:300px;">` +
+          `<strong style="font-size:13px;">📐 Current Exposure</strong><br>` +
+          `<code style="background:#f3f4f6;padding:2px 5px;border-radius:3px;font-size:11px;">` +
+          `Underlying Price × Accounting Qty</code><br>` +
+          `<span style="color:#6b7280;font-size:11px;">Accounting Qty = Contract Qty × Multiplier (${d.contract_quantity ?? '?'} × ${mult})</span><br>` +
+          (isOpt ? `<span style="color:#6366f1;font-size:11px;">⚠️ OPT: uses underlying stock price, not option premium</span><br>` : '') +
+          `<hr style="margin:5px 0;border:none;border-top:1px solid #e5e7eb;">` +
+          `Underlying Price &nbsp;<b>${price != null ? formatCurrency(price) : 'N/A'}</b><br>` +
+          `Accounting Qty &nbsp;&nbsp;<b>${qty ?? 'N/A'}</b><br>` +
+          `<hr style="margin:5px 0;border:none;border-top:1px solid #e5e7eb;">` +
+          `<strong>= ${result != null ? formatCurrency(result) : 'N/A'}</strong>` +
+          `</div>`
+        return [{ label, action: () => {}, disabled: true }]
+      }
+    },
     { title: 'Contract Qty', field: 'contract_quantity', minWidth: 60, width: columnWidths.value['contract_quantity'] || undefined, hozAlign: 'right',
       visible: visibleCols.value.includes('contract_quantity'), headerFilter: 'input', headerFilterPlaceholder: 'e.g. >10', headerFilterFunc: numericHeaderFilter,
       bottomCalc: 'sum', bottomCalcFormatter: (cell: any) => formatNumber(cell.getValue()),
@@ -741,6 +789,7 @@ initializeTabulator = function() {
     { title: 'Underlying Instrument', headerHozAlign: 'center', columns: [getCol('computed_be_price'), getCol('market_price'), getCol('ul_entry_price')].filter(Boolean) },
     getCol('computed_cash_flow_on_exercise'),
     getCol('entry_exercise_cash_flow_pct'),
+    getCol('current_exposure'),
     getCol('ai_recommendation'),
     // Legacy
     getCol('thesis'), getCol('expiry_date'), getCol('asset_class'), getCol('conid'), getCol('undConid'),
