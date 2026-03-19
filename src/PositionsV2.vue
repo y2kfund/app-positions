@@ -547,8 +547,10 @@ initializeTabulator = function() {
         const tags = extractTagsFromSymbol(row.symbol)
         const expiryStr = tags[1]
         if (!expiryStr) return '-'
-        const expiry = new Date(expiryStr); const now = new Date(); now.setHours(0,0,0,0); expiry.setHours(0,0,0,0)
-        const days = Math.ceil((expiry.getTime() - now.getTime()) / 86400000)
+        const [ey, em, ed] = expiryStr.split('-').map(Number)
+        const expiry = new Date(ey, em - 1, ed)  // local midnight — avoids UTC parsing trap
+        const now = new Date(); now.setHours(0,0,0,0)
+        const days = Math.round((expiry.getTime() - now.getTime()) / 86400000)
         if (days < 0) return '<span style="color:#dc3545;font-weight:bold;">Expired</span>'
         const style = days <= 7 ? 'color:#dc3545;font-weight:bold;' : days <= 30 ? 'color:#fd7e14;font-weight:bold;' : 'color:inherit;'
         return `<span style="${style}">${days}d</span>`
@@ -558,7 +560,8 @@ initializeTabulator = function() {
           if (d.asset_class !== 'OPT') return Infinity
           const t = extractTagsFromSymbol(d.symbol)
           if (!t[1]) return Infinity
-          const days = Math.ceil((new Date(t[1]).getTime() - Date.now()) / 86400000)
+          const [sy, sm, sd] = t[1].split('-').map(Number)
+          const days = Math.round((new Date(sy, sm - 1, sd).setHours(0,0,0,0) - new Date().setHours(0,0,0,0)) / 86400000)
           return days < 0 ? Infinity : days  // expired → always last in ASC
         }
         return getDte(aRow.getData()) - getDte(bRow.getData())
